@@ -218,11 +218,9 @@ class MessageDetail extends BaseComponent{
         loadEarlier={this.state.loadEarlier}
         onLoadEarlier={this.onLoadEarlier}
         isLoadingEarlier={this.state.isLoadingEarlier}
-
         user={{
           _id: 1, // sent messages should have same user._id
         }}
-
         renderActions={this.renderCustomActions}
         renderBubble={this.renderBubble}
         renderCustomView={this.renderCustomView}
