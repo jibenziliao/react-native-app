@@ -66,10 +66,10 @@ class MainContainer extends Component {
           /*使用自定义tabbar*/
           return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
         }}>
-        <Home style={styles.subView}/>
-        <Vicinity style={styles.subView}/>
-        <Message style={styles.subView}/>
-        <Mine style={styles.subView}/>
+        <Home style={styles.subView} navigator={this.props.navigator}/>
+        <Vicinity style={styles.subView} navigator={this.props.navigator}/>
+        <Message style={styles.subView} navigator={this.props.navigator}/>
+        <Mine style={styles.subView} navigator={this.props.navigator}/>
       </ScrollableTabView>
     );
   }

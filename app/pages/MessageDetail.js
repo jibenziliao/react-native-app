@@ -16,6 +16,7 @@ import BaseComponent from '../base/BaseComponent'
 import {componentStyles} from '../style'
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
+import signalr from 'react-native-signalr'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -29,6 +30,9 @@ const styles = StyleSheet.create({
     color: '#aaa',
   },
 });
+
+let connection;
+let proxy;
 
 class MessageDetail extends BaseComponent{
   constructor(props) {
@@ -53,11 +57,61 @@ class MessageDetail extends BaseComponent{
 
   componentWillMount() {
     this._isMounted = true;
-    this.setState(() => {
+    /*this.setState(() => {
       return {
         messages: require('../data/messages'),
       };
+    });*/
+
+    connection = signalr.hubConnection('http://192.168.2.130:12580/signalr/hubs');
+    connection.logging = true;
+    console.log(connection);
+    proxy = connection.createHubProxy('ChatCore');
+
+    //receives broadcast messages from a hub function, called "messageFromServer"
+    proxy.on('messageFromServer', (message) => {
+      console.log(message);
+
+      //Respond to message, invoke messageToServer on server with arg 'hej'
+      // let messagePromise =
+      //message-status-handling
+      messagePromise.done(() => {
+        console.log('Invocation of NewContosoChatMessage succeeded');
+      }).fail(function (error) {
+        console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
+      });
     });
+
+    proxy.on('sayHey', (message) => {
+      console.log(message);
+    });
+
+    // atempt connection, and handle errors
+    connection.start().done(() => {
+      proxy.invoke('login', '1|Test');
+      console.log('Now connected, connection ID=' + connection.id);
+    }).fail(() => {
+      console.log('Failed');
+    });
+
+    //connection-handling
+    connection.connectionSlow(function () {
+      console.log('We are currently experiencing difficulties with the connection.')
+    });
+
+    connection.error(function (error) {
+      console.log('SignalR error: ' + error)
+    });
+
+
+
+    proxy.on('getNewMsg', (text) => {
+      console.log(text);
+      console.log(text[0]['MsgList'][0]['MsgContent']);
+      this.onReceive(text[0]['MsgList'][0]['MsgContent']);
+    });
+
+
   }
 
   componentWillUnmount() {
@@ -91,8 +145,13 @@ class MessageDetail extends BaseComponent{
       };
     });
 
+    console.log(messages);
+
+    proxy.invoke('userSendMsgToUser','1|Test',messages[0].text);
+
+
     // for demo purpose
-    this.answerDemo(messages);
+    //this.answerDemo(messages);
   }
 
   answerDemo(messages) {
@@ -130,6 +189,19 @@ class MessageDetail extends BaseComponent{
     }, 1000);
   }
 
+  componentDidMount(){
+    let arr=[
+      {userData:{
+        userId:1,
+        userName:'abc',
+        msgContent:'124ewafdsfa',
+        time:'',
+        userAvatar:''
+      }},
+      {}
+    ];
+  }
+
 
   onReceive(text) {
     this.setState((previousState) => {
@@ -146,6 +218,8 @@ class MessageDetail extends BaseComponent{
         }),
       };
     });
+
+
   }
 
   renderCustomActions(props) {
@@ -217,7 +291,7 @@ class MessageDetail extends BaseComponent{
         onSend={this.onSend}
         loadEarlier={this.state.loadEarlier}
         onLoadEarlier={this.onLoadEarlier}
-        isLoadingEarlier={this.state.isLoadingEarlier}
+        isLoadingEarlier={this.state.isLoadingEarlier }
         user={{
           _id: 1, // sent messages should have same user._id
         }}

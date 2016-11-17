@@ -5,9 +5,15 @@
  */
 import {combineReducers} from 'redux'
 import InitialApp from './InitialApp'
+import Vicinity from './Vicinity'
+import UserProfile from './UserProfile'
+import Login from './Login'
 
 const rootReducer = combineReducers({
-  InitialApp
+  InitialApp,
+  Vicinity,
+  UserProfile,
+  Login
 });
 
 export default rootReducer;

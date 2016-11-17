@@ -20,6 +20,15 @@ import BaseComponent from '../base/BaseComponent'
 import Button from 'react-native-button'
 import {CommonStyles} from '../style'
 import dismissKeyboard from 'dismissKeyboard'
+import MainContainer from '../containers/MainContainer'
+import {connect} from 'react-redux'
+import DeviceInfo from 'react-native-device-info'
+import * as UserProfileActions from '../actions/UserProfile'
+import * as InitialAppActions from '../actions/InitialApp'
+import * as LoginActions from '../actions/Login'
+import Spinner from '../components/Spinner'
+import UserProfile from './UserProfile'
+import BackgroundTimer from 'react-native-background-timer'
 import Menu, {
   MenuContext,
   MenuOptions,
@@ -114,11 +123,34 @@ class Login extends BaseComponent {
       validCode: '',
       phoneCountry: '86',
       pending: false,
-      validCodeBtnAccessible: true,
+      validCodeBtnAccessible: false,
       nextBtnAccessible: false,
       maxLength: 11,
-      validCodeText: '获取验证码'
+      validCodeText: '获取验证码',
+      tipsText: '使用手机号一键登录'
     };
+    this.login = this.login.bind(this);
+  }
+
+  componentWillMount() {
+    const data = {
+      DeviceType: DeviceInfo.getSystemName() || 'Android',
+      DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
+      DeviceInfo: DeviceInfo.getModel() || 'NX507J'
+    };
+
+    //const data = {
+    //  DeviceType: 'iOS',
+    //  DeviceVersion: '8.1',
+    //  DeviceInfo: 'iPhone Simulator'
+    //};
+
+    const {dispatch}= this.props;
+    Storage.getItem('hasInit').then((response)=> {
+      if (!response) {
+        dispatch(InitialAppActions.initialApp(data))
+      }
+    });
   }
 
   getNavigationBarProps() {
@@ -128,37 +160,66 @@ class Login extends BaseComponent {
     };
   }
 
-  login() {
-    //Storage.setItem('user', {name: '张三', age: '18'});
-    getNavigator().push({
-      name: 'MainContainer'
+  renderCountry(phoneCountry) {
+    this.setState({
+      maxLength: '86' == phoneCountry ? 11 : 9,
+      phone: '',
+      validCode: '',
+      phoneCountry: phoneCountry,
+      validCodeBtnAccessible: false
     });
   }
 
-  getValidCode() {
+  login(data) {
+    //Storage.setItem('user', {name: '张三', age: '18'});
+    const {navigator}=this.props;
+    /*navigator.push({
+      component: MainContainer,
+      name: 'MainContainer'
+    });*/
     dismissKeyboard();
-    let second = 5;
-    if (this.state.validCodeBtnAccessible == false) {
-      return false;
-    }
-    this.setState({
-      validCodeBtnAccessible: false,
-      validCodeText: `剩余${second}秒`
-    });
+    const {dispatch} = this.props;
+    dispatch(LoginActions.validCode(data,navigator));
+  }
 
-    this.timer = setInterval(()=> {
-      this.setState({validCodeText: `剩余${second - 1}秒`});
-      second -= 1;
-      if (second === 0) {
-        clearInterval(this.timer);
-        this.setState({validCodeBtnAccessible: true});
-        this.setState({validCodeText: '获取验证码'});
-      }
-    }, 1000)
+  getValidCode(phoneCountry, phone) {
+    dismissKeyboard();
+    const data = {
+      Country: phoneCountry,
+      Mobile: phone
+    };
+    const {dispatch} = this.props;
+    dispatch(LoginActions.getValidCode(data));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.hasSendValidCode) {
+      let second = 120;
+      let phone = this.state.phone;
+      let phoneCountry = this.state.phoneCountry;
+      this.setState({
+        validCodeBtnAccessible: false,
+        validCodeText: `剩余${second}秒`,
+        tipsText: `我们已经给你的手机号码+${phoneCountry}-${phone}发送了一条验证短息`
+      });
+
+      this.timer = BackgroundTimer.setInterval(()=> {
+        this.setState({validCodeText: `剩余${second - 1}秒`});
+        second -= 1;
+        if (second === 0) {
+          BackgroundTimer.clearInterval(this.timer);
+          this.setState({
+            validCodeBtnAccessible: true,
+            validCodeText: '获取验证码',
+            tipsText: '使用手机号一键登录'
+          });
+        }
+      }, 1000)
+    }
   }
 
   componentWillUnmount() {
-    this.timer && clearInterval(this.timer);
+    BackgroundTimer.clearInterval(this.timer);
   }
 
   renderValidCodeBtn(phone) {
@@ -174,14 +235,14 @@ class Login extends BaseComponent {
       phone: '',
       validCode: '',
       phoneCountry: phoneCountry,
-      validCodeBtnAccessible: false
+      tipsText: '使用手机号一键登录',
     });
   }
 
   renderTips() {
     return (
       <View style={styles.tipsArea}>
-        <Text style={styles.tips}>{'使用手机号一键登录'}</Text>
+        <Text style={styles.tips}>{this.state.tipsText}</Text>
       </View>
     )
   }
@@ -256,13 +317,14 @@ class Login extends BaseComponent {
             style={styles.input}
             underlineColorAndroid={'transparent'}
             placeholder={'请输入验证码'}
+            maxLength={6}
             returnKeyType={'done'}
             onChangeText={(validCode)=>this.setState({validCode})}
             value={this.state.validCode}/>
           <Button
             style={styles.validCodeBtn}
             onPress={()=> {
-              this.getValidCode()
+              this.getValidCode(this.state.phoneCountry, this.state.phone)
             }}
             styleDisabled={[styles.validCodeBtn, styles.btnDisabled]}
             disabled={!this.state.validCodeBtnAccessible}>
@@ -273,6 +335,22 @@ class Login extends BaseComponent {
     )
   }
 
+  renderPending(data) {
+    if (data) {
+      return (
+        <Spinner animating={data}/>
+      )
+    }
+  }
+
+  nextTest(){
+    const {navigator}=this.props;
+    navigator.push({
+      component: UserProfile,
+      name: 'UserProfile'
+    });
+  }
+
   renderBody() {
     return (
       <MenuContext style={{flex: 1}}>
@@ -281,15 +359,26 @@ class Login extends BaseComponent {
           {this.renderForm()}
           <Button
             style={styles.loginBtn}
-            onPress={()=> {
-              this.login()
-            }}>
+            styleDisabled={[styles.loginBtn, styles.btnDisabled]}
+            disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}
+            onPress={()=>this.login(this.state.validCode)}>
             登录
           </Button>
+          <Button
+            style={styles.loginBtn}
+            onPress={()=>this.nextTest()}>
+            Test下一步
+          </Button>
+          {this.renderPending(this.props.pendingStatus)}
         </View>
       </MenuContext>
     )
   }
 }
 
-export default Login
+export default connect((state)=> {
+  return {
+    pendingStatus: state.InitialApp.pending || state.Login.pending || state.UserProfile.pending,
+    hasSendValidCode: state.Login.hasSendValidCode
+  }
+})(Login)

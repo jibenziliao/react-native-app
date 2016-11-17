@@ -42,7 +42,6 @@ export function registerNavigator(tempNavigator) {
     return;
   }
   navigator = tempNavigator;
-
 }
 
 export function getNavigator() {

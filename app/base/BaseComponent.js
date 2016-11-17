@@ -9,8 +9,8 @@ import {
   Text,
   StyleSheet
 } from 'react-native';
-import NavigationBar from '../components/NavigationBar';
 import {getNavigator} from '../navigation/Route';
+import NavigationBar from '../components/NavigationBar';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
 });
 
 class BaseComponent extends Component {
-
   constructor(props) {
     super(props);
     this.getNavigationBarProps = this.getNavigationBarProps.bind(this);
@@ -64,11 +63,12 @@ class BaseComponent extends Component {
   }
 
   componentWillUnmount() {
-
+    return null;
   }
 
   onLeftPressed() {
-    getNavigator().pop();
+    const {navigator}=this.props;
+    navigator.pop();
   }
 
   onRightPressed() {

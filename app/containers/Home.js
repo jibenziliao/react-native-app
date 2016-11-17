@@ -13,10 +13,16 @@ import {
 import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
 import Button from 'react-native-button'
+import MessageDetail from '../pages/MessageDetail'
+import Login from '../pages/Login'
+
+let navigator;
 
 class Home extends BaseComponent{
   constructor(props){
-    super(props)
+    super(props);
+    navigator=this.props.navigator;
+
   }
 
   getNavigationBarProps() {
@@ -31,13 +37,15 @@ class Home extends BaseComponent{
   }
 
   goMessageDetail(){
-    getNavigator().push({
+    navigator.push({
+      component:MessageDetail,
       name:'MessageDetail'
     })
   }
 
   goLogin(){
-    getNavigator().push({
+    navigator.push({
+      component:Login,
       name: 'Login'
     });
   }

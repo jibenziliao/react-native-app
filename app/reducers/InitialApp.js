@@ -6,16 +6,23 @@
 import * as ActionTypes from '../actions/ActionTypes'
 
 const initialState={
-  pending:false
+  hasInitial:false,
+  pending:false,
 };
-
-export default function init(state=initialState,action) {
+export default function initialApp(state=initialState,action) {
   switch (action.type){
     case ActionTypes.APP_INITIAL_BEGIN:
-      return{
+      return {
         ...state,
         pending:true
-      }
+      };
+    case ActionTypes.APP_INITIAL_END:
+      return {
+        ...state,
+        hasInitial:true,
+        res:action,
+        pending:false
+      };
     default:
       return state;
   }
