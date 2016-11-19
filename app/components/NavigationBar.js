@@ -19,7 +19,7 @@ const {width, height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   navigationBar: {
-    backgroundColor: '#3281DD',
+    backgroundColor: '#5067FF',
     ...Platform.select({
       ios: {
         height: 64
@@ -35,12 +35,19 @@ const styles = StyleSheet.create({
   },
   navigationBarTitleContainer: {
     position: 'absolute',
-    top: 0,
     bottom: 0,
     left: 80,
     right: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Platform.select({
+      ios:{
+        top:20
+      },
+      android:{
+        top:0
+      }
+    })
   },
   navigationBarTitle: {
     color: 'white',
@@ -50,22 +57,36 @@ const styles = StyleSheet.create({
   },
   leftButton: {
     position: 'absolute',
-    top: 0,
     bottom: 0,
     left: 0,
     width: 60,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingHorizontal:20
+    paddingHorizontal:20,
+    ...Platform.select({
+      ios:{
+        top:20
+      },
+      android:{
+        top:0
+      }
+    })
   },
   rightButton: {
     position: 'absolute',
-    top: 0,
     bottom: 0,
     right: 0,
     alignItems: 'flex-end',
     justifyContent: 'center',
-    paddingHorizontal:20
+    paddingHorizontal:20,
+    ...Platform.select({
+      ios:{
+        top:20
+      },
+      android:{
+        top:0
+      }
+    })
   },
   rightButtonTextStyle: {
     color: '#FFF',

@@ -3,7 +3,7 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:54
  * @description
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,70 +15,67 @@ import BaseComponent from '../base/BaseComponent'
 import Button from 'react-native-button'
 import MessageDetail from '../pages/MessageDetail'
 import Login from '../pages/Login'
+import {Button as NBButton} from 'native-base'
+import {StyleConfig, CommonStyles, componentStyles} from '../style'
 
 let navigator;
 
-class Home extends BaseComponent{
-  constructor(props){
+class Home extends BaseComponent {
+  constructor(props) {
     super(props);
-    navigator=this.props.navigator;
+    navigator = this.props.navigator;
 
   }
 
   getNavigationBarProps() {
     return {
       title: '广场',
-      hideLeftButton:true
+      hideLeftButton: true
     };
   }
 
-  onRightPressed(){
+  onRightPressed() {
     console.log('这是继承后的方法');
   }
 
-  goMessageDetail(){
+  goMessageDetail() {
     navigator.push({
-      component:MessageDetail,
-      name:'MessageDetail'
+      component: MessageDetail,
+      name: 'MessageDetail'
     })
   }
 
-  goLogin(){
+  goLogin() {
     navigator.push({
-      component:Login,
+      component: Login,
       name: 'Login'
     });
   }
 
   renderBody() {
-    return(
-      <View style={{flex:1,paddingHorizontal:10}}>
-        <Button
+    return (
+      <View style={{flex: 1, paddingHorizontal: 10}}>
+        <NBButton
+          block
           style={{
-            backgroundColor:'#3281DD',
-            marginVertical:30,
-            borderRadius:4,
-            height:50,
-            color:'#FFF',
-            padding:10,
-            textAlignVertical:'center',
+            height: 40,
+            marginVertical:30
           }}
-        onPress={()=>{this.goMessageDetail()}}>
+          onPress={()=> {
+            this.goMessageDetail()
+          }}>
           测试页面跳转
-        </Button>
-        <Button
+        </NBButton>
+        <NBButton
+          block
           style={{
-            backgroundColor:'#3281DD',
-            marginVertical:30,
-            borderRadius:4,
-            height:50,
-            color:'#FFF',
-            padding:10,
-            textAlignVertical:'center',
+            height:40
           }}
-          onPress={()=>{this.goLogin()}}>
+          onPress={()=> {
+            this.goLogin()
+          }}>
           测试登录
-        </Button>
+        </NBButton>
       </View>
     )
   }

@@ -15,6 +15,8 @@ import BaseComponent from '../base/BaseComponent'
 import * as Storage from '../utils/Storage'
 import Button from 'react-native-button'
 import signalr from 'react-native-signalr'
+import {Button as NBButton} from 'native-base'
+import {StyleConfig, CommonStyles} from '../style'
 
 let navigator;
 let connection;
@@ -85,21 +87,17 @@ class Mine extends BaseComponent {
   renderBody() {
     return (
       <View style={{flex: 1, paddingHorizontal: 10}}>
-        <Button
+        <NBButton
+          block
           style={{
-            backgroundColor: '#3281DD',
-            marginVertical: 30,
-            borderRadius: 4,
-            height: 50,
-            color: '#FFF',
-            padding: 10,
-            textAlignVertical: 'center',
+            height: 40,
+            marginVertical: 30
           }}
           onPress={()=> {
             this.loginTest()
           }}>
           测试页面跳转
-        </Button>
+        </NBButton>
       </View>
     )
   }

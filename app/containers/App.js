@@ -75,7 +75,7 @@ class App extends Component {
         this.setState({hasRegistered: value});
         this.getCurrentPosition();
         console.log('已完成注册流程');
-      }else{
+      } else {
         console.log('尚未完成注册流程');
       }
       this.setState({loading: false, getRegistered: true});
@@ -178,7 +178,7 @@ class App extends Component {
     return (
       <View style={{flex: 1}}>
         <StatusBar
-          backgroundColor="#3281DD"
+          backgroundColor="#5067FF"
           barStyle="light-content"
         />
         {this.renderNavigator(status)}
@@ -217,7 +217,8 @@ class App extends Component {
 
   onBackAndroid() {
     const routers = this.navigator.getCurrentRoutes();
-    if ((routers.length === 2 && routers[0].name == 'Login') || routers[routers.length - 1].name == 'Login' || routers[routers.length - 2].name == 'Login') {
+    console.log(routers);
+    if ((routers.length > 2 && routers[routers.length - 1] != 'MainContainer' && routers[routers.length-1].name !='UserProfile') || routers[routers.length - 1].name == 'Login') {
       let now = new Date().getTime();
       if (now - lastClickTime < 2500) {
         return false;

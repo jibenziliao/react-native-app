@@ -12,13 +12,13 @@ import {
   Picker,
   PickerIOS,
   Platform,
-  TouchableHighlight
+  TouchableHighlight,
+  Animated
 } from 'react-native'
 import {getNavigator} from '../navigation/Route'
 import * as Storage from '../utils/Storage'
 import BaseComponent from '../base/BaseComponent'
 import Button from 'react-native-button'
-import {CommonStyles} from '../style'
 import dismissKeyboard from 'dismissKeyboard'
 import MainContainer from '../containers/MainContainer'
 import {connect} from 'react-redux'
@@ -29,6 +29,8 @@ import * as LoginActions from '../actions/Login'
 import Spinner from '../components/Spinner'
 import UserProfile from './UserProfile'
 import BackgroundTimer from 'react-native-background-timer'
+import {Button as NBButton} from 'native-base'
+import {StyleConfig, CommonStyles} from '../style'
 import Menu, {
   MenuContext,
   MenuOptions,
@@ -55,28 +57,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20
   },
-  loginForm: {
-    borderRadius: 4,
-  },
   picker: {
-    width: 100
-  },
-  pickerMenu: {
-    width: 60,
-    height: 50,
-    justifyContent: 'center'
+    width: 100,
+    height:40
   },
   pickerView: {
     backgroundColor: '#DADADA',
     marginRight: 10,
     paddingLeft: 10,
-    borderRadius: 4
+    borderRadius: 4,
+    height: 40
   },
   inputItem: {
     flexDirection: 'row',
-    flex: 1,
     alignItems: 'center',
-    height: 50,
+    height: 40,
     marginBottom: 20
   },
   label: {
@@ -87,31 +82,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     borderRadius: 4,
-    borderColor: '#444'
-  },
-  loginBtn: {
-    textAlignVertical: 'center',
-    backgroundColor: '#3281DD',
-    borderColor: '#3281DD',
-    borderRadius: 4,
-    height: 50,
-    marginTop: 30,
-    padding: 10,
-    color: '#FFF',
-    flex: 1
-  },
-  validCodeBtn: {
-    width: 120,
-    marginLeft: 10,
-    height: 50,
-    backgroundColor: '#3281DD',
-    borderRadius: 4,
-    borderColor: '#3281DD',
-    textAlignVertical: 'center',
-    color: '#FFF'
-  },
-  btnDisabled: {
-    backgroundColor: '#9DCDFD'
+    borderColor: '#444',
+    height: 40
   }
 });
 
@@ -133,22 +105,22 @@ class Login extends BaseComponent {
   }
 
   componentWillMount() {
-    const data = {
-      DeviceType: DeviceInfo.getSystemName() || 'Android',
-      DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
-      DeviceInfo: DeviceInfo.getModel() || 'NX507J'
-    };
-
     //const data = {
-    //  DeviceType: 'iOS',
-    //  DeviceVersion: '8.1',
-    //  DeviceInfo: 'iPhone Simulator'
+    //  DeviceType: DeviceInfo.getSystemName() || 'Android',
+    //  DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
+    //  DeviceInfo: DeviceInfo.getModel() || 'NX507J'
     //};
+
+    const data = {
+      DeviceType: 'iOS',
+      DeviceVersion: '8.1',
+      DeviceInfo: 'iPhone Simulator'
+    };
 
     const {dispatch}= this.props;
     Storage.getItem('hasInit').then((response)=> {
       if (!response) {
-        dispatch(InitialAppActions.initialApp(data))
+        //dispatch(InitialAppActions.initialApp(data))
       }
     });
   }
@@ -174,12 +146,12 @@ class Login extends BaseComponent {
     //Storage.setItem('user', {name: '张三', age: '18'});
     const {navigator}=this.props;
     /*navigator.push({
-      component: MainContainer,
-      name: 'MainContainer'
-    });*/
+     component: MainContainer,
+     name: 'MainContainer'
+     });*/
     dismissKeyboard();
     const {dispatch} = this.props;
-    dispatch(LoginActions.validCode(data,navigator));
+    dispatch(LoginActions.validCode(data, navigator));
   }
 
   getValidCode(phoneCountry, phone) {
@@ -250,7 +222,7 @@ class Login extends BaseComponent {
   renderPicker() {
     if (Platform.OS === 'ios') {
       return (
-        <View>
+        <View style={{width: 80, height: 40,backgroundColor:'#DADADA',marginRight:20,borderRadius:4}}>
           {this.renderPickerIOS()}
         </View>
       )
@@ -274,64 +246,22 @@ class Login extends BaseComponent {
   renderPickerIOS() {
     return (
       <Menu
-        style={[styles.pickerMenu, styles.pickerMenu]}
         onSelect={(value) => {
           this.renderCountry(value + '')
         }}>
         <MenuTrigger>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between',height:40,alignItems:'center',paddingHorizontal:10}}>
             <Text>{'+'}{this.state.phoneCountry}</Text>
             <Icon name="angle-down" size={16} style={{marginRight: 10}}/>
           </View>
         </MenuTrigger>
         <MenuOptions
-          optionsContainerStyle={{width: 60}}>
+          optionsContainerStyle={{width: 80}}>
           <MenuOption value={86} text='+86'/>
           <MenuOption value={64} text="+64"/>
           <MenuOption value={61} text="+61"/>
         </MenuOptions>
       </Menu>
-    )
-  }
-
-  renderForm() {
-    return (
-      <View style={styles.loginForm}>
-        <View style={styles.inputItem}>
-          {this.renderPicker()}
-          <TextInput
-            style={styles.input}
-            keyboardType={'numeric'}
-            underlineColorAndroid={'transparent'}
-            placeholder={'请输入手机号'}
-            maxLength={this.state.maxLength}
-            onChangeText={(phone) => this.renderValidCodeBtn({phone})}
-            value={this.state.phone}
-            returnKeyType={'done'}
-          />
-        </View>
-        <View style={styles.inputItem}>
-          <TextInput
-            multiline={false}
-            keyboardType={'numeric'}
-            style={styles.input}
-            underlineColorAndroid={'transparent'}
-            placeholder={'请输入验证码'}
-            maxLength={6}
-            returnKeyType={'done'}
-            onChangeText={(validCode)=>this.setState({validCode})}
-            value={this.state.validCode}/>
-          <Button
-            style={styles.validCodeBtn}
-            onPress={()=> {
-              this.getValidCode(this.state.phoneCountry, this.state.phone)
-            }}
-            styleDisabled={[styles.validCodeBtn, styles.btnDisabled]}
-            disabled={!this.state.validCodeBtnAccessible}>
-            {this.state.validCodeText}
-          </Button>
-        </View>
-      </View>
     )
   }
 
@@ -343,7 +273,7 @@ class Login extends BaseComponent {
     }
   }
 
-  nextTest(){
+  nextTest() {
     const {navigator}=this.props;
     navigator.push({
       component: UserProfile,
@@ -356,19 +286,53 @@ class Login extends BaseComponent {
       <MenuContext style={{flex: 1}}>
         <View style={styles.loginPage}>
           {this.renderTips()}
-          {this.renderForm()}
-          <Button
-            style={styles.loginBtn}
-            styleDisabled={[styles.loginBtn, styles.btnDisabled]}
-            disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}
-            onPress={()=>this.login(this.state.validCode)}>
+          <View style={styles.inputItem}>
+            {this.renderPicker()}
+            <TextInput
+              style={styles.input}
+              keyboardType={'numeric'}
+              underlineColorAndroid={'transparent'}
+              placeholder={'请输入手机号'}
+              maxLength={this.state.maxLength}
+              onChangeText={(phone) => this.renderValidCodeBtn({phone})}
+              value={this.state.phone}
+              returnKeyType={'done'}
+            />
+          </View>
+          <View style={styles.inputItem}>
+            <TextInput
+              multiline={false}
+              keyboardType={'numeric'}
+              style={styles.input}
+              underlineColorAndroid={'transparent'}
+              placeholder={'请输入验证码'}
+              maxLength={6}
+              returnKeyType={'done'}
+              onChangeText={(validCode)=>this.setState({validCode})}
+              value={this.state.validCode}/>
+            <NBButton
+              block
+              style={{height: 40, marginLeft: 20, width: 120}}
+              onPress={()=> {
+                this.getValidCode(this.state.phoneCountry, this.state.phone)
+              }}
+              disabled={!this.state.validCodeBtnAccessible}>
+              {this.state.validCodeText}
+            </NBButton>
+          </View>
+          <NBButton
+            block
+            style={{marginTop: 20, height: 40}}
+            onPress={()=>this.login(this.state.validCode)}
+            disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}>
             登录
-          </Button>
-          <Button
-            style={styles.loginBtn}
+          </NBButton>
+          <NBButton
+            block
+            style={{marginTop: 20, height: 40}}
             onPress={()=>this.nextTest()}>
-            Test下一步
-          </Button>
+            下一步(Test)
+          </NBButton>
           {this.renderPending(this.props.pendingStatus)}
         </View>
       </MenuContext>

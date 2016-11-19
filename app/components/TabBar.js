@@ -8,22 +8,30 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Text
+  Text,
+Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const styles = StyleSheet.create({
   container: {
-    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
-    borderTopColor: 'gray'
+    borderTopColor: 'gray',
+    ...Platform.select({
+      ios:{
+        height:46
+      },
+      android:{
+        height:50
+      }
+    })
   },
   touchableContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#3281DD'
+    backgroundColor: '#5067FF'
   }
 });
 

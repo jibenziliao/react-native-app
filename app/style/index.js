@@ -6,10 +6,10 @@
 import {
   StyleSheet,
   Dimensions,
-Platform
+  Platform
 } from 'react-native';
 
-const { height, width } = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 
 // ===============================================
 // style config
@@ -17,11 +17,12 @@ const { height, width } = Dimensions.get('window');
 
 export const StyleConfig = {
 
-  color_primary: 'rgba(60, 177, 158, 1)',
-  color_danger: 'rgba(199, 85, 74, 1)',
-  color_warning: 'rgba(216, 196, 128, 1)',
-  color_success: 'rgba(69, 190, 174, 1)',
-  color_white: 'rgba(255, 255, 255, 1)',
+  color_primary: '#5067FF',
+  color_danger: '#d9534f',
+  color_warning: '#f0ad4e',
+  color_success: '#5cb85c',
+  color_info: '#5bc0de',
+  color_white: '#FFF',
   color_light: 'rgba(255, 255, 255, 0.6)',
   color_muted: 'rgba(0, 0, 0, 0.4)',
   color_gray: 'rgba(0, 0, 0, 0.6)',
@@ -39,16 +40,15 @@ export const StyleConfig = {
   line_height_md: 26,
   line_height_sm: 24,
 
-  space_0:   0,
-  space_5:   5,
-  space_10:   10,
-  space_15:   15,
-  space_20:   20,
+  space_0: 0,
+  space_5: 5,
+  space_10: 10,
+  space_15: 15,
+  space_20: 20,
 
   screen_width: width,
   screen_height: height,
 };
-
 
 // ===============================================
 // common styles
@@ -110,8 +110,8 @@ export const CommonStyles = StyleSheet.create({
     justifyContent: 'space-between'
   },
 
-  flexWrap:{
-    flexWrap:'wrap'
+  flexWrap: {
+    flexWrap: 'wrap'
   },
 
   flex_1: {
@@ -245,19 +245,19 @@ export const CommonStyles = StyleSheet.create({
     marginTop: StyleConfig.space_20
   },
 
-  m_t_15:{
+  m_t_15: {
     marginTop: StyleConfig.space_15
   },
 
-  m_t_10:{
+  m_t_10: {
     marginTop: StyleConfig.space_10
   },
 
-  m_t_5:{
+  m_t_5: {
     marginTop: StyleConfig.space_5
   },
 
-  m_t_0:{
+  m_t_0: {
     marginTop: StyleConfig.space_0
   },
 
@@ -265,19 +265,19 @@ export const CommonStyles = StyleSheet.create({
     marginLeft: StyleConfig.space_20
   },
 
-  m_l_15:{
+  m_l_15: {
     marginLeft: StyleConfig.space_15
   },
 
-  m_l_10:{
+  m_l_10: {
     marginLeft: StyleConfig.space_10
   },
 
-  m_l_5:{
+  m_l_5: {
     marginLeft: StyleConfig.space_5
   },
 
-  m_l_0:{
+  m_l_0: {
     marginLeft: StyleConfig.space_0
   },
 
@@ -285,19 +285,19 @@ export const CommonStyles = StyleSheet.create({
     marginRight: StyleConfig.space_20
   },
 
-  m_r_15:{
+  m_r_15: {
     marginRight: StyleConfig.space_15
   },
 
-  m_r_10:{
+  m_r_10: {
     marginRight: StyleConfig.space_10
   },
 
-  m_r_5:{
+  m_r_5: {
     marginRight: StyleConfig.space_5
   },
 
-  m_r_0:{
+  m_r_0: {
     marginRight: StyleConfig.space_0
   },
 
@@ -305,19 +305,19 @@ export const CommonStyles = StyleSheet.create({
     marginBottom: StyleConfig.space_20
   },
 
-  m_b_15:{
+  m_b_15: {
     marginBottom: StyleConfig.space_15
   },
 
-  m_b_10:{
+  m_b_10: {
     marginBottom: StyleConfig.space_10
   },
 
-  m_b_5:{
+  m_b_5: {
     marginBottom: StyleConfig.space_5
   },
 
-  m_b_0:{
+  m_b_0: {
     marginBottom: StyleConfig.space_0
   },
 
@@ -325,19 +325,19 @@ export const CommonStyles = StyleSheet.create({
     marginHorizontal: StyleConfig.space_20
   },
 
-  m_x_15:{
+  m_x_15: {
     marginHorizontal: StyleConfig.space_15
   },
 
-  m_x_10:{
+  m_x_10: {
     marginHorizontal: StyleConfig.space_10
   },
 
-  m_x_5:{
+  m_x_5: {
     marginHorizontal: StyleConfig.space_5
   },
 
-  m_x_0:{
+  m_x_0: {
     marginHorizontal: StyleConfig.space_0
   },
 
@@ -345,19 +345,19 @@ export const CommonStyles = StyleSheet.create({
     marginVertical: StyleConfig.space_20
   },
 
-  m_y_15:{
+  m_y_15: {
     marginVertical: StyleConfig.space_15
   },
 
-  m_y_10:{
+  m_y_10: {
     marginVertical: StyleConfig.space_10
   },
 
-  m_y_5:{
+  m_y_5: {
     marginVertical: StyleConfig.space_5
   },
 
-  m_y_0:{
+  m_y_0: {
     marginVertical: StyleConfig.space_0
   },
 
@@ -365,19 +365,19 @@ export const CommonStyles = StyleSheet.create({
     margin: StyleConfig.space_20
   },
 
-  m_a_15:{
+  m_a_15: {
     margin: StyleConfig.space_15
   },
 
-  m_a_10:{
+  m_a_10: {
     margin: StyleConfig.space_10
   },
 
-  m_a_5:{
+  m_a_5: {
     margin: StyleConfig.space_5
   },
 
-  m_a_0:{
+  m_a_0: {
     margin: StyleConfig.space_0
   },
 
@@ -385,19 +385,19 @@ export const CommonStyles = StyleSheet.create({
     paddingTop: StyleConfig.space_20
   },
 
-  p_t_15:{
+  p_t_15: {
     paddingTop: StyleConfig.space_15
   },
 
-  p_t_10:{
+  p_t_10: {
     paddingTop: StyleConfig.space_10
   },
 
-  p_t_5:{
+  p_t_5: {
     paddingTop: StyleConfig.space_5
   },
 
-  p_t_0:{
+  p_t_0: {
     paddingTop: StyleConfig.space_0
   },
 
@@ -405,19 +405,19 @@ export const CommonStyles = StyleSheet.create({
     paddingLeft: StyleConfig.space_20
   },
 
-  p_l_15:{
+  p_l_15: {
     paddingLeft: StyleConfig.space_15
   },
 
-  p_l_10:{
+  p_l_10: {
     paddingLeft: StyleConfig.space_10
   },
 
-  p_l_5:{
+  p_l_5: {
     paddingLeft: StyleConfig.space_5
   },
 
-  p_l_0:{
+  p_l_0: {
     paddingLeft: StyleConfig.space_0
   },
 
@@ -425,19 +425,19 @@ export const CommonStyles = StyleSheet.create({
     paddingRight: StyleConfig.space_20
   },
 
-  p_r_15:{
+  p_r_15: {
     paddingRight: StyleConfig.space_15
   },
 
-  p_r_10:{
+  p_r_10: {
     paddingRight: StyleConfig.space_10
   },
 
-  p_r_5:{
+  p_r_5: {
     paddingRight: StyleConfig.space_5
   },
 
-  p_r_0:{
+  p_r_0: {
     paddingRight: StyleConfig.space_0
   },
 
@@ -445,19 +445,19 @@ export const CommonStyles = StyleSheet.create({
     paddingBottom: StyleConfig.space_20
   },
 
-  p_b_15:{
+  p_b_15: {
     paddingBottom: StyleConfig.space_15
   },
 
-  p_b_10:{
+  p_b_10: {
     paddingBottom: StyleConfig.space_10
   },
 
-  p_b_5:{
+  p_b_5: {
     paddingBottom: StyleConfig.space_5
   },
 
-  p_b_0:{
+  p_b_0: {
     paddingBottom: StyleConfig.space_0
   },
 
@@ -465,19 +465,19 @@ export const CommonStyles = StyleSheet.create({
     paddingHorizontal: StyleConfig.space_20
   },
 
-  p_x_15:{
+  p_x_15: {
     paddingHorizontal: StyleConfig.space_15
   },
 
-  p_x_10:{
+  p_x_10: {
     paddingHorizontal: StyleConfig.space_10
   },
 
-  p_x_5:{
+  p_x_5: {
     paddingHorizontal: StyleConfig.space_5
   },
 
-  p_x_0:{
+  p_x_0: {
     paddingHorizontal: StyleConfig.space_0
   },
 
@@ -485,19 +485,19 @@ export const CommonStyles = StyleSheet.create({
     paddingVertical: StyleConfig.space_20
   },
 
-  p_y_15:{
+  p_y_15: {
     paddingVertical: StyleConfig.space_15
   },
 
-  p_y_10:{
+  p_y_10: {
     paddingVertical: StyleConfig.space_10
   },
 
-  p_y_5:{
+  p_y_5: {
     paddingVertical: StyleConfig.space_5
   },
 
-  p_y_0:{
+  p_y_0: {
     paddingVertical: StyleConfig.space_0
   },
 
@@ -505,19 +505,19 @@ export const CommonStyles = StyleSheet.create({
     padding: StyleConfig.space_20
   },
 
-  p_a_15:{
+  p_a_15: {
     padding: StyleConfig.space_15
   },
 
-  p_a_10:{
+  p_a_10: {
     padding: StyleConfig.space_10
   },
 
-  p_a_5:{
+  p_a_5: {
     padding: StyleConfig.space_5
   },
 
-  p_a_0:{
+  p_a_0: {
     padding: StyleConfig.space_0
   }
 });
@@ -526,18 +526,18 @@ export const CommonStyles = StyleSheet.create({
 // component styles
 // ===============================================
 
-export const componentStyles=StyleSheet.create({
-  container:{
+export const componentStyles = StyleSheet.create({
+  container: {
     ...Platform.select({
       ios: {
-        paddingTop:64
+        paddingTop: 64
       },
       android: {
-        paddingTop:54
+        paddingTop: 54
       }
     }),
-    backgroundColor:'#ebebeb',
-    paddingHorizontal:10,
+    backgroundColor: '#ebebeb',
+    paddingHorizontal: 10,
     flex: 1,
   },
 });

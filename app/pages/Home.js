@@ -12,7 +12,8 @@ Text
 import Button from 'react-native-button'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
+import {Button as NBButton} from 'native-base'
+import {StyleConfig, CommonStyles,componentStyles} from '../style'
 
 class Home extends Component{
   constructor(props){
