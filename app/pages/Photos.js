@@ -35,10 +35,9 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
-
 const {width, height}=Dimensions.get('window');
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E2E2E2'
@@ -63,13 +62,13 @@ const styles=StyleSheet.create({
 class Photos extends BaseComponent {
   constructor(props) {
     super(props);
-    this.state={
-      imageArr:[]
+    this.state = {
+      imageArr: []
     };
   }
 
   //去首页
-  goHome(){
+  goHome() {
     const {navigator} =this.props;
     navigator.push({
       component: MainContainer,
@@ -125,23 +124,26 @@ class Photos extends BaseComponent {
         //  }
         //}
 
-
-        this.state.imageArr.push(source);
-        this.setState({imageArr:this.state.imageArr});
-        console.log(source);
-        console.log(this.state.imageArr);
-        //如果从交友要求页返回过来,再次拍照会清空之前已拍照内容
-        tmpPhotoArr.push({
+        this.state.imageArr.push({
           id: (new Date()).getTime().toString(),
           ...source,
           Permission: 'Everybody'
         });
+        this.setState({imageArr: this.state.imageArr});
+        console.log(source);
+        console.log(this.state.imageArr);
+        //如果从交友要求页返回过来,再次拍照会清空之前已拍照内容
+        //tmpPhotoArr.push({
+        //  id: (new Date()).getTime().toString(),
+        //  ...source,
+        //  Permission: 'Everybody'
+        //});
       }
     });
   }
 
   renderImage(data) {
-    if (data.length>0) {
+    if (data.length > 0) {
       return (
         <ImageViewer
           dataSource={data}

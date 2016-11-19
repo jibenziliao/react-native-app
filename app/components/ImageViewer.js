@@ -62,8 +62,8 @@ class ImageViewer extends Component {
     return (
       <Menu
         style={{flex: 1}}
-        onSelect={(value) => {
-          this.props.setPermission(rowData, dataSource, value+'')
+        onSelect={() => {
+          this.props.setPermission()
         }}>
         <MenuTrigger>
           <View style={{
@@ -147,8 +147,8 @@ class ImageViewer extends Component {
           setAvatar={(id)=> {
             this.props.setAvatar(id)
           }}
-          setPersmission={(singleData, allData, permission)=> {
-            this.props.setPermission(singleData, allData, permission)
+          setPersmission={()=> {
+            this.props.setPermission()
           }}
         />
       </View>
