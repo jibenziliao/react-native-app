@@ -19,6 +19,7 @@ import {
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
+import Photos from './Photos'
 import Button from 'react-native-button'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Modal from 'react-native-modalbox'
@@ -153,12 +154,21 @@ class UserProfile extends BaseComponent {
       heightArr: this.initHeight(),
       heightText: '175',
       height: 175,
-      weightArr:this.initWeight(),
-      weightText:'60',
-      weight:60,
-      birthYearArr:this.initBirthYear(),
-      birthYear:1995,
-      birthYearText:'1995'
+      weightArr: this.initWeight(),
+      weightText: '60',
+      weight: 60,
+      birthYearArr: this.initBirthYear(),
+      birthYear: 1995,
+      birthYearText: '1995',
+      educationStatusArr:[
+        {label:'小学',value:1},
+        {label:'初中',value:2},
+        {label:'高中',value:3},
+        {label:'大学',value:4},
+        {label:'研究生',value:5}
+      ],
+      educationStatus:4,
+      educationStatusText:'大学'
     };
     navigator = this.props.navigator;
   };
@@ -172,20 +182,19 @@ class UserProfile extends BaseComponent {
     return heightArr;
   }
 
-  initWeight(){
-    let weightArr=[];
-    weightArr.push({label:'请选择',value:0});
-    for(let i=30;i<200;i++){
-      weightArr.push({label:i+'',value:i});
+  initWeight() {
+    let weightArr = [];
+    weightArr.push({label: '请选择', value: 0});
+    for (let i = 30; i < 200; i++) {
+      weightArr.push({label: i + '', value: i});
     }
     return weightArr;
   }
 
-  initBirthYear(){
-    let birthYearArr=[];
-    birthYearArr.push({label:'1995',value:1995});
-    for(let i=1950;i<2016;i++){
-      birthYearArr.push({label:i+'',value:i});
+  initBirthYear() {
+    let birthYearArr = [];
+    for (let i = 1950; i < 2016; i++) {
+      birthYearArr.push({label: i + '', value: i});
     }
     return birthYearArr;
   }
@@ -196,7 +205,17 @@ class UserProfile extends BaseComponent {
     };
   }
 
+  //下一步
   goNext() {
+    const {navigator} =this.props;
+    navigator.push({
+      component: Photos,
+      name: 'Photos'
+    });
+  }
+
+  //去首页
+  goHome(){
     const {navigator} =this.props;
     navigator.push({
       component: MainContainer,
@@ -224,6 +243,7 @@ class UserProfile extends BaseComponent {
     )
   }
 
+  //性别
   renderGenderItem(gender, index) {
     return (
       <TouchableHighlight
@@ -241,6 +261,7 @@ class UserProfile extends BaseComponent {
     )
   }
 
+  //情感状态
   renderEmotionStatus() {
     if (Platform.OS == 'ios') {
       return (
@@ -271,10 +292,39 @@ class UserProfile extends BaseComponent {
     }
   }
 
-  openEmotionStatusIOS() {
-    this.refs.emotion.open();
+  //学历
+  renderEducationStatus(){
+    if (Platform.OS == 'ios') {
+      return (
+        <TouchableHighlight
+          onPress={()=> {
+            this.openEducationStatusIOS()
+          }}
+          style={styles.emotionStatusIOS}
+          activeOpacity={0.5}
+          underlayColor="rgba(247,245,245,0.7)">
+          <View style={styles.emotionStatusIOSView}>
+            <Text style={styles.emotionStatusIOSText}>{this.state.educationStatusText}</Text>
+            <Icon name={'angle-down'} size={24}/>
+          </View>
+        </TouchableHighlight>
+      )
+    } else {
+      return (
+        <Picker
+          style={{flex: 1, height: 40}}
+          selectedValue={this.state.educationStatus}
+          onValueChange={(value)=> {
+            this.setState({educationStatus: value})
+          }}>
+          {this.renderPickerItem(this.state.educationStatusArr)}
+        </Picker>
+      )
+    }
   }
 
+
+  //展开更多按钮
   renderMoreButton() {
     return (
       <TouchableHighlight
@@ -292,6 +342,7 @@ class UserProfile extends BaseComponent {
     )
   }
 
+  //展开更多方法
   expandMore() {
     this.setState({
       expandStatus: !this.state.expandStatus,
@@ -300,6 +351,7 @@ class UserProfile extends BaseComponent {
     });
   }
 
+  //身高
   renderHeightBtn() {
     if (Platform.OS == 'ios') {
       return (
@@ -318,13 +370,23 @@ class UserProfile extends BaseComponent {
         </TouchableHighlight>
       )
     } else {
-      //android height picker
+      return (
+        <Picker
+          style={{height: 40, flex: 1}}
+          selectedValue={this.state.weight}
+          onValueChange={(value)=> {
+            this.setState({weight: value})
+          }}>
+          {this.renderPickerItem(this.state.weightArr)}
+        </Picker>
+      )
     }
   }
 
-  renderWeightBtn(){
-    if(Platform.OS=='ios'){
-      return(
+  //体重
+  renderWeightBtn() {
+    if (Platform.OS == 'ios') {
+      return (
         <TouchableHighlight
           onPress={()=> {
             this.openWeightPicker()
@@ -339,14 +401,24 @@ class UserProfile extends BaseComponent {
           </View>
         </TouchableHighlight>
       )
-    }else{
-
+    } else {
+      return (
+        <Picker
+          style={{height: 40, flex: 1}}
+          selectedValue={this.state.height}
+          onValueChange={(value)=> {
+            this.setState({height: value})
+          }}>
+          {this.renderPickerItem(this.state.heightArr)}
+        </Picker>
+      )
     }
   }
 
-  renderBirthYearBtn(){
-    if(Platform.OS=='ios'){
-      return(
+  //出生年
+  renderBirthYearBtn() {
+    if (Platform.OS == 'ios') {
+      return (
         <TouchableHighlight
           onPress={()=> {
             this.openBirthYearPicker()
@@ -361,20 +433,37 @@ class UserProfile extends BaseComponent {
           </View>
         </TouchableHighlight>
       )
-    }else{
-      //android picker
+    } else {
+      return (
+        <Picker
+          style={{height: 40, flex: 1}}
+          selectedValue={this.state.birthYear}
+          onValueChange={(value)=> {
+            this.setState({birthYear: value})
+          }}>
+          {this.renderPickerItem(this.state.birthYearArr)}
+        </Picker>
+      )
     }
+  }
+
+  openEmotionStatusIOS() {
+    this.refs.emotion.open();
+  }
+
+  openEducationStatusIOS(){
+    this.refs.education.open();
   }
 
   openHeightPicker() {
     this.refs.heightPicker.open()
   }
 
-  openWeightPicker(){
+  openWeightPicker() {
     this.refs.weightPicker.open();
   }
 
-  openBirthYearPicker(){
+  openBirthYearPicker() {
     this.refs.birthYearPicker.open();
   }
 
@@ -425,10 +514,7 @@ class UserProfile extends BaseComponent {
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'学历'}</Text>
-          <TextInput
-            style={[styles.input, styles.fullInput]}
-            underlineColorAndroid={'transparent'}
-            maxLength={15}/>
+          {this.renderEducationStatus()}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'信仰'}</Text>
@@ -495,6 +581,13 @@ class UserProfile extends BaseComponent {
     this.setState({birthYearText: birthYearTextIOS});
   }
 
+  renderEducationStatusText(value) {
+    const educationStatusText = this.state.educationStatusArr.find((item)=> {
+      return item.value == value;
+    }).label;
+    this.setState({educationStatusText: educationStatusText});
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -529,6 +622,14 @@ class UserProfile extends BaseComponent {
               this.goNext()
             }}>
             下一步
+          </NBButton>
+          <NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goHome()
+            }}>
+            去首页(Test)
           </NBButton>
         </ScrollView>
         {Platform.OS == 'ios' ?
@@ -585,6 +686,20 @@ class UserProfile extends BaseComponent {
                 this.renderHeightText(value)
               }}>
               {this.renderPickerItem(this.state.weightArr)}
+            </PickerIOS>
+          </Modal> : null}
+        {Platform.OS == 'ios' ?
+          <Modal
+            swipeToClose={false}
+            style={styles.modalCenter}
+            ref={"education"}>
+            <PickerIOS
+              selectedValue={this.state.educationStatus}
+              onValueChange={(value)=> {
+                this.setState({educationStatus: value});
+                this.renderEducationStatusText(value);
+              }}>
+              {this.renderPickerItem(this.state.educationStatusArr)}
             </PickerIOS>
           </Modal> : null}
       </View>
