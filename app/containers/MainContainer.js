@@ -62,6 +62,10 @@ class MainContainer extends Component {
         scrollWithoutAnimation={false}
         prerenderingSiblingsNumber={0}
         initialPage={0}
+        onScroll={(postion) => {
+          // float类型 [0, tab数量-1]
+          console.log('scroll position:' + postion);
+        }}
         renderTabBar={() => {
           /*使用自定义tabbar*/
           return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>

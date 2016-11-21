@@ -15,7 +15,9 @@ import {
   Picker,
   Platform,
   PickerIOS,
-  ActionSheetIOS
+  ActionSheetIOS,
+  DatePickerAndroid,
+  DatePickerIOS
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
@@ -25,6 +27,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Modal from 'react-native-modalbox'
 import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles} from '../style'
+import RNPicker from 'react-native-picker'
 
 const styles = StyleSheet.create({
   container: {
@@ -160,15 +163,22 @@ class UserProfile extends BaseComponent {
       birthYearArr: this.initBirthYear(),
       birthYear: 1995,
       birthYearText: '1995',
-      educationStatusArr:[
-        {label:'小学',value:1},
-        {label:'初中',value:2},
-        {label:'高中',value:3},
-        {label:'大学',value:4},
-        {label:'研究生',value:5}
+      educationStatusArr: [
+        {label: '小学', value: 1},
+        {label: '初中', value: 2},
+        {label: '高中', value: 3},
+        {label: '大学', value: 4},
+        {label: '研究生', value: 5}
       ],
-      educationStatus:4,
-      educationStatusText:'大学'
+      educationStatus: 4,
+      educationStatusText: '大学',
+      presetDate: new Date(2020, 4, 5),
+      allDate: new Date(2020, 4, 5),
+      simpleText: 'pick a date',
+      minText: 'pick a date, no earlier than today',
+      maxText: 'pick a date, no later than today',
+      presetText: 'pick a date, preset to 2020/5/5',
+      allText: 'pick a date between 2020/5/1 and 2020/5/10',
     };
     navigator = this.props.navigator;
   };
@@ -205,6 +215,13 @@ class UserProfile extends BaseComponent {
     };
   }
 
+  //因为有弹出的日期选择框,这里需要自定义返回方法,以便在点击返回时自动关闭日期弹出框(如果之前没有手动关闭的话)
+  onLeftPressed(){
+    const {navigator}=this.props;
+    RNPicker.isPickerShow((status)=>{if(status) RNPicker.hide()});
+    navigator.pop();
+  }
+
   //下一步
   goNext() {
     const {navigator} =this.props;
@@ -215,7 +232,7 @@ class UserProfile extends BaseComponent {
   }
 
   //去首页
-  goHome(){
+  goHome() {
     const {navigator} =this.props;
     navigator.push({
       component: MainContainer,
@@ -293,7 +310,7 @@ class UserProfile extends BaseComponent {
   }
 
   //学历
-  renderEducationStatus(){
+  renderEducationStatus() {
     if (Platform.OS == 'ios') {
       return (
         <TouchableHighlight
@@ -322,7 +339,6 @@ class UserProfile extends BaseComponent {
       )
     }
   }
-
 
   //展开更多按钮
   renderMoreButton() {
@@ -415,6 +431,65 @@ class UserProfile extends BaseComponent {
     }
   }
 
+  _createDateData() {
+    let date = [];
+    let currentYear = new Date().getFullYear();
+    for (let i = 1950; i < currentYear+1; i++) {
+      let month = [];
+      for (let j = 1; j < 13; j++) {
+        let day = [];
+        if (j === 2) {
+          for (let k = 1; k < 29; k++) {
+            day.push(k + '日');
+          }
+          //Leap day for years that are divisible by 4, such as 2000, 2004
+          if (i % 4 === 0) {
+            day.push(29 + '日');
+          }
+        }
+        else if (j in {1: 1, 3: 1, 5: 1, 7: 1, 8: 1, 10: 1, 12: 1}) {
+          for (let k = 1; k < 32; k++) {
+            day.push(k + '日');
+          }
+        }
+        else {
+          for (let k = 1; k < 31; k++) {
+            day.push(k + '日');
+          }
+        }
+        let _month = {};
+        _month[j + '月'] = day;
+        month.push(_month);
+      }
+      let _date = {};
+      _date[i + '年'] = month;
+      date.push(_date);
+    }
+    return date;
+  };
+
+  _showDatePicker() {
+    RNPicker.init({
+      pickerData: this._createDateData(),
+      selectedValue: ['1992年', '12月', '12日'],
+      onPickerConfirm: pickedValue => {
+        //console.log('date', pickedValue);
+        RNPicker.hide();
+      },
+      onPickerCancel: pickedValue => {
+        //console.log('date', pickedValue);
+        RNPicker.hide();
+      },
+      onPickerSelect: pickedValue => {
+        //console.log('date', pickedValue);
+      }
+    });
+    RNPicker.show();
+  }
+
+
+
+
   //出生年
   renderBirthYearBtn() {
     if (Platform.OS == 'ios') {
@@ -435,14 +510,27 @@ class UserProfile extends BaseComponent {
       )
     } else {
       return (
-        <Picker
+        /*<Picker
           style={{height: 40, flex: 1}}
           selectedValue={this.state.birthYear}
           onValueChange={(value)=> {
             this.setState({birthYear: value})
           }}>
           {this.renderPickerItem(this.state.birthYearArr)}
-        </Picker>
+        </Picker>*/
+        <TouchableHighlight
+          onPress={()=> {
+            this._showDatePicker()
+          }}
+          style={styles.emotionStatusIOS}
+          activeOpacity={0.5}
+          underlayColor="rgba(247,245,245,0.7)">
+          <View style={styles.emotionStatusIOSView}>
+            <Text style={styles.emotionStatusIOSText}>
+              {this.state.birthYearText}
+            </Text>
+          </View>
+        </TouchableHighlight>
       )
     }
   }
@@ -451,7 +539,7 @@ class UserProfile extends BaseComponent {
     this.refs.emotion.open();
   }
 
-  openEducationStatusIOS(){
+  openEducationStatusIOS() {
     this.refs.education.open();
   }
 

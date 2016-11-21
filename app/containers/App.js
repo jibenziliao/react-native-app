@@ -22,6 +22,7 @@ import MainContainer from '../containers/MainContainer'
 import * as VicinityActions from '../actions/Vicinity'
 import {calculateRegion} from '../utils/MapHelpers'
 import Spinner from '../components/Spinner'
+import RNPicker from 'react-native-picker'
 
 let lastClickTime = 0;
 let watchId;
@@ -187,14 +188,14 @@ class App extends Component {
     );
   }
 
-  //出场动画
+  //出场动画(需要禁用Navigator手势滑动返回)
   configureScene(route) {
     let sceneAnimation = route.component.sceneAnimation;
     if (sceneAnimation) {
       return sceneAnimation;
     }
-    //默认
-    return Navigator.SceneConfigs.FloatFromRight
+    //默认(gestures设为{}或null用来禁用安卓从屏幕左侧滑动返回)
+    return {...Navigator.SceneConfigs.FloatFromRight,gestures:null}
   }
 
   renderScene(route, navigator) {
@@ -227,6 +228,8 @@ class App extends Component {
       toastShort('再按一次退出情缘结');
       return true;
     } else {
+      //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
+      RNPicker.isPickerShow((status)=>{if(status) RNPicker.hide()});
       this.navigator.pop();
       return true;
     }

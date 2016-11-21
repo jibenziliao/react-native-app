@@ -17,6 +17,7 @@ import MessageDetail from '../pages/MessageDetail'
 import Login from '../pages/Login'
 import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles, componentStyles} from '../style'
+import RNPicker from 'react-native-picker'
 
 let navigator;
 
@@ -25,6 +26,22 @@ class Home extends BaseComponent {
     super(props);
     navigator = this.props.navigator;
 
+  }
+
+  _showPicker(){
+    RNPicker.init({
+      pickerData: [58,59,60],
+      selectedValue: [59],
+      onPickerConfirm: data => {
+        console.log(data);
+      },
+      onPickerCancel: data => {
+        console.log(data);
+      },
+      onPickerSelect: data => {
+        console.log(data);
+      }
+    });
   }
 
   getNavigationBarProps() {
@@ -69,12 +86,23 @@ class Home extends BaseComponent {
         <NBButton
           block
           style={{
-            height:40
+            height:40,
+            marginBottom:30
           }}
           onPress={()=> {
             this.goLogin()
           }}>
           测试登录
+        </NBButton>
+        <NBButton
+          block
+          style={{
+            height:40
+          }}
+          onPress={()=> {
+            this._showPicker()
+          }}>
+          测试日期选择
         </NBButton>
       </View>
     )
