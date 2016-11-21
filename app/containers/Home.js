@@ -21,6 +21,42 @@ import RNPicker from 'react-native-picker'
 
 let navigator;
 
+function createDateData(){
+  let date = [];
+  for(let i=1950;i<2050;i++){
+    let month = [];
+    for(let j = 1;j<13;j++){
+      let day = [];
+      if(j === 2){
+        for(let k=1;k<29;k++){
+          day.push(k+'日');
+        }
+        //Leap day for years that are divisible by 4, such as 2000, 2004
+        if(i%4 === 0){
+          day.push(29+'日');
+        }
+      }
+      else if(j in {1:1, 3:1, 5:1, 7:1, 8:1, 10:1, 12:1}){
+        for(let k=1;k<32;k++){
+          day.push(k+'日');
+        }
+      }
+      else{
+        for(let k=1;k<31;k++){
+          day.push(k+'日');
+        }
+      }
+      let _month = {};
+      _month[j+'月'] = day;
+      month.push(_month);
+    }
+    let _date = {};
+    _date[i+'年'] = month;
+    date.push(_date);
+  }
+  return date;
+}
+
 class Home extends BaseComponent {
   constructor(props) {
     super(props);
@@ -28,20 +64,21 @@ class Home extends BaseComponent {
 
   }
 
-  _showPicker(){
+  _showDatePicker() {
     RNPicker.init({
-      pickerData: [58,59,60],
-      selectedValue: [59],
-      onPickerConfirm: data => {
-        console.log(data);
+      pickerData: createDateData(),
+      selectedValue: ['2015年', '12月', '12日'],
+      onPickerConfirm: pickedValue => {
+        console.log('date', pickedValue);
       },
-      onPickerCancel: data => {
-        console.log(data);
+      onPickerCancel: pickedValue => {
+        console.log('date', pickedValue);
       },
-      onPickerSelect: data => {
-        console.log(data);
+      onPickerSelect: pickedValue => {
+        console.log('date', pickedValue);
       }
     });
+    RNPicker.show();
   }
 
   getNavigationBarProps() {
@@ -76,7 +113,7 @@ class Home extends BaseComponent {
           block
           style={{
             height: 40,
-            marginVertical:30
+            marginVertical: 30
           }}
           onPress={()=> {
             this.goMessageDetail()
@@ -86,8 +123,8 @@ class Home extends BaseComponent {
         <NBButton
           block
           style={{
-            height:40,
-            marginBottom:30
+            height: 40,
+            marginBottom: 30
           }}
           onPress={()=> {
             this.goLogin()
@@ -97,10 +134,11 @@ class Home extends BaseComponent {
         <NBButton
           block
           style={{
-            height:40
+            height: 40,
+            marginBottom:30
           }}
           onPress={()=> {
-            this._showPicker()
+            this._showDatePicker()
           }}>
           测试日期选择
         </NBButton>
