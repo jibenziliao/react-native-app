@@ -7,7 +7,7 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   Dimensions,
-Platform
+  Platform
 } from 'react-native';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Home from './Home';
@@ -27,14 +27,14 @@ const styles = StyleSheet.create({
   subView: {
     overflow: 'hidden'
   },
-  scrollTabView:{
-    bottom:0,
+  scrollTabView: {
+    bottom: 0,
     ...Platform.select({
-      ios:{
-        height:height-25
+      ios: {
+        height: height - 25
       },
-      android:{
-        height:height-18
+      android: {
+        height: height - 18
       }
     })
   }

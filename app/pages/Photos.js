@@ -33,7 +33,8 @@ import Menu, {
   MenuOptions,
   MenuOption,
   MenuTrigger,
-} from 'react-native-popup-menu';
+} from 'react-native-popup-menu'
+import FriendsFilter from './FriendsFilter'
 
 const {width, height}=Dimensions.get('window');
 
@@ -73,6 +74,15 @@ class Photos extends BaseComponent {
     navigator.push({
       component: MainContainer,
       name: 'MainContainer'
+    });
+  }
+
+  //下一步
+  goNext() {
+    const {navigator} =this.props;
+    navigator.push({
+      component: FriendsFilter,
+      name: 'FriendsFilter'
     });
   }
 
@@ -196,6 +206,14 @@ class Photos extends BaseComponent {
               this.initImagePicker()
             }}>
             拍照
+          </NBButton>
+          <NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goNext()
+            }}>
+            下一步(Test)
           </NBButton>
           <NBButton
             block

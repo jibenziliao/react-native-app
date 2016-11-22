@@ -27,6 +27,7 @@ import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles} from '../style'
 import RNPicker from 'react-native-picker'
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -170,7 +171,7 @@ class UserProfile extends BaseComponent {
       ],
       educationStatus: 4,
       educationStatusText: '大学',
-      professionText:'IT通信',
+      professionText:'IT',
       profession:'0'
     };
     navigator = this.props.navigator;
@@ -196,7 +197,8 @@ class UserProfile extends BaseComponent {
 
   initBirthYear() {
     let birthYearArr = [];
-    for (let i = 1950; i < 2016; i++) {
+    let currentYear=new Date().getFullYear();
+    for (let i = 1950; i < currentYear+1; i++) {
       birthYearArr.push({label: i + '', value: i});
     }
     return birthYearArr;
@@ -605,7 +607,7 @@ class UserProfile extends BaseComponent {
           for (let k = 1; k < 29; k++) {
             day.push(k + '日');
           }
-          //Leap day for years that are divisible by 4, such as 2000, 2004
+          //Leap inputday for years that are divisible by 4, such as 2000, 2004
           if (i % 4 === 0) {
             day.push(29 + '日');
           }
@@ -767,13 +769,15 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'身高'}</Text>
           {/*{this.renderHeightBtn()}*/}
-          {this.renderHeightPicker()}
+          {/*{this.renderHeightPicker()}*/}
+          {this.renderSinglePicker('heightText','height',this._createHeightData())}
           <Text style={styles.rightLabel}>{'cm'}</Text>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'体重'}</Text>
           {/*{this.renderWeightBtn()}*/}
-          {this.renderWeightPicker()}
+          {/*{this.renderWeightPicker()}*/}
+          {this.renderSinglePicker('weightText','weight',this._createWeightData())}
           <Text style={styles.rightLabel}>{'kg'}</Text>
         </View>
         <View style={styles.inputRow}>
@@ -919,7 +923,7 @@ class UserProfile extends BaseComponent {
           </View>
           <NBButton
             block
-            style={{marginVertical: 30}}
+            style={{marginBottom: 30}}
             onPress={()=> {
               this.goNext()
             }}>
