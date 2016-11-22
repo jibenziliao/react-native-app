@@ -11,7 +11,8 @@ import {
   InteractionManager,
   ListView,
   RefreshControl,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native';
 import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
@@ -29,6 +30,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E2E2E2'
   },
+  listView: {
+    flex: 1,
+    paddingHorizontal: 10
+  },
   contentTitle: {
     margin: 10
   },
@@ -36,7 +41,9 @@ const styles = StyleSheet.create({
     flex: 1
   },
   card: {
-    padding: 10
+    padding: 10,
+    backgroundColor: '#FFF',
+    marginTop: 10
   },
   cardRow: {
     flexDirection: 'row'
@@ -45,14 +52,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   avatarImg: {
-    width: 100,
-    height: 100
+    width: 50,
+    height: 50,
+    marginRight: 10,
+    borderRadius: 8
   },
   userInfo: {
     justifyContent: 'space-between'
   },
-  userInfoLabel:{
-
+  userInfoLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: 'pink',
+    borderWidth: 1,
+    borderColor: 'pink',
+    paddingHorizontal: 6
+  },
+  userInfoIcon: {
+    marginRight: 4
+  },
+  userInfoText: {
+    fontSize: 14
+  },
+  moodView: {
+    marginVertical: 5
+  },
+  moodText: {
+    fontSize: 16
+  },
+  cardBtn: {
+    marginTop: 10,
+    marginRight: 20
   }
 });
 
@@ -64,7 +95,7 @@ const listViewData = [
     age: 23,
     gender: 1,
     text: 'hello world',
-    distance: '3.9km',
+    distance: '3.9',
     second: 19,
     comment: 8,
     read: 10
@@ -76,7 +107,7 @@ const listViewData = [
     age: 23,
     gender: 1,
     text: 'hello world',
-    distance: '3.9km',
+    distance: '3.9',
     second: 19,
     comment: 8,
     read: 10
@@ -138,19 +169,55 @@ class Home extends BaseComponent {
     return (
       <View key={rowData.userId}
             style={styles.card}>
-        <View style={styles.cardRow}>
-          <View style={styles.cardLeft}>
-            <Image source={rowData.avatarUrl} style={styles.avatarImg}/>
-            <View style={styles.userInfo}>
-              <Text>{rowData.userName}</Text>
-              <View>
-                <View style={styles.userInfoLabel}>
-                  <Icon name={'venus'} size={24}/>
-                  <Text>{rowData.age}{'岁'}</Text>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={()=> {
+            console.log('123')
+          }}>
+          <View style={styles.cardRow}>
+            <View style={styles.cardLeft}>
+              <Image source={{uri: rowData.avatarUrl}} style={styles.avatarImg}/>
+              <View style={styles.userInfo}>
+                <Text>{rowData.userName}</Text>
+                <View>
+                  <View style={styles.userInfoLabel}>
+                    <Icon
+                      name={'venus'}
+                      size={12}
+                      style={styles.userInfoIcon}/>
+                    <Text style={styles.userInfoText}>{rowData.age}{'岁'}</Text>
+                  </View>
                 </View>
               </View>
             </View>
           </View>
+        </TouchableOpacity>
+        <View style={[styles.cardRow, styles.moodView]}>
+          <Text style={styles.moodText}>{rowData.text}</Text>
+        </View>
+        <View style={styles.cardRow}>
+          <Text>{rowData.distance}{'km'}{'·'}</Text>
+          <Text>{rowData.second}{'赞'}{'·'}</Text>
+          <Text>{rowData.comment}{'评论'}{'·'}</Text>
+          <Text>{rowData.read}{'阅读'}</Text>
+        </View>
+        <View style={styles.cardRow}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.cardBtn}
+            onPress={()=> {
+              console.log('点了个赞')
+            }}>
+            <Icon name="thumbs-o-up" size={20}/>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.cardBtn}
+            onPress={()=> {
+              console.log('点了评论')
+            }}>
+            <Icon name="comments-o" size={20}/>
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -159,7 +226,7 @@ class Home extends BaseComponent {
   renderBody() {
     return (
       <View style={styles.container}>
-        <Text style={styles.contentTitle}>{'最新消息'}</Text>
+        {/*<Text style={styles.contentTitle}>{'最新消息'}</Text>*/}
         <View style={styles.content}>
           <ListView
             refreshControl={
@@ -168,6 +235,7 @@ class Home extends BaseComponent {
                 onRefresh={this._onRefresh.bind(this)}
               />
             }
+            style={styles.listView}
             dataSource={this.state.dataSource}
             renderRow={
               this.renderRowData.bind(this)
