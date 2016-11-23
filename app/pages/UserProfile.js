@@ -15,7 +15,8 @@ import {
   Picker,
   Platform,
   PickerIOS,
-  ActionSheetIOS
+  ActionSheetIOS,
+  Alert
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
@@ -26,7 +27,6 @@ import Modal from 'react-native-modalbox'
 import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles} from '../style'
 import RNPicker from 'react-native-picker'
-
 
 const styles = StyleSheet.create({
   container: {
@@ -154,7 +154,7 @@ class UserProfile extends BaseComponent {
       educationStatus: 4,
       educationStatusText: '大学',
       professionText:'IT',
-      profession:'0'
+      profession:0
     };
     navigator = this.props.navigator;
   };
@@ -174,11 +174,16 @@ class UserProfile extends BaseComponent {
 
   //下一步
   goNext() {
-    const {navigator} =this.props;
-    navigator.push({
-      component: Photos,
-      name: 'Photos'
-    });
+    Alert.alert('提示','',[
+      {text: '确定', onPress: () => console.log('OK Pressed!')},
+      {text: '取消', onPress: () => console.log('Cancel Pressed!')}
+    ]);
+
+    //const {navigator} =this.props;
+    //navigator.push({
+    //  component: Photos,
+    //  name: 'Photos'
+    //});
   }
 
   //去首页
