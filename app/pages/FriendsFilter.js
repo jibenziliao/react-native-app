@@ -371,25 +371,25 @@ class FriendsFilter extends BaseComponent {
         break;
       case 'friendShip':
         this.setState({
-          datingPurpose:{
+          datingPurpose: {
             ...this.state.datingPurpose,
-            friendShip:!data
+            friendShip: !data
           }
         });
         break;
       case 'relationShip':
         this.setState({
-          datingPurpose:{
+          datingPurpose: {
             ...this.state.datingPurpose,
-            relationShip:!data
+            relationShip: !data
           }
         });
         break;
       case 'other':
         this.setState({
-          datingPurpose:{
+          datingPurpose: {
             ...this.state.datingPurpose,
-            other:!data
+            other: !data
           }
         });
         break;

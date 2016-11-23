@@ -180,6 +180,7 @@ class UserProfile extends BaseComponent {
     ]);
   }
 
+  //去拍照
   goPhotos(){
     const {navigator} =this.props;
     navigator.push({
