@@ -38,6 +38,7 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import CheckBox from '../components/CheckBox'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: 100,
-    height:40
+    height: 40
   },
   pickerView: {
     backgroundColor: '#DADADA',
@@ -86,6 +87,13 @@ const styles = StyleSheet.create({
     height: 40
   }
 });
+
+const checkBoxArr = [
+  ['love', '男女朋友', false],
+  ['relationShip', '异性知己', false],
+  ['friendShip', '好朋友', false],
+  ['other', '中介或其他服务', false]
+];
 
 class Login extends BaseComponent {
   constructor(props) {
@@ -222,7 +230,7 @@ class Login extends BaseComponent {
   renderPicker() {
     if (Platform.OS === 'ios') {
       return (
-        <View style={{width: 80, height: 40,backgroundColor:'#DADADA',marginRight:20,borderRadius:4}}>
+        <View style={{width: 80, height: 40, backgroundColor: '#DADADA', marginRight: 20, borderRadius: 4}}>
           {this.renderPickerIOS()}
         </View>
       )
@@ -250,7 +258,13 @@ class Login extends BaseComponent {
           this.renderCountry(value + '')
         }}>
         <MenuTrigger>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between',height:40,alignItems:'center',paddingHorizontal:10}}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            height: 40,
+            alignItems: 'center',
+            paddingHorizontal: 10
+          }}>
             <Text>{'+'}{this.state.phoneCountry}</Text>
             <Icon name="angle-down" size={16} style={{marginRight: 10}}/>
           </View>
@@ -287,6 +301,16 @@ class Login extends BaseComponent {
     navigator.push({
       component: MainContainer,
       name: 'MainContainer'
+    });
+  }
+
+  renderCheckBox(arr) {
+    return arr.map((i)=> {
+      return (
+        <CheckBox key={i[0]} label={i[1]} checked={i[2]} onChange={(checked)=> {
+          console.log(checked,i[0])
+        }}/>
+      )
     });
   }
 
@@ -348,6 +372,8 @@ class Login extends BaseComponent {
             onPress={()=>this.goHome()}>
             首页(Test)
           </NBButton>
+          {/*<CheckBox label="男女朋友" checked={true} onChange={(checked)=>{console.log(checked)}}/>*/}
+          {this.renderCheckBox(checkBoxArr)}
           {this.renderPending(this.props.pendingStatus)}
         </View>
       </MenuContext>
