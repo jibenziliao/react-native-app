@@ -10,6 +10,7 @@ import {Actions} from 'react-native-router-flux'
 import * as UserProfileActions from './UserProfile'
 import * as Storage from '../utils/Storage'
 import MainContainer from '../containers/MainContainer'
+import UserProfile from '../pages/UserProfile'
 
 function fetchOptions(data) {
   return {
@@ -63,8 +64,8 @@ export function validCode(data, navigator) {
           //获取注册用户初始信息
           //dispatch(UserProfileActions.getUserProfile());
           navigator.push({
-            component: MainContainer,
-            name: 'MainContainer'
+            component: UserProfile,
+            name: 'UserProfile'
           });
         }
       }).catch((err)=> {

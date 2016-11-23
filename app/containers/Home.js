@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   listView: {
     flex: 1,
-    paddingHorizontal: 10
+    //paddingHorizontal: 10
   },
   contentTitle: {
     margin: 10
@@ -43,13 +43,16 @@ const styles = StyleSheet.create({
   card: {
     padding: 10,
     backgroundColor: '#FFF',
-    marginTop: 10
+    marginTop: 10,
+    flex:1
   },
   cardRow: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex:1
   },
   cardLeft: {
     flexDirection: 'row',
+    flex:1
   },
   avatarImg: {
     width: 50,

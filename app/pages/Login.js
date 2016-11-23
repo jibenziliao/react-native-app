@@ -105,22 +105,22 @@ class Login extends BaseComponent {
   }
 
   componentWillMount() {
-    //const data = {
-    //  DeviceType: DeviceInfo.getSystemName() || 'Android',
-    //  DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
-    //  DeviceInfo: DeviceInfo.getModel() || 'NX507J'
-    //};
-
     const data = {
-      DeviceType: 'iOS',
-      DeviceVersion: '8.1',
-      DeviceInfo: 'iPhone Simulator'
+      DeviceType: DeviceInfo.getSystemName() || 'Android',
+      DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
+      DeviceInfo: DeviceInfo.getModel() || 'NX507J'
     };
+
+    //const data = {
+    //  DeviceType: 'iOS',
+    //  DeviceVersion: '8.1',
+    //  DeviceInfo: 'iPhone Simulator'
+    //};
 
     const {dispatch}= this.props;
     Storage.getItem('hasInit').then((response)=> {
       if (!response) {
-        //dispatch(InitialAppActions.initialApp(data))
+        dispatch(InitialAppActions.initialApp(data))
       }
     });
   }
@@ -342,7 +342,7 @@ class Login extends BaseComponent {
 
 export default connect((state)=> {
   return {
-    pendingStatus: state.InitialApp.pending || state.Login.pending || state.UserProfile.pending,
+    pendingStatus: state.Login.pending || state.UserProfile.pending,
     hasSendValidCode: state.Login.hasSendValidCode
   }
 })(Login)

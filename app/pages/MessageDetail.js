@@ -63,7 +63,7 @@ class MessageDetail extends BaseComponent{
       };
     });*/
 
-    connection = signalr.hubConnection('http://192.168.2.130:12580/signalr/hubs');
+    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/mobile/chat/signalr/hubs');
     connection.logging = true;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
