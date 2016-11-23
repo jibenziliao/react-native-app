@@ -174,16 +174,18 @@ class UserProfile extends BaseComponent {
 
   //下一步
   goNext() {
-    Alert.alert('提示','',[
-      {text: '确定', onPress: () => console.log('OK Pressed!')},
-      {text: '取消', onPress: () => console.log('Cancel Pressed!')}
+    Alert.alert('提示','是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料',[
+      {text: '确定', onPress: () => this.goPhotos()},
+      {text: '跳过', onPress: () => this.goHome()}
     ]);
+  }
 
-    //const {navigator} =this.props;
-    //navigator.push({
-    //  component: Photos,
-    //  name: 'Photos'
-    //});
+  goPhotos(){
+    const {navigator} =this.props;
+    navigator.push({
+      component: Photos,
+      name: 'Photos'
+    });
   }
 
   //去首页
