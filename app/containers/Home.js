@@ -31,8 +31,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E2E2E2'
   },
   listView: {
-    flex: 1,
-    //paddingHorizontal: 10
+    flex: 1
   },
   contentTitle: {
     margin: 10
@@ -43,8 +42,9 @@ const styles = StyleSheet.create({
   card: {
     padding: 10,
     backgroundColor: '#FFF',
-    marginTop: 10,
-    flex:1
+    flex:1,
+    marginTop:10,
+    marginHorizontal:10
   },
   cardRow: {
     flexDirection: 'row',
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   userInfo: {
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -106,6 +106,54 @@ const listViewData = [
   {
     avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
     userId: 111,
+    userName: '李四',
+    age: 23,
+    gender: 1,
+    text: 'hello world',
+    distance: '3.9',
+    second: 19,
+    comment: 8,
+    read: 10
+  },
+  {
+    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
+    userId: 112,
+    userName: '李四',
+    age: 23,
+    gender: 1,
+    text: 'hello world',
+    distance: '3.9',
+    second: 19,
+    comment: 8,
+    read: 10
+  },
+  {
+    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
+    userId: 113,
+    userName: '李四',
+    age: 23,
+    gender: 1,
+    text: 'hello world',
+    distance: '3.9',
+    second: 19,
+    comment: 8,
+    read: 10
+  },
+  {
+    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
+    userId: 114,
+    userName: '李四',
+    age: 23,
+    gender: 1,
+    text: 'hello world',
+    distance: '3.9',
+    second: 19,
+    comment: 8,
+    read: 10
+  },
+  {
+    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
+    userId: 115,
     userName: '李四',
     age: 23,
     gender: 1,
@@ -182,7 +230,7 @@ class Home extends BaseComponent {
               <Image source={{uri: rowData.avatarUrl}} style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{rowData.userName}</Text>
-                <View>
+                <View style={{flex:1}}>
                   <View style={styles.userInfoLabel}>
                     <Icon
                       name={'venus'}

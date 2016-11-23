@@ -281,6 +281,15 @@ class Login extends BaseComponent {
     });
   }
 
+  //去首页
+  goHome() {
+    const {navigator} =this.props;
+    navigator.push({
+      component: MainContainer,
+      name: 'MainContainer'
+    });
+  }
+
   renderBody() {
     return (
       <MenuContext style={{flex: 1}}>
@@ -332,6 +341,12 @@ class Login extends BaseComponent {
             style={{marginTop: 20, height: 40}}
             onPress={()=>this.nextTest()}>
             下一步(Test)
+          </NBButton>
+          <NBButton
+            block
+            style={{marginTop: 20, height: 40}}
+            onPress={()=>this.goHome()}>
+            首页(Test)
           </NBButton>
           {this.renderPending(this.props.pendingStatus)}
         </View>
