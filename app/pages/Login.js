@@ -244,7 +244,9 @@ class Login extends BaseComponent {
           <Picker
             style={styles.picker}
             selectedValue={this.state.phoneCountry}
-            onValueChange={(phoneCountry) => this.renderCountry(phoneCountry)}>
+            onValueChange={
+              (phoneCountry) => this.renderCountry(phoneCountry)
+            }>
             <Picker.Item label="+86" value="86"/>
             <Picker.Item label="+64" value="64"/>
             <Picker.Item label="+61" value="61"/>
@@ -282,14 +284,6 @@ class Login extends BaseComponent {
     )
   }
 
-  renderPending(data) {
-    if (data) {
-      return (
-        <Spinner animating={data}/>
-      )
-    }
-  }
-
   nextTest() {
     const {navigator}=this.props;
     navigator.push({
@@ -314,10 +308,10 @@ class Login extends BaseComponent {
           key={i[0]}
           label={i[1]}
           checked={i[2]}
-          labelStyle={{marginLeft:10}}
+          labelStyle={{marginLeft: 10}}
           onChange={(checked)=> {
-          console.log(checked,i[0])
-        }}/>
+            console.log(checked, i[0])
+          }}/>
       )
     });
   }
@@ -380,12 +374,18 @@ class Login extends BaseComponent {
             onPress={()=>this.goHome()}>
             首页(Test)
           </NBButton>
-          {/*<CheckBox label="男女朋友" checked={true} onChange={(checked)=>{console.log(checked)}}/>*/}
           {this.renderCheckBox(checkBoxArr)}
-          {this.renderPending(this.props.pendingStatus)}
         </View>
       </MenuContext>
     )
+  }
+
+  renderSpinner() {
+    if (this.props.pendingStatus) {
+      return (
+        <Spinner animating={this.props.pendingStatus}/>
+      )
+    }
   }
 }
 

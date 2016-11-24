@@ -53,11 +53,16 @@ class BaseComponent extends Component {
 
   }
 
+  renderSpinner(){
+
+  }
+
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
         {this.renderNavigationBar()}
         {this.renderBody()}
+        {this.renderSpinner()}
       </View>
     );
   }

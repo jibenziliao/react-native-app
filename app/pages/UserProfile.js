@@ -27,6 +27,8 @@ import Modal from 'react-native-modalbox'
 import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles} from '../style'
 import RNPicker from 'react-native-picker'
+import {connect} from 'react-redux'
+import * as UserProfileActions from '../actions/UserProfile'
 
 const styles = StyleSheet.create({
   container: {
@@ -137,8 +139,7 @@ class UserProfile extends BaseComponent {
     this.state = {
       genderArr: [
         {text: '男', iconName: 'check-circle-o', checked: true},
-        {text: '女', iconName: 'circle-o', checked: false},
-        {text: '保密', iconName: 'circle-o', checked: false}
+        {text: '女', iconName: 'circle-o', checked: false}
       ],
       expandText: '点击展开更多(选填)',
       expandStatus: false,
@@ -150,11 +151,11 @@ class UserProfile extends BaseComponent {
       weightText: '68',
       weight: 68,
       birthYear: 1992,
-      birthYearText: '1992',
+      birthYearText: '1992-1-1',
       educationStatus: 4,
       educationStatusText: '大学',
-      professionText:'IT',
-      profession:0
+      professionText: 'IT',
+      profession: 0
     };
     navigator = this.props.navigator;
   };
@@ -166,22 +167,29 @@ class UserProfile extends BaseComponent {
   }
 
   //因为有弹出的日期选择框,这里需要自定义返回方法,以便在点击返回时自动关闭日期弹出框(如果之前没有手动关闭的话)
-  onLeftPressed(){
+  onLeftPressed() {
     const {navigator}=this.props;
-    RNPicker.isPickerShow((status)=>{if(status) RNPicker.hide()});
+    RNPicker.isPickerShow((status)=> {
+      if (status) RNPicker.hide()
+    });
     navigator.pop();
   }
 
   //下一步
   goNext() {
-    Alert.alert('提示','是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料',[
+    Alert.alert('提示', '是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料', [
       {text: '确定', onPress: () => this.goPhotos()},
       {text: '跳过', onPress: () => this.goHome()}
     ]);
   }
 
+  saveUserProfile() {
+    const {disptach}=this.props;
+
+  }
+
   //去拍照
-  goPhotos(){
+  goPhotos() {
     const {navigator} =this.props;
     navigator.push({
       component: Photos,
@@ -264,11 +272,11 @@ class UserProfile extends BaseComponent {
   }
 
   //通用选择弹窗显示文本方法
-  renderSinglePicker(text,value,_createData){
-    return(
+  renderSinglePicker(text, value, _createData) {
+    return (
       <TouchableHighlight
         onPress={()=> {
-          this._showPicker(_createData,text,value)
+          this._showPicker(_createData, text, value)
         }}
         style={styles.emotionStatusIOS}
         activeOpacity={0.5}
@@ -282,46 +290,46 @@ class UserProfile extends BaseComponent {
     )
   }
 
-  _updateState(text,value,pickedValue){
-    switch (text){
+  _updateState(text, value, pickedValue) {
+    switch (text) {
       case 'emotionStatusText':
-        this.setState({emotionStatusText:pickedValue});
+        this.setState({emotionStatusText: pickedValue});
         break;
       case 'educationStatusText':
-        this.setState({educationStatusText:pickedValue});
+        this.setState({educationStatusText: pickedValue});
         break;
       case 'heightText':
-        this.setState({heightText:pickedValue});
+        this.setState({heightText: pickedValue});
         break;
       case 'weightText':
-        this.setState({weightText:pickedValue});
+        this.setState({weightText: pickedValue});
         break;
       case 'professionText':
-        this.setState({professionText:pickedValue});
+        this.setState({professionText: pickedValue});
         break;
       default:
         console.error('设置数据出错!');
         break;
     }
     let index;
-    switch (value){
+    switch (value) {
       case 'emotionStatus':
-        index=this._createEmotionData().indexOf(pickedValue);
-        this.setState({emotionStatus:index});
+        index = this._createEmotionData().indexOf(pickedValue);
+        this.setState({emotionStatus: index});
         break;
       case 'educationStatus':
-        index=this._createEducationData().indexOf(pickedValue);
-        this.setState({educationStatus:index});
+        index = this._createEducationData().indexOf(pickedValue);
+        this.setState({educationStatus: index});
         break;
       case 'height':
-        this.setState({height:parseInt(pickedValue)});
+        this.setState({height: parseInt(pickedValue)});
         break;
       case 'weight':
-        this.setState({weight:parseInt(pickedValue)});
+        this.setState({weight: parseInt(pickedValue)});
         break;
       case 'profession':
-        index=this._createProfessionData().indexOf(pickedValue);
-        this.setState({profession:pickedValue});
+        index = this._createProfessionData().indexOf(pickedValue);
+        this.setState({profession: pickedValue});
         break;
       default:
         console.error('设置数据出错');
@@ -329,19 +337,19 @@ class UserProfile extends BaseComponent {
     }
   }
 
-  _showPicker(_createData,text,value){
+  _showPicker(_createData, text, value) {
     RNPicker.init({
       pickerData: _createData,
       selectedValue: [this.state[`${text}`]],
       onPickerConfirm: pickedValue => {
-        this._updateState(text,value,pickedValue[0]);
+        this._updateState(text, value, pickedValue[0]);
         RNPicker.hide();
       },
       onPickerCancel: pickedValue => {
         RNPicker.hide();
       },
       onPickerSelect: pickedValue => {
-        this._updateState(text,value,pickedValue[0]);
+        this._updateState(text, value, pickedValue[0]);
       }
     });
     RNPicker.show();
@@ -350,7 +358,7 @@ class UserProfile extends BaseComponent {
   _createDateData() {
     let date = [];
     let currentYear = new Date().getFullYear();
-    for (let i = 1950; i < currentYear+1; i++) {
+    for (let i = 1950; i < currentYear + 1; i++) {
       let month = [];
       for (let j = 1; j < 13; j++) {
         let day = [];
@@ -384,32 +392,32 @@ class UserProfile extends BaseComponent {
     return date;
   }
 
-  _createHeightData(){
-    let data=[];
-    for(let i=100;i<251;i++){
-      data.push(i+'')
+  _createHeightData() {
+    let data = [];
+    for (let i = 100; i < 251; i++) {
+      data.push(i + '')
     }
     return data;
   }
 
-  _createWeightData(){
-    let data=[];
-    for(let i=20;i<501;i++){
-      data.push(i+'')
+  _createWeightData() {
+    let data = [];
+    for (let i = 20; i < 501; i++) {
+      data.push(i + '')
     }
     return data;
   }
 
-  _createEmotionData(){
-    return ['请选择','保密','单身','恋爱中','已婚','同性恋'];
+  _createEmotionData() {
+    return ['请选择', '保密', '单身', '恋爱中', '已婚', '同性恋'];
   }
 
-  _createEducationData(){
-    return ['小学','初中','高中','大学','研究生'];
+  _createEducationData() {
+    return ['小学', '初中', '高中', '大学', '研究生'];
   }
 
-  _createProfessionData(){
-    return ['IT','制造','医疗','金融','商业','文化','艺术','法律','教育','行政','模特','空姐','学生','其他职业'];
+  _createProfessionData() {
+    return ['IT', '制造', '医疗', '金融', '商业', '文化', '艺术', '法律', '教育', '行政', '模特', '空姐', '学生', '其他职业'];
   }
 
   _showDatePicker() {
@@ -418,8 +426,8 @@ class UserProfile extends BaseComponent {
       selectedValue: ['1992年', '1月', '1日'],
       onPickerConfirm: pickedValue => {
         this.setState({
-          birthYearText:pickedValue[0].substr(0,4),
-          birthYear:parseInt(pickedValue[0].substr(0,4))
+          birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
+          birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
         });
         RNPicker.hide();
       },
@@ -428,8 +436,8 @@ class UserProfile extends BaseComponent {
       },
       onPickerSelect: pickedValue => {
         this.setState({
-          birthYearText:pickedValue[0].substr(0,4),
-          birthYear:parseInt(pickedValue[0].substr(0,4))
+          birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
+          birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
         });
       }
     });
@@ -478,17 +486,17 @@ class UserProfile extends BaseComponent {
       <Animated.View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'身高'}</Text>
-          {this.renderSinglePicker('heightText','height',this._createHeightData())}
+          {this.renderSinglePicker('heightText', 'height', this._createHeightData())}
           <Text style={styles.rightLabel}>{'cm'}</Text>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'体重'}</Text>
-          {this.renderSinglePicker('weightText','weight',this._createWeightData())}
+          {this.renderSinglePicker('weightText', 'weight', this._createWeightData())}
           <Text style={styles.rightLabel}>{'kg'}</Text>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'职业'}</Text>
-          {this.renderSinglePicker('professionText','profession',this._createProfessionData())}
+          {this.renderSinglePicker('professionText', 'profession', this._createProfessionData())}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'收入'}</Text>
@@ -507,7 +515,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'情感状态'}</Text>
           {/*{this.renderEmotionStatus()}*/}
-          {this.renderSinglePicker('emotionStatusText','emotionStatus',this._createEmotionData())}
+          {this.renderSinglePicker('emotionStatusText', 'emotionStatus', this._createEmotionData())}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'家乡'}</Text>
@@ -519,7 +527,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'学历'}</Text>
           {/*{this.renderEducationStatus()}*/}
-          {this.renderSinglePicker('educationStatusText','educationStatus',this._createEducationData())}
+          {this.renderSinglePicker('educationStatusText', 'educationStatus', this._createEducationData())}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'信仰'}</Text>
@@ -576,7 +584,7 @@ class UserProfile extends BaseComponent {
               <Text style={styles.inputLabel}>{'性别'}</Text>
               {this.renderGenders(this.state.genderArr)}
             </View>
-            <Text style={styles.genderTips}>{'注册成功后,性别不可修改'}</Text>
+            <Text style={styles.genderTips}>{'注册成功后,性别和出生年月不可修改'}</Text>
             {this.renderMoreButton()}
             {this.state.expandStatus ? this.renderMoreForm() : null}
           </View>
@@ -600,6 +608,18 @@ class UserProfile extends BaseComponent {
       </View>
     )
   }
+
+  renderSpinner() {
+    if (this.props.pendingStatus) {
+      return (
+        <Spinner animating={this.props.pendingStatus}/>
+      )
+    }
+  }
 }
 
-export default UserProfile
+export default connect((state)=> {
+  return {
+    pendingStatus: state.UserProfile.pending
+  }
+})(UserProfile)

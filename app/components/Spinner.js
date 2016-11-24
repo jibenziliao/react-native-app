@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     left: 0,
     backgroundColor: 'rgba(142, 142, 142, 0.1)',
     width: width,
-    height: height
+    height: height,
   },
   loading: {
     position: 'absolute',
@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
     height: 120,
     backgroundColor: 'rgba(176, 176, 176, 0.5)',
     borderRadius: 6
-
   }
 });
 

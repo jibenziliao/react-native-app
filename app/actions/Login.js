@@ -11,6 +11,7 @@ import * as UserProfileActions from './UserProfile'
 import * as Storage from '../utils/Storage'
 import MainContainer from '../containers/MainContainer'
 import UserProfile from '../pages/UserProfile'
+import Home from '../containers/Home'
 
 function fetchOptions(data) {
   return {
@@ -61,12 +62,18 @@ export function validCode(data, navigator) {
             response.smsHasValid = true;
             Storage.setItem('user', response);
           });
-          //获取注册用户初始信息
-          //dispatch(UserProfileActions.getUserProfile());
-          navigator.push({
-            component: UserProfile,
-            name: 'UserProfile'
-          });
+
+          if(json.Result===false){
+            navigator.push({
+              component: UserProfile,
+              name: 'UserProfile'
+            });
+          }else{
+            navigator.push({
+              component: Home,
+              name: 'Home'
+            });
+          }
         }
       }).catch((err)=> {
       dispatch(endValidCode(err));
