@@ -43,13 +43,13 @@ class CheckBox extends Component {
   getInitialStyle() {
     return {
       checkbox: {
-        flexDirection: 'row'
+        flex: 1
       },
       checkboxView: {
         width: 20,
         height: 20,
-        paddingLeft: (Platform.OS === 'ios') ? 5 : 2,
-        paddingBottom: (Platform.OS === 'ios') ? 0 : 5,
+        alignItems: 'center',
+        justifyContent: 'center',
         overflow: 'hidden',
         borderWidth: (Platform.OS === 'ios') ? 1 : 2,
         borderColor: '#039BE5',
@@ -71,23 +71,49 @@ class CheckBox extends Component {
     this.props.onChange(!this.state.checked);
   }
 
+  renderPosition() {
+    if (this.props.labelLeft) {
+      return (
+        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <Text style={[styles.label, this.props.labelStyle]}>{this.props.label}</Text>
+          <View style={this.getInitialStyle().checkboxView}>
+            <Icon
+              name={(Platform.OS === 'ios') ? 'ios-checkmark-outline' : 'md-checkmark'}
+              style={[{
+                color: this.state.checked ? '#fff' : 'transparent',
+                fontSize: (Platform.OS === 'ios') ? 26 : 18,
+                flex: 1,
+                lineHeight: (Platform.OS === 'ios') ? 22 : 18,
+              }, this.props.iconStyle]}/>
+          </View>
+        </View>
+      )
+    } else {
+      return (
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={this.getInitialStyle().checkboxView}>
+            <Icon
+              name={(Platform.OS === 'ios') ? 'ios-checkmark-outline' : 'md-checkmark'}
+              style={[{
+                color: this.state.checked ? '#fff' : 'transparent',
+                fontSize: (Platform.OS === 'ios') ? 26 : 18,
+                flex: 1,
+                lineHeight: (Platform.OS === 'ios') ? 22 : 18,
+              }, this.props.iconStyle]}/>
+          </View>
+          <Text style={[styles.label, this.props.labelStyle]}>{this.props.label}</Text>
+        </View>
+      )
+    }
+  }
+
   render() {
     return (
       <TouchableOpacity
         ref="checkbox"
         style={this.getInitialStyle().checkbox}
         onPress={this.toggle.bind(this)}>
-        <View style={this.getInitialStyle().checkboxView}>
-          <Icon
-            name={(Platform.OS === 'ios') ? 'ios-checkmark-outline' : 'md-checkmark'}
-            style={[{
-              color: this.state.checked ? '#fff' : 'transparent',
-              lineHeight: (Platform.OS === 'ios') ? 20 : 16,
-              marginTop: (Platform.OS === 'ios') ? undefined : 1,
-              fontSize: (Platform.OS === 'ios') ? 16 : 16
-            }, this.props.iconStyle]}/>
-        </View>
-        <Text style={[styles.label, this.props.labelStyle]}>{this.props.label}</Text>
+        {this.renderPosition()}
       </TouchableOpacity>
     )
   }

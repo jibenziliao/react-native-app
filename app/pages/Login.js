@@ -92,7 +92,10 @@ const checkBoxArr = [
   ['love', '男女朋友', false],
   ['relationShip', '异性知己', false],
   ['friendShip', '好朋友', false],
-  ['other', '中介或其他服务', false]
+  ['other', '中介或其他服务', false],
+  ['a', 'a', false],
+  ['b', 'b', false],
+  ['c', 'c', false]
 ];
 
 class Login extends BaseComponent {
@@ -307,7 +310,12 @@ class Login extends BaseComponent {
   renderCheckBox(arr) {
     return arr.map((i)=> {
       return (
-        <CheckBox key={i[0]} label={i[1]} checked={i[2]} onChange={(checked)=> {
+        <CheckBox
+          key={i[0]}
+          label={i[1]}
+          checked={i[2]}
+          labelStyle={{marginLeft:10}}
+          onChange={(checked)=> {
           console.log(checked,i[0])
         }}/>
       )
