@@ -1,7 +1,7 @@
 # qingyuanjie
 
 ```bash
-git clone 
+git clone https://github.com/jibenziliao/qingyuanjie.git
 ```
 
 ```bash
