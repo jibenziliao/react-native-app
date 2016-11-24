@@ -8,6 +8,10 @@ git clone https://github.com/jibenziliao/qingyuanjie.git
 npm install
 ```
 
+```bash
+react-native link
+```
+
 ### Android
 
 ```bash
