@@ -3,16 +3,12 @@
  * @author keyy/1501718947@qq.com 16/11/8 17:34
  * @description
  */
-/**
- *
- * @author keyy/1501718947@qq.com 16/10/11 16:16
- * @description
- */
 import * as ActionTypes from './ActionTypes'
 import {URL_DEV} from '../constants/Constant'
 import DeviceInfo from 'react-native-device-info'
 import {toastShort} from '../utils/ToastUtil'
 import * as Storage from '../utils/Storage'
+import {postFetch, getFetch} from '../utils/NetUtil'
 
 console.log("Device Unique ID", DeviceInfo.getUniqueID());  // e.g. FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9
 // * note this is IDFV on iOS so it will change if all apps from the current apps vendor have been previously uninstalled
@@ -54,34 +50,42 @@ export function initialApp(data) {
     },
     body: JSON.stringify(data)
   };
-  return (dispatch)=>{
+  return (dispatch)=> {
     dispatch(beginInitial(data));
-    fetch(URL_DEV+'/initial',fetchOptions)
+    fetch(URL_DEV + '/initial', fetchOptions)
       .then(response => response.json())
-      .then(json =>{
+      .then(json => {
         dispatch(endInitial(data, json));
-        if('OK'!==json.Code){
+        if ('OK' !== json.Code) {
           toastShort(json.Message)
-        }else{
-          Storage.setItem('hasInit',true);
+        } else {
+          Storage.setItem('hasInit', true);
         }
       }).catch((err)=> {
-      dispatch(endInitial(data,err));
+      dispatch(endInitial(data, err));
       toastShort('网络发生错误,请重试')
     })
   };
 }
 
-function beginInitial(data){
+
+
+export function initDevice(data, resolve, reject) {
+  return (dispatch)=> {
+    postFetch('/initial', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+function beginInitial(data) {
   return {
-    type:ActionTypes.APP_INITIAL_BEGIN,
+    type: ActionTypes.APP_INITIAL_BEGIN,
     data
   }
 }
 
-function endInitial(data,json) {
+function endInitial(data, json) {
   return {
-    type:ActionTypes.APP_INITIAL_END,
+    type: ActionTypes.APP_INITIAL_END,
     data,
     json
   }

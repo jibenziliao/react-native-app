@@ -5,6 +5,8 @@
  */
 export const URL_DEV='http://nrb-stage.azurewebsites.net/mobile';
 
+export const TIME_OUT=10000;
+
 export const DEBUG_SETTINGS = {
   useFixtures: false,
   ezLogin: false,

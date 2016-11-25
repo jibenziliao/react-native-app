@@ -12,6 +12,7 @@ import * as Storage from '../utils/Storage'
 import MainContainer from '../containers/MainContainer'
 import UserProfile from '../pages/UserProfile'
 import Home from '../containers/Home'
+import {postFetch, getFetch} from '../utils/NetUtil'
 
 function fetchOptions(data) {
   return {
@@ -46,6 +47,24 @@ export function getValidCode(data) {
       toastShort('网络发生错误,请重试')
     })
   };
+}
+
+export function getDict(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/dict/all', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getSmsCode(data, resolve, reject) {
+  return (dispatch)=> {
+    postFetch('/device', data, dispatch, {type: ActionTypes.FETCH_VALID_CODE}, {type: ActionTypes.RECEIVE_VALID_CODE}, {type: ActionTypes.RECEIVE_VALID_CODE}, resolve, reject);
+  }
+}
+
+export function validSmsCode(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/device/'+data+'', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
 }
 
 export function validCode(data, navigator) {

@@ -39,6 +39,9 @@ import Menu, {
 } from 'react-native-popup-menu'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import CheckBox from '../components/CheckBox'
+import {toastShort} from '../utils/ToastUtil'
+import Home from '../containers/Home'
+import {setDictArr} from '../utils/Dict'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -88,15 +91,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const checkBoxArr = [
-  ['love', '男女朋友', false],
-  ['relationShip', '异性知己', false],
-  ['friendShip', '好朋友', false],
-  ['other', '中介或其他服务', false],
-  ['a', 'a', false],
-  ['b', 'b', false],
-  ['c', 'c', false]
-];
+let navigator;
 
 class Login extends BaseComponent {
   constructor(props) {
@@ -131,7 +126,12 @@ class Login extends BaseComponent {
     const {dispatch}= this.props;
     Storage.getItem('hasInit').then((response)=> {
       if (!response) {
-        dispatch(InitialAppActions.initialApp(data))
+        //dispatch(InitialAppActions.initialApp(data));
+        dispatch(InitialAppActions.initDevice(data, (json)=> {
+          Storage.setItem('hasInit', true);
+        }, (json)=> {
+          //不需要做特殊处理
+        }));
       }
     });
   }
@@ -154,15 +154,32 @@ class Login extends BaseComponent {
   }
 
   login(data) {
-    //Storage.setItem('user', {name: '张三', age: '18'});
-    const {navigator}=this.props;
-    /*navigator.push({
-     component: MainContainer,
-     name: 'MainContainer'
-     });*/
+    navigator=this.props.navigator;
     dismissKeyboard();
     const {dispatch} = this.props;
-    dispatch(LoginActions.validCode(data, navigator));
+    //dispatch(LoginActions.validCode(data, navigator));
+    dispatch(LoginActions.validSmsCode(data,
+      (json)=> {
+        this.loginSuccess(json)
+      },
+      (error)=> {
+        //不需要做特殊处理
+      }
+    ));
+  }
+
+  loginSuccess(json) {
+    if(json.Result===false){
+      navigator.push({
+        component: UserProfile,
+        name: 'UserProfile'
+      });
+    }else{
+      navigator.push({
+        component: Home,
+        name: 'Home'
+      });
+    }
   }
 
   getValidCode(phoneCountry, phone) {
@@ -172,7 +189,22 @@ class Login extends BaseComponent {
       Mobile: phone
     };
     const {dispatch} = this.props;
-    dispatch(LoginActions.getValidCode(data));
+    //dispatch(LoginActions.getValidCode(data));
+    dispatch(LoginActions.getSmsCode(data,(json)=>{
+      this.initDict()
+      }, (error)=> {
+      //不做特殊处理
+    }));
+  }
+
+  //初始化字典
+  initDict(){
+    const {dispatch} = this.props;
+    dispatch(LoginActions.getDict(null,(json)=>{
+      setDictArr(json.Result);
+    },(error)=>{
+      //
+    }));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -301,21 +333,6 @@ class Login extends BaseComponent {
     });
   }
 
-  renderCheckBox(arr) {
-    return arr.map((i)=> {
-      return (
-        <CheckBox
-          key={i[0]}
-          label={i[1]}
-          checked={i[2]}
-          labelStyle={{marginLeft: 10}}
-          onChange={(checked)=> {
-            console.log(checked, i[0])
-          }}/>
-      )
-    });
-  }
-
   renderBody() {
     return (
       <MenuContext style={{flex: 1}}>
@@ -374,7 +391,6 @@ class Login extends BaseComponent {
             onPress={()=>this.goHome()}>
             首页(Test)
           </NBButton>
-          {this.renderCheckBox(checkBoxArr)}
         </View>
       </MenuContext>
     )

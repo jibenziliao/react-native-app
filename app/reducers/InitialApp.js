@@ -5,23 +5,40 @@
  */
 import * as ActionTypes from '../actions/ActionTypes'
 
-const initialState={
-  hasInitial:false,
-  pending:false,
+const initialState = {
+  hasInitial: false,
+  pending: false,
 };
-export default function initialApp(state=initialState,action) {
-  switch (action.type){
+export default function initialApp(state = initialState, action) {
+  switch (action.type) {
     case ActionTypes.APP_INITIAL_BEGIN:
       return {
         ...state,
-        pending:true
+        pending: true
       };
     case ActionTypes.APP_INITIAL_END:
       return {
         ...state,
-        hasInitial:true,
-        res:action,
-        pending:false
+        hasInitial: true,
+        res: action,
+        pending: false
+      };
+    case ActionTypes.FETCH_BEGIN:
+      return {
+        ...state,
+        pending: true
+      };
+    case ActionTypes.FETCH_END:
+      return {
+        ...state,
+        res: action,
+        pending: false
+      };
+    case ActionTypes.FETCH_FAILED:
+      return {
+        ...state,
+        res: action,
+        pending: false
       };
     default:
       return state;

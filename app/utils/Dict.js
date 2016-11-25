@@ -5,18 +5,19 @@
  */
 import * as Storage from './Storage'
 
-const dictArr = ['EducationLevelDict', 'IncomeLevelDict', 'JobType', 'MarriageStatus'];
-
-function getObj(data) {
+export function getObjArr(data) {
   let tmpArr=[];
   for(let i in data){
-    tmpArr.push(data[i]+'');
+    tmpArr.push(data[i]);
   }
   return tmpArr;
 }
 
-export const setDictArr = (data)=> {
-  dictArr.forEach((i)=>{
-    Storage.setItem(data[i],getObj(data[i]));
-  });
-};
+export function setDictArr(data) {
+  let tmpArr=[];
+  for(let i in data){
+    Storage.setItem(`${i}`,data[i])
+  }
+  return tmpArr;
+}
+

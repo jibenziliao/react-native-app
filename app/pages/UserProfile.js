@@ -29,6 +29,7 @@ import {StyleConfig, CommonStyles} from '../style'
 import RNPicker from 'react-native-picker'
 import {connect} from 'react-redux'
 import * as UserProfileActions from '../actions/UserProfile'
+import * as Storage from '../utils/Storage'
 
 const styles = StyleSheet.create({
   container: {
@@ -132,6 +133,12 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
+let DictMap = {
+  EducationLevelDict: [],
+  IncomeLevelDict: [],
+  JobTypeDict: [],
+  MarriageStatusDict: []
+};
 
 class UserProfile extends BaseComponent {
   constructor(props) {
@@ -141,24 +148,45 @@ class UserProfile extends BaseComponent {
         {text: '男', iconName: 'check-circle-o', checked: true},
         {text: '女', iconName: 'circle-o', checked: false}
       ],
+      gender:true,
       expandText: '点击展开更多(选填)',
       expandStatus: false,
       expandIconName: 'angle-double-down',
-      emotionStatus: 0,
-      emotionStatusText: '单身',
-      heightText: '175',
-      height: 175,
-      weightText: '68',
-      weight: 68,
+      emotionStatus: null,
+      emotionStatusText: '',
+      heightText: '',
+      height: null,
+      weightText: '',
+      weight: null,
       birthYear: 1992,
-      birthYearText: '1992-1-1',
-      educationStatus: 4,
-      educationStatusText: '大学',
-      professionText: 'IT',
-      profession: 0
+      birthYearText: '',
+      educationStatus: null,
+      educationStatusText: '',
+      professionText: '',
+      profession: null,
+      income: null,
+      incomeText: '',
+      religion:'',
+      mapPrecision:null,
+      mapPrecisionText:'',
+      hometown:'',
+      ethnicity:'',
+      interest:'',
+      selfEvaluation:'',
+      nickName:''
     };
     navigator = this.props.navigator;
   };
+
+  componentWillMount() {
+    for (let i in DictMap) {
+      Storage.getItem(`${i}`).then((response)=> {
+        response.forEach((j)=> {
+          DictMap[i].push(j.Value);
+        })
+      })
+    }
+  }
 
   getNavigationBarProps() {
     return {
@@ -176,16 +204,24 @@ class UserProfile extends BaseComponent {
   }
 
   //下一步
-  goNext() {
+  goNext(data) {
     Alert.alert('提示', '是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料', [
-      {text: '确定', onPress: () => this.goPhotos()},
-      {text: '跳过', onPress: () => this.goHome()}
+      {text: '确定', onPress: () => this.saveUserProfile(data,true)},
+      {text: '跳过', onPress: () => this.saveUserProfile(data,false)}
     ]);
   }
 
-  saveUserProfile() {
-    const {disptach}=this.props;
-
+  saveUserProfile(data,bool){
+    const {dispatch} =this.props;
+    dispatch(UserProfileActions.saveProfile(data,(json)=>{
+      if(bool){
+        this.goPhotos();
+      }else{
+        this.goHome();
+      }
+    },(error)=>{
+      console.log(error);
+    }));
   }
 
   //去拍照
@@ -214,6 +250,7 @@ class UserProfile extends BaseComponent {
     this.state.genderArr[index].iconName = 'check-circle-o';
     this.state.genderArr[index].checked = true;
     this.setState({
+      gender:this.state.genderArr[index].text=='男',
       genderArr: this.state.genderArr
     });
   }
@@ -307,6 +344,12 @@ class UserProfile extends BaseComponent {
       case 'professionText':
         this.setState({professionText: pickedValue});
         break;
+      case 'incomeText':
+      this.setState({incomeText: pickedValue});
+      break;
+      case 'mapPrecisionText':
+        this.setState({mapPrecisionText: pickedValue});
+        break;
       default:
         console.error('设置数据出错!');
         break;
@@ -314,11 +357,11 @@ class UserProfile extends BaseComponent {
     let index;
     switch (value) {
       case 'emotionStatus':
-        index = this._createEmotionData().indexOf(pickedValue);
+        index = DictMap['MarriageStatusDict'].indexOf(pickedValue);
         this.setState({emotionStatus: index});
         break;
       case 'educationStatus':
-        index = this._createEducationData().indexOf(pickedValue);
+        index = DictMap['EducationLevelDict'].indexOf(pickedValue);
         this.setState({educationStatus: index});
         break;
       case 'height':
@@ -328,8 +371,15 @@ class UserProfile extends BaseComponent {
         this.setState({weight: parseInt(pickedValue)});
         break;
       case 'profession':
-        index = this._createProfessionData().indexOf(pickedValue);
+        index = DictMap['JobTypeDict'].indexOf(pickedValue);
         this.setState({profession: pickedValue});
+        break;
+      case 'income':
+        index = DictMap['IncomeLevelDict'].indexOf(pickedValue);
+        this.setState({income: pickedValue});
+        break;
+      case 'mapPrecision':
+        this.setState({mapPrecision: pickedValue});
         break;
       default:
         console.error('设置数据出错');
@@ -408,16 +458,8 @@ class UserProfile extends BaseComponent {
     return data;
   }
 
-  _createEmotionData() {
-    return ['请选择', '保密', '单身', '恋爱中', '已婚', '同性恋'];
-  }
-
-  _createEducationData() {
-    return ['小学', '初中', '高中', '大学', '研究生'];
-  }
-
-  _createProfessionData() {
-    return ['IT', '制造', '医疗', '金融', '商业', '文化', '艺术', '法律', '教育', '行政', '模特', '空姐', '学生', '其他职业'];
+  _createMapData(){
+    return['0m(精确定位)','200m','500m','1000m','隐身'];
   }
 
   _showDatePicker() {
@@ -496,44 +538,56 @@ class UserProfile extends BaseComponent {
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'职业'}</Text>
-          {this.renderSinglePicker('professionText', 'profession', this._createProfessionData())}
+          {this.renderSinglePicker('professionText', 'profession', DictMap['JobTypeDict'])}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'收入'}</Text>
-          <TextInput
-            style={[styles.input, styles.fullInput]}
-            underlineColorAndroid={'transparent'}
-            maxLength={15}/>
+          {this.renderSinglePicker('incomeText', 'income', DictMap['IncomeLevelDict'])}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'所在地'}</Text>
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            maxLength={15}/>
+            maxLength={50}/>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'情感状态'}</Text>
-          {/*{this.renderEmotionStatus()}*/}
-          {this.renderSinglePicker('emotionStatusText', 'emotionStatus', this._createEmotionData())}
+          {this.renderSinglePicker('emotionStatusText', 'emotionStatus', DictMap['MarriageStatusDict'])}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'家乡'}</Text>
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            value={this.state.hometown}
+            onChangeText={(hometown)=>this.setState({hometown})}
+            maxLength={15}/>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>{'地图精度'}</Text>
+          {this.renderSinglePicker('mapPrecisionText', 'mapPrecision', this._createMapData())}
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>{'民族'}</Text>
+          <TextInput
+            style={[styles.input, styles.fullInput]}
+            underlineColorAndroid={'transparent'}
+            value={this.state.ethnicity}
+            onChangeText={(ethnicity)=>this.setState({ethnicity})}
             maxLength={15}/>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'学历'}</Text>
-          {/*{this.renderEducationStatus()}*/}
-          {this.renderSinglePicker('educationStatusText', 'educationStatus', this._createEducationData())}
+          {this.renderSinglePicker('educationStatusText', 'educationStatus', DictMap['EducationLevelDict'])}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'信仰'}</Text>
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            value={this.state.religion}
+            onChangeText={(religion)=>this.setState({religion})}
             maxLength={15}/>
         </View>
         <View style={styles.inputRow}>
@@ -548,6 +602,8 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            value={this.state.interest}
+            onChangeText={(interest)=>this.setState({interest})}
             maxLength={15}/>
         </View>
         <View style={styles.inputRow}>
@@ -555,6 +611,8 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            value={this.state.selfEvaluation}
+            onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
             maxLength={15}/>
         </View>
       </Animated.View>
@@ -574,6 +632,8 @@ class UserProfile extends BaseComponent {
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
+                value={this.state.nickName}
+                onChangeText={(nickName)=>this.setState({nickName})}
                 maxLength={15}/>
             </View>
             <View style={styles.inputRow}>
@@ -592,7 +652,7 @@ class UserProfile extends BaseComponent {
             block
             style={{marginBottom: 30}}
             onPress={()=> {
-              this.goNext()
+              this.goNext(this.state)
             }}>
             下一步
           </NBButton>

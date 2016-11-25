@@ -7,6 +7,8 @@ import * as ActionTypes from './ActionTypes'
 import {URL_DEV} from '../constants/Constant'
 import {toastShort} from '../utils/ToastUtil'
 import {Actions} from 'react-native-router-flux'
+import {postFetch, getFetch} from '../utils/NetUtil'
+import * as Storage from '../utils/Storage'
 
 function fetchOptions(data) {
   return {
@@ -47,7 +49,7 @@ export function getUserProfile() {
             HasSavedBirthYear: !!json.Result.BirthYear,
             Ethnicity: json.Result.Ethnicity ? json.Result.Ethnicity + '' : '',
             HasSavedEthnicity: !!json.Result.Ethnicity,
-            Gender: 'undefined'==typeof json.Result.Gender || json.Result.Gender==true ? '1' : '0',
+            Gender: 'undefined' == typeof json.Result.Gender || json.Result.Gender == true ? '1' : '0',
             HasSavedGender: !!json.Result.Gender,
             Height: json.Result.Height ? json.Result.Height + '' : '',
             HasSavedHeight: !!json.Result.Height,
@@ -77,6 +79,61 @@ function receiveUserProfile(json) {
   return {
     type: ActionTypes.RECEIVE_USER_PROFILE,
     json
+  }
+}
+
+function getSelectedValue(data) {
+  let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus;
+  const selectedValue = async(data)=> {
+    let jobTypeArr = await Storage.getItem('JobTypeDict');
+    let incomeLevelArr = await Storage.getItem('IncomeLevelDict');
+    let educationLevelArr = await Storage.getItem('EducationLevelDict');
+    let marriageStatusArr = await Storage.getItem('MarriageStatusDict');
+
+    JobTypeObj = jobTypeArr.find((item)=> {
+      return item.Value == data.professionText;
+    });
+    IncomeLevel = incomeLevelArr.find((item)=> {
+      return item.Value == data.incomeText;
+    });
+    EducationLevel = educationLevelArr.find((item)=> {
+      return item.Value == data.educationStatusText;
+    });
+    MarriageStatus = marriageStatusArr.find((item)=> {
+      return item.Value == data.emotionStatusText;
+    });
+    console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
+  };
+  selectedValue(data);
+  console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
+  return {JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus};
+}
+
+
+export function saveProfile(data, resolve, reject) {
+  console.log(data);
+  //console.log(getSelectedValue(data));
+
+  let params = {
+    Nickname: data.nickName,
+    BirthDate: data.birthYearText,
+    Ethnicity: data.ethnicity,
+    Gender: data.gender,
+    Height: data.height,
+    Weight: data.weight,
+    //JobType: JobTypeObj.Key,
+    //IncomeLevel:IncomeLevel.Key,
+    //EducationLevel: EducationLevel.Key,
+    //MarriageStatus: MarriageStatus.Key,
+    Religion: data.religion,
+    DatingPurpose: data.datingPurpose,
+    MapPrecision: data.mapPrecision,
+    Hometown: data.hometown
+  };
+
+  console.log(params);
+  return (dispatch)=> {
+    postFetch('/profile', params, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
@@ -120,7 +177,7 @@ export function saveUserProfile(data) {
         if ('OK' !== json.Code) {
           toastShort(json.Message);
         } else {
-          Actions.photos({new:true});
+          Actions.photos({new: true});
         }
       }).catch((err)=> {
       dispatch(receiveSaveUserProfile(params, err));
