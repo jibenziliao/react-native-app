@@ -106,7 +106,7 @@ class ImageViewer extends Component {
     return (
       <View style={styles.column}>
         <View style={styles.imageOptions}>
-          <Image source={rowData} style={styles.image}/>
+          <Image source={{uri:rowData.uri}} style={styles.image}/>
           <View style={styles.button}>
             <Button
               style={styles.avatar}

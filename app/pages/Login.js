@@ -111,17 +111,17 @@ class Login extends BaseComponent {
   }
 
   componentWillMount() {
-    const data = {
-      DeviceType: DeviceInfo.getSystemName() || 'Android',
-      DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
-      DeviceInfo: DeviceInfo.getModel() || 'NX507J'
-    };
-
     //const data = {
-    //  DeviceType: 'iOS',
-    //  DeviceVersion: '8.1',
-    //  DeviceInfo: 'iPhone Simulator'
+    //  DeviceType: DeviceInfo.getSystemName() || 'Android',
+    //  DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
+    //  DeviceInfo: DeviceInfo.getModel() || 'NX507J'
     //};
+
+    const data = {
+      DeviceType: 'iOS',
+      DeviceVersion: '8.1',
+      DeviceInfo: 'iPhone Simulator'
+    };
 
     const {dispatch}= this.props;
     Storage.getItem('hasInit').then((response)=> {

@@ -10,6 +10,9 @@ import {Actions} from 'react-native-router-flux'
 import {postFetch, getFetch} from '../utils/NetUtil'
 import * as Storage from '../utils/Storage'
 
+let tmpDatingPurposeArr = [];
+let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus;
+
 function fetchOptions(data) {
   return {
     method: 'POST',
@@ -82,58 +85,68 @@ function receiveUserProfile(json) {
   }
 }
 
-function getSelectedValue(data) {
-  let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus;
-  const selectedValue = async(data)=> {
-    let jobTypeArr = await Storage.getItem('JobTypeDict');
-    let incomeLevelArr = await Storage.getItem('IncomeLevelDict');
-    let educationLevelArr = await Storage.getItem('EducationLevelDict');
-    let marriageStatusArr = await Storage.getItem('MarriageStatusDict');
+async function getSelectedValue(data) {
+  let jobTypeArr = await Storage.getItem('JobTypeDict');
+  let incomeLevelArr = await Storage.getItem('IncomeLevelDict');
+  let educationLevelArr = await Storage.getItem('EducationLevelDict');
+  let marriageStatusArr = await Storage.getItem('MarriageStatusDict');
 
-    JobTypeObj = jobTypeArr.find((item)=> {
-      return item.Value == data.professionText;
-    });
-    IncomeLevel = incomeLevelArr.find((item)=> {
-      return item.Value == data.incomeText;
-    });
-    EducationLevel = educationLevelArr.find((item)=> {
-      return item.Value == data.educationStatusText;
-    });
-    MarriageStatus = marriageStatusArr.find((item)=> {
-      return item.Value == data.emotionStatusText;
-    });
-    console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
-  };
-  selectedValue(data);
-  console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
-  return {JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus};
+  JobTypeObj = jobTypeArr.find((item)=> {
+    return item.Value == data.professionText;
+  });
+  IncomeLevel = incomeLevelArr.find((item)=> {
+    return item.Value == data.incomeText;
+  });
+  EducationLevel = educationLevelArr.find((item)=> {
+    return item.Value == data.educationStatusText;
+  });
+  MarriageStatus = marriageStatusArr.find((item)=> {
+    return item.Value == data.emotionStatusText;
+  });
+  //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
+  return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus});
 }
 
+export function saveProfile(data, datingPurpose, resolve, reject) {
+  if (datingPurpose.length > 0) {
+    for (let i = 0; i < datingPurpose.length; i++) {
+      tmpDatingPurposeArr.push(datingPurpose[i].Key);
+    }
+  }
+  //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
 
-export function saveProfile(data, resolve, reject) {
-  console.log(data);
-  //console.log(getSelectedValue(data));
-
-  let params = {
-    Nickname: data.nickName,
-    BirthDate: data.birthYearText,
-    Ethnicity: data.ethnicity,
-    Gender: data.gender,
-    Height: data.height,
-    Weight: data.weight,
-    //JobType: JobTypeObj.Key,
-    //IncomeLevel:IncomeLevel.Key,
-    //EducationLevel: EducationLevel.Key,
-    //MarriageStatus: MarriageStatus.Key,
-    Religion: data.religion,
-    DatingPurpose: data.datingPurpose,
-    MapPrecision: data.mapPrecision,
-    Hometown: data.hometown
-  };
-
-  console.log(params);
   return (dispatch)=> {
-    postFetch('/profile', params, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    dispatch({type: ActionTypes.GET_ITEM_BEGIN});
+    getSelectedValue(data).then(
+      (result)=> {
+        dispatch({type: ActionTypes.GET_ITEM_END, data, result});
+        let params = {
+          Nickname: data.nickName,
+          BirthDate: data.birthYearText,
+          Ethnicity: data.ethnicity,
+          Gender: data.gender,
+          Height: data.height,
+          Weight: data.weight,
+          JobType: result.JobTypeObj.Key || "Marketing",
+          IncomeLevel: result.IncomeLevel.Key || "Higher",
+          EducationLevel: result.EducationLevel.Key || "Diploma",
+          MarriageStatus: result.MarriageStatus.Key || "Married",
+          Religion: data.religion,
+          DatingPurpose: tmpDatingPurposeArr.join(','),
+          MapPrecision: data.mapPrecision,
+          Hometown: data.hometown
+        };
+        postFetch('/profile', params, dispatch,
+          {type: ActionTypes.FETCH_BEGIN},
+          {type: ActionTypes.FETCH_END},
+          {type: ActionTypes.FETCH_FAILED},
+          resolve,
+          reject
+        );
+      }
+    ).catch((error)=> {
+      dispatch({type: ActionTypes.GET_ITEM_FAILED, data, error});
+    });
   }
 }
 

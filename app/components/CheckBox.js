@@ -38,13 +38,11 @@ class CheckBox extends Component {
     this.state = {
       checked: this.props.checked,
     };
+    console.log(this.props);
   }
 
   getInitialStyle() {
     return {
-      checkbox: {
-        flex: 1
-      },
       checkboxView: {
         width: 20,
         height: 20,
@@ -66,15 +64,16 @@ class CheckBox extends Component {
   }
 
   toggle() {
-    this.setState({checked: !this.state.checked});
-    //setState方法时异步的,此时this.state.checked还没么有更新,所以这里onChange()传参传的是!this.state.checked
+    //setState方法时异步的,此时this.state.checked还没有来得及更新,所以这里onChange()传参传的是!this.state.checked
     this.props.onChange(!this.state.checked);
+    this.setState({checked: !this.state.checked});
+
   }
 
   renderPosition() {
     if (this.props.labelLeft) {
       return (
-        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end',alignItems:'center'}}>
           <Text style={[styles.label, this.props.labelStyle]}>{this.props.label}</Text>
           <View style={this.getInitialStyle().checkboxView}>
             <Icon
@@ -90,7 +89,7 @@ class CheckBox extends Component {
       )
     } else {
       return (
-        <View style={{flex: 1, flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row',alignItems:'center'}}>
           <View style={this.getInitialStyle().checkboxView}>
             <Icon
               name={(Platform.OS === 'ios') ? 'ios-checkmark-outline' : 'md-checkmark'}
@@ -111,7 +110,7 @@ class CheckBox extends Component {
     return (
       <TouchableOpacity
         ref="checkbox"
-        style={this.getInitialStyle().checkbox}
+        style={this.props.style}
         onPress={this.toggle.bind(this)}>
         {this.renderPosition()}
       </TouchableOpacity>
@@ -124,8 +123,8 @@ CheckBox.propTypes = {
   label: React.PropTypes.string.isRequired,
   checked: React.PropTypes.bool.isRequired,
   onChange: React.PropTypes.func.isRequired,
-  iconStyle: React.PropTypes.object,
-  labelStyle: React.PropTypes.object,
+  iconStyle: View.propTypes.style,
+  labelStyle: View.propTypes.style,
   labelLeft: React.PropTypes.bool
 };
 

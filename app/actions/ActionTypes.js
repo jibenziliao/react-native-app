@@ -61,6 +61,11 @@ export const FETCH_BEGIN='FETCH_BEGIN';
 export const FETCH_END='FETCH_END';
 export const FETCH_FAILED='FETCH_FAILED';
 
+//从缓存中获取数据
+export const GET_ITEM_BEGIN='GET_ITEM_BEGIN';
+export const GET_ITEM_END='GET_ITEM_END';
+export const GET_ITEM_FAILED='GET_ITEM_FAILED';
+
 
 
 

@@ -35,6 +35,8 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import FriendsFilter from './FriendsFilter'
+import {connect} from 'react-redux'
+import * as PhotoAction from '../actions/Photo'
 
 const {width, height}=Dimensions.get('window');
 
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#EBEBEB',
+    borderColor: 'grey',
     paddingHorizontal: 10,
     paddingVertical: 30
   },
@@ -79,11 +81,14 @@ class Photos extends BaseComponent {
 
   //下一步
   goNext() {
-    const {navigator} =this.props;
-    navigator.push({
-      component: FriendsFilter,
-      name: 'FriendsFilter'
-    });
+    const {navigator,dispatch} =this.props;
+    //navigator.push({
+    //  component: FriendsFilter,
+    //  name: 'FriendsFilter'
+    //});
+
+    dispatch(PhotoAction.uploadImage(this.state.imageArr,navigator));
+
   }
 
   getNavigationBarProps() {
@@ -126,7 +131,7 @@ class Photos extends BaseComponent {
           source = {uri: response.uri, isStatic: true};
         }
 
-        let tmpPhotoArr = [];
+        //let tmpPhotoArr = [];
         //if (this.props.photoArr && this.props.photoArr.data) {
         //  console.log(this.props.photoArr.data);
         //  for (let i = 0; i < this.props.photoArr.data.length; i++) {
@@ -172,7 +177,7 @@ class Photos extends BaseComponent {
       return (
         <View>
           <Text style={styles.tips}>
-            点击拍照按钮,拍摄照片,或者点击下一步跳过此步骤(您仍可以在个人信息中上传您的照片)
+            点击拍照按钮,拍摄照片,或者点击下一步跳过此步骤(您仍可以在【个人信息】中上传您的照片)
           </Text>
         </View>
       )
@@ -227,6 +232,18 @@ class Photos extends BaseComponent {
       </View>
     )
   }
+
+  renderSpinner() {
+    if (this.props.pendingStatus) {
+      return (
+        <Spinner animating={this.props.pendingStatus}/>
+      )
+    }
+  }
 }
 
-export default Photos
+export default connect((state)=>{
+  return{
+    pendingStatus: state.Photo.pending
+  }
+})(Photos)

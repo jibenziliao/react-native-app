@@ -40,6 +40,23 @@ export default function initialApp(state = initialState, action) {
         res: action,
         pending: false
       };
+    case ActionTypes.GET_ITEM_BEGIN:
+      return {
+        ...state,
+        pending: false
+      };
+    case ActionTypes.GET_ITEM_END:
+      return {
+        ...state,
+        res: action,
+        pending: false
+      };
+    case ActionTypes.GET_ITEM_FAILED:
+      return {
+        ...state,
+        res: action,
+        pending: false
+      };
     default:
       return state;
   }

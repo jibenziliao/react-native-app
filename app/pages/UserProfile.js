@@ -16,7 +16,8 @@ import {
   Platform,
   PickerIOS,
   ActionSheetIOS,
-  Alert
+  Alert,
+  Dimensions
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
@@ -30,6 +31,9 @@ import RNPicker from 'react-native-picker'
 import {connect} from 'react-redux'
 import * as UserProfileActions from '../actions/UserProfile'
 import * as Storage from '../utils/Storage'
+import CheckBox from '../components/CheckBox'
+
+const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -129,6 +133,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 300,
     width: 400
+  },
+  datingPurposeLabel: {
+    flexDirection: 'row',
+    height: 40,
+    alignItems: 'center'
+  },
+  listItem: {
+    marginTop: 10
+  },
+  checkBoxView:{
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between'
+  },
+  checkBoxItem: {
+    width: (width - 30) / 2,
+    height: 40
+  },
+  checkBoxLabel: {
+    marginLeft: 10,
+    flexDirection: 'row',
+    flex: 1,
+    flexWrap: 'nowrap'
   }
 });
 
@@ -138,7 +166,19 @@ let DictMap = {
   IncomeLevelDict: [],
   JobTypeDict: [],
   MarriageStatusDict: []
+  //DatingPurposeDict:[]
 };
+
+let DatingPurposeDict = ['男女朋友', '异性知己', '好友', '中介或其他'];
+
+let DatingPurposeSelect = [
+  {Key: 'Love', Value: '男女朋友', Checked: false},
+  {Key: 'RelationShip', Value: '异性知己', Checked: false},
+  {Key: 'FriendShip', Value: '好友', Checked: false},
+  {Key: 'Other', Value: '中介或其他', Checked: false}
+];
+
+let DatingPurposeSelectCopy = [];
 
 class UserProfile extends BaseComponent {
   constructor(props) {
@@ -148,7 +188,7 @@ class UserProfile extends BaseComponent {
         {text: '男', iconName: 'check-circle-o', checked: true},
         {text: '女', iconName: 'circle-o', checked: false}
       ],
-      gender:true,
+      gender: true,
       expandText: '点击展开更多(选填)',
       expandStatus: false,
       expandIconName: 'angle-double-down',
@@ -166,14 +206,15 @@ class UserProfile extends BaseComponent {
       profession: null,
       income: null,
       incomeText: '',
-      religion:'',
-      mapPrecision:null,
-      mapPrecisionText:'',
-      hometown:'',
-      ethnicity:'',
-      interest:'',
-      selfEvaluation:'',
-      nickName:''
+      religion: '',
+      mapPrecision: null,
+      mapPrecisionText: '',
+      hometown: '',
+      ethnicity: '',
+      interest: '',
+      selfEvaluation: '',
+      nickName: '',
+      datingPurposeArr: [],
     };
     navigator = this.props.navigator;
   };
@@ -181,9 +222,13 @@ class UserProfile extends BaseComponent {
   componentWillMount() {
     for (let i in DictMap) {
       Storage.getItem(`${i}`).then((response)=> {
-        response.forEach((j)=> {
-          DictMap[i].push(j.Value);
-        })
+        if (response && response.length > 0) {
+          response.forEach((j)=> {
+            DictMap[i].push(j.Value);
+          })
+        } else {
+          console.error('获取下拉选项字典出错');
+        }
       })
     }
   }
@@ -204,23 +249,23 @@ class UserProfile extends BaseComponent {
   }
 
   //下一步
-  goNext(data) {
+  goNext(data, datingPurpose) {
     Alert.alert('提示', '是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料', [
-      {text: '确定', onPress: () => this.saveUserProfile(data,true)},
-      {text: '跳过', onPress: () => this.saveUserProfile(data,false)}
+      {text: '确定', onPress: () => this.saveUserProfile(data, datingPurpose, true)},
+      {text: '跳过', onPress: () => this.saveUserProfile(data, datingPurpose, false)}
     ]);
   }
 
-  saveUserProfile(data,bool){
+  saveUserProfile(data, datingPurpose, bool) {
     const {dispatch} =this.props;
-    dispatch(UserProfileActions.saveProfile(data,(json)=>{
-      if(bool){
+    dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json)=> {
+      if (bool) {
         this.goPhotos();
-      }else{
+      } else {
         this.goHome();
       }
-    },(error)=>{
-      console.log(error);
+    }, (error)=> {
+      //console.log(error);
     }));
   }
 
@@ -250,7 +295,7 @@ class UserProfile extends BaseComponent {
     this.state.genderArr[index].iconName = 'check-circle-o';
     this.state.genderArr[index].checked = true;
     this.setState({
-      gender:this.state.genderArr[index].text=='男',
+      gender: this.state.genderArr[index].text == '男',
       genderArr: this.state.genderArr
     });
   }
@@ -345,8 +390,8 @@ class UserProfile extends BaseComponent {
         this.setState({professionText: pickedValue});
         break;
       case 'incomeText':
-      this.setState({incomeText: pickedValue});
-      break;
+        this.setState({incomeText: pickedValue});
+        break;
       case 'mapPrecisionText':
         this.setState({mapPrecisionText: pickedValue});
         break;
@@ -379,7 +424,12 @@ class UserProfile extends BaseComponent {
         this.setState({income: pickedValue});
         break;
       case 'mapPrecision':
-        this.setState({mapPrecision: pickedValue});
+        if (pickedValue == '隐身') {
+          this.setState({mapPrecision: null});
+        } else {
+          pickedValue = pickedValue.substring(0, pickedValue.indexOf('m'));
+          this.setState({mapPrecision: pickedValue});
+        }
         break;
       default:
         console.error('设置数据出错');
@@ -458,8 +508,8 @@ class UserProfile extends BaseComponent {
     return data;
   }
 
-  _createMapData(){
-    return['0m(精确定位)','200m','500m','1000m','隐身'];
+  _createMapData() {
+    return ['0m(精确定位)', '200m', '500m', '1000m', '隐身'];
   }
 
   _showDatePicker() {
@@ -521,6 +571,38 @@ class UserProfile extends BaseComponent {
         </TouchableHighlight>
       )
     }
+  }
+
+  renderDatingPurpose(DatingPurposeSelect) {
+    return (
+      <View style={styles.checkBoxView}>
+        {DatingPurposeSelect.map((item)=> {
+          return (
+            <CheckBox
+              key={item.Value}
+              label={item.Value}
+              labelStyle={styles.checkBoxLabel}
+              checked={item.Checked}
+              style={styles.checkBoxItem}
+              onChange={(checked)=> {
+                item.Checked = checked;
+                if (checked) {
+                  DatingPurposeSelectCopy.push(item);
+                } else {
+                  let index = 0;
+                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
+                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
+                      index = i;
+                      break;
+                    }
+                  }
+                  DatingPurposeSelectCopy.splice(index, 1);
+                }
+              }}/>
+          )
+        })}
+      </View>
+    )
   }
 
   renderMoreForm() {
@@ -615,6 +697,11 @@ class UserProfile extends BaseComponent {
             onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
             maxLength={15}/>
         </View>
+        <View style={styles.listItem}>
+          <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
+          {this.renderDatingPurpose(DatingPurposeSelect)}
+        </View>
+
       </Animated.View>
     )
   }
@@ -652,9 +739,17 @@ class UserProfile extends BaseComponent {
             block
             style={{marginBottom: 30}}
             onPress={()=> {
-              this.goNext(this.state)
+              this.goNext(this.state, DatingPurposeSelectCopy)
             }}>
             下一步
+          </NBButton>
+          <NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goPhotos()
+            }}>
+            去拍照
           </NBButton>
           <NBButton
             block
