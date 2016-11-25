@@ -35,7 +35,9 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import RNPicker from 'react-native-picker'
-import {List, ListItem, Text as NBText, CheckBox} from 'native-base'
+import {List, ListItem, Text as NBText, CheckBox as NBCheckBox} from 'native-base'
+import CheckBox from '../components/CheckBox'
+import * as Storage from '../utils/Storage'
 
 const {width, height}=Dimensions.get('window');
 
@@ -84,21 +86,52 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#d4cfcf'
   },
-  checkBoxRow: {
-    flex: 1,
+  datingPurposeLabel: {
     flexDirection: 'row',
+    height: 40,
     alignItems: 'center'
   },
-  checkBoxItem: {
-    flex: 1
+  listItem: {
+    marginTop: 10
   },
-  checkBoxText: {
-    fontSize: 16
+  checkBoxView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between'
+  },
+  checkBoxItem: {
+    width: (width - 30) / 2,
+    height: 40
+  },
+  checkBoxLabel: {
+    marginLeft: 10,
+    flexDirection: 'row',
+    flex: 1,
+    flexWrap: 'nowrap'
   }
 });
 
 const tmpEducationArr = ['不限', '小学', '初中', '高中', '大学', '研究生'];
 const tmpGenderArr = ['不限', '男', '女'];
+const tmpPhotoOnlyArr = ['不限', '是', '否'];
+
+let DictMap = {
+  EducationLevelDict: [],
+  IncomeLevelDict: [],
+  JobTypeDict: [],
+  MarriageStatusDict: []
+  //DatingPurposeDict:[]
+};
+
+let DatingPurposeSelect = [
+  {Key: 'Love', Value: '男女朋友', Checked: false},
+  {Key: 'RelationShip', Value: '异性知己', Checked: false},
+  {Key: 'FriendShip', Value: '好友', Checked: false},
+  {Key: 'Other', Value: '中介或其他', Checked: false}
+];
+
+let DatingPurposeSelectCopy = [];
 
 class FriendsFilter extends BaseComponent {
   constructor(props) {
@@ -121,7 +154,22 @@ class FriendsFilter extends BaseComponent {
         relationShip: false,
         love: false,
         other: false
-      }
+      },
+      photoOnly: false
+    }
+  }
+
+  componentWillMount() {
+    for (let i in DictMap) {
+      Storage.getItem(`${i}`).then((response)=> {
+        if (response && response.length > 0) {
+          response.forEach((j)=> {
+            DictMap[i].push(j.Value);
+          })
+        } else {
+          console.error('获取下拉选项字典出错');
+        }
+      })
     }
   }
 
@@ -147,6 +195,38 @@ class FriendsFilter extends BaseComponent {
     return {
       title: '交友信息'
     };
+  }
+
+  renderDatingPurpose(DatingPurposeSelect) {
+    return (
+      <View style={styles.checkBoxView}>
+        {DatingPurposeSelect.map((item)=> {
+          return (
+            <CheckBox
+              key={item.Value}
+              label={item.Value}
+              labelStyle={styles.checkBoxLabel}
+              checked={item.Checked}
+              style={styles.checkBoxItem}
+              onChange={(checked)=> {
+                item.Checked = checked;
+                if (checked) {
+                  DatingPurposeSelectCopy.push(item);
+                } else {
+                  let index = 0;
+                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
+                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
+                      index = i;
+                      break;
+                    }
+                  }
+                  DatingPurposeSelectCopy.splice(index, 1);
+                }
+              }}/>
+          )
+        })}
+      </View>
+    )
   }
 
   _createAgeRangeData() {
@@ -423,50 +503,59 @@ class FriendsFilter extends BaseComponent {
               <Text style={styles.inputLabel}>{'性别'}</Text>
               {this._renderSinglePicker('genderText', '请选择性别', this.state.gender, tmpGenderArr)}
             </View>
-          </View>
-          <View style={styles.datingFilterArea}>
-            <Text style={styles.datingFilterTitle}>{'交友目的'}</Text>
-            <View style={styles.datingFilter}>
-              <View style={styles.checkBoxRow}>
-                <ListItem
-                  style={{flex: 1}}
-                  onPress={()=> {
-                    this._updateCheckStatus('love', this.state.datingPurpose.love)
-                  }}>
-                  <CheckBox
-                    checked={this.state.datingPurpose.love}/>
-                  <NBText style={styles.checkBoxText}>{'男女朋友'}</NBText>
-                </ListItem>
-                <ListItem
-                  style={{flex: 1}}
-                  onPress={()=> {
-                    this._updateCheckStatus('relationShip', this.state.datingPurpose.relationShip)
-                  }}>
-                  <CheckBox checked={this.state.datingPurpose.relationShip}/>
-                  <NBText style={styles.checkBoxText}>{'异性知己'}</NBText>
-                </ListItem>
-              </View>
-              <View style={styles.checkBoxRow}>
-                <ListItem
-                  style={styles.checkBoxItem}
-                  onPress={()=> {
-                    this._updateCheckStatus('friendShip', this.state.datingPurpose.friendShip)
-                  }}>
-                  <CheckBox checked={this.state.datingPurpose.friendShip}/>
-                  <NBText style={styles.checkBoxText}>{'好友'}</NBText>
-                </ListItem>
-                <ListItem
-                  style={styles.checkBoxItem}
-                  onPress={()=> {
-                    this._updateCheckStatus('other', this.state.datingPurpose.other)
-                  }}>
-                  <CheckBox
-                    checked={this.state.datingPurpose.other}/>
-                  <NBText style={styles.checkBoxText}>{'中介或其他'}</NBText>
-                </ListItem>
-              </View>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'只看有照片的人'}</Text>
+              {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.gender, tmpPhotoOnlyArr)}
             </View>
           </View>
+          <View style={styles.listItem}>
+            <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
+            {this.renderDatingPurpose(DatingPurposeSelect)}
+          </View>
+
+          {/*<View style={styles.datingFilterArea}>
+           <Text style={styles.datingFilterTitle}>{'交友目的'}</Text>
+           <View style={styles.datingFilter}>
+           <View style={styles.checkBoxRow}>
+           <ListItem
+           style={{flex: 1}}
+           onPress={()=> {
+           this._updateCheckStatus('love', this.state.datingPurpose.love)
+           }}>
+           <NBCheckBox
+           checked={this.state.datingPurpose.love}/>
+           <NBText style={styles.checkBoxText}>{'男女朋友'}</NBText>
+           </ListItem>
+           <ListItem
+           style={{flex: 1}}
+           onPress={()=> {
+           this._updateCheckStatus('relationShip', this.state.datingPurpose.relationShip)
+           }}>
+           <NBCheckBox checked={this.state.datingPurpose.relationShip}/>
+           <NBText style={styles.checkBoxText}>{'异性知己'}</NBText>
+           </ListItem>
+           </View>
+           <View style={styles.checkBoxRow}>
+           <ListItem
+           style={styles.checkBoxItem}
+           onPress={()=> {
+           this._updateCheckStatus('friendShip', this.state.datingPurpose.friendShip)
+           }}>
+           <NBCheckBox checked={this.state.datingPurpose.friendShip}/>
+           <NBText style={styles.checkBoxText}>{'好友'}</NBText>
+           </ListItem>
+           <ListItem
+           style={styles.checkBoxItem}
+           onPress={()=> {
+           this._updateCheckStatus('other', this.state.datingPurpose.other)
+           }}>
+           <NBCheckBox
+           checked={this.state.datingPurpose.other}/>
+           <NBText style={styles.checkBoxText}>{'中介或其他'}</NBText>
+           </ListItem>
+           </View>
+           </View>
+           </View>*/}
           <NBButton
             block
             style={{
@@ -490,6 +579,15 @@ class FriendsFilter extends BaseComponent {
       </View>
     )
   }
+
+  renderSpinner() {
+    if (this.props.pendingStatus) {
+      return (
+        <Spinner animating={this.props.pendingStatus}/>
+      )
+    }
+  }
+
 }
 
 export default FriendsFilter

@@ -91,6 +91,15 @@ class Photos extends BaseComponent {
 
   }
 
+  //去交友信息页面
+  goFriendFilter(){
+    const {navigator} =this.props;
+    navigator.push({
+      component: FriendsFilter,
+      name: 'FriendsFilter'
+    });
+  }
+
   getNavigationBarProps() {
     return {
       title: '照片'
@@ -227,6 +236,14 @@ class Photos extends BaseComponent {
               this.goHome()
             }}>
             去首页(Test)
+          </NBButton>
+          <NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goFriendFilter()
+            }}>
+            交友信息(Test)
           </NBButton>
         </ScrollView>
       </View>
