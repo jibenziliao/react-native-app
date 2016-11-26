@@ -146,11 +146,12 @@ class FriendsFilter extends BaseComponent {
       minHeight: 175,
       maxHeight: 195,
       genderText: '不限',
-      gender: 0,
+      gender: null,
       genderFilter: 0,
-      educationRangeText: '不限',
+      educationText: '不限',
       minEducation: 0,
-      maxEducation: 5,
+      maxEducation: 3,
+      education: 2,
       datingPurpose: {
         friendShip: false,
         relationShip: false,
@@ -167,7 +168,7 @@ class FriendsFilter extends BaseComponent {
         if (response && response.length > 0) {
           response.forEach((j)=> {
             DictMap[i].push(j.Value);
-          })
+          });
         } else {
           console.error('获取下拉选项字典出错');
         }
@@ -243,10 +244,10 @@ class FriendsFilter extends BaseComponent {
 
   _createAgeRangeData() {
     let data = [], unLimitAge = [];
+    unLimitAge.push('不限');
     for (let m = 18; m < 81; m++) {
       unLimitAge.push(m + '');
     }
-    unLimitAge.push('不限');
     data.push({'不限': unLimitAge});
     for (let i = 18; i < 80; i++) {
       let maxAge = [];
@@ -285,23 +286,11 @@ class FriendsFilter extends BaseComponent {
     return data;
   }
 
-  _createEducationRangeData() {
-    let data = [];
-    for (let i = 0; i < 5; i++) {
-      let maxEducation = [];
-      for (let j = 1; j < 6; j++) {
-        if (i < j) {
-          if (maxEducation.indexOf('不限')) {
-            maxEducation.push('不限');
-          }
-          maxEducation.push(tmpEducationArr[j]);
-        }
-      }
-      let _maxEducation = {};
-      _maxEducation[tmpEducationArr[i]] = maxEducation;
-      data.push(_maxEducation);
-    }
-    return data;
+  _createEducationData() {
+    //DictMap['EducationLevelDict'].push('不限');
+
+
+    return DictMap['EducationLevelDict'];
   }
 
   _renderDoublePicker(text, title, minValue, maxValue, _createData) {
@@ -391,31 +380,15 @@ class FriendsFilter extends BaseComponent {
           });
         }
         break;
-      case 'educationRangeText':
-        if (pickedValue[0] == '不限') {
-          this.setState({
-            educationRangeText: '不限',
-            minEducation: 0,
-            maxEducation: 5
-          });
-        } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
-          this.setState({
-            educationRangeText: `${pickedValue[0]}学历以上`,
-            minEducation: parseInt(pickedValue[0]),
-            maxEducation: 5
-          });
-        } else {
-          this.setState({
-            educationRangeText: `${pickedValue[0]}-${pickedValue[1]}学历`,
-            minEducation: parseInt(pickedValue[0]),
-            maxEducation: parseInt(pickedValue[1])
-          });
-        }
+      case 'educationText':
+        this.setState({
+          educationText: pickedValue[0]
+        });
         break;
       case 'genderText':
         this.setState({
           genderText: pickedValue[0],
-          gender: tmpGenderArr.indexOf(pickedValue[0])
+          gender: pickedValue[0] == '不限' ? null : pickedValue[0] == '男'
         });
         break;
 
@@ -452,7 +425,7 @@ class FriendsFilter extends BaseComponent {
     RNPicker.init({
       pickerTitleText: title,
       pickerData: _createData,
-      selectedValue: [`${value}`],
+      selectedValue: [this.state[`${text}`]],
       onPickerConfirm: pickedValue => {
         this._updateState(text, pickedValue);
         RNPicker.hide();
@@ -525,11 +498,11 @@ class FriendsFilter extends BaseComponent {
             </View>
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'学历'}</Text>
-              {this._renderDoublePicker('educationRangeText', '请选择学历范围', tmpEducationArr[this.state.minEducation], tmpEducationArr[this.state.maxEducation], this._createEducationRangeData())}
+              {this._renderSinglePicker('educationText', '请选择学历', 'education', this._createEducationData())}
             </View>
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'性别'}</Text>
-              {this._renderSinglePicker('genderText', '请选择性别', this.state.gender, tmpGenderArr)}
+              {this._renderSinglePicker('genderText', '请选择性别', 'gender', tmpGenderArr)}
             </View>
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'只看有照片的人'}</Text>
