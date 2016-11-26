@@ -38,7 +38,6 @@ class CheckBox extends Component {
     this.state = {
       checked: this.props.checked,
     };
-    console.log(this.props);
   }
 
   getInitialStyle() {

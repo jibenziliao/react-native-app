@@ -38,6 +38,8 @@ import RNPicker from 'react-native-picker'
 import {List, ListItem, Text as NBText, CheckBox as NBCheckBox} from 'native-base'
 import CheckBox from '../components/CheckBox'
 import * as Storage from '../utils/Storage'
+import {connect} from 'react-redux'
+import * as FriendFilterActions from '../actions/FriendFilter'
 
 const {width, height}=Dimensions.get('window');
 
@@ -173,6 +175,16 @@ class FriendsFilter extends BaseComponent {
     }
   }
 
+  //保存交友信息
+  saveFriendFilter(data) {
+    const {dispatch}=this.props;
+    dispatch(FriendFilterActions.saveFriendFilter(data, (json)=> {
+
+    }, (error)=> {
+
+    }));
+  }
+
   //去首页
   goHome() {
     const {navigator} =this.props;
@@ -230,8 +242,12 @@ class FriendsFilter extends BaseComponent {
   }
 
   _createAgeRangeData() {
-    let data = [];
-    data.push({'不限': ['不限']});
+    let data = [], unLimitAge = [];
+    for (let m = 18; m < 81; m++) {
+      unLimitAge.push(m + '');
+    }
+    unLimitAge.push('不限');
+    data.push({'不限': unLimitAge});
     for (let i = 18; i < 80; i++) {
       let maxAge = [];
       for (let j = 19; j < 81; j++) {
@@ -328,11 +344,17 @@ class FriendsFilter extends BaseComponent {
   _updateState(text, pickedValue) {
     switch (text) {
       case 'ageRangeText':
-        if (pickedValue[0] == '不限') {
+        if (pickedValue[0] == '不限' && pickedValue[1] == '不限') {
           this.setState({
             ageRangeText: '不限',
             minAge: 18,
             maxAge: 80
+          });
+        } else if (pickedValue[0] == '不限' && pickedValue[1] != '不限') {
+          this.setState({
+            ageRangeText: `${pickedValue[1]}岁以下`,
+            minAge: null,
+            maxAge: parseInt(pickedValue[1])
           });
         } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
           this.setState({
@@ -394,6 +416,12 @@ class FriendsFilter extends BaseComponent {
         this.setState({
           genderText: pickedValue[0],
           gender: tmpGenderArr.indexOf(pickedValue[0])
+        });
+        break;
+
+      case 'photoOnlyText':
+        this.setState({
+          photoOnlyText: pickedValue[0]
         });
         break;
       default:
@@ -571,7 +599,7 @@ class FriendsFilter extends BaseComponent {
             block
             style={{marginVertical: 30}}
             onPress={()=> {
-              this.goNext()
+              this.saveFriendFilter(this.state)
             }}>
             下一步
           </NBButton>
@@ -590,4 +618,8 @@ class FriendsFilter extends BaseComponent {
 
 }
 
-export default FriendsFilter
+export default connect((state)=> {
+  return {
+    pendingStatus: state.InitialApp.pending
+  }
+})(FriendsFilter)
