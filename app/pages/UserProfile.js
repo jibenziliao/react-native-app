@@ -161,22 +161,14 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
+
 let DictMap = {
   EducationLevelDict: [],
   IncomeLevelDict: [],
   JobTypeDict: [],
-  MarriageStatusDict: []
-  //DatingPurposeDict:[]
+  MarriageStatusDict: [],
+  DatingPurposeDict: []
 };
-
-let DatingPurposeDict = ['男女朋友', '异性知己', '好友', '中介或其他'];
-
-let DatingPurposeSelect = [
-  {Key: 'Love', Value: '男女朋友', Checked: false},
-  {Key: 'RelationShip', Value: '异性知己', Checked: false},
-  {Key: 'FriendShip', Value: '好友', Checked: false},
-  {Key: 'Other', Value: '中介或其他', Checked: false}
-];
 
 let DatingPurposeSelectCopy = [];
 
@@ -225,7 +217,11 @@ class UserProfile extends BaseComponent {
       Storage.getItem(`${i}`).then((response)=> {
         if (response && response.length > 0) {
           response.forEach((j)=> {
-            DictMap[i].push(j.Value);
+            if (`${i}` == 'DatingPurposeDict') {
+              DictMap[i].push(j);
+            } else {
+              DictMap[i].push(j.Value);
+            }
           })
         } else {
           console.error('获取下拉选项字典出错');
@@ -574,13 +570,13 @@ class UserProfile extends BaseComponent {
     }
   }
 
-  renderDatingPurpose(DatingPurposeSelect) {
+  renderDatingPurpose(arr) {
     return (
       <View style={styles.checkBoxView}>
-        {DatingPurposeSelect.map((item)=> {
+        {arr.map((item)=> {
           return (
             <CheckBox
-              key={item.Value}
+              key={item.Key}
               label={item.Value}
               labelStyle={styles.checkBoxLabel}
               checked={item.Checked}
@@ -702,9 +698,8 @@ class UserProfile extends BaseComponent {
         </View>
         <View style={styles.listItem}>
           <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
-          {this.renderDatingPurpose(DatingPurposeSelect)}
+          {this.renderDatingPurpose(DictMap['DatingPurposeDict'])}
         </View>
-
       </Animated.View>
     )
   }

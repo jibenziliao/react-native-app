@@ -21,11 +21,35 @@ import Menu, {
   MenuOptions,
   MenuOption,
   MenuTrigger
-} from 'react-native-popup-menu';
+} from 'react-native-popup-menu'
+import * as Storage from '../utils/Storage'
+
+let DictMap = {
+  EducationLevelDict: [],
+  IncomeLevelDict: [],
+  JobTypeDict: [],
+  MarriageStatusDict: [],
+  DatingPurposeDict: [],
+  PhotoPermissionDict: []
+};
 
 class ImageViewer extends Component {
   constructor(props) {
     super(props);
+  }
+
+  componentWillMount() {
+    for (let i in DictMap) {
+      Storage.getItem(`${i}`).then((response)=> {
+        if (response && response.length > 0) {
+          response.forEach((j)=> {
+            DictMap[i].push(j);
+          })
+        } else {
+          console.error('获取下拉选项字典出错');
+        }
+      })
+    }
   }
 
   _dataSource(data) {
@@ -49,10 +73,14 @@ class ImageViewer extends Component {
           onValueChange={(value)=> {
             this.props.setPermission(rowData, value)
           }}>
-          <Picker.Item label="所有人可见" value="Everybody"/>
-          <Picker.Item label="有照片可见" value="WithPhotoToSee"/>
-          <Picker.Item label="VIP可见" value="VipToSee"/>
-          <Picker.Item label="仅邀请可见" value="InviteToSee"/>
+          {DictMap['PhotoPermissionDict'].map((item)=> {
+            return (
+              <Picker.Item
+                key={item.Key}
+                label={item.Value}
+                value={item.Key}/>
+            )
+          })}
         </Picker>
       )
     }
@@ -63,7 +91,7 @@ class ImageViewer extends Component {
       <Menu
         style={{flex: 1}}
         onSelect={(value) => {
-          this.props.setPermission(rowData,value)
+          this.props.setPermission(rowData, value)
         }}>
         <MenuTrigger>
           <View style={{
@@ -81,10 +109,14 @@ class ImageViewer extends Component {
         </MenuTrigger>
         <MenuOptions
           optionsContainerStyle={{flex: 1}}>
-          <MenuOption value='Everybody' text='所有人可见'/>
-          <MenuOption value='WithPhotoToSee' text='有照片可见'/>
-          <MenuOption value='VipToSee' text='VIP可见'/>
-          <MenuOption value='InviteToSee' text='仅邀请可见'/>
+          {DictMap['PhotoPermissionDict'].map((item)=> {
+            return (
+              <MenuOption
+                key={item.Key}
+                value={item.Key}
+                text={item.Value}/>
+            )
+          })}
         </MenuOptions>
       </Menu>
     )

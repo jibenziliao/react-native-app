@@ -384,23 +384,23 @@ class Login extends BaseComponent {
           </View>
           <NBButton
             block
-            style={{marginTop: 20, height: 40,alignItems:'center'}}
+            style={{marginTop: 20, height: 40, alignItems: 'center'}}
             onPress={()=>this.login(this.state.validCode)}
             disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}>
             登录
           </NBButton>
-          {/*<NBButton
-           block
-           style={{marginTop: 20, height: 40}}
-           onPress={()=>this.nextTest()}>
-           下一步(Test)
-           </NBButton>
-           <NBButton
-           block
-           style={{marginTop: 20, height: 40}}
-           onPress={()=>this.goHome()}>
-           首页(Test)
-           </NBButton>*/}
+          <NBButton
+            block
+            style={{marginTop: 20, height: 40}}
+            onPress={()=>this.nextTest()}>
+            下一步(Test)
+          </NBButton>
+          <NBButton
+            block
+            style={{marginTop: 20, height: 40}}
+            onPress={()=>this.goHome()}>
+            首页(Test)
+          </NBButton>
         </ScrollView>
       </MenuContext>
     )
