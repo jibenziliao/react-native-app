@@ -32,6 +32,7 @@ import {connect} from 'react-redux'
 import * as UserProfileActions from '../actions/UserProfile'
 import * as Storage from '../utils/Storage'
 import CheckBox from '../components/CheckBox'
+import Spinner from '../components/Spinner'
 
 const {width, height}=Dimensions.get('window');
 
@@ -199,7 +200,7 @@ class UserProfile extends BaseComponent {
       income: null,
       incomeText: '',
       religion: '',
-      mapPrecision: null,
+      mapPrecision: 1000,
       mapPrecisionText: '',
       hometown: '',
       ethnicity: '',
@@ -213,6 +214,9 @@ class UserProfile extends BaseComponent {
   };
 
   componentWillMount() {
+    const {dispatch}=this.props;
+    dispatch(UserProfileActions.getDict());
+    //下面是选填项的字典
     for (let i in DictMap) {
       Storage.getItem(`${i}`).then((response)=> {
         if (response && response.length > 0) {
@@ -705,61 +709,73 @@ class UserProfile extends BaseComponent {
   }
 
   renderBody() {
-    return (
-      <View style={styles.container}>
-        <ScrollView
-          style={styles.scrollView}
-          keyboardDismissMode={'none'}
-          keyboardShouldPersistTaps={true}>
-          <View style={styles.needItems}>
-            <View style={styles.inputRow}>
-              <Text style={styles.inputLabel}>{'昵称'}</Text>
-              <TextInput
-                style={[styles.input, styles.fullInput]}
-                underlineColorAndroid={'transparent'}
-                value={this.state.nickName}
-                onChangeText={(nickName)=>this.setState({nickName})}
-                maxLength={15}/>
+    if(this.props.DictMap && this.props.DictMap.DictMap){
+      return (
+        <View style={styles.container}>
+          <ScrollView
+            style={styles.scrollView}
+            keyboardDismissMode={'none'}
+            keyboardShouldPersistTaps={true}>
+            <View style={styles.needItems}>
+              <View style={styles.inputRow}>
+                <Text style={styles.inputLabel}>{'昵称'}</Text>
+                <TextInput
+                  style={[styles.input, styles.fullInput]}
+                  underlineColorAndroid={'transparent'}
+                  value={this.state.nickName}
+                  onChangeText={(nickName)=>this.setState({nickName})}
+                  maxLength={15}/>
+              </View>
+              <View style={styles.inputRow}>
+                <Text style={styles.inputLabel}>{'出生年'}</Text>
+                {this.renderBirthYearBtn()}
+              </View>
+              <View style={styles.inputRow}>
+                <Text style={styles.inputLabel}>{'性别'}</Text>
+                {this.renderGenders(this.state.genderArr)}
+              </View>
+              <View style={styles.listItem}>
+                <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
+                {this.renderDatingPurpose(this.props.DictMap.DictMap.DatingPurposeDict)}
+              </View>
+              <Text style={styles.genderTips}>{'注册成功后,性别和出生年月不可修改'}</Text>
+              {this.renderMoreButton()}
+              {this.state.expandStatus ? this.renderMoreForm() : null}
             </View>
-            <View style={styles.inputRow}>
-              <Text style={styles.inputLabel}>{'出生年'}</Text>
-              {this.renderBirthYearBtn()}
-            </View>
-            <View style={styles.inputRow}>
-              <Text style={styles.inputLabel}>{'性别'}</Text>
-              {this.renderGenders(this.state.genderArr)}
-            </View>
-            <Text style={styles.genderTips}>{'注册成功后,性别和出生年月不可修改'}</Text>
-            {this.renderMoreButton()}
-            {this.state.expandStatus ? this.renderMoreForm() : null}
-          </View>
-          <NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goNext(this.state, DatingPurposeSelectCopy)
-            }}>
-            下一步
-          </NBButton>
-          {/*<NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goPhotos()
-            }}>
-            去拍照
-          </NBButton>
-          <NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goHome()
-            }}>
-            去首页(Test)
-          </NBButton>*/}
-        </ScrollView>
-      </View>
-    )
+            <NBButton
+              block
+              style={{marginBottom: 30}}
+              onPress={()=> {
+                this.goNext(this.state, DatingPurposeSelectCopy)
+              }}>
+              下一步
+            </NBButton>
+            <NBButton
+              block
+              style={{marginBottom: 30}}
+              onPress={()=> {
+                this.goPhotos()
+              }}>
+              去拍照
+            </NBButton>
+            <NBButton
+              block
+              style={{marginBottom: 30}}
+              onPress={()=> {
+                this.goHome()
+              }}>
+              去首页(Test)
+            </NBButton>
+          </ScrollView>
+        </View>
+      )
+    }else{
+      return(
+        <View>
+          <Text>{'页面加载出错了'}</Text>
+        </View>
+      )
+    }
   }
 
   renderSpinner() {
@@ -773,6 +789,7 @@ class UserProfile extends BaseComponent {
 
 export default connect((state)=> {
   return {
-    pendingStatus: state.UserProfile.pending
+    DictMap:state.InitialApp.res,
+    pendingStatus: state.UserProfile.pending||state.InitialApp.pending
   }
 })(UserProfile)

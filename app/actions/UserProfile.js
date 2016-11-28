@@ -12,6 +12,14 @@ import * as Storage from '../utils/Storage'
 
 let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus;
 
+let DictMap = {
+  EducationLevelDict: [],
+  IncomeLevelDict: [],
+  JobTypeDict: [],
+  MarriageStatusDict: [],
+  DatingPurposeDict: []
+};
+
 function fetchOptions(data) {
   return {
     method: 'POST',
@@ -151,6 +159,37 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
       dispatch({type: ActionTypes.GET_ITEM_FAILED, data, error});
     });
   }
+}
+
+export function getDict() {
+  return (dispatch)=> {
+    dispatch({type: ActionTypes.FETCH_BEGIN});
+    for (let i in DictMap) {
+      Storage.getItem(`${i}`).then((response)=> {
+        if (response && response.length > 0) {
+          response.forEach((j)=> {
+            if (`${i}` == 'DatingPurposeDict') {
+              DictMap[i].push(j);
+            } else {
+              DictMap[i].push(j.Value);
+            }
+          });
+          let count = 0;
+          for (let m in DictMap) {
+            if (DictMap[m].length === 0) {
+              count += 1;
+            }
+          }
+          if (count === 0) {
+            dispatch({type: ActionTypes.FETCH_END, null, DictMap});
+            return false;
+          }
+        } else {
+          console.error('获取下拉选项字典出错');
+        }
+      })
+    }
+  };
 }
 
 export function saveUserProfile(data) {

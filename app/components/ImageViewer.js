@@ -22,34 +22,13 @@ import Menu, {
   MenuOption,
   MenuTrigger
 } from 'react-native-popup-menu'
-import * as Storage from '../utils/Storage'
-
-let DictMap = {
-  EducationLevelDict: [],
-  IncomeLevelDict: [],
-  JobTypeDict: [],
-  MarriageStatusDict: [],
-  DatingPurposeDict: [],
-  PhotoPermissionDict: []
-};
 
 class ImageViewer extends Component {
   constructor(props) {
     super(props);
-  }
-
-  componentWillMount() {
-    for (let i in DictMap) {
-      Storage.getItem(`${i}`).then((response)=> {
-        if (response && response.length > 0) {
-          response.forEach((j)=> {
-            DictMap[i].push(j);
-          })
-        } else {
-          console.error('获取下拉选项字典出错');
-        }
-      })
-    }
+    this.state={
+      permissionOptions:this.props.permissionOptions
+    };
   }
 
   _dataSource(data) {
@@ -62,7 +41,7 @@ class ImageViewer extends Component {
     if (Platform.OS == 'ios') {
       return (
         <View style={{flex: 1}}>
-          {this.renderPermissionOptions(rowData, this.props.dataSource)}
+          {this.renderPermissionOptions(rowData, this.props.dataSource,this.state.permissionOptions)}
         </View>
       )
     } else {
@@ -73,10 +52,10 @@ class ImageViewer extends Component {
           onValueChange={(value)=> {
             this.props.setPermission(rowData, value)
           }}>
-          {DictMap['PhotoPermissionDict'].map((item)=> {
+          {this.state.permissionOptions.map((item,index)=> {
             return (
               <Picker.Item
-                key={item.Key}
+                key={index}
                 label={item.Value}
                 value={item.Key}/>
             )
@@ -109,7 +88,7 @@ class ImageViewer extends Component {
         </MenuTrigger>
         <MenuOptions
           optionsContainerStyle={{flex: 1}}>
-          {DictMap['PhotoPermissionDict'].map((item)=> {
+          {this.state.permissionOptions.map((item)=> {
             return (
               <MenuOption
                 key={item.Key}
@@ -182,6 +161,7 @@ class ImageViewer extends Component {
           setPersmission={()=> {
             this.props.setPermission()
           }}
+          permissionOptions={this.state.permissionOptions}
         />
       </View>
     );

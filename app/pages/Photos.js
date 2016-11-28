@@ -37,6 +37,7 @@ import Menu, {
 import FriendsFilter from './FriendsFilter'
 import {connect} from 'react-redux'
 import * as PhotoAction from '../actions/Photo'
+import * as Storage from '../utils/Storage'
 
 const {width, height}=Dimensions.get('window');
 
@@ -62,12 +63,35 @@ const styles = StyleSheet.create({
   },
 });
 
+let DictMap = {
+  EducationLevelDict: [],
+  IncomeLevelDict: [],
+  JobTypeDict: [],
+  MarriageStatusDict: [],
+  DatingPurposeDict: [],
+  PhotoPermissionDict: []
+};
+
 class Photos extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
       imageArr: []
     };
+  }
+
+  componentWillMount(){
+    for (let i in DictMap) {
+      Storage.getItem(`${i}`).then((response)=> {
+        if (response && response.length > 0) {
+          response.forEach((j)=> {
+            DictMap[i].push(j);
+          })
+        } else {
+          console.error('获取下拉选项字典出错');
+        }
+      })
+    }
   }
 
   //去首页
@@ -82,12 +106,12 @@ class Photos extends BaseComponent {
   //下一步
   goNext() {
     const {navigator, dispatch} =this.props;
-    if(this.state.imageArr.length===0){
+    if (this.state.imageArr.length === 0) {
       navigator.push({
         component: FriendsFilter,
         name: 'FriendsFilter'
       });
-    }else{
+    } else {
       dispatch(PhotoAction.uploadImage(this.state.imageArr, navigator));
     }
   }
@@ -180,6 +204,7 @@ class Photos extends BaseComponent {
           setPermission={(singleData, dataSource, value)=> {
             this.setPermission(singleData, dataSource, value)
           }}
+          permissionOptions={DictMap['PhotoPermissionDict']}
         />
       )
     } else {
@@ -247,21 +272,21 @@ class Photos extends BaseComponent {
               下一步
             </NBButton>
             {/*<NBButton
-              block
-              style={{marginBottom: 30}}
-              onPress={()=> {
-                this.goHome()
-              }}>
-              去首页(Test)
-            </NBButton>
-            <NBButton
-              block
-              style={{marginBottom: 30}}
-              onPress={()=> {
-                this.goFriendFilter()
-              }}>
-              交友信息(Test)
-            </NBButton>*/}
+             block
+             style={{marginBottom: 30}}
+             onPress={()=> {
+             this.goHome()
+             }}>
+             去首页(Test)
+             </NBButton>
+             <NBButton
+             block
+             style={{marginBottom: 30}}
+             onPress={()=> {
+             this.goFriendFilter()
+             }}>
+             交友信息(Test)
+             </NBButton>*/}
           </ScrollView>
         </View>
       </MenuContext>
