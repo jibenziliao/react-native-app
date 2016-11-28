@@ -10,7 +10,6 @@ import {Actions} from 'react-native-router-flux'
 import {postFetch, getFetch} from '../utils/NetUtil'
 import * as Storage from '../utils/Storage'
 
-
 let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus;
 
 function fetchOptions(data) {
@@ -128,10 +127,10 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
           Gender: data.gender,
           Height: data.height,
           Weight: data.weight,
-          JobType: result.JobTypeObj.Key || "Marketing",
-          IncomeLevel: result.IncomeLevel.Key || "Higher",
-          EducationLevel: result.EducationLevel.Key || "Diploma",
-          MarriageStatus: result.MarriageStatus.Key || "Married",
+          JobType: result.JobTypeObj && result.JobTypeObj.Key ? result.JobTypeObj.Key : "Marketing",
+          IncomeLevel: result.IncomeLevel && result.IncomeLevel.Key ? result.IncomeLevel.Key : "Higher",
+          EducationLevel: result.EducationLevel && result.EducationLevel.Key ? result.EducationLevel : "Diploma",
+          MarriageStatus: result.MarriageStatus && result.MarriageStatus.Key ? result.MarriageStatus.Key : "Married",
           Religion: data.religion,
           DatingPurpose: tmpDatingPurposeArr.join(','),
           MapPrecision: data.mapPrecision,

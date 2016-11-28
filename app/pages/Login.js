@@ -6,6 +6,7 @@
 import React, {Component} from 'react'
 import {
   View,
+  ScrollView,
   Text,
   TextInput,
   StyleSheet,
@@ -111,8 +112,15 @@ class Login extends BaseComponent {
   }
 
   componentWillMount() {
+    let systemType = DeviceInfo.getSystemName();
+    if (systemType && systemType == 'iPhone OS') {
+      systemType = 'iOS';
+    } else {
+      systemType = 'Android';
+    }
+
     const data = {
-      DeviceType: DeviceInfo.getSystemName() || 'Android',
+      DeviceType: systemType,
       DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
       DeviceInfo: DeviceInfo.getModel() || 'NX507J'
     };
@@ -154,7 +162,7 @@ class Login extends BaseComponent {
   }
 
   login(data) {
-    navigator=this.props.navigator;
+    navigator = this.props.navigator;
     dismissKeyboard();
     const {dispatch} = this.props;
     //dispatch(LoginActions.validCode(data, navigator));
@@ -169,12 +177,12 @@ class Login extends BaseComponent {
   }
 
   loginSuccess(json) {
-    if(json.Result===false){
+    if (json.Result === false) {
       navigator.push({
         component: UserProfile,
         name: 'UserProfile'
       });
-    }else{
+    } else {
       navigator.push({
         component: Home,
         name: 'Home'
@@ -190,19 +198,19 @@ class Login extends BaseComponent {
     };
     const {dispatch} = this.props;
     //dispatch(LoginActions.getValidCode(data));
-    dispatch(LoginActions.getSmsCode(data,(json)=>{
+    dispatch(LoginActions.getSmsCode(data, (json)=> {
       this.initDict()
-      }, (error)=> {
+    }, (error)=> {
       //不做特殊处理
     }));
   }
 
   //初始化字典
-  initDict(){
+  initDict() {
     const {dispatch} = this.props;
-    dispatch(LoginActions.getDict(null,(json)=>{
+    dispatch(LoginActions.getDict(null, (json)=> {
       setDictArr(json.Result);
-    },(error)=>{
+    }, (error)=> {
       //
     }));
   }
@@ -336,7 +344,9 @@ class Login extends BaseComponent {
   renderBody() {
     return (
       <MenuContext style={{flex: 1}}>
-        <View style={styles.loginPage}>
+        <ScrollView style={styles.loginPage}
+                    keyboardDismissMode={'interactive'}
+                    keyboardShouldPersistTaps={true}>
           {this.renderTips()}
           <View style={styles.inputItem}>
             {this.renderPicker()}
@@ -374,24 +384,24 @@ class Login extends BaseComponent {
           </View>
           <NBButton
             block
-            style={{marginTop: 20, height: 40}}
+            style={{marginTop: 20, height: 40,alignItems:'center'}}
             onPress={()=>this.login(this.state.validCode)}
             disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}>
             登录
           </NBButton>
           {/*<NBButton
-            block
-            style={{marginTop: 20, height: 40}}
-            onPress={()=>this.nextTest()}>
-            下一步(Test)
-          </NBButton>
-          <NBButton
-            block
-            style={{marginTop: 20, height: 40}}
-            onPress={()=>this.goHome()}>
-            首页(Test)
-          </NBButton>*/}
-        </View>
+           block
+           style={{marginTop: 20, height: 40}}
+           onPress={()=>this.nextTest()}>
+           下一步(Test)
+           </NBButton>
+           <NBButton
+           block
+           style={{marginTop: 20, height: 40}}
+           onPress={()=>this.goHome()}>
+           首页(Test)
+           </NBButton>*/}
+        </ScrollView>
       </MenuContext>
     )
   }
