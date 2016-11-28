@@ -5,10 +5,10 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
-		00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* qingyuanjieTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* qingyuanjieTests.m */; };
@@ -43,11 +43,12 @@
 		F3FADA432512414BBF2168E4 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED6B1B72BB7B406DB47CA4B6 /* Arial.ttf */; };
 		F488749052DC43B994C4672F /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2E56487E61747EB9604370F /* Entypo.ttf */; };
 		F77A65629C354CE3B1E21272 /* Comic Sans MS.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5273BC5008DC44AC99A88586 /* Comic Sans MS.ttf */; };
-		FD2A2ECB1DE04D9D00C40188 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD2A2EC91DE04D7E00C40188 /* libRNImagePicker.a */; };
 		FD2A2ECC1DE04DA600C40188 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8745141DDF095300BED367 /* libRNVectorIcons.a */; };
 		FD2A2ECD1DE04DAC00C40188 /* libRNBackgroundTimer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD87450E1DDF095300BED367 /* libRNBackgroundTimer.a */; };
 		FD2A2ECE1DE04DB200C40188 /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8745111DDF095300BED367 /* libRNDeviceInfo.a */; };
-		FD8A7EDC1DE2D1B700B6BF59 /* libRCTBEEPickerManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8A7EC71DE2D1A900B6BF59 /* libRCTBEEPickerManager.a */; };
+		FD3F89821DEBD18F005AB567 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD2A2EC91DE04D7E00C40188 /* libRNImagePicker.a */; };
+		FD3F89831DEBD19C005AB567 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
+		FD3F89841DEBD1B6005AB567 /* libRCTBEEPickerManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8A7EC71DE2D1A900B6BF59 /* libRCTBEEPickerManager.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -277,19 +278,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FD8A7EDC1DE2D1B700B6BF59 /* libRCTBEEPickerManager.a in Frameworks */,
 				FD2A2ECE1DE04DB200C40188 /* libRNDeviceInfo.a in Frameworks */,
 				FD2A2ECD1DE04DAC00C40188 /* libRNBackgroundTimer.a in Frameworks */,
 				FD2A2ECC1DE04DA600C40188 /* libRNVectorIcons.a in Frameworks */,
-				FD2A2ECB1DE04D9D00C40188 /* libRNImagePicker.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
-				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
+				FD3F89831DEBD19C005AB567 /* libRCTImage.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
+				FD3F89821DEBD18F005AB567 /* libRNImagePicker.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
+				FD3F89841DEBD1B6005AB567 /* libRCTBEEPickerManager.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 			);
@@ -573,7 +574,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 610;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -941,6 +942,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/qingyuanjie.app/qingyuanjie";
 			};
@@ -963,6 +965,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/qingyuanjie.app/qingyuanjie";
 			};
@@ -1053,6 +1056,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;

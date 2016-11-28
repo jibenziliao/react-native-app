@@ -158,7 +158,8 @@ class FriendsFilter extends BaseComponent {
         love: false,
         other: false
       },
-      photoOnly: false
+      photoOnly: false,
+      photoOnlyText:'不限'
     }
   }
 
@@ -177,12 +178,12 @@ class FriendsFilter extends BaseComponent {
   }
 
   //保存交友信息
-  saveFriendFilter(data) {
+  saveFriendFilter(data,datingPurpose) {
     const {dispatch}=this.props;
-    dispatch(FriendFilterActions.saveFriendFilter(data, (json)=> {
-
+    dispatch(FriendFilterActions.saveFriendFilter(data,datingPurpose, (json)=> {
+      this.goHome();
     }, (error)=> {
-
+      //console.log(error)
     }));
   }
 
@@ -288,8 +289,6 @@ class FriendsFilter extends BaseComponent {
 
   _createEducationData() {
     //DictMap['EducationLevelDict'].push('不限');
-
-
     return DictMap['EducationLevelDict'];
   }
 
@@ -336,8 +335,8 @@ class FriendsFilter extends BaseComponent {
         if (pickedValue[0] == '不限' && pickedValue[1] == '不限') {
           this.setState({
             ageRangeText: '不限',
-            minAge: 18,
-            maxAge: 80
+            minAge: null,
+            maxAge: null
           });
         } else if (pickedValue[0] == '不限' && pickedValue[1] != '不限') {
           this.setState({
@@ -349,7 +348,7 @@ class FriendsFilter extends BaseComponent {
           this.setState({
             ageRangeText: `${pickedValue[0]}岁以上`,
             minAge: parseInt(pickedValue[0]),
-            maxAge: 80
+            maxAge: null
           });
         } else {
           this.setState({
@@ -394,7 +393,8 @@ class FriendsFilter extends BaseComponent {
 
       case 'photoOnlyText':
         this.setState({
-          photoOnlyText: pickedValue[0]
+          photoOnlyText: pickedValue[0],
+          photoOnly: pickedValue[0] == '不限' ? null : pickedValue[0] == '是'
         });
         break;
       default:
@@ -496,10 +496,10 @@ class FriendsFilter extends BaseComponent {
               <Text style={styles.inputLabel}>{'身高'}</Text>
               {this._renderDoublePicker('heightRangeText', '请选择身高范围', this.state.minHeight + '', this.state.maxHeight + '', this._createHeightRangeData())}
             </View>
-            <View style={styles.inputRow}>
-              <Text style={styles.inputLabel}>{'学历'}</Text>
-              {this._renderSinglePicker('educationText', '请选择学历', 'education', this._createEducationData())}
-            </View>
+            {/*<View style={styles.inputRow}>
+             <Text style={styles.inputLabel}>{'学历'}</Text>
+             {this._renderSinglePicker('educationText', '请选择学历', 'education', this._createEducationData())}
+             </View>*/}
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'性别'}</Text>
               {this._renderSinglePicker('genderText', '请选择性别', 'gender', tmpGenderArr)}
@@ -557,7 +557,7 @@ class FriendsFilter extends BaseComponent {
            </View>
            </View>
            </View>*/}
-          <NBButton
+          {/*<NBButton
             block
             style={{
               height: 40,
@@ -567,14 +567,14 @@ class FriendsFilter extends BaseComponent {
               this.goHome()
             }}>
             去首页(Test)
-          </NBButton>
+          </NBButton>*/}
           <NBButton
             block
             style={{marginVertical: 30}}
             onPress={()=> {
-              this.saveFriendFilter(this.state)
+              this.saveFriendFilter(this.state,DatingPurposeSelectCopy)
             }}>
-            下一步
+            完成注册
           </NBButton>
         </ScrollView>
       </View>

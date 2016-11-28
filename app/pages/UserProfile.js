@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   listItem: {
     marginTop: 10
   },
-  checkBoxView:{
+  checkBoxView: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
@@ -214,6 +214,7 @@ class UserProfile extends BaseComponent {
       interest: '',
       selfEvaluation: '',
       nickName: '',
+      location: '',
       datingPurposeArr: [],
     };
     navigator = this.props.navigator;
@@ -631,6 +632,8 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            value={this.state.location}
+            onChangeText={(location)=>this.setState({location})}
             maxLength={50}/>
         </View>
         <View style={styles.inputRow}>
@@ -695,7 +698,7 @@ class UserProfile extends BaseComponent {
             underlineColorAndroid={'transparent'}
             value={this.state.selfEvaluation}
             onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
-            maxLength={15}/>
+            maxLength={100}/>
         </View>
         <View style={styles.listItem}>
           <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
@@ -743,7 +746,7 @@ class UserProfile extends BaseComponent {
             }}>
             下一步
           </NBButton>
-          <NBButton
+          {/*<NBButton
             block
             style={{marginBottom: 30}}
             onPress={()=> {
@@ -758,7 +761,7 @@ class UserProfile extends BaseComponent {
               this.goHome()
             }}>
             去首页(Test)
-          </NBButton>
+          </NBButton>*/}
         </ScrollView>
       </View>
     )

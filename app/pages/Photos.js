@@ -81,18 +81,19 @@ class Photos extends BaseComponent {
 
   //下一步
   goNext() {
-    const {navigator,dispatch} =this.props;
-    //navigator.push({
-    //  component: FriendsFilter,
-    //  name: 'FriendsFilter'
-    //});
-
-    dispatch(PhotoAction.uploadImage(this.state.imageArr,navigator));
-
+    const {navigator, dispatch} =this.props;
+    if(this.state.imageArr.length===0){
+      navigator.push({
+        component: FriendsFilter,
+        name: 'FriendsFilter'
+      });
+    }else{
+      dispatch(PhotoAction.uploadImage(this.state.imageArr, navigator));
+    }
   }
 
   //去交友信息页面
-  goFriendFilter(){
+  goFriendFilter() {
     const {navigator} =this.props;
     navigator.push({
       component: FriendsFilter,
@@ -154,8 +155,7 @@ class Photos extends BaseComponent {
           Permission: 'Everybody'
         });
         this.setState({imageArr: this.state.imageArr});
-        console.log(source);
-        console.log(this.state.imageArr);
+
         //如果从交友要求页返回过来,再次拍照会清空之前已拍照内容
         //tmpPhotoArr.push({
         //  id: (new Date()).getTime().toString(),
@@ -177,8 +177,8 @@ class Photos extends BaseComponent {
           setAvatar={(data)=> {
             this.setAvatar(data)
           }}
-          setPermission={()=> {
-            this.setPermission()
+          setPermission={(singleData, dataSource, value)=> {
+            this.setPermission(singleData, dataSource, value)
           }}
         />
       )
@@ -186,7 +186,7 @@ class Photos extends BaseComponent {
       return (
         <View>
           <Text style={styles.tips}>
-            点击拍照按钮,拍摄照片,或者点击下一步跳过此步骤(您仍可以在【个人信息】中上传您的照片)
+            您可以直接点击下一步跳过拍照,稍后可以在【个人信息】中上传您的照片
           </Text>
         </View>
       )
@@ -197,56 +197,74 @@ class Photos extends BaseComponent {
     console.log('setAvatar');
   }
 
-  setPermission() {
-    console.log('setPermission');
+  setPermission(singleData, value) {
+    let index = this.state.imageArr.findIndex((item)=> {
+      return item.id == singleData.id;
+    });
+    this.state.imageArr[index].Permission = value;
+    this.setState({
+      imageArr: [
+        ...this.state.imageArr
+      ]
+    });
   }
 
-  deletePhoto(data) {
-    console.log('deletePhoto');
+  deletePhoto(singleData) {
+    let index = this.state.imageArr.findIndex((item)=> {
+      return item.id == singleData.id;
+    });
+    this.state.imageArr.splice(index, 1);
+    this.setState({
+      imageArr: [
+        ...this.state.imageArr
+      ]
+    });
   }
 
   renderBody() {
     return (
-      <View style={styles.container}>
-        <ScrollView
-          style={styles.scrollView}
-          keyboardDismissMode={'none'}
-          keyboardShouldPersistTaps={true}>
-          {this.renderImage(this.state.imageArr)}
-          <NBButton
-            block
-            style={{marginVertical: 30}}
-            onPress={()=> {
-              this.initImagePicker()
-            }}>
-            拍照
-          </NBButton>
-          <NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goNext()
-            }}>
-            下一步(Test)
-          </NBButton>
-          <NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goHome()
-            }}>
-            去首页(Test)
-          </NBButton>
-          <NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goFriendFilter()
-            }}>
-            交友信息(Test)
-          </NBButton>
-        </ScrollView>
-      </View>
+      <MenuContext style={{flex: 1}}>
+        <View style={styles.container}>
+          <ScrollView
+            style={styles.scrollView}
+            keyboardDismissMode={'none'}
+            keyboardShouldPersistTaps={true}>
+            {this.renderImage(this.state.imageArr)}
+            <NBButton
+              block
+              style={{marginVertical: 30}}
+              onPress={()=> {
+                this.initImagePicker()
+              }}>
+              拍照
+            </NBButton>
+            <NBButton
+              block
+              style={{marginBottom: 30}}
+              onPress={()=> {
+                this.goNext()
+              }}>
+              下一步
+            </NBButton>
+            {/*<NBButton
+              block
+              style={{marginBottom: 30}}
+              onPress={()=> {
+                this.goHome()
+              }}>
+              去首页(Test)
+            </NBButton>
+            <NBButton
+              block
+              style={{marginBottom: 30}}
+              onPress={()=> {
+                this.goFriendFilter()
+              }}>
+              交友信息(Test)
+            </NBButton>*/}
+          </ScrollView>
+        </View>
+      </MenuContext>
     )
   }
 
@@ -259,8 +277,8 @@ class Photos extends BaseComponent {
   }
 }
 
-export default connect((state)=>{
-  return{
+export default connect((state)=> {
+  return {
     pendingStatus: state.Photo.pending
   }
 })(Photos)

@@ -38,7 +38,7 @@ class ImageViewer extends Component {
     if (Platform.OS == 'ios') {
       return (
         <View style={{flex: 1}}>
-          {this.renderPermissionOptions(rowData,this.props.dataSource)}
+          {this.renderPermissionOptions(rowData, this.props.dataSource)}
         </View>
       )
     } else {
@@ -47,7 +47,7 @@ class ImageViewer extends Component {
           style={styles.picker}
           selectedValue={rowData.Permission}
           onValueChange={(value)=> {
-            this.props.setPermission(rowData, this.props.dataSource, value)
+            this.props.setPermission(rowData, value)
           }}>
           <Picker.Item label="所有人可见" value="Everybody"/>
           <Picker.Item label="有照片可见" value="WithPhotoToSee"/>
@@ -58,12 +58,12 @@ class ImageViewer extends Component {
     }
   }
 
-  renderPermissionOptions(rowData,dataSource) {
+  renderPermissionOptions(rowData, dataSource) {
     return (
       <Menu
         style={{flex: 1}}
-        onSelect={() => {
-          this.props.setPermission()
+        onSelect={(value) => {
+          this.props.setPermission(rowData,value)
         }}>
         <MenuTrigger>
           <View style={{
@@ -90,14 +90,14 @@ class ImageViewer extends Component {
     )
   }
 
-  renderPermissionText(text){
-    if(text=='Everybody'){
+  renderPermissionText(text) {
+    if (text == 'Everybody') {
       return '所有人可见';
-    }else if(text=='WithPhotoToSee'){
+    } else if (text == 'WithPhotoToSee') {
       return '有照片可见';
-    }else if(text=='VipToSee'){
+    } else if (text == 'VipToSee') {
       return 'VIP可见';
-    }else if(text=='InviteToSee'){
+    } else if (text == 'InviteToSee') {
       return '仅邀请可见';
     }
   }
@@ -106,7 +106,7 @@ class ImageViewer extends Component {
     return (
       <View style={styles.column}>
         <View style={styles.imageOptions}>
-          <Image source={{uri:rowData.uri}} style={styles.image}/>
+          <Image source={{uri: rowData.uri}} style={styles.image}/>
           <View style={styles.button}>
             <Button
               style={styles.avatar}
@@ -127,7 +127,7 @@ class ImageViewer extends Component {
           </View>
         </View>
         <View style={styles.permission}>
-          {this.renderPermissionPicker(rowData,this.props.dataSource)}
+          {this.renderPermissionPicker(rowData, this.props.dataSource)}
         </View>
       </View>
     )
@@ -141,11 +141,11 @@ class ImageViewer extends Component {
           dataSource={this._dataSource(this.props.dataSource)}
           renderRow={this._renderRow.bind(this)}
           pageSize={3}
-          deletePhoto={(id)=> {
-            this.props.deletePhoto(id)
+          deletePhoto={()=> {
+            this.props.deletePhoto()
           }}
-          setAvatar={(id)=> {
-            this.props.setAvatar(id)
+          setAvatar={()=> {
+            this.props.setAvatar()
           }}
           setPersmission={()=> {
             this.props.setPermission()

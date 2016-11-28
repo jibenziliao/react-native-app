@@ -55,7 +55,7 @@ export function uploadImage(arr,navigator) {
         })
         .catch((error)=> {
           //dispatch(uploadFailed(arr,error));
-          toastShort('网络发生错误,请重试')
+          toastShort('网络发生错误,请重试');
         });
     }
   }
