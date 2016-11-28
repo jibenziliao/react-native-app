@@ -122,7 +122,7 @@ class Login extends BaseComponent {
     const data = {
       DeviceType: systemType,
       DeviceVersion: DeviceInfo.getSystemVersion() || '1.0.0',
-      DeviceInfo: DeviceInfo.getModel() || 'NX507J'
+      DeviceInfo: DeviceInfo.getDeviceName() || 'NX507J'
     };
 
     //const data = {

@@ -261,6 +261,7 @@ class UserProfile extends BaseComponent {
     const {dispatch} =this.props;
     dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json)=> {
       if (bool) {
+        Storage.setItem('hasRegistered',true);
         this.goPhotos();
       } else {
         this.goHome();
@@ -772,7 +773,7 @@ class UserProfile extends BaseComponent {
     }else{
       return(
         <View>
-          <Text>{'页面加载出错了'}</Text>
+          <Text>{''}</Text>
         </View>
       )
     }
