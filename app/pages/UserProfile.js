@@ -215,7 +215,10 @@ class UserProfile extends BaseComponent {
 
   componentWillMount() {
     const {dispatch}=this.props;
-    dispatch(UserProfileActions.getDict());
+    //如果交友目的已经渲染过,返回到登录页,在进入此页,不需要重新渲染。
+    if(!(this.props.DictMap && this.props.DictMap.DictMap)){
+      dispatch(UserProfileActions.getDict());
+    }
     //下面是选填项的字典
     for (let i in DictMap) {
       Storage.getItem(`${i}`).then((response)=> {
@@ -261,7 +264,7 @@ class UserProfile extends BaseComponent {
     const {dispatch} =this.props;
     dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json)=> {
       if (bool) {
-        Storage.setItem('hasRegistered',true);
+        Storage.setItem('hasRegistered', true);
         this.goPhotos();
       } else {
         this.goHome();
@@ -575,36 +578,41 @@ class UserProfile extends BaseComponent {
     }
   }
 
-  renderDatingPurpose(arr) {
-    return (
-      <View style={styles.checkBoxView}>
-        {arr.map((item)=> {
-          return (
-            <CheckBox
-              key={item.Key}
-              label={item.Value}
-              labelStyle={styles.checkBoxLabel}
-              checked={item.Checked}
-              style={styles.checkBoxItem}
-              onChange={(checked)=> {
-                item.Checked = checked;
-                if (checked) {
-                  DatingPurposeSelectCopy.push(item);
-                } else {
-                  let index = 0;
-                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
-                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
-                      index = i;
-                      break;
+  renderDatingPurpose() {
+    if (this.props.DictMap && this.props.DictMap.DictMap) {
+      let arr = this.props.DictMap.DictMap.DatingPurposeDict;
+      return (
+        <View style={styles.checkBoxView}>
+          {arr.map((item,index)=> {
+            return (
+              <CheckBox
+                key={index}
+                label={item.Value}
+                labelStyle={styles.checkBoxLabel}
+                checked={item.Checked}
+                style={styles.checkBoxItem}
+                onChange={(checked)=> {
+                  item.Checked = checked;
+                  if (checked) {
+                    DatingPurposeSelectCopy.push(item);
+                  } else {
+                    let index = 0;
+                    for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
+                      if (DatingPurposeSelectCopy[i].Key == item.Key) {
+                        index = i;
+                        break;
+                      }
                     }
+                    DatingPurposeSelectCopy.splice(index, 1);
                   }
-                  DatingPurposeSelectCopy.splice(index, 1);
-                }
-              }}/>
-          )
-        })}
-      </View>
-    )
+                }}/>
+            )
+          })}
+        </View>
+      )
+    } else {
+      return null;
+    }
   }
 
   renderMoreForm() {
@@ -701,82 +709,70 @@ class UserProfile extends BaseComponent {
             onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
             maxLength={100}/>
         </View>
-        <View style={styles.listItem}>
-          <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
-          {this.renderDatingPurpose(DictMap['DatingPurposeDict'])}
-        </View>
       </Animated.View>
     )
   }
 
   renderBody() {
-    if(this.props.DictMap && this.props.DictMap.DictMap){
-      return (
-        <View style={styles.container}>
-          <ScrollView
-            style={styles.scrollView}
-            keyboardDismissMode={'none'}
-            keyboardShouldPersistTaps={true}>
-            <View style={styles.needItems}>
-              <View style={styles.inputRow}>
-                <Text style={styles.inputLabel}>{'昵称'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  value={this.state.nickName}
-                  onChangeText={(nickName)=>this.setState({nickName})}
-                  maxLength={15}/>
-              </View>
-              <View style={styles.inputRow}>
-                <Text style={styles.inputLabel}>{'出生年'}</Text>
-                {this.renderBirthYearBtn()}
-              </View>
-              <View style={styles.inputRow}>
-                <Text style={styles.inputLabel}>{'性别'}</Text>
-                {this.renderGenders(this.state.genderArr)}
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
-                {this.renderDatingPurpose(this.props.DictMap.DictMap.DatingPurposeDict)}
-              </View>
-              <Text style={styles.genderTips}>{'注册成功后,性别和出生年月不可修改'}</Text>
-              {this.renderMoreButton()}
-              {this.state.expandStatus ? this.renderMoreForm() : null}
+    return (
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.scrollView}
+          keyboardDismissMode={'none'}
+          keyboardShouldPersistTaps={true}>
+          <View style={styles.needItems}>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'昵称'}</Text>
+              <TextInput
+                style={[styles.input, styles.fullInput]}
+                underlineColorAndroid={'transparent'}
+                value={this.state.nickName}
+                onChangeText={(nickName)=>this.setState({nickName})}
+                maxLength={15}/>
             </View>
-            <NBButton
-              block
-              style={{marginBottom: 30}}
-              onPress={()=> {
-                this.goNext(this.state, DatingPurposeSelectCopy)
-              }}>
-              下一步
-            </NBButton>
-            <NBButton
-              block
-              style={{marginBottom: 30}}
-              onPress={()=> {
-                this.goPhotos()
-              }}>
-              去拍照
-            </NBButton>
-            <NBButton
-              block
-              style={{marginBottom: 30}}
-              onPress={()=> {
-                this.goHome()
-              }}>
-              去首页(Test)
-            </NBButton>
-          </ScrollView>
-        </View>
-      )
-    }else{
-      return(
-        <View>
-          <Text>{''}</Text>
-        </View>
-      )
-    }
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'出生年'}</Text>
+              {this.renderBirthYearBtn()}
+            </View>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'性别'}</Text>
+              {this.renderGenders(this.state.genderArr)}
+            </View>
+            <View style={styles.listItem}>
+              <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
+              {this.renderDatingPurpose()}
+            </View>
+            <Text style={styles.genderTips}>{'注册成功后,性别和出生年月不可修改'}</Text>
+            {this.renderMoreButton()}
+            {this.state.expandStatus ? this.renderMoreForm() : null}
+          </View>
+          <NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goNext(this.state, DatingPurposeSelectCopy)
+            }}>
+            下一步
+          </NBButton>
+          {/*<NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goPhotos()
+            }}>
+            去拍照
+          </NBButton>
+          <NBButton
+            block
+            style={{marginBottom: 30}}
+            onPress={()=> {
+              this.goHome()
+            }}>
+            去首页(Test)
+          </NBButton>*/}
+        </ScrollView>
+      </View>
+    )
   }
 
   renderSpinner() {
@@ -790,7 +786,7 @@ class UserProfile extends BaseComponent {
 
 export default connect((state)=> {
   return {
-    DictMap:state.InitialApp.res,
-    pendingStatus: state.UserProfile.pending||state.InitialApp.pending
+    DictMap: state.InitialApp.res,
+    pendingStatus: state.UserProfile.pending || state.InitialApp.pending
   }
 })(UserProfile)

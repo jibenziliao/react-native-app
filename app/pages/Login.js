@@ -389,7 +389,7 @@ class Login extends BaseComponent {
             disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}>
             登录
           </NBButton>
-          <NBButton
+          {/*<NBButton
             block
             style={{marginTop: 20, height: 40}}
             onPress={()=>this.nextTest()}>
@@ -400,7 +400,7 @@ class Login extends BaseComponent {
             style={{marginTop: 20, height: 40}}
             onPress={()=>this.goHome()}>
             首页(Test)
-          </NBButton>
+          </NBButton>*/}
         </ScrollView>
       </MenuContext>
     )

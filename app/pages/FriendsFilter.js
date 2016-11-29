@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const tmpEducationArr = ['不限', '小学', '初中', '高中', '大学', '研究生'];
 const tmpGenderArr = ['不限', '男', '女'];
 const tmpPhotoOnlyArr = ['不限', '是', '否'];
 
