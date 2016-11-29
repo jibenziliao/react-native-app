@@ -23,6 +23,17 @@ function fetchOptionsGet() {
   }
 }
 
+function fetchOptionsPut(data) {
+  return {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+}
+
 function timeoutPromise(ms, promise) {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
@@ -65,6 +76,26 @@ export function postFetch(url, data, dispatch, fetchReq, receive, error, resolve
 export function getFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {
   dispatch(fetchReq);
   timeoutPromise(TIME_OUT, fetch(URL_DEV + url + data + '', fetchOptionsGet())).then(response => response.json())
+    .then((json) => {
+      if ('OK' != json.Code) {
+        dispatch({...error, json});
+        toastShort(json.Message);
+        rejectFn(json);
+      } else {
+        dispatch({...receive, json});
+        resolveFn(json);
+      }
+    })
+    .catch((error) => {
+      toastShort('网络发生错误,请重试');
+      dispatch({...error, error});
+      rejectFn(error);
+    });
+}
+
+export function putFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {
+  dispatch(fetchReq);
+  timeoutPromise(TIME_OUT, fetch(URL_DEV + url + '', fetchOptionsPut(data))).then(response => response.json())
     .then((json) => {
       if ('OK' != json.Code) {
         dispatch({...error, json});

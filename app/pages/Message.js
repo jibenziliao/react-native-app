@@ -15,6 +15,7 @@ import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import {componentStyles} from '../style'
 
+
 class Message extends BaseComponent{
   constructor(props){
     super(props);
@@ -27,7 +28,7 @@ class Message extends BaseComponent{
   render(){
     return(
       <View style={componentStyles.container}>
-        <Text>消息</Text>
+        <Text>{'333'}</Text>
       </View>
     )
   }

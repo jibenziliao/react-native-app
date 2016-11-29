@@ -11,7 +11,13 @@ import {
   InteractionManager
 } from 'react-native';
 import {getNavigator} from '../navigation/Route'
-import BaseComponent from '../base/BaseComponent';
+import BaseComponent from '../base/BaseComponent'
+import {Button as NBButton} from 'native-base'
+import Login from '../pages/Login'
+import MessageDetail from '../pages/MessageDetail'
+import {componentStyles} from '../style'
+
+let navigator;
 
 class Message extends BaseComponent{
   constructor(props){
@@ -25,10 +31,45 @@ class Message extends BaseComponent{
     };
   }
 
+  goLogin() {
+    navigator.push({
+      component: Login,
+      name: 'Login'
+    });
+  }
+
+  goMessageDetail() {
+    navigator.push({
+      component: MessageDetail,
+      name: 'MessageDetail'
+    })
+  }
+
   renderBody() {
     return(
-      <View>
-        <Text>333</Text>
+      <View style={componentStyles.container}>
+        <NBButton
+          block
+          style={{
+            height: 40,
+            marginVertical: 30
+          }}
+          onPress={()=> {
+            this.goMessageDetail()
+          }}>
+          测试页面跳转
+        </NBButton>
+        <NBButton
+          block
+          style={{
+            height: 40,
+            marginBottom: 30
+          }}
+          onPress={()=> {
+            this.goLogin()
+          }}>
+          测试登录
+        </NBButton>
       </View>
     )
   }
