@@ -416,7 +416,7 @@ class Home extends BaseComponent {
             justifyContent: 'center',
             alignItems: 'center',
             height: height,
-            backgroundColor:'transparent'
+            backgroundColor: 'transparent'
           }}
           swipeToClose={false}
           position={"bottom"}

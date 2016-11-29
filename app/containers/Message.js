@@ -21,7 +21,8 @@ let navigator;
 
 class Message extends BaseComponent{
   constructor(props){
-    super(props)
+    super(props);
+    navigator = this.props.navigator;
   }
 
   getNavigationBarProps() {
