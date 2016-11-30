@@ -9,7 +9,7 @@ import {toastShort} from '../utils/ToastUtil'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 

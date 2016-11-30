@@ -14,7 +14,8 @@ import Home from './Home';
 import Vicinity from './Vicinity';
 import Message from './Message';
 import Mine from './Mine'
-import TabBar from '../components/TabBar';
+import TabBar from '../components/TabBar'
+import VicinityList from '../pages/VicinityList'
 
 const {width, height}=Dimensions.get('window');
 

@@ -9,12 +9,12 @@ import {
   StyleSheet,
   Text
 } from 'react-native'
-import Button from 'react-native-button'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import {componentStyles} from '../style'
+import BaseComponent from '../base/BaseComponent'
 
-class Vicinity extends Component{
+class VicinityList extends BaseComponent{
   constructor(props){
     super(props);
   }
@@ -32,4 +32,4 @@ class Vicinity extends Component{
   }
 
 }
-export default connect()(Vicinity)
+export default VicinityList

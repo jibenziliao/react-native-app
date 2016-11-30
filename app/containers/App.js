@@ -74,11 +74,12 @@ class App extends Component {
       var value = await Storage.getItem('hasRegistered');
       if (value !== null) {
         this.setState({hasRegistered: value});
-        this.getCurrentPosition();
+        //this.getCurrentPosition();
         console.log('已完成注册流程');
       } else {
         console.log('尚未完成注册流程');
       }
+      this.getCurrentPosition();
       this.setState({loading:false,getRegistered: true});
     } catch (error) {
       console.log('加载缓存注册状态时出错', error.message);
@@ -127,7 +128,23 @@ class App extends Component {
         Lat: lastPosition.LastLocation.Lat,
         Lng: lastPosition.LastLocation.Lng
       };
-      dispatch(VicinityActions.saveCoordinate(params));
+
+      async function saveLocation() {
+        await Storage.setItem('currentLocation',params);
+        Storage.getItem('hasRegistered').then(
+          (response)=>{
+            if(response!=null){
+              console.log('用户已注册,开始向后台发送用户位置信息');
+              dispatch(VicinityActions.saveCoordinate(params));
+            }
+          },(error)=>{
+            console.log('读取缓存出错!',error);
+          }
+        );
+      }
+
+      saveLocation();
+
       navigator.geolocation.clearWatch(watchId);
     });
   }

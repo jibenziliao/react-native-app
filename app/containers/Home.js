@@ -16,7 +16,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions
-} from 'react-native';
+} from 'react-native'
 import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
 import Button from 'react-native-button'
@@ -30,6 +30,7 @@ import * as HomeActions from '../actions/Home'
 import Spinner from '../components/Spinner'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import Modal from 'react-native-modalbox'
+import * as Storage from '../utils/Storage'
 
 const styles = StyleSheet.create({
   container: {
@@ -198,17 +199,28 @@ class Home extends BaseComponent {
 
   componentWillMount() {
     const {dispatch}=this.props;
-    const data = {
+    let data = {
       pageSize: this.state.pageSize,
       pageIndex: this.state.pageIndex
     };
-    dispatch(HomeActions.getPostList(data, (json)=> {
-      this.setState({
-        postList: json.Result
-      })
-    }, (error)=> {
+    Storage.getItem('currentLocation').then((response)=> {
+      if (response != null) {
+        data={
+          ...data,
+          ...response
+        };
+        console.log('获取广场公告列表',data);
+        dispatch(HomeActions.getPostList(data, (json)=> {
+          this.setState({
+            postList: json.Result
+          })
+        }, (error)=> {
 
-    }));
+        }));
+      }
+    }, (error)=> {
+      console.log('读取缓存出错!', error);
+    });
   }
 
   _toEnd() {
@@ -463,7 +475,6 @@ class Home extends BaseComponent {
       )
     }
   }
-
 }
 
 export default connect((state)=> {
