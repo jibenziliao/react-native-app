@@ -3,7 +3,7 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:54
  * @description
  */
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {
   StyleSheet,
   Text,
@@ -31,6 +31,8 @@ import Spinner from '../components/Spinner'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import Modal from 'react-native-modalbox'
 import * as Storage from '../utils/Storage'
+import AnnouncementDetail from '../pages/AnnouncementDetail'
+import Addannouncement from '../pages/Addannouncement'
 
 const styles = StyleSheet.create({
   container: {
@@ -83,13 +85,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6
   },
   userInfoIcon: {
-    marginRight: 4
+    marginRight: 4,
+    color: '#FFF'
   },
   userInfoText: {
-    fontSize: 14
+    fontSize: 14,
+    color: '#FFF'
   },
   moodView: {
-    marginVertical: 5
+    marginVertical: 20
   },
   moodText: {
     fontSize: 16
@@ -214,7 +218,6 @@ class Home extends BaseComponent {
         currentLocation = {
           ...response
         };
-        console.log('获取广场公告列表', data);
         dispatch(HomeActions.getPostList(data, (json)=> {
           this.setState({
             postList: json.Result
@@ -302,26 +305,39 @@ class Home extends BaseComponent {
     };
   }
 
+  //跳转发布公告页面
   onRightPressed() {
     console.log('这是继承后的方法');
+    navigator.push({
+      component: Addannouncement,
+      name: 'Addannouncement'
+    })
   }
 
-  _doLike(id) {
+  //点赞/取消赞(不论是否已赞,点赞取消赞,isLike都传true,isLike可能的值null,true,false)
+  _doLike(id, isLike) {
     const {dispatch}=this.props;
     let index = this.state.postList.findIndex((item)=> {
       return item.Id === id;
     });
-    this.state.postList[index].LikeCount += 1;
-    this.setState({
-      postList: [
-        ...this.state.postList
-      ]
-    });
+    if (isLike === null) {
+      this.state.postList[index].LikeCount += 1;
+      this.state.postList[index].AmILikeIt = true;
+    } else {
+      this.state.postList[index].LikeCount -= 1;
+      this.state.postList[index].AmILikeIt = null;
+    }
+
     const data = {
       postId: id,
-      isLike: false
+      isLike: true
     };
     dispatch(HomeActions.like(data, (json)=> {
+      this.setState({
+        postList: [
+          ...this.state.postList
+        ]
+      });
     }, (error)=> {
     }));
   }
@@ -330,6 +346,44 @@ class Home extends BaseComponent {
     //保存当前要评论的广告id
     commentId = id;
     this.refs.commentInputBox.open();
+  }
+
+  _renderGenderStyle(gender) {
+    return {
+      backgroundColor: gender ? '#1496ea' : 'pink',
+      borderColor: gender ? '#1496ea' : 'pink',
+    }
+  }
+
+  //前往公告详情(需要先获取公告详情和评论列表)
+  _goAnnouncementDetail(id) {
+    const {dispatch}=this.props;
+    const data = {
+      postId: id,
+      ...currentLocation
+    };
+    let params = {
+      postId: id,
+      pageIndex: 1,
+      pageSize: 10
+    };
+    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
+      dispatch(HomeActions.getCommentList(params, (result)=> {
+        navigator.push({
+          component: AnnouncementDetail,
+          name: 'AnnouncementDetail',
+          params: {
+            pageIndex: 1,
+            pageSize: 10,
+            ...json.Result,
+            myLocation: {...currentLocation},
+            commentList: result.Result
+          }
+        })
+      }, (error)=> {
+      }));
+    }, (error)=> {
+    }));
   }
 
   renderRowData(rowData) {
@@ -348,12 +402,12 @@ class Home extends BaseComponent {
               <View style={styles.userInfo}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
                 <View style={{flex: 1}}>
-                  <View style={styles.userInfoLabel}>
+                  <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
                     <Icon
-                      name={'venus'}
+                      name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
                       size={12}
                       style={styles.userInfoIcon}/>
-                    <Text style={styles.userInfoText}>{'22'}{'岁'}</Text>
+                    <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                   </View>
                 </View>
               </View>
@@ -363,9 +417,13 @@ class Home extends BaseComponent {
             </View>
           </View>
         </TouchableOpacity>
-        <View style={[styles.cardRow, styles.moodView]}>
+        <TouchableOpacity
+          style={[styles.cardRow, styles.moodView]}
+          onPress={()=> {
+            this._goAnnouncementDetail(rowData.Id)
+          }}>
           <Text style={styles.moodText}>{rowData.PostContent}</Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.cardRow}>
           <Text>{rowData.Distance}{'km'}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
@@ -377,9 +435,9 @@ class Home extends BaseComponent {
             activeOpacity={0.5}
             style={styles.cardBtn}
             onPress={()=> {
-              this._doLike(rowData.Id)
+              this._doLike(rowData.Id, rowData.AmILikeIt)
             }}>
-            <Icon name="thumbs-o-up" size={20}/>
+            <Icon name={rowData.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
@@ -424,16 +482,6 @@ class Home extends BaseComponent {
 
   }
 
-  _closeModal() {
-    return (
-      <TouchableOpacity onPress={()=> {
-        console.log('123');
-      }}>
-
-      </TouchableOpacity>
-    )
-  }
-
   //发送评论
   _sendComment() {
     //关闭评论输入框
@@ -442,10 +490,21 @@ class Home extends BaseComponent {
     const {dispatch}=this.props;
     let data = {
       postId: commentId,
-      forCommentId: '',
+      forCommentId: null,
       comment: this.state.comment
     };
+
+    let index = this.state.postList.findIndex((item)=> {
+      return item.Id === commentId;
+    });
+    this.state.postList[index].CommentCount += 1;
+
     dispatch(HomeActions.comment(data, (json)=> {
+      this.setState({
+        postList: [
+          ...this.state.postList
+        ]
+      });
     }, (error)=> {
     }));
     //清空评论输入框内容

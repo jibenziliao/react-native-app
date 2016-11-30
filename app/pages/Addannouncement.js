@@ -1,6 +1,6 @@
 /**
- *
- * @author keyy/1501718947@qq.com 16/11/9 11:57
+ * 添加公告页面
+ * @author keyy/1501718947@qq.com 16/11/30 18:21
  * @description
  */
 import React,{Component} from 'react'
@@ -14,7 +14,7 @@ import {connect} from 'react-redux'
 import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 
-class VicinityList extends BaseComponent{
+class Addannouncement extends BaseComponent{
   constructor(props){
     super(props);
   }
@@ -25,21 +25,19 @@ class VicinityList extends BaseComponent{
 
   getNavigationBarProps() {
     return {
-      title: '附近',
+      title: '发布公告',
       hideRightButton: false,
-      rightIcon: {
-        name: 'ellipsis-v'
-      },
+      rightTitle:'完成'
     };
   }
 
   renderBody(){
     return(
       <View style={componentStyles.container}>
-        <Text>{'附近列表模式'}</Text>
+        <Text>{'这是发布公告页面'}</Text>
       </View>
     )
   }
 
 }
-export default VicinityList
+export default Addannouncement

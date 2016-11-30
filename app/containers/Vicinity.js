@@ -224,7 +224,7 @@ class Vicinity extends BaseComponent {
 
     //Actions.userInfo({userInfo:location});
     const {dispatch}=this.props;
-    dispatch(VicinityActions.fetchUserInfo(location.UserId));
+    //dispatch(VicinityActions.fetchUserInfo(location.UserId));
   }
 
   renderMapMarkers(location) {

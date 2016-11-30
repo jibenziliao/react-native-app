@@ -20,8 +20,19 @@ export function like(data, resolve, reject) {
 }
 
 export function comment(data,resolve,reject) {
-  console.log(data);
   return (dispatch)=> {
-    postFetch(`/post/comment/${data.postId}/${data.forCommentId}`, {comment:data.comment}, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    postFetch(`/post/comment/${data.postId}?forCommentId=${data.forCommentId}`, {comment:data.comment}, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getAnnouncementDetail(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch('/post/viewpost/',`${data.postId}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getCommentList(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch('/post/getpostcommentlist/',`${data.postId}/${data.pageIndex}/${data.pageSize}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
