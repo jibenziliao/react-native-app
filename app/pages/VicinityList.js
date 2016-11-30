@@ -23,7 +23,17 @@ class VicinityList extends BaseComponent{
 
   }
 
-  render(){
+  getNavigationBarProps() {
+    return {
+      title: '附近',
+      hideRightButton: false,
+      rightIcon: {
+        name: 'ellipsis-v'
+      },
+    };
+  }
+
+  renderBody(){
     return(
       <View style={componentStyles.container}>
         <Text>222</Text>

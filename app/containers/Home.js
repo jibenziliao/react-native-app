@@ -178,6 +178,8 @@ const listViewData = [
 const {height, width} = Dimensions.get('window');
 
 let navigator;
+let currentLocation = {};
+let commentId;
 
 class Home extends BaseComponent {
   constructor(props) {
@@ -189,7 +191,7 @@ class Home extends BaseComponent {
     this.state = {
       dataSource: ds.cloneWithRows(listViewData),
       refreshing: false,
-      pageSize: 10,
+      pageSize: 4,
       pageIndex: 1,
       postList: [],
       comment: '',
@@ -205,11 +207,14 @@ class Home extends BaseComponent {
     };
     Storage.getItem('currentLocation').then((response)=> {
       if (response != null) {
-        data={
+        data = {
           ...data,
           ...response
         };
-        console.log('获取广场公告列表',data);
+        currentLocation = {
+          ...response
+        };
+        console.log('获取广场公告列表', data);
         dispatch(HomeActions.getPostList(data, (json)=> {
           this.setState({
             postList: json.Result
@@ -249,7 +254,8 @@ class Home extends BaseComponent {
     this.setState({refreshing: true});
     const data = {
       pageSize: this.state.pageSize,
-      pageIndex: this.state.pageIndex
+      pageIndex: this.state.pageIndex,
+      ...currentLocation
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
       this.setState({
@@ -320,7 +326,9 @@ class Home extends BaseComponent {
     }));
   }
 
-  _showCommentInput() {
+  _showCommentInput(id) {
+    //保存当前要评论的广告id
+    commentId = id;
     this.refs.commentInputBox.open();
   }
 
@@ -351,7 +359,7 @@ class Home extends BaseComponent {
               </View>
             </View>
             <View style={styles.cardRight}>
-              <Text>{rowData.CreateTime}</Text>
+              <Text>{rowData.CreateTimeDescription}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -359,7 +367,7 @@ class Home extends BaseComponent {
           <Text style={styles.moodText}>{rowData.PostContent}</Text>
         </View>
         <View style={styles.cardRow}>
-          <Text>{'0'}{'km'}{'·'}</Text>
+          <Text>{rowData.Distance}{'km'}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
           <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
           <Text>{rowData.ViewCount}{'阅读'}</Text>
@@ -377,7 +385,7 @@ class Home extends BaseComponent {
             activeOpacity={0.5}
             style={styles.cardBtn}
             onPress={()=> {
-              this._showCommentInput()
+              this._showCommentInput(rowData.Id)
             }}>
             <Icon name="comments-o" size={20}/>
           </TouchableOpacity>
@@ -416,6 +424,34 @@ class Home extends BaseComponent {
 
   }
 
+  _closeModal() {
+    return (
+      <TouchableOpacity onPress={()=> {
+        console.log('123');
+      }}>
+
+      </TouchableOpacity>
+    )
+  }
+
+  //发送评论
+  _sendComment() {
+    //关闭评论输入框
+    this.refs.commentInputBox.close();
+    //发送评论,并给当前广告评论数加一
+    const {dispatch}=this.props;
+    let data = {
+      postId: commentId,
+      forCommentId: '',
+      comment: this.state.comment
+    };
+    dispatch(HomeActions.comment(data, (json)=> {
+    }, (error)=> {
+    }));
+    //清空评论输入框内容
+    this.setState({comment: ''});
+  }
+
   renderBody() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return (
@@ -425,44 +461,51 @@ class Home extends BaseComponent {
         </View>
         <Modal
           style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: height,
-            backgroundColor: 'transparent'
+            backgroundColor: '#E2E2E2',
+            height: 60,
+            justifyContent: 'center'
           }}
+          backdropOpacity={0.5}
+          backdropColor={'transparent'}
           swipeToClose={false}
           position={"bottom"}
           backdropPressToClose={true}
           ref={"commentInputBox"}>
-          <ScrollView>
-            <View style={{
-              flexDirection: 'row',
-              paddingHorizontal: 10
-            }}>
-              <TextInput
-                multiline={false}
-                style={{
-                  height: 40,
-                  flex: 1,
-                  backgroundColor: 'gray',
-                  borderRadius: 4
-                }}
-                underlineColorAndroid={'transparent'}
-                placeholder={'请输入回复'}
-                maxLength={50}
-                onChangeText={(comment)=>this.setState({comment})}
-                value={this.state.comment}/>
+          <View style={{
+            flexDirection: 'row',
+            paddingHorizontal: 10,
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <TextInput
+              multiline={false}
+              style={{
+                height: 40,
+                flex: 1,
+                backgroundColor: '#fff',
+                borderRadius: 4
+              }}
+              underlineColorAndroid={'transparent'}
+              placeholder={'请输入回复'}
+              maxLength={50}
+              onChangeText={(comment)=>this.setState({comment})}
+              value={this.state.comment}/>
+            <View>
               <NBButton
                 primary
                 style={{
                   width: 100,
                   height: 40,
                   marginLeft: 10
+                }}
+                onPress={()=> {
+                  this._sendComment()
                 }}>
                 发送
               </NBButton>
             </View>
-          </ScrollView>
+          </View>
         </Modal>
       </View>
     )

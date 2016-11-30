@@ -52,7 +52,7 @@ let compareCenterRegion = {
   latitudeDelta: 0
 };
 let searchTimes=0;
-let navigator;
+let pageNavigator;
 let hasMove=false;
 
 class Vicinity extends BaseComponent {
@@ -66,7 +66,7 @@ class Vicinity extends BaseComponent {
       refresh: false,
       locations: []
     };
-    navigator = this.props.navigator;
+    pageNavigator = this.props.navigator;
     this.renderMapMarkers = this.renderMapMarkers.bind(this);
   }
 
@@ -299,7 +299,6 @@ class Vicinity extends BaseComponent {
     }
   }
 
-
   getNavigationBarProps() {
     return {
       title: '附近',
@@ -322,12 +321,11 @@ class Vicinity extends BaseComponent {
   }
 
   onRightPressed() {
-    navigator.push({
+    pageNavigator.push({
       component: VicinityList,
       name: 'VicinityList'
     });
   }
-
 }
 
 const mapStateToProps = (state) => {

@@ -18,3 +18,10 @@ export function like(data, resolve, reject) {
     putFetch(`/post/like/${data.postId}/${data.isLike}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function comment(data,resolve,reject) {
+  console.log(data);
+  return (dispatch)=> {
+    postFetch(`/post/comment/${data.postId}/${data.forCommentId}`, {comment:data.comment}, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
