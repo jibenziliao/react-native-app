@@ -66,7 +66,12 @@ export default class MapCallout extends Component {
      * Note: if you don't want your callout surrounded by the default tooltip, pass `tooltip={true}` to `MapView.Callout`
      *************************************************************/
     const {location} = this.props;
-    const datingPurposes = location.DatingPurpose.split(', ');
+    //##############原交友目的################
+    //const datingPurposes = location.DatingPurpose.split(', ');
+    //##############################
+
+    //模拟假数据
+    const datingPurposes = ['Love','FriendShip'];
 
     return (
       <MapView.Callout

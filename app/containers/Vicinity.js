@@ -3,7 +3,7 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:54
  * @description
  */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   Text,
@@ -21,6 +21,8 @@ import * as VicinityActions from '../actions/Vicinity'
 import {connect} from 'react-redux'
 import {URL_DEV} from '../constants/Constant'
 import VicinityList from '../pages/VicinityList'
+import UserInfo from '../pages/UserInfo'
+import * as HomeActions from '../actions/Home'
 
 const styles = StyleSheet.create({
   container: {
@@ -51,9 +53,9 @@ let compareCenterRegion = {
   latitude: 0,
   latitudeDelta: 0
 };
-let searchTimes=0;
+let searchTimes = 0;
 let pageNavigator;
-let hasMove=false;
+let hasMove = false;
 
 class Vicinity extends BaseComponent {
   constructor(props) {
@@ -209,6 +211,7 @@ class Vicinity extends BaseComponent {
               this.setState({locations: json.Result, pending: false, region: newRegion});
             }
           }).catch((err)=> {
+          console.log(err);
           toastShort('网络发生错误,请重试');
         })
       }
@@ -225,6 +228,16 @@ class Vicinity extends BaseComponent {
     //Actions.userInfo({userInfo:location});
     const {dispatch}=this.props;
     //dispatch(VicinityActions.fetchUserInfo(location.UserId));
+
+    dispatch(HomeActions.getUserInfo({UserId:location.UserId},(json)=>{
+      pageNavigator.push({
+        component: UserInfo,
+        name: 'UserInfo',
+        params: {
+          ...json.Result,
+        }
+      });
+    },(error)=>{}));
   }
 
   renderMapMarkers(location) {
@@ -237,7 +250,9 @@ class Vicinity extends BaseComponent {
       <MapView.Marker
         key={location.UserId}
         coordinate={{latitude: location.LastLocation.Lat, longitude: location.LastLocation.Lng}}>
-        <MapCallout location={location} onPress={()=>{this.calloutPress(location)}}/>
+        <MapCallout location={location} onPress={()=> {
+          this.calloutPress(location)
+        }}/>
       </MapView.Marker>
     )
   }
@@ -252,7 +267,7 @@ class Vicinity extends BaseComponent {
           onRegionChangeComplete={(newRegion)=> {
             this.onRegionChangeComplete(newRegion)
           }}
-          onRegionChange={(newRegion)=>{
+          onRegionChange={(newRegion)=> {
             this.onRegionChange(newRegion);
           }}
           showsCompass={true}
@@ -278,19 +293,20 @@ class Vicinity extends BaseComponent {
     }
   }
 
-  refreshPage(){
-    setTimeout(()=>{
-      this.setState({pending:true,GPS:false});
+  refreshPage() {
+    setTimeout(()=> {
+      this.setState({pending: true, GPS: false});
       this.getPosition();
-    },100);
+    }, 100);
   }
 
-  renderWarningView(data){
-    if(data){
-      return(
-        <View style={{margin:30}}>
-          <Text style={{fontSize:28}} onPress={()=>{
-            this.refreshPage()}
+  renderWarningView(data) {
+    if (data) {
+      return (
+        <View style={{margin: 30}}>
+          <Text style={{fontSize: 28}} onPress={()=> {
+            this.refreshPage()
+          }
           }>
             打开手机GPS开关,并给本APP权限后,点此重试
           </Text>
@@ -302,7 +318,7 @@ class Vicinity extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '附近',
-      hideLeftButton:true,
+      hideLeftButton: true,
       hideRightButton: false,
       rightIcon: {
         name: 'ellipsis-v'

@@ -123,6 +123,8 @@ class AnnouncementDetail extends BaseComponent {
     console.log(this.props.route.params);
     this.state = {
       comment: '',
+      commentUser:'',
+      forCommentId:null,
       refreshing: false,
       loadingMore: false,
       pageSize: 3,
@@ -152,7 +154,13 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  _showCommentInput() {
+  _showCommentInput(id,rowData) {
+    if(rowData !== null){
+      this.setState({
+        forCommentId:id,
+        commentUser:rowData.CommentUserInfo.Nickname
+      });
+    }
     //保存当前要评论的广告id
     this.refs.commentInputBox.open();
   }
@@ -189,7 +197,7 @@ class AnnouncementDetail extends BaseComponent {
     const {dispatch}=this.props;
     let data = {
       postId: this.state.Id,
-      forCommentId: null,
+      forCommentId: this.state.forCommentId,
       comment: this.state.comment
     };
     this.state.CommentCount += 1;
@@ -230,30 +238,31 @@ class AnnouncementDetail extends BaseComponent {
           <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
                  style={styles.commentImg}/>
           <View style={styles.commentArea}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text>{rowData.CommentUserInfo.Nickname}</Text>
-              <View style={[styles.userInfoLabel,styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
-                <Icon
-                  name={rowData.CommentUserInfo.Gender ? 'mars-stroke' : 'venus'}
-                  size={12}
-                  style={styles.userInfoIcon}/>
-                <Text style={styles.userInfoText}>{rowData.CommentUserInfo.Age}{'岁'}</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'space-between'}}>
+              <View style={{flexDirection:'row',alignItems:'center'}}>
+                <Text>{rowData.CommentUserInfo.Nickname}</Text>
+                <View style={[styles.userInfoLabel,styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
+                  <Icon
+                    name={rowData.CommentUserInfo.Gender ? 'mars-stroke' : 'venus'}
+                    size={12}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{rowData.CommentUserInfo.Age}{'岁'}</Text>
+                </View>
               </View>
+              <Text>{rowData.CreateTime}</Text>
             </View>
             <View>
               <TouchableOpacity
                 onPress={()=> {
-                  console.log('123');
+                  this._showCommentInput(rowData.Id,rowData);
                 }}
                 style={styles.commentContent}>
-                <Text>{rowData.CommentContent}</Text>
+                <Text>{rowData.ForCommentUserInfo?`回复${rowData.ForCommentUserInfo.Nickname}: `:''}{rowData.CommentContent}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-        <View style={styles.cardRight}>
-          <Text>{rowData.CreateTime}</Text>
-        </View>
+
       </View>
     )
   }
@@ -310,7 +319,7 @@ class AnnouncementDetail extends BaseComponent {
             activeOpacity={0.5}
             style={styles.cardBtn}
             onPress={()=> {
-              this._showCommentInput()
+              this._showCommentInput(this.state.Id,null)
             }}>
             <Icon name="comments-o" size={20}/>
           </TouchableOpacity>
@@ -395,7 +404,7 @@ class AnnouncementDetail extends BaseComponent {
                 borderRadius: 4
               }}
               underlineColorAndroid={'transparent'}
-              placeholder={'请输入回复'}
+              placeholder={`输入评论/回复${this.state.commentUser}:`}
               maxLength={50}
               onChangeText={(comment)=>this.setState({comment})}
               value={this.state.comment}/>

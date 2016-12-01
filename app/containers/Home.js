@@ -33,6 +33,7 @@ import Modal from 'react-native-modalbox'
 import * as Storage from '../utils/Storage'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
+import UserInfo from '../pages/UserInfo'
 
 const styles = StyleSheet.create({
   container: {
@@ -327,6 +328,20 @@ class Home extends BaseComponent {
     })
   }
 
+  //点击头像和名字,跳转个人信息详情页
+  _goUserInfo(id){
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getUserInfo({UserId:id},(json)=>{
+      navigator.push({
+        component: UserInfo,
+        name: 'UserInfo',
+        params: {
+          ...json.Result,
+        }
+      });
+    },(error)=>{}));
+  }
+
   //点赞/取消赞(不论是否已赞,点赞取消赞,isLike都传true,isLike可能的值null,true,false)
   _doLike(id, isLike) {
     const {dispatch}=this.props;
@@ -369,16 +384,18 @@ class Home extends BaseComponent {
   }
 
   //前往公告详情(需要先获取公告详情和评论列表)
-  _goAnnouncementDetail(id) {
+  _goAnnouncementDetail(rowData) {
     const {dispatch}=this.props;
     const data = {
-      postId: id,
+      postId: rowData.Id,
       ...currentLocation
     };
     let params = {
-      postId: id,
+      postId: rowData.Id,
       pageIndex: 1,
-      pageSize: 10
+      pageSize: 10,
+      Lat:rowData.Lat,
+      Lng:rowData.Lng
     };
     dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (result)=> {
@@ -406,7 +423,7 @@ class Home extends BaseComponent {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={()=> {
-            console.log('123')
+            this._goUserInfo(rowData.PosterInfo.UserId)
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
@@ -433,7 +450,7 @@ class Home extends BaseComponent {
         <TouchableOpacity
           style={[styles.cardRow, styles.moodView]}
           onPress={()=> {
-            this._goAnnouncementDetail(rowData.Id)
+            this._goAnnouncementDetail(rowData)
           }}>
           <Text style={styles.moodText}>{rowData.PostContent}</Text>
         </TouchableOpacity>

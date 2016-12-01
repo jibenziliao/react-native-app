@@ -33,6 +33,12 @@ export function getAnnouncementDetail(data,resolve,reject) {
 
 export function getCommentList(data,resolve,reject) {
   return (dispatch)=> {
-    getFetch('/post/getpostcommentlist/',`${data.postId}/${data.pageIndex}/${data.pageSize}`, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/post/getpostcommentlist/',`${data.postId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getUserInfo(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch('/profiles/',`${data.UserId}`, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
