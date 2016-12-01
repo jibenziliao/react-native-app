@@ -53,7 +53,7 @@ function timeoutPromise(ms, promise) {
 }
 
 export function postFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {
-  dispatch({...fetchReq, data});
+  dispatch({...fetchReq,data});
   fetch(URL_DEV + url, fetchOptions(data))
     .then(response => response.json())
     .then((json) => {

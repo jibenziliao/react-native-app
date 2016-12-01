@@ -9,13 +9,13 @@ import {toastShort} from '../utils/ToastUtil'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
 export function like(data, resolve, reject) {
   return (dispatch)=> {
-    putFetch(`/post/like/${data.postId}/${data.isLike}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    putFetch(`/post/like/${data.postId}/${data.isLike}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
@@ -27,12 +27,12 @@ export function comment(data,resolve,reject) {
 
 export function getAnnouncementDetail(data,resolve,reject) {
   return (dispatch)=> {
-    getFetch('/post/viewpost/',`${data.postId}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/post/viewpost/',`${data.postId}/${data.Lat}/${data.Lng}`, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
 export function getCommentList(data,resolve,reject) {
   return (dispatch)=> {
-    getFetch('/post/getpostcommentlist/',`${data.postId}/${data.pageIndex}/${data.pageSize}`, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/post/getpostcommentlist/',`${data.postId}/${data.pageIndex}/${data.pageSize}`, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }

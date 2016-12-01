@@ -184,6 +184,7 @@ const {height, width} = Dimensions.get('window');
 let navigator;
 let currentLocation = {};
 let commentId;
+let lastCount;
 
 class Home extends BaseComponent {
   constructor(props) {
@@ -195,7 +196,8 @@ class Home extends BaseComponent {
     this.state = {
       dataSource: ds.cloneWithRows(listViewData),
       refreshing: false,
-      pageSize: 4,
+      loadingMore: false,
+      pageSize: 3,
       pageIndex: 1,
       postList: [],
       comment: '',
@@ -219,6 +221,7 @@ class Home extends BaseComponent {
           ...response
         };
         dispatch(HomeActions.getPostList(data, (json)=> {
+          lastCount = json.Result.length;
           this.setState({
             postList: json.Result
           })
@@ -232,11 +235,10 @@ class Home extends BaseComponent {
   }
 
   _toEnd() {
-    //const { reducer } = this.props;
-    //ListView滚动到底部，根据是否正在加载更多 是否正在刷新 是否已加载全部来判断是否执行加载更多
-    //if (reducer.isLoadingMore || reducer.products.length >= reducer.totalProductCount || reducer.isRefreshing) {
-    //  return;
-    //}
+    //如果最后一次请求的数据数量少于每页需要渲染的数量,表明没有更多数据了(在没有更多数据的情况下,暂时不能继续上拉加载更多数据。在实际场景中,这里是可以一直上拉加载更多数据的,便于有即时新数据拉取)
+    if (lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
+      return false;
+    }
 
     InteractionManager.runAfterInteractions(() => {
       console.log("触发加载更多 toEnd() --> ");
@@ -246,21 +248,37 @@ class Home extends BaseComponent {
 
   _loadMoreData() {
     console.log('加载更多');
+    this.setState({loadingMore: true});
     const {dispatch} = this.props;
-    //dispatch();
-    //this.state.pageIndex = Number.parseInt(this.state.dataSource.length / this.state.pageSize) + 1;
-    //dispatch(HomeActions.getPostList(this.state,()=>{},()=>{}));
-  }
-
-  _onRefresh() {
-    const {dispatch}=this.props;
-    this.setState({refreshing: true});
+    this.state.pageIndex += 1;
     const data = {
       pageSize: this.state.pageSize,
       pageIndex: this.state.pageIndex,
       ...currentLocation
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
+      lastCount = json.Result.length;
+      this.state.postList = this.state.postList.concat(json.Result);
+      this.setState({
+        ...this.state.postList,
+        refreshing: false,
+        loadingMore: false
+      })
+    }, (error)=> {
+
+    }));
+  }
+
+  _onRefresh() {
+    const {dispatch}=this.props;
+    this.setState({refreshing: true, pageIndex: 1});
+    const data = {
+      pageSize: this.state.pageSize,
+      pageIndex: 1,
+      ...currentLocation
+    };
+    dispatch(HomeActions.getPostList(data, (json)=> {
+      lastCount = json.Result.length;
       this.setState({
         postList: json.Result,
         refreshing: false
@@ -270,24 +288,19 @@ class Home extends BaseComponent {
     }));
   }
 
-  _renderFooter(postList) {
-    //const { result } = this.props;
-    ////通过当前product数量和刷新状态（是否正在下拉刷新）来判断footer的显示
-    //if (result.postList.length < 1 || result.postList.isRefreshing) {
-    //  return null
-    //}
-    //if (result.postList.length < result.totalProductCount) {
-    //  //还有更多，默认显示‘正在加载更多...’
-    //  return <LoadMoreFooter />
-    //}else{
-    // 加载全部
+  _renderFooter() {
+    if (this.state.loadingMore) {
+      //这里会显示正在加载更多,但在屏幕下方,需要向上滑动显示(自动或手动),加载指示器,阻止了用户的滑动操作,后期可以让页面自动上滑,显示出这个组件。
+      return <LoadMoreFooter />
+    }
 
-    //if(this.props.result && this.props.result.json){
-    //
-    //}
+    if (lastCount < this.state.postList.length) {
+      return (<LoadMoreFooter isLoadAll={true}/>);
+    }
 
-    return (<LoadMoreFooter isLoadAll={true}/>);
-    //}
+    if (!lastCount) {
+      return null;
+    }
   }
 
   componentWillUnmount() {
@@ -468,9 +481,9 @@ class Home extends BaseComponent {
             this.renderRowData.bind(this)
           }
           onEndReached={this._toEnd.bind(this)}
-          renderFooter={()=> {
-            this._renderFooter(postList)
-          }}
+          renderFooter={
+            this._renderFooter.bind(this)
+          }
           enableEmptySections={true}
           onEndReachedThreshold={10}
           initialListSize={3}

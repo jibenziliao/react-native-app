@@ -14,7 +14,8 @@ import {
   TextInput,
   ListView,
   RefreshControl,
-  Dimensions
+  Dimensions,
+  InteractionManager
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -24,11 +25,15 @@ import * as HomeActions from '../actions/Home'
 import Modal from 'react-native-modalbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
+import LoadMoreFooter from '../components/LoadMoreFooter'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E2E2E2'
+  },
+  listView: {
+    flex: 1
   },
   card: {
     padding: 10,
@@ -66,6 +71,9 @@ const styles = StyleSheet.create({
     borderColor: 'pink',
     paddingHorizontal: 6
   },
+  commentName:{
+    marginLeft:10
+  },
   userInfoIcon: {
     marginRight: 4,
     color: '#FFF'
@@ -83,8 +91,31 @@ const styles = StyleSheet.create({
   cardBtn: {
     marginTop: 10,
     marginRight: 20
+  },
+  commentCard: {
+    padding: 10,
+    marginTop: 5,
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    borderColor: '#fff',
+    flexDirection: 'row',
+    marginHorizontal: 10
+  },
+  commentImg: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+    borderRadius: 6
+  },
+  commentArea: {
+    flex: 1
+  },
+  commentContent: {
+    marginVertical: 10
   }
 });
+
+let lastCount;
 
 class AnnouncementDetail extends BaseComponent {
   constructor(props) {
@@ -92,6 +123,10 @@ class AnnouncementDetail extends BaseComponent {
     console.log(this.props.route.params);
     this.state = {
       comment: '',
+      refreshing: false,
+      loadingMore: false,
+      pageSize: 3,
+      pageIndex: 1,
       ...this.props.route.params
     }
   }
@@ -167,65 +202,171 @@ class AnnouncementDetail extends BaseComponent {
     }));
   }
 
-  renderBody() {
+  _toEnd() {
+    if (lastCount < this.state.pageSize || this.state.commentList.length < this.state.pageSize) {
+      return false;
+    }
+
+    InteractionManager.runAfterInteractions(() => {
+      console.log("触发加载更多 toEnd() --> ");
+      this._loadMoreData();
+    });
+  }
+
+  _onRefresh() {
+
+  }
+
+  _loadMoreData() {
+    console.log('加载更多');
+  }
+
+  renderRowData(rowData) {
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.card}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={()=> {
-              console.log('123')
-            }}>
-            <View style={styles.cardRow}>
-              <View style={styles.cardLeft}>
-                <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
-                       style={styles.avatarImg}/>
-                <View style={styles.userInfo}>
-                  <Text>{this.state.PosterInfo.Nickname}</Text>
-                  <View style={{flex: 1}}>
-                    <View style={[styles.userInfoLabel, this._renderGenderStyle(this.state.PosterInfo.Gender)]}>
-                      <Icon
-                        name={this.state.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                        size={12}
-                        style={styles.userInfoIcon}/>
-                      <Text style={styles.userInfoText}>{this.state.PosterInfo.Age}{'岁'}</Text>
-                    </View>
+      <View
+        key={rowData.Id}
+        style={styles.commentCard}>
+        <View style={styles.cardLeft}>
+          <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
+                 style={styles.commentImg}/>
+          <View style={styles.commentArea}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text>{rowData.CommentUserInfo.Nickname}</Text>
+              <View style={[styles.userInfoLabel,styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
+                <Icon
+                  name={rowData.CommentUserInfo.Gender ? 'mars-stroke' : 'venus'}
+                  size={12}
+                  style={styles.userInfoIcon}/>
+                <Text style={styles.userInfoText}>{rowData.CommentUserInfo.Age}{'岁'}</Text>
+              </View>
+            </View>
+            <View>
+              <TouchableOpacity
+                onPress={()=> {
+                  console.log('123');
+                }}
+                style={styles.commentContent}>
+                <Text>{rowData.CommentContent}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View style={styles.cardRight}>
+          <Text>{rowData.CreateTime}</Text>
+        </View>
+      </View>
+    )
+  }
+
+  _renderHeader() {
+    return (
+      <View style={styles.card}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={()=> {
+            console.log('123')
+          }}>
+          <View style={styles.cardRow}>
+            <View style={styles.cardLeft}>
+              <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
+                     style={styles.avatarImg}/>
+              <View style={styles.userInfo}>
+                <Text>{this.state.PosterInfo.Nickname}</Text>
+                <View style={{flex: 1}}>
+                  <View style={[styles.userInfoLabel, this._renderGenderStyle(this.state.PosterInfo.Gender)]}>
+                    <Icon
+                      name={this.state.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                      size={12}
+                      style={styles.userInfoIcon}/>
+                    <Text style={styles.userInfoText}>{this.state.PosterInfo.Age}{'岁'}</Text>
                   </View>
                 </View>
               </View>
-              <View style={styles.cardRight}>
-                <Text>{this.state.CreateTimeDescription}</Text>
-              </View>
             </View>
-          </TouchableOpacity>
-          <View style={[styles.cardRow, styles.moodView]}>
-            <Text style={styles.moodText}>{this.state.PostContent}</Text>
+            <View style={styles.cardRight}>
+              <Text>{this.state.CreateTimeDescription}</Text>
+            </View>
           </View>
-          <View style={styles.cardRow}>
-            <Text>{this.state.Distance}{'km'}{'·'}</Text>
-            <Text>{this.state.LikeCount}{'赞'}{'·'}</Text>
-            <Text>{this.state.CommentCount}{'评论'}{'·'}</Text>
-            <Text>{this.state.ViewCount}{'阅读'}</Text>
-          </View>
-          <View style={styles.cardRow}>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={styles.cardBtn}
-              onPress={()=> {
-                this._doLike(this.state.Id, this.state.AmILikeIt)
-              }}>
-              <Icon name={this.state.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
-            </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={styles.cardBtn}
-              onPress={()=> {
-                this._showCommentInput()
-              }}>
-              <Icon name="comments-o" size={20}/>
-            </TouchableOpacity>
-          </View>
+        </TouchableOpacity>
+        <View style={[styles.cardRow, styles.moodView]}>
+          <Text style={styles.moodText}>{this.state.PostContent}</Text>
         </View>
+        <View style={styles.cardRow}>
+          <Text>{this.state.Distance}{'km'}{'·'}</Text>
+          <Text>{this.state.LikeCount}{'赞'}{'·'}</Text>
+          <Text>{this.state.CommentCount}{'评论'}{'·'}</Text>
+          <Text>{this.state.ViewCount}{'阅读'}</Text>
+        </View>
+        <View style={styles.cardRow}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.cardBtn}
+            onPress={()=> {
+              this._doLike(this.state.Id, this.state.AmILikeIt)
+            }}>
+            <Icon name={this.state.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.cardBtn}
+            onPress={()=> {
+              this._showCommentInput()
+            }}>
+            <Icon name="comments-o" size={20}/>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  _renderFooter() {
+    if (this.state.loadingMore) {
+      //这里会显示正在加载更多,但在屏幕下方,需要向上滑动显示(自动或手动),加载指示器,阻止了用户的滑动操作,后期可以让页面自动上滑,显示出这个组件。
+      return <LoadMoreFooter />
+    }
+
+    if (lastCount < this.state.commentList.length) {
+      return (<LoadMoreFooter isLoadAll={true}/>);
+    }
+
+    if (!lastCount) {
+      return null;
+    }
+  }
+
+  renderCommentList() {
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    return (
+      <ListView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh.bind(this)}
+          />
+        }
+        style={styles.listView}
+        dataSource={ds.cloneWithRows(this.state.commentList)}
+        renderRow={
+          this.renderRowData.bind(this)
+        }
+        onEndReached={this._toEnd.bind(this)}
+        renderFooter={
+          this._renderFooter.bind(this)
+        }
+        renderHeader={
+          this._renderHeader.bind(this)
+        }
+        enableEmptySections={true}
+        onEndReachedThreshold={10}
+        initialListSize={3}
+        pageSize={3}/>
+    )
+  }
+
+  renderBody() {
+    return (
+      <View style={styles.container}>
+        {this.renderCommentList()}
         <Modal
           style={{
             backgroundColor: '#E2E2E2',
@@ -274,7 +415,7 @@ class AnnouncementDetail extends BaseComponent {
             </View>
           </View>
         </Modal>
-      </ScrollView>
+      </View>
     )
   }
 
