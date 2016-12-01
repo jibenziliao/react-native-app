@@ -322,13 +322,21 @@ class Home extends BaseComponent {
   //跳转发布公告页面
   onRightPressed() {
     console.log('这是继承后的方法');
-    navigator.push({
+    const{dispatch}=this.props;
+    dispatch(HomeActions.newPost('',(json)=>{
+      console.log(json);
+      if(json.Code=='OK' && json.Result.DoIHaveANotExpiredPost){
+        //这里获取当前用户发布的最新的一条没有过期的动态
+      }
+    },(error)=>{}));
+
+    /*navigator.push({
       component: Addannouncement,
       name: 'Addannouncement',
       params:{
         myLocation:currentLocation
       }
-    })
+    })*/
   }
 
   //点击头像和名字,跳转个人信息详情页

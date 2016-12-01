@@ -59,6 +59,12 @@ export function getUserInfo(data, resolve, reject) {
   }
 }
 
+export function newPost(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch('/post/doihaveanotexpiredpost', data, dispatch, {type: ActionTypes.FETCH_BEGIN,}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
 function fetchOptions(data) {
   return {
     method: 'POST',
@@ -128,7 +134,7 @@ export function postAnnouncement(data, navigator) {
                       navigator.pop();
                     }, 1000);
                   }
-                }).catch((error)=>{
+                }).catch((error)=> {
                 dispatch({type: ActionTypes.FETCH_FAILED, params, error});
                 toastShort('网络异常,请重试');
               })
