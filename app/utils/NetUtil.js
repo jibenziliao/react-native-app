@@ -37,7 +37,7 @@ function fetchOptionsPut(data) {
 function timeoutPromise(ms, promise) {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
-      reject(new Error('Timeout Error'));
+      reject(toastShort('请求超时,请重试'));
     }, ms);
     promise.then(
       (res) => {
@@ -53,7 +53,7 @@ function timeoutPromise(ms, promise) {
 }
 
 export function postFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {
-  dispatch({...fetchReq,data});
+  dispatch({...fetchReq, data});
   fetch(URL_DEV + url, fetchOptions(data))
     .then(response => response.json())
     .then((json) => {

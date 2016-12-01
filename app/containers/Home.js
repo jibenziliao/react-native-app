@@ -324,7 +324,10 @@ class Home extends BaseComponent {
     console.log('这是继承后的方法');
     navigator.push({
       component: Addannouncement,
-      name: 'Addannouncement'
+      name: 'Addannouncement',
+      params:{
+        myLocation:currentLocation
+      }
     })
   }
 
@@ -337,6 +340,7 @@ class Home extends BaseComponent {
         name: 'UserInfo',
         params: {
           ...json.Result,
+          myLocation: currentLocation
         }
       });
     },(error)=>{}));

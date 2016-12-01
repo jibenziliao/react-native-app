@@ -26,6 +26,7 @@ import Modal from 'react-native-modalbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
 import LoadMoreFooter from '../components/LoadMoreFooter'
+import UserInfo from '../pages/UserInfo'
 
 const styles = StyleSheet.create({
   container: {
@@ -71,8 +72,8 @@ const styles = StyleSheet.create({
     borderColor: 'pink',
     paddingHorizontal: 6
   },
-  commentName:{
-    marginLeft:10
+  commentName: {
+    marginLeft: 10
   },
   userInfoIcon: {
     marginRight: 4,
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
 });
 
 let lastCount;
+let navigator;
 
 class AnnouncementDetail extends BaseComponent {
   constructor(props) {
@@ -123,14 +125,14 @@ class AnnouncementDetail extends BaseComponent {
     console.log(this.props.route.params);
     this.state = {
       comment: '',
-      commentUser:'',
-      forCommentId:null,
+      commentUser: '',
+      forCommentId: null,
       refreshing: false,
       loadingMore: false,
-      pageSize: 3,
-      pageIndex: 1,
       ...this.props.route.params
-    }
+    };
+    lastCount = this.state.pageSize;
+    navigator = this.props.navigator;
   }
 
   componentDidMount() {
@@ -141,10 +143,31 @@ class AnnouncementDetail extends BaseComponent {
     return {
       title: '公告详情',
       hideRightButton: false,
-      rightIcon: {
-        name: 'ellipsis-v'
-      },
+      rightTitle:'关注TA'
     };
+  }
+
+  //关注用户
+  onRightPressed() {
+    console.log('你点击了关注TA');
+    /*navigator.push({
+      component: Addannouncement,
+      name: 'Addannouncement'
+    })*/
+  }
+
+  //点击头像和名字,跳转个人信息详情页
+  _goUserInfo(id){
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getUserInfo({UserId:id},(json)=>{
+      navigator.push({
+        component: UserInfo,
+        name: 'UserInfo',
+        params: {
+          ...json.Result,
+        }
+      });
+    },(error)=>{}));
   }
 
   _renderGenderStyle(gender) {
@@ -154,11 +177,11 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  _showCommentInput(id,rowData) {
-    if(rowData !== null){
+  _showCommentInput(id, rowData) {
+    if (rowData !== null) {
       this.setState({
-        forCommentId:id,
-        commentUser:rowData.CommentUserInfo.Nickname
+        forCommentId: id,
+        commentUser: rowData.CommentUserInfo.Nickname
       });
     }
     //保存当前要评论的广告id
@@ -201,11 +224,22 @@ class AnnouncementDetail extends BaseComponent {
       comment: this.state.comment
     };
     this.state.CommentCount += 1;
+
+    let params = {
+      postId: this.state.Id,
+      pageIndex: 1,
+      pageSize: 10,
+      ...this.state.myLocation
+    };
     dispatch(HomeActions.comment(data, (json)=> {
-      this.setState({
-        CommentCount: this.state.CommentCount,
-        comment: ''//评论成功后需要清空评论框内容
-      });
+      dispatch(HomeActions.getCommentList(params, (json)=> {
+        this.setState({
+          CommentCount: this.state.CommentCount,
+          comment: '',//评论成功后需要清空评论框内容
+          commentList: json.Result//评论成功后,需要重新渲染页面,以显示最新的评论
+        });
+      }, (error)=> {
+      }))
     }, (error)=> {
     }));
   }
@@ -222,11 +256,61 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   _onRefresh() {
-
+    const {dispatch}=this.props;
+    this.setState({refreshing: true, pageIndex: 1});
+    const data = {
+      postId: this.state.Id,
+      ...this.state.myLocation
+    };
+    let params = {
+      postId: this.state.Id,
+      pageIndex: 1,
+      pageSize: 10,
+      Lat:this.state.Lat,
+      Lng:this.state.Lng
+    };
+    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
+      dispatch(HomeActions.getCommentList(params, (result)=> {
+        this.setState({
+          comment: '',
+          commentUser: '',
+          forCommentId: null,
+          refreshing: false,
+          loadingMore: false,
+          pageIndex: 1,
+          pageSize: 10,
+          ...json.Result,
+          myLocation:this.state.myLocation,
+          commentList:result.Result
+        });
+      }, (error)=> {
+      }));
+    }, (error)=> {
+    }));
   }
 
   _loadMoreData() {
     console.log('加载更多');
+    this.setState({loadingMore: true});
+    const {dispatch} = this.props;
+    this.state.pageIndex += 1;
+    let params = {
+      postId: this.state.Id,
+      pageIndex: this.state.pageIndex,
+      pageSize: 10,
+      ...this.state.myLocation
+    };
+    dispatch(HomeActions.getCommentList(params, (json)=> {
+      lastCount = json.Result.length;
+      this.state.commentList = this.state.commentList.concat(json.Result);
+      this.setState({
+        ...this.state.commentList,
+        refreshing: false,
+        loadingMore: false
+      })
+    }, (error)=> {
+
+    }));
   }
 
   renderRowData(rowData) {
@@ -238,10 +322,11 @@ class AnnouncementDetail extends BaseComponent {
           <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
                  style={styles.commentImg}/>
           <View style={styles.commentArea}>
-            <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'space-between'}}>
-              <View style={{flexDirection:'row',alignItems:'center'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text>{rowData.CommentUserInfo.Nickname}</Text>
-                <View style={[styles.userInfoLabel,styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
+                <View
+                  style={[styles.userInfoLabel, styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
                   <Icon
                     name={rowData.CommentUserInfo.Gender ? 'mars-stroke' : 'venus'}
                     size={12}
@@ -254,15 +339,17 @@ class AnnouncementDetail extends BaseComponent {
             <View>
               <TouchableOpacity
                 onPress={()=> {
-                  this._showCommentInput(rowData.Id,rowData);
+                  this._showCommentInput(rowData.Id, rowData);
                 }}
                 style={styles.commentContent}>
-                <Text>{rowData.ForCommentUserInfo?`回复${rowData.ForCommentUserInfo.Nickname}: `:''}{rowData.CommentContent}</Text>
+                <Text>{rowData.ForCommentUserNickname !== null ? `回复${rowData.ForCommentUserNickname}: ` : ''}{rowData.CommentContent}</Text>
               </TouchableOpacity>
+            </View>
+            <View>
+              <Text>{rowData.CommentUserInfo.Distance}{'km'}</Text>
             </View>
           </View>
         </View>
-
       </View>
     )
   }
@@ -273,7 +360,7 @@ class AnnouncementDetail extends BaseComponent {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={()=> {
-            console.log('123')
+            this._goUserInfo(this.state.CreaterId);
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
@@ -319,7 +406,7 @@ class AnnouncementDetail extends BaseComponent {
             activeOpacity={0.5}
             style={styles.cardBtn}
             onPress={()=> {
-              this._showCommentInput(this.state.Id,null)
+              this._showCommentInput(this.state.Id, null)
             }}>
             <Icon name="comments-o" size={20}/>
           </TouchableOpacity>
