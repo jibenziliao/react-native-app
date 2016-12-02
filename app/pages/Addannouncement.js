@@ -34,6 +34,7 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import * as HomeActions from '../actions/Home'
+import * as DateUtil from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   container: {
@@ -119,8 +120,7 @@ class Addannouncement extends BaseComponent {
       PostContent: '',
       imageArr: [],
       myLocation: this.props.route.params.myLocation,
-      days: 1,
-      ExpirationDate: null
+      days: '1'
     };
   }
 
@@ -250,12 +250,7 @@ class Addannouncement extends BaseComponent {
             selectedValue={this.state.days}
             onValueChange={
               (days) => {
-                let now = new Date();
-                this.setState({
-                  days: days,
-                  ExpirationDate: now.setDate(now.getDate() + days)
-                });
-                console.log(now.setDate(now.getDate() + 1));
+                this.setState({days});
               }}>
             <Picker.Item label="1天" value="1"/>
             <Picker.Item label="2天" value="2"/>
@@ -270,11 +265,7 @@ class Addannouncement extends BaseComponent {
     return (
       <Menu
         onSelect={(days) => {
-          let now = new Date();
-          this.setState({
-            days: days,
-            ExpirationDate: now.setDate(now.getDate() + days)
-          });
+          this.setState({days});
         }}>
         <MenuTrigger>
           <View style={{
@@ -290,9 +281,9 @@ class Addannouncement extends BaseComponent {
         </MenuTrigger>
         <MenuOptions
           optionsContainerStyle={{width: 80}}>
-          <MenuOption value={1} text='1天'/>
-          <MenuOption value={2} text="2天"/>
-          <MenuOption value={3} text="3天"/>
+          <MenuOption value={'1'} text='1天'/>
+          <MenuOption value={'2'} text="2天"/>
+          <MenuOption value={'3'} text="3天"/>
         </MenuOptions>
       </Menu>
     )
@@ -345,9 +336,19 @@ class Addannouncement extends BaseComponent {
       </MenuContext>
     )
   }
+
+  renderSpinner() {
+    if (this.props.pendingStatus) {
+      return (
+        <Spinner animating={this.props.pendingStatus}/>
+      )
+    }
+  }
+
 }
 export default connect((state)=> {
   return {
-    ...state
+    ...state,
+    pendingStatus: state.Photo.pending
   }
 })(Addannouncement)

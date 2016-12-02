@@ -191,14 +191,10 @@ class Home extends BaseComponent {
   constructor(props) {
     super(props);
     navigator = this.props.navigator;
-    let ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    });
     this.state = {
-      dataSource: ds.cloneWithRows(listViewData),
       refreshing: false,
       loadingMore: false,
-      pageSize: 3,
+      pageSize: 10,
       pageIndex: 1,
       postList: [],
       comment: '',
@@ -295,7 +291,7 @@ class Home extends BaseComponent {
       return <LoadMoreFooter />
     }
 
-    if (lastCount < this.state.postList.length) {
+    if (lastCount < this.state.pageSize) {
       return (<LoadMoreFooter isLoadAll={true}/>);
     }
 
@@ -319,30 +315,55 @@ class Home extends BaseComponent {
     };
   }
 
-  //跳转发布公告页面
+  //获取用户是否存在未过期的动态
   onRightPressed() {
-    console.log('这是继承后的方法');
-    const{dispatch}=this.props;
-    /*dispatch(HomeActions.newPost('',(json)=>{
-      console.log(json);
-      if(json.Code=='OK' && json.Result.DoIHaveANotExpiredPost){
-        //这里获取当前用户发布的最新的一条没有过期的动态
-      }
-    },(error)=>{}));*/
+    const {dispatch}=this.props;
+    dispatch(HomeActions.newPost('', (json)=> {
+      let params = {
+        postId: json.Result.PostInfo.Id,
+        pageIndex: 1,
+        pageSize: 10,
+        ...currentLocation
+      };
+      this._publicAnnouncement(params, json, dispatch);
+    }, (error)=> {
+    }));
+  }
 
-    navigator.push({
-      component: Addannouncement,
-      name: 'Addannouncement',
-      params:{
-        myLocation:currentLocation
-      }
-    })
+  //跳转发布公告(查看公告)页面
+  _publicAnnouncement(params, json, dispatch) {
+    if (json.Code == 'OK' && json.Result.DoIHaveANotExpiredPost) {
+      //这里获取当前用户发布的最新的一条没有过期的动态
+      dispatch(HomeActions.getCommentList(params, (result)=> {
+        navigator.push({
+          component: AnnouncementDetail,
+          name: 'AnnouncementDetail',
+          params: {
+            ...json.Result.PostInfo,
+            myLocation: currentLocation,
+            commentList: result.Result,
+            pageIndex: 1,
+            pageSize: 10,
+            isSelf: true
+          }
+        })
+      }, (error)=> {
+      }))
+    } else {
+      navigator.push({
+        component: Addannouncement,
+        name: 'Addannouncement',
+        params: {
+          myLocation: currentLocation
+        }
+      })
+    }
   }
 
   //点击头像和名字,跳转个人信息详情页
-  _goUserInfo(id){
+  _goUserInfo(id) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getUserInfo({UserId:id},(json)=>{
+    dispatch(HomeActions.getUserInfo({UserId: id}, (json)=> {
       navigator.push({
         component: UserInfo,
         name: 'UserInfo',
@@ -351,7 +372,8 @@ class Home extends BaseComponent {
           myLocation: currentLocation
         }
       });
-    },(error)=>{}));
+    }, (error)=> {
+    }));
   }
 
   //点赞/取消赞(不论是否已赞,点赞取消赞,isLike都传true,isLike可能的值null,true,false)
@@ -395,7 +417,7 @@ class Home extends BaseComponent {
     }
   }
 
-  //前往公告详情(需要先获取公告详情和评论列表)
+  //前往公告详情(先判断是否是本人发布的动态,然后获取公告详情和评论列表)
   _goAnnouncementDetail(rowData) {
     const {dispatch}=this.props;
     const data = {
@@ -406,8 +428,8 @@ class Home extends BaseComponent {
       postId: rowData.Id,
       pageIndex: 1,
       pageSize: 10,
-      Lat:rowData.Lat,
-      Lng:rowData.Lng
+      Lat: rowData.Lat,
+      Lng: rowData.Lng
     };
     dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (result)=> {
@@ -418,7 +440,7 @@ class Home extends BaseComponent {
             pageIndex: 1,
             pageSize: 10,
             ...json.Result,
-            myLocation: {...currentLocation},
+            myLocation: currentLocation,
             commentList: result.Result
           }
         })
@@ -516,7 +538,7 @@ class Home extends BaseComponent {
           enableEmptySections={true}
           onEndReachedThreshold={10}
           initialListSize={3}
-          pageSize={3}/>
+          pageSize={this.state.pageSize}/>
       )
     } else {
       return null

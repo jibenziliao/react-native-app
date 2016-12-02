@@ -76,15 +76,47 @@ function fetchOptions(data) {
   }
 }
 
+function pushNewPost(dispatch, data, imgArr, navigator) {
+  let params = {
+    PostContent: data.PostContent,
+    Lat: data.myLocation.Lat,
+    Lng: data.myLocation.Lng,
+    PicList: imgArr
+  };
+  dispatch({type: ActionTypes.FETCH_BEGIN, params});
+  fetch(URL_DEV + '/post/newpost/' + data.days, fetchOptions(params))
+    .then(response=>response.json())
+    .then((json)=> {
+      dispatch({type: ActionTypes.FETCH_END, params, json});
+      if ('OK' != json.Code) {
+        toastShort(json.Message);
+        return false;
+      } else {
+        toastShort('发布成功');
+        setTimeout(()=> {
+          navigator.pop();
+        }, 1000);
+      }
+    }).catch((error)=> {
+    dispatch({type: ActionTypes.FETCH_FAILED, params, error});
+    toastShort('网络异常,请重试');
+  })
+}
+
 export function postAnnouncement(data, navigator) {
   return (dispatch)=> {
-    dispatch({type: ActionTypes.UPLOAD_PHOTO_BEGIN});
     const photoCount = data.imageArr.length;
     let uploadReq = 0;
     let uploadImgArr = [];
-    for (let i = 0; i < data.imageArr.length; i++) {
-      uploadSingleImage(data.imageArr[i], data.imageArr, dispatch);
+    if (photoCount !== 0) {
+      dispatch({type: ActionTypes.UPLOAD_PHOTO_BEGIN});
+      for (let i = 0; i < data.imageArr.length; i++) {
+        uploadSingleImage(data.imageArr[i], data.imageArr, dispatch);
+      }
+    } else {
+      pushNewPost(dispatch, data, [], navigator);
     }
+
     function uploadSingleImage(obj, arr, dispatch) {
       let formData = new FormData();
       let file = {
@@ -111,34 +143,7 @@ export function postAnnouncement(data, navigator) {
             uploadReq += 1;
             if (uploadReq === photoCount) {
               dispatch({type: ActionTypes.UPLOAD_PHOTO_END, arr, json});
-              let params = {
-                PostContent: data.PostContent,
-                Lat: data.myLocation.Lat,
-                Lng: data.myLocation.Lng,
-                PicList: uploadImgArr,
-                ExpirationDate: '2016-12-2'
-              };
-              dispatch({type: ActionTypes.FETCH_BEGIN, params});
-              fetch(URL_DEV + '/post/newpost', fetchOptions(params))
-                .then((response)=> {
-                  response.json()
-                })
-                .then((json)=> {
-                  dispatch({type: ActionTypes.FETCH_END, params, json});
-                  if ('OK' != json.Code) {
-                    toastShort(json.Message);
-                    return false;
-                  } else {
-                    toastShort('发布成功');
-                    setTimeout(()=> {
-                      navigator.pop();
-                    }, 1000);
-                  }
-                }).catch((error)=> {
-                dispatch({type: ActionTypes.FETCH_FAILED, params, error});
-                toastShort('网络异常,请重试');
-              })
-
+              pushNewPost(dispatch, data, uploadImgArr, navigator);
             }
           }
         })
