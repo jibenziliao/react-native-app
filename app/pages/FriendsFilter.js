@@ -177,9 +177,9 @@ class FriendsFilter extends BaseComponent {
   }
 
   //保存交友信息
-  saveFriendFilter(data,datingPurpose) {
+  saveFriendFilter(data) {
     const {dispatch}=this.props;
-    dispatch(FriendFilterActions.saveFriendFilter(data,datingPurpose, (json)=> {
+    dispatch(FriendFilterActions.saveFriendFilter(data, (json)=> {
       this.goHome();
     }, (error)=> {
       //console.log(error)
@@ -209,38 +209,6 @@ class FriendsFilter extends BaseComponent {
     return {
       title: '交友信息'
     };
-  }
-
-  renderDatingPurpose(DatingPurposeSelect) {
-    return (
-      <View style={styles.checkBoxView}>
-        {DatingPurposeSelect.map((item)=> {
-          return (
-            <CheckBox
-              key={item.Value}
-              label={item.Value}
-              labelStyle={styles.checkBoxLabel}
-              checked={item.Checked}
-              style={styles.checkBoxItem}
-              onChange={(checked)=> {
-                item.Checked = checked;
-                if (checked) {
-                  DatingPurposeSelectCopy.push(item);
-                } else {
-                  let index = 0;
-                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
-                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
-                      index = i;
-                      break;
-                    }
-                  }
-                  DatingPurposeSelectCopy.splice(index, 1);
-                }
-              }}/>
-          )
-        })}
-      </View>
-    )
   }
 
   _createAgeRangeData() {
@@ -285,11 +253,6 @@ class FriendsFilter extends BaseComponent {
       data.push(_maxHeight);
     }
     return data;
-  }
-
-  _createEducationData() {
-    //DictMap['EducationLevelDict'].push('不限');
-    return DictMap['EducationLevelDict'];
   }
 
   _renderDoublePicker(text, title, minValue, maxValue, _createData) {
@@ -440,46 +403,6 @@ class FriendsFilter extends BaseComponent {
     RNPicker.show();
   }
 
-  _updateCheckStatus(text, data) {
-    switch (text) {
-      case 'love':
-        this.setState({
-          datingPurpose: {
-            ...this.state.datingPurpose,
-            love: !data
-          }
-        });
-        break;
-      case 'friendShip':
-        this.setState({
-          datingPurpose: {
-            ...this.state.datingPurpose,
-            friendShip: !data
-          }
-        });
-        break;
-      case 'relationShip':
-        this.setState({
-          datingPurpose: {
-            ...this.state.datingPurpose,
-            relationShip: !data
-          }
-        });
-        break;
-      case 'other':
-        this.setState({
-          datingPurpose: {
-            ...this.state.datingPurpose,
-            other: !data
-          }
-        });
-        break;
-      default:
-        console.error('选择交友目的出错');
-        break;
-    }
-  }
-
   renderBody() {
     return (
       <View style={styles.container}>
@@ -496,10 +419,6 @@ class FriendsFilter extends BaseComponent {
               <Text style={styles.inputLabel}>{'身高'}</Text>
               {this._renderDoublePicker('heightRangeText', '请选择身高范围', this.state.minHeight + '', this.state.maxHeight + '', this._createHeightRangeData())}
             </View>
-            {/*<View style={styles.inputRow}>
-             <Text style={styles.inputLabel}>{'学历'}</Text>
-             {this._renderSinglePicker('educationText', '请选择学历', 'education', this._createEducationData())}
-             </View>*/}
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'性别'}</Text>
               {this._renderSinglePicker('genderText', '请选择性别', 'gender', tmpGenderArr)}
@@ -509,54 +428,6 @@ class FriendsFilter extends BaseComponent {
               {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.gender, tmpPhotoOnlyArr)}
             </View>
           </View>
-          <View style={styles.listItem}>
-            <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>
-            {this.renderDatingPurpose(DatingPurposeSelect)}
-          </View>
-
-          {/*<View style={styles.datingFilterArea}>
-           <Text style={styles.datingFilterTitle}>{'交友目的'}</Text>
-           <View style={styles.datingFilter}>
-           <View style={styles.checkBoxRow}>
-           <ListItem
-           style={{flex: 1}}
-           onPress={()=> {
-           this._updateCheckStatus('love', this.state.datingPurpose.love)
-           }}>
-           <NBCheckBox
-           checked={this.state.datingPurpose.love}/>
-           <NBText style={styles.checkBoxText}>{'男女朋友'}</NBText>
-           </ListItem>
-           <ListItem
-           style={{flex: 1}}
-           onPress={()=> {
-           this._updateCheckStatus('relationShip', this.state.datingPurpose.relationShip)
-           }}>
-           <NBCheckBox checked={this.state.datingPurpose.relationShip}/>
-           <NBText style={styles.checkBoxText}>{'异性知己'}</NBText>
-           </ListItem>
-           </View>
-           <View style={styles.checkBoxRow}>
-           <ListItem
-           style={styles.checkBoxItem}
-           onPress={()=> {
-           this._updateCheckStatus('friendShip', this.state.datingPurpose.friendShip)
-           }}>
-           <NBCheckBox checked={this.state.datingPurpose.friendShip}/>
-           <NBText style={styles.checkBoxText}>{'好友'}</NBText>
-           </ListItem>
-           <ListItem
-           style={styles.checkBoxItem}
-           onPress={()=> {
-           this._updateCheckStatus('other', this.state.datingPurpose.other)
-           }}>
-           <NBCheckBox
-           checked={this.state.datingPurpose.other}/>
-           <NBText style={styles.checkBoxText}>{'中介或其他'}</NBText>
-           </ListItem>
-           </View>
-           </View>
-           </View>*/}
           {/*<NBButton
             block
             style={{
@@ -572,7 +443,7 @@ class FriendsFilter extends BaseComponent {
             block
             style={{marginVertical: 30}}
             onPress={()=> {
-              this.saveFriendFilter(this.state,DatingPurposeSelectCopy)
+              this.saveFriendFilter(this.state)
             }}>
             完成注册
           </NBButton>
