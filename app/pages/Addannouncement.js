@@ -120,7 +120,8 @@ class Addannouncement extends BaseComponent {
       PostContent: '',
       imageArr: [],
       myLocation: this.props.route.params.myLocation,
-      days: '1'
+      days: '1',
+      callBack:this.props.route.params.callBack
     };
   }
 
@@ -140,11 +141,6 @@ class Addannouncement extends BaseComponent {
   onRightPressed() {
     const {dispatch, navigator}=this.props;
     dispatch(HomeActions.postAnnouncement(this.state, navigator));
-
-    /*navigator.push({
-     component: Addannouncement,
-     name: 'Addannouncement'
-     })*/
   }
 
   _initImagePicker() {

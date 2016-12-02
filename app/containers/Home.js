@@ -99,16 +99,16 @@ const styles = StyleSheet.create({
   },
   moodText: {
     fontSize: 16,
-    flexDirection:'row',
-    flexWrap:'wrap',
-    alignItems:'flex-start'
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start'
   },
-  postImage:{
-    flexDirection:'row',
-    flexWrap:'wrap',
-    alignItems:'flex-start',
-    paddingVertical:5,
-    justifyContent:'space-between'
+  postImage: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    paddingVertical: 5,
+    justifyContent: 'space-between'
   },
   cardBtn: {
     marginTop: 10,
@@ -373,7 +373,10 @@ class Home extends BaseComponent {
             commentList: result.Result,
             pageIndex: 1,
             pageSize: 10,
-            isSelf: true
+            isSelf: true,
+            callBack: ()=> {
+              this._onRefresh()
+            }
           }
         })
       }, (error)=> {
@@ -383,7 +386,10 @@ class Home extends BaseComponent {
         component: Addannouncement,
         name: 'Addannouncement',
         params: {
-          myLocation: currentLocation
+          myLocation: currentLocation,
+          callBack: ()=> {
+            this._onRefresh()
+          }
         }
       })
     }
@@ -471,7 +477,10 @@ class Home extends BaseComponent {
             ...json.Result,
             myLocation: currentLocation,
             commentList: result.Result,
-            isSelf: currentUser.UserId === rowData.CreaterId
+            isSelf: currentUser.UserId === rowData.CreaterId,
+            callBack: ()=> {
+              this._onRefresh()
+            }
           }
         })
       }, (error)=> {
@@ -481,17 +490,17 @@ class Home extends BaseComponent {
   }
 
   //渲染公告中的图片
-  renderPostImage(arr){
-    if(arr.length!==0){
-      return arr.map((item,index)=>{
-        return(
+  renderPostImage(arr) {
+    if (arr.length !== 0) {
+      return arr.map((item, index)=> {
+        return (
           <Image
             key={index}
-            style={{width:80,height:80,marginBottom:5,marginRight:5}}
-            source={{uri:URL_DEV+'/'+item}}/>
+            style={{width: 80, height: 80, marginBottom: 5, marginRight: 5}}
+            source={{uri: URL_DEV + '/' + item}}/>
         )
       })
-    }else{
+    } else {
       return null;
     }
   }

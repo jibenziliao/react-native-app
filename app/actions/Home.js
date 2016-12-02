@@ -7,6 +7,8 @@ import * as ActionTypes from './ActionTypes'
 import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 import {toastShort} from '../utils/ToastUtil'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import Home from '../containers/Home'
+import MainContainer from '../containers/MainContainer'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {
@@ -118,7 +120,8 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
       } else {
         toastShort('发布成功');
         setTimeout(()=> {
-          navigator.pop();
+          navigator.popToTop();
+          data.callBack();
         }, 1000);
       }
     }).catch((error)=> {
@@ -135,13 +138,13 @@ export function postAnnouncement(data, navigator) {
     if (photoCount !== 0) {
       dispatch({type: ActionTypes.UPLOAD_PHOTO_BEGIN});
       for (let i = 0; i < data.imageArr.length; i++) {
-        uploadSingleImage(data.imageArr[i], data.imageArr, dispatch);
+        uploadSingleImage(data.imageArr[i], data, dispatch);
       }
     } else {
       pushNewPost(dispatch, data, [], navigator);
     }
 
-    function uploadSingleImage(obj, arr, dispatch) {
+    function uploadSingleImage(obj, data, dispatch) {
       let formData = new FormData();
       let file = {
         uri: obj.uri,
@@ -166,7 +169,7 @@ export function postAnnouncement(data, navigator) {
             uploadImgArr.push(json.Result);
             uploadReq += 1;
             if (uploadReq === photoCount) {
-              dispatch({type: ActionTypes.UPLOAD_PHOTO_END, arr, json});
+              dispatch({type: ActionTypes.UPLOAD_PHOTO_END, data, json});
               pushNewPost(dispatch, data, uploadImgArr, navigator);
             }
           }

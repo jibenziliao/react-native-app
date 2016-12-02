@@ -32,6 +32,7 @@ import {toastShort} from '../utils/ToastUtil'
 import Addannouncement from '../pages/Addannouncement'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import ActionSheet from 'react-native-actionsheet'
+import Home from '../containers/Home'
 
 const styles = StyleSheet.create({
   container: {
@@ -148,7 +149,8 @@ class AnnouncementDetail extends BaseComponent {
       forCommentId: null,
       refreshing: false,
       loadingMore: false,
-      ...this.props.route.params
+      ...this.props.route.params,
+      callBack:this.props.route.params.callBack
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -166,7 +168,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   componentWillUnmount(){
-    this.clearTimeout(this.deleteTimer);
+    clearTimeout(this.deleteTimer);
   }
 
   getNavigationBarProps() {
@@ -187,13 +189,6 @@ class AnnouncementDetail extends BaseComponent {
       //关注用户
       console.log('你点击了关注TA');
     }
-    /*navigator.push({
-     component: Addannouncement,
-     name: 'Addannouncement',
-     params: {
-     myLocation: this.state.myLocation
-     }
-     })*/
   }
 
   //点击actionSheet
@@ -207,6 +202,7 @@ class AnnouncementDetail extends BaseComponent {
         toastShort('删除成功');
         this.deleteTimer = setTimeout(()=> {
           navigator.pop();
+          this.state.callBack();
         }, 1000);
       }, (error)=> {
       }));
@@ -345,6 +341,7 @@ class AnnouncementDetail extends BaseComponent {
           loadingMore: false,
           pageIndex: 1,
           pageSize: 10,
+          callBack:this.state.callBack,
           ...json.Result,
           myLocation: this.state.myLocation,
           commentList: result.Result,
