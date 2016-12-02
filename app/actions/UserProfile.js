@@ -137,7 +137,7 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
           Weight: data.weight,
           JobType: result.JobTypeObj && result.JobTypeObj.Key ? result.JobTypeObj.Key : "Marketing",
           IncomeLevel: result.IncomeLevel && result.IncomeLevel.Key ? result.IncomeLevel.Key : "Higher",
-          EducationLevel: result.EducationLevel && result.EducationLevel.Key ? result.EducationLevel : "Diploma",
+          EducationLevel: result.EducationLevel && result.EducationLevel.Key ? result.EducationLevel.Key : "Diploma",
           MarriageStatus: result.MarriageStatus && result.MarriageStatus.Key ? result.MarriageStatus.Key : "Married",
           Religion: data.religion,
           DatingPurpose: tmpDatingPurposeArr.join(','),

@@ -116,7 +116,7 @@ export function postAnnouncement(data, navigator) {
                 Lat: data.myLocation.Lat,
                 Lng: data.myLocation.Lng,
                 PicList: uploadImgArr,
-                ExpirationDate: ''
+                ExpirationDate: '2016-12-2'
               };
               dispatch({type: ActionTypes.FETCH_BEGIN, params});
               fetch(URL_DEV + '/post/newpost', fetchOptions(params))
