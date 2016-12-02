@@ -4,7 +4,7 @@
  * @description
  */
 import * as ActionTypes from './ActionTypes'
-import {postFetch, getFetch, putFetch} from '../utils/NetUtil'
+import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 import {toastShort} from '../utils/ToastUtil'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 
@@ -32,6 +32,15 @@ export function comment(data, resolve, reject) {
   }
 }
 
+export function deleteAnnouncement(data, resolve, reject) {
+  return (dispatch)=> {
+    deleteFetch(`/post/delete/${data.PostId}`, '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
 export function getAnnouncementDetail(data, resolve, reject) {
   return (dispatch)=> {
     getFetch('/post/viewpost/', `${data.postId}/${data.Lat}/${data.Lng}`, dispatch, {
@@ -56,6 +65,21 @@ export function getUserInfo(data, resolve, reject) {
       type: ActionTypes.FETCH_BEGIN,
       data
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function gore(data, resolve, reject) {
+  return (dispatch)=> {
+    putFetch(`/post/up/${data.PostId}`, data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getCurrentUserProfile(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch('/profile/', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 

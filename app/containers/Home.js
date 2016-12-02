@@ -34,6 +34,7 @@ import * as Storage from '../utils/Storage'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
 
 const styles = StyleSheet.create({
   container: {
@@ -97,7 +98,17 @@ const styles = StyleSheet.create({
     marginVertical: 20
   },
   moodText: {
-    fontSize: 16
+    fontSize: 16,
+    flexDirection:'row',
+    flexWrap:'wrap',
+    alignItems:'flex-start'
+  },
+  postImage:{
+    flexDirection:'row',
+    flexWrap:'wrap',
+    alignItems:'flex-start',
+    paddingVertical:5,
+    justifyContent:'space-between'
   },
   cardBtn: {
     marginTop: 10,
@@ -186,6 +197,7 @@ let navigator;
 let currentLocation = {};
 let commentId;
 let lastCount;
+let currentUser;
 
 class Home extends BaseComponent {
   constructor(props) {
@@ -221,7 +233,8 @@ class Home extends BaseComponent {
           lastCount = json.Result.length;
           this.setState({
             postList: json.Result
-          })
+          });
+          this._getCurrentUserProfile();
         }, (error)=> {
 
         }));
@@ -229,6 +242,22 @@ class Home extends BaseComponent {
     }, (error)=> {
       console.log('读取缓存出错!', error);
     });
+  }
+
+  //处理距离
+  _distance(data) {
+    data = data + '';
+    return data.substr(0, data.indexOf(".") + 3);
+  }
+
+  //获取当前登录的用户信息
+  _getCurrentUserProfile() {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      currentUser = json.Result;
+    }, (error)=> {
+
+    }));
   }
 
   _toEnd() {
@@ -319,20 +348,20 @@ class Home extends BaseComponent {
   onRightPressed() {
     const {dispatch}=this.props;
     dispatch(HomeActions.newPost('', (json)=> {
+      this._publicAnnouncement(json, dispatch);
+    }, (error)=> {
+    }));
+  }
+
+  //跳转发布公告(查看公告)页面
+  _publicAnnouncement(json, dispatch) {
+    if (json.Code == 'OK' && json.Result.DoIHaveANotExpiredPost) {
       let params = {
         postId: json.Result.PostInfo.Id,
         pageIndex: 1,
         pageSize: 10,
         ...currentLocation
       };
-      this._publicAnnouncement(params, json, dispatch);
-    }, (error)=> {
-    }));
-  }
-
-  //跳转发布公告(查看公告)页面
-  _publicAnnouncement(params, json, dispatch) {
-    if (json.Code == 'OK' && json.Result.DoIHaveANotExpiredPost) {
       //这里获取当前用户发布的最新的一条没有过期的动态
       dispatch(HomeActions.getCommentList(params, (result)=> {
         navigator.push({
@@ -441,13 +470,30 @@ class Home extends BaseComponent {
             pageSize: 10,
             ...json.Result,
             myLocation: currentLocation,
-            commentList: result.Result
+            commentList: result.Result,
+            isSelf: currentUser.UserId === rowData.CreaterId
           }
         })
       }, (error)=> {
       }));
     }, (error)=> {
     }));
+  }
+
+  //渲染公告中的图片
+  renderPostImage(arr){
+    if(arr.length!==0){
+      return arr.map((item,index)=>{
+        return(
+          <Image
+            key={index}
+            style={{width:80,height:80,marginBottom:5,marginRight:5}}
+            source={{uri:URL_DEV+'/'+item}}/>
+        )
+      })
+    }else{
+      return null;
+    }
   }
 
   renderRowData(rowData) {
@@ -482,14 +528,17 @@ class Home extends BaseComponent {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.cardRow, styles.moodView]}
+          style={styles.moodView}
           onPress={()=> {
             this._goAnnouncementDetail(rowData)
           }}>
           <Text style={styles.moodText}>{rowData.PostContent}</Text>
+          <View style={styles.postImage}>
+            {this.renderPostImage(rowData.PicList)}
+          </View>
         </TouchableOpacity>
         <View style={styles.cardRow}>
-          <Text>{rowData.Distance}{'km'}{'·'}</Text>
+          <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
           <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
           <Text>{rowData.ViewCount}{'阅读'}</Text>

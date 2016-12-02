@@ -15,7 +15,8 @@ import {
   ListView,
   RefreshControl,
   Dimensions,
-  InteractionManager
+  InteractionManager,
+  Alert
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -27,6 +28,10 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import UserInfo from '../pages/UserInfo'
+import {toastShort} from '../utils/ToastUtil'
+import Addannouncement from '../pages/Addannouncement'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import ActionSheet from 'react-native-actionsheet'
 
 const styles = StyleSheet.create({
   container: {
@@ -86,8 +91,18 @@ const styles = StyleSheet.create({
   moodView: {
     marginVertical: 20
   },
+  postImage: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    paddingVertical: 5,
+    justifyContent: 'space-between'
+  },
   moodText: {
-    fontSize: 16
+    fontSize: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start'
   },
   cardBtn: {
     marginTop: 10,
@@ -119,6 +134,10 @@ const styles = StyleSheet.create({
 let lastCount;
 let navigator;
 
+const buttons = ['取消', '发布新公告', '删除'];
+const CANCEL_INDEX = 0;
+const DESTRUCTIVE_INDEX = 1;
+
 class AnnouncementDetail extends BaseComponent {
   constructor(props) {
     super(props);
@@ -135,31 +154,77 @@ class AnnouncementDetail extends BaseComponent {
     navigator = this.props.navigator;
   }
 
-  componentDidMount() {
+  _renderRightIcon() {
+    if (this.state.isSelf) {
+      return {
+        name: 'ellipsis-v',
+        size: 24
+      }
+    } else {
+      return null;
+    }
+  }
 
+  componentWillUnmount(){
+    this.clearTimeout(this.deleteTimer);
   }
 
   getNavigationBarProps() {
     return {
       title: '公告详情',
       hideRightButton: false,
-      rightTitle:'关注TA'
+      rightTitle: this.state.isSelf ? null : '关注TA',
+      rightIcon: this._renderRightIcon()
     };
   }
 
   //关注用户
   onRightPressed() {
-    console.log('你点击了关注TA');
+    if (this.state.isSelf) {
+      //弹出下拉菜单
+      this.ActionSheet.show();
+    } else {
+      //关注用户
+      console.log('你点击了关注TA');
+    }
     /*navigator.push({
-      component: Addannouncement,
-      name: 'Addannouncement'
-    })*/
+     component: Addannouncement,
+     name: 'Addannouncement',
+     params: {
+     myLocation: this.state.myLocation
+     }
+     })*/
+  }
+
+  //点击actionSheet
+  _actionSheetPress(index) {
+    const {dispatch, navigator}=this.props;
+    let data = {
+      PostId: this.state.Id
+    };
+    if (index === 2) {
+      dispatch(HomeActions.deleteAnnouncement(data, (json)=> {
+        toastShort('删除成功');
+        this.deleteTimer = setTimeout(()=> {
+          navigator.pop();
+        }, 1000);
+      }, (error)=> {
+      }));
+    } else if (index === 1) {
+      navigator.push({
+        component: Addannouncement,
+        name: 'Addannouncement',
+        params: {
+          myLocation: this.state.myLocation
+        }
+      })
+    }
   }
 
   //点击头像和名字,跳转个人信息详情页
-  _goUserInfo(id){
+  _goUserInfo(id) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getUserInfo({UserId:id},(json)=>{
+    dispatch(HomeActions.getUserInfo({UserId: id}, (json)=> {
       navigator.push({
         component: UserInfo,
         name: 'UserInfo',
@@ -167,7 +232,8 @@ class AnnouncementDetail extends BaseComponent {
           ...json.Result,
         }
       });
-    },(error)=>{}));
+    }, (error)=> {
+    }));
   }
 
   _renderGenderStyle(gender) {
@@ -266,8 +332,8 @@ class AnnouncementDetail extends BaseComponent {
       postId: this.state.Id,
       pageIndex: 1,
       pageSize: 10,
-      Lat:this.state.Lat,
-      Lng:this.state.Lng
+      Lat: this.state.Lat,
+      Lng: this.state.Lng
     };
     dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (result)=> {
@@ -280,8 +346,9 @@ class AnnouncementDetail extends BaseComponent {
           pageIndex: 1,
           pageSize: 10,
           ...json.Result,
-          myLocation:this.state.myLocation,
-          commentList:result.Result
+          myLocation: this.state.myLocation,
+          commentList: result.Result,
+          isSelf: this.state.isSelf
         });
       }, (error)=> {
       }));
@@ -311,6 +378,74 @@ class AnnouncementDetail extends BaseComponent {
     }, (error)=> {
 
     }));
+  }
+
+  //弹出顶一下提示框
+  _goreAlert() {
+    Alert.alert('提示', '顶一下,在广场的时间可以加一天哦,取消则不加天数', [
+      {text: '确定', onPress: () => this._gore()},
+      {
+        text: '取消', onPress: () => {
+      }
+      }
+    ]);
+  }
+
+  //顶一下操作
+  _gore() {
+    const {dispatch}=this.props;
+    let data = {
+      PostId: this.state.Id
+    };
+    dispatch(HomeActions.gore(data, (json)=> {
+      toastShort('置顶成功');
+    }, (error)=> {
+    }));
+  }
+
+  //判断此公告是否是当前用户所发,来决定是否显示"顶一下"按钮
+  renderGore() {
+    if (this.state.isSelf) {
+      return (
+        <TouchableOpacity
+          activeOpacity={0.5}
+          style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}
+          onPress={()=> {
+            this._goreAlert()
+          }}>
+          <Text>{'顶一下'}</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return null;
+    }
+  }
+
+  //处理距离
+  _distance(data) {
+    data = data + '';
+    return data.substr(0, data.indexOf(".") + 3);
+  }
+
+  //处理到期日期
+  _expirationDate(data) {
+    return data.split("T")[0];
+  }
+
+  //渲染公告中的图片
+  renderPostImage(arr) {
+    if (arr.length !== 0) {
+      return arr.map((item, index)=> {
+        return (
+          <Image
+            key={index}
+            style={{width: 80, height: 80, marginRight: 5, marginBottom: 5}}
+            source={{uri: URL_DEV + '/' + item}}/>
+        )
+      })
+    } else {
+      return null;
+    }
   }
 
   renderRowData(rowData) {
@@ -346,7 +481,7 @@ class AnnouncementDetail extends BaseComponent {
               </TouchableOpacity>
             </View>
             <View>
-              <Text>{rowData.CommentUserInfo.Distance}{'km'}</Text>
+              <Text>{this._distance(rowData.CommentUserInfo.Distance)}{'km'}</Text>
             </View>
           </View>
         </View>
@@ -384,14 +519,18 @@ class AnnouncementDetail extends BaseComponent {
             </View>
           </View>
         </TouchableOpacity>
-        <View style={[styles.cardRow, styles.moodView]}>
+        <View style={styles.moodView}>
           <Text style={styles.moodText}>{this.state.PostContent}</Text>
+          <View style={styles.postImage}>
+            {this.renderPostImage(this.state.PicList)}
+          </View>
         </View>
         <View style={styles.cardRow}>
-          <Text>{this.state.Distance}{'km'}{'·'}</Text>
+          <Text>{this._distance(this.state.Distance)}{'km'}{'·'}</Text>
           <Text>{this.state.LikeCount}{'赞'}{'·'}</Text>
           <Text>{this.state.CommentCount}{'评论'}{'·'}</Text>
           <Text>{this.state.ViewCount}{'阅读'}</Text>
+          {this.renderGore()}
         </View>
         <View style={styles.cardRow}>
           <TouchableOpacity
@@ -410,6 +549,9 @@ class AnnouncementDetail extends BaseComponent {
             }}>
             <Icon name="comments-o" size={20}/>
           </TouchableOpacity>
+          <View style={{flex: 1, marginTop: 10, flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <Text>{'公告到期时间:'}{this._expirationDate(this.state.ExpirationDate)}</Text>
+          </View>
         </View>
       </View>
     )
@@ -463,6 +605,14 @@ class AnnouncementDetail extends BaseComponent {
     return (
       <View style={styles.container}>
         {this.renderCommentList()}
+        <ActionSheet
+          ref={(o) => this.ActionSheet = o}
+          title="请选择你的操作"
+          options={buttons}
+          cancelButtonIndex={CANCEL_INDEX}
+          destructiveButtonIndex={DESTRUCTIVE_INDEX}
+          onPress={this._actionSheetPress.bind(this)}
+        />
         <Modal
           style={{
             backgroundColor: '#E2E2E2',

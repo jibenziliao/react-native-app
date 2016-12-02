@@ -348,7 +348,6 @@ class Addannouncement extends BaseComponent {
 }
 export default connect((state)=> {
   return {
-    ...state,
     pendingStatus: state.Photo.pending
   }
 })(Addannouncement)

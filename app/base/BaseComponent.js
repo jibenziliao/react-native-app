@@ -3,14 +3,14 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:58
  * @description
  */
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {
   View,
   Text,
   StyleSheet
-} from 'react-native';
-import {getNavigator} from '../navigation/Route';
-import NavigationBar from '../components/NavigationBar';
+} from 'react-native'
+import {getNavigator} from '../navigation/Route'
+import NavigationBar from '../components/NavigationBar'
 
 const styles = StyleSheet.create({
   container: {

@@ -34,6 +34,12 @@ function fetchOptionsPut(data) {
   }
 }
 
+function fetchOptionsDelete() {
+  return {
+    method: 'DELETE'
+  }
+}
+
 function timeoutPromise(ms, promise) {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
@@ -96,6 +102,26 @@ export function getFetch(url, data, dispatch, fetchReq, receive, error, resolveF
 export function putFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {
   dispatch(fetchReq);
   timeoutPromise(TIME_OUT, fetch(URL_DEV + url + '', fetchOptionsPut(data))).then(response => response.json())
+    .then((json) => {
+      if ('OK' != json.Code) {
+        dispatch({...error, json});
+        toastShort(json.Message);
+        rejectFn(json);
+      } else {
+        dispatch({...receive, json});
+        resolveFn(json);
+      }
+    })
+    .catch((error) => {
+      toastShort('网络发生错误,请重试');
+      dispatch({...error, error});
+      rejectFn(error);
+    });
+}
+
+export function deleteFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {
+  dispatch(fetchReq);
+  timeoutPromise(TIME_OUT, fetch(URL_DEV + url + data, fetchOptionsDelete())).then(response => response.json())
     .then((json) => {
       if ('OK' != json.Code) {
         dispatch({...error, json});
