@@ -80,7 +80,7 @@ class App extends Component {
         console.log('尚未完成注册流程');
       }
       this.getCurrentPosition();
-      this.setState({loading:false,getRegistered: true});
+      this.setState({loading: false, getRegistered: true});
     } catch (error) {
       console.log('加载缓存注册状态时出错', error.message);
     }
@@ -130,15 +130,15 @@ class App extends Component {
       };
 
       async function saveLocation() {
-        await Storage.setItem('currentLocation',params);
+        await Storage.setItem('currentLocation', params);
         Storage.getItem('hasRegistered').then(
-          (response)=>{
-            if(response!=null){
+          (response)=> {
+            if (response != null) {
               console.log('用户已注册,开始向后台发送用户位置信息');
               dispatch(VicinityActions.saveCoordinate(params));
             }
-          },(error)=>{
-            console.log('读取缓存出错!',error);
+          }, (error)=> {
+            console.log('读取缓存出错!', error);
           }
         );
       }
@@ -212,7 +212,7 @@ class App extends Component {
       return sceneAnimation;
     }
     //默认(gestures设为{}或null用来禁用安卓从屏幕左侧滑动返回)
-    return {...Navigator.SceneConfigs.FloatFromRight,gestures:null}
+    return {...Navigator.SceneConfigs.FloatFromRight, gestures: null}
   }
 
   renderScene(route, navigator) {
@@ -236,7 +236,7 @@ class App extends Component {
   onBackAndroid() {
     const routers = this.navigator.getCurrentRoutes();
     console.log(routers);
-    if ((routers.length > 2 && routers[routers.length - 1].name == 'MainContainer') || routers[routers.length - 1].name == 'Login') {
+    if((routers[routers.length - 1].name == 'MainContainer')||(routers[routers.length - 1].name == 'Home')||(routers[routers.length - 1].name == 'Login')){
       let now = new Date().getTime();
       if (now - lastClickTime < 2500) {
         return false;
@@ -246,7 +246,9 @@ class App extends Component {
       return true;
     } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
-      RNPicker.isPickerShow((status)=>{if(status) RNPicker.hide()});
+      RNPicker.isPickerShow((status)=> {
+        if (status) RNPicker.hide()
+      });
       this.navigator.pop();
       return true;
     }

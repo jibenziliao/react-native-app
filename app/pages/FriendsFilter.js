@@ -189,7 +189,8 @@ class FriendsFilter extends BaseComponent {
   //去首页
   goHome() {
     const {navigator} =this.props;
-    navigator.push({
+    //TODO: 这里的resetTo动画异常
+    navigator.resetTo({
       component: MainContainer,
       name: 'MainContainer'
     });

@@ -14,7 +14,7 @@ import {
   Picker,
   Platform
 } from 'react-native';
-import Button from 'react-native-button'
+import {Button as NBButton} from 'native-base'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Menu, {
   MenuContext,
@@ -119,22 +119,22 @@ class ImageViewer extends Component {
         <View style={styles.imageOptions}>
           <Image source={{uri: rowData.uri}} style={styles.image}/>
           <View style={styles.button}>
-            <Button
-              style={styles.avatar}
-              containerStyle={styles.avatarContainer}
+            <NBButton
+              block
+              bordered
               onPress={()=> {
                 this.props.setAvatar(rowData)
               }}>
               设为头像
-            </Button>
-            <Button
-              style={styles.deleteBtn}
-              containerStyle={styles.deleteBtnContainer}
+            </NBButton>
+            <NBButton
+              block
+              bordered
               onPress={()=> {
                 this.props.deletePhoto(rowData)
               }}>
               删除
-            </Button>
+            </NBButton>
           </View>
         </View>
         <View style={styles.permission}>
@@ -188,25 +188,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',
-    height: 100
-  },
-  avatar: {
-    color: 'blue'
-  },
-  avatarContainer: {
-    backgroundColor: '#EBEBEB',
-    padding: 4,
-    borderRadius: 4,
-    width: 100
-  },
-  deleteBtn: {
-    color: 'red',
-  },
-  deleteBtnContainer: {
-    backgroundColor: '#EBEBEB',
-    padding: 4,
-    borderRadius: 4,
-    width: 100
+    height: 100,
+    marginLeft:20
   },
   permission: {
     flex: 1

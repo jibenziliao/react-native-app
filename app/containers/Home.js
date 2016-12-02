@@ -242,7 +242,11 @@ class Home extends BaseComponent {
   //处理距离
   _distance(data) {
     data = data + '';
-    return data.substr(0, data.indexOf(".") + 3);
+    if(data.indexOf('.')>-1 && data.length-3>data.indexOf(".")){
+      return data.substr(0, data.indexOf(".") + 3);
+    }else{
+      return data
+    }
   }
 
   //获取当前登录的用户信息
@@ -484,14 +488,6 @@ class Home extends BaseComponent {
     }));
   }
 
-  _renderPictureUri(item){
-    if(item==''){
-      return 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg';
-    }else{
-      return item;
-    }
-  }
-
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
@@ -500,7 +496,7 @@ class Home extends BaseComponent {
           <Image
             key={index}
             style={{width: 80, height: 80, marginBottom: 5, marginRight: 5}}
-            source={{uri: URL_DEV + '/' + this._renderPictureUri(item)}}/>
+            source={{uri: URL_DEV + '/' + item}}/>
         )
       })
     } else {

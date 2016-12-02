@@ -420,7 +420,11 @@ class AnnouncementDetail extends BaseComponent {
   //处理距离
   _distance(data) {
     data = data + '';
-    return data.substr(0, data.indexOf(".") + 3);
+    if(data.indexOf('.')>-1 && data.length-3>data.indexOf(".")){
+      return data.substr(0, data.indexOf(".") + 3);
+    }else{
+      return data
+    }
   }
 
   //处理到期日期

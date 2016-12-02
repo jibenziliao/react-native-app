@@ -19,12 +19,10 @@ import {
 import {getNavigator} from '../navigation/Route'
 import * as Storage from '../utils/Storage'
 import BaseComponent from '../base/BaseComponent'
-import Button from 'react-native-button'
 import dismissKeyboard from 'dismissKeyboard'
 import MainContainer from '../containers/MainContainer'
 import {connect} from 'react-redux'
 import DeviceInfo from 'react-native-device-info'
-import * as UserProfileActions from '../actions/UserProfile'
 import * as InitialAppActions from '../actions/InitialApp'
 import * as LoginActions from '../actions/Login'
 import Spinner from '../components/Spinner'
@@ -39,10 +37,9 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import CheckBox from '../components/CheckBox'
-import {toastShort} from '../utils/ToastUtil'
 import Home from '../containers/Home'
 import {setDictArr} from '../utils/Dict'
+import Photos from '../pages/Photos'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -161,6 +158,14 @@ class Login extends BaseComponent {
     });
   }
 
+  goPhotos(){
+    navigator = this.props.navigator;
+    navigator.push({
+      component: Photos,
+      name: 'Photos'
+    });
+  }
+
   login(data) {
     navigator = this.props.navigator;
     dismissKeyboard();
@@ -183,9 +188,9 @@ class Login extends BaseComponent {
         name: 'UserProfile'
       });
     } else {
-      navigator.push({
-        component: Home,
-        name: 'Home'
+      navigator.resetTo({
+        component: MainContainer,
+        name: 'MainContainer'
       });
     }
   }
@@ -393,13 +398,19 @@ class Login extends BaseComponent {
             block
             style={{marginTop: 20, height: 40}}
             onPress={()=>this.nextTest()}>
-            下一步(Test)
+            下一步(Test){}
           </NBButton>
           <NBButton
             block
             style={{marginTop: 20, height: 40}}
             onPress={()=>this.goHome()}>
             首页(Test)
+          </NBButton>
+          <NBButton
+            block
+            style={{marginTop: 20, height: 40}}
+            onPress={()=>this.goPhotos()}>
+            拍照(Test)
           </NBButton>*/}
         </ScrollView>
       </MenuContext>

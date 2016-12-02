@@ -22,9 +22,7 @@ import {
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
 import Photos from './Photos'
-import Button from 'react-native-button'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Modal from 'react-native-modalbox'
 import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles} from '../style'
 import RNPicker from 'react-native-picker'
@@ -286,7 +284,7 @@ class UserProfile extends BaseComponent {
   //去首页
   goHome() {
     const {navigator} =this.props;
-    navigator.push({
+    navigator.resetTo({
       component: MainContainer,
       name: 'MainContainer'
     });

@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Text
 } from 'react-native'
-import Button from 'react-native-button'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
