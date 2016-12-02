@@ -18,7 +18,6 @@ import {
   InteractionManager,
   Alert
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
@@ -32,7 +31,6 @@ import {toastShort} from '../utils/ToastUtil'
 import Addannouncement from '../pages/Addannouncement'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import ActionSheet from 'react-native-actionsheet'
-import Home from '../containers/Home'
 
 const styles = StyleSheet.create({
   container: {

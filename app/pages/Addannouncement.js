@@ -20,7 +20,6 @@ import {
   Picker,
   Alert
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
@@ -34,7 +33,6 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import * as HomeActions from '../actions/Home'
-import * as DateUtil from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   container: {

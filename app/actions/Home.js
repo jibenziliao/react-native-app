@@ -7,8 +7,6 @@ import * as ActionTypes from './ActionTypes'
 import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 import {toastShort} from '../utils/ToastUtil'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
-import Home from '../containers/Home'
-import MainContainer from '../containers/MainContainer'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {

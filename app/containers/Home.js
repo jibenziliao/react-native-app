@@ -17,13 +17,8 @@ import {
   TouchableOpacity,
   Dimensions
 } from 'react-native'
-import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
-import Button from 'react-native-button'
 import {Button as NBButton} from 'native-base'
-import {StyleConfig, CommonStyles, componentStyles} from '../style'
-import RNPicker from 'react-native-picker'
-import BackgroundTimer from 'react-native-background-timer'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'

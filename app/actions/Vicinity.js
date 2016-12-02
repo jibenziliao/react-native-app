@@ -6,7 +6,6 @@
 import * as ActionTypes from './ActionTypes'
 import {URL_DEV} from '../constants/Constant'
 import {toastShort} from '../utils/ToastUtil'
-import {Actions} from 'react-native-router-flux'
 
 function fetchOptions(data) {
   return {
@@ -69,10 +68,7 @@ export function fetchUserInfo(data) {
         if('OK'!==json.Code){
           toastShort(json.Message);
         }else{
-          Actions.userInfo({userInfo:{
-            ...json.Result,
-            UserId:data
-          }});
+          //
         }
       }).catch((err)=>{
       dispatch({type:ActionTypes.RECEIVE_USER_DETAIL_INFO,data,err});

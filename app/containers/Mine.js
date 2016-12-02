@@ -13,7 +13,6 @@ import {
 import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
 import * as Storage from '../utils/Storage'
-import Button from 'react-native-button'
 import signalr from 'react-native-signalr'
 import {Button as NBButton} from 'native-base'
 import {StyleConfig, CommonStyles} from '../style'
