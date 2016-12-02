@@ -489,6 +489,14 @@ class Home extends BaseComponent {
     }));
   }
 
+  _renderPictureUri(item){
+    if(item==''){
+      return 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg';
+    }else{
+      return item;
+    }
+  }
+
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
@@ -497,7 +505,7 @@ class Home extends BaseComponent {
           <Image
             key={index}
             style={{width: 80, height: 80, marginBottom: 5, marginRight: 5}}
-            source={{uri: URL_DEV + '/' + item}}/>
+            source={{uri: URL_DEV + '/' + this._renderPictureUri(item)}}/>
         )
       })
     } else {

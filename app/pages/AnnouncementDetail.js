@@ -211,7 +211,8 @@ class AnnouncementDetail extends BaseComponent {
         component: Addannouncement,
         name: 'Addannouncement',
         params: {
-          myLocation: this.state.myLocation
+          myLocation: this.state.myLocation,
+          callBack:this.state.callBack
         }
       })
     }
