@@ -3,14 +3,13 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:54
  * @description
  */
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {
   StyleSheet,
   Text,
   View,
   InteractionManager
 } from 'react-native'
-import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
 import MapView from 'react-native-maps'
 import Spinner from '../components/Spinner'
@@ -147,11 +146,6 @@ class Vicinity extends BaseComponent {
   }
 
   onRegionChangeComplete(newRegion) {
-    /* ***********************************************************
-     * STEP 4
-     * If you wish to fetch new locations when the user changes the
-     * currently visible region, do something like this:
-     *************************************************************/
     let ne_long = newRegion.longitude + newRegion.longitudeDelta / 2;
     let sw_long = newRegion.longitude - newRegion.longitudeDelta / 2;
     let ne_lat = newRegion.latitude + newRegion.latitudeDelta / 2;
@@ -219,17 +213,8 @@ class Vicinity extends BaseComponent {
   }
 
   calloutPress(location) {
-    /* ***********************************************************
-     * STEP 5
-     * Configure what will happen (if anything) when the user
-     * presses your callout.
-     *************************************************************/
-
-    //Actions.userInfo({userInfo:location});
     const {dispatch}=this.props;
-    //dispatch(VicinityActions.fetchUserInfo(location.UserId));
-
-    dispatch(HomeActions.getUserInfo({UserId:location.UserId},(json)=>{
+    dispatch(HomeActions.getUserInfo({UserId: location.UserId}, (json)=> {
       pageNavigator.push({
         component: UserInfo,
         name: 'UserInfo',
@@ -237,15 +222,11 @@ class Vicinity extends BaseComponent {
           ...json.Result,
         }
       });
-    },(error)=>{}));
+    }, (error)=> {
+    }));
   }
 
   renderMapMarkers(location) {
-    /* ***********************************************************
-     * STEP 6
-     * Customize the appearance and location of the map marker.
-     * Customize the callout in ../Components/MapCallout.js
-     *************************************************************/
     return (
       <MapView.Marker
         key={location.UserId}
@@ -346,7 +327,6 @@ class Vicinity extends BaseComponent {
 
 const mapStateToProps = (state) => {
   return {
-    // ...redux state to props here
     pendingStatus: state.Vicinity.pending,
     saveCoordinateStatus: state.Vicinity.asyncCoordinating
   }

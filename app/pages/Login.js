@@ -122,12 +122,6 @@ class Login extends BaseComponent {
       DeviceInfo: DeviceInfo.getDeviceName() || 'NX507J'
     };
 
-    //const data = {
-    //  DeviceType: 'iOS',
-    //  DeviceVersion: '8.1',
-    //  DeviceInfo: 'iPhone Simulator'
-    //};
-
     const {dispatch}= this.props;
     Storage.getItem('hasInit').then((response)=> {
       if (!response) {
@@ -169,7 +163,6 @@ class Login extends BaseComponent {
     navigator = this.props.navigator;
     dismissKeyboard();
     const {dispatch} = this.props;
-    //dispatch(LoginActions.validCode(data, navigator));
     dispatch(LoginActions.validSmsCode(data,
       (json)=> {
         this.loginSuccess(json)
@@ -201,7 +194,6 @@ class Login extends BaseComponent {
       Mobile: phone
     };
     const {dispatch} = this.props;
-    //dispatch(LoginActions.getValidCode(data));
     dispatch(LoginActions.getSmsCode(data, (json)=> {
       this.initDict()
     }, (error)=> {

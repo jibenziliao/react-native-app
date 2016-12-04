@@ -3,19 +3,18 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:24
  * @description
  */
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {
   StyleSheet,
   Dimensions,
   Platform
-} from 'react-native';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
-import Home from './Home';
-import Vicinity from './Vicinity';
-import Message from './Message';
+} from 'react-native'
+import ScrollableTabView from 'react-native-scrollable-tab-view'
+import Home from './Home'
+import Vicinity from './Vicinity'
+import Message from './Message'
 import Mine from './Mine'
 import TabBar from '../components/TabBar'
-import VicinityList from '../pages/VicinityList'
 
 const {width, height}=Dimensions.get('window');
 

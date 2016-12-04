@@ -4,47 +4,7 @@
  * @description
  */
 import * as ActionTypes from './ActionTypes'
-import {URL_DEV} from '../constants/Constant'
-import {toastShort} from '../utils/ToastUtil'
-import * as Storage from '../utils/Storage'
-import UserProfile from '../pages/UserProfile'
-import Home from '../containers/Home'
 import {postFetch, getFetch} from '../utils/NetUtil'
-
-function fetchOptions(data) {
-  return {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  }
-}
-
-export function getValidCode(data) {
-  return (dispatch)=> {
-    dispatch(requestValidCode(data));
-    fetch(URL_DEV + '/device', fetchOptions(data))
-      .then(response => response.json())
-      .then(json => {
-        dispatch(receiveValidCode(data, json));
-        if ('OK' !== json.Code) {
-          toastShort(json.Message);
-        } else {
-          let cacheData = {
-            mobile: data.Mobile,
-            country: data.Country,
-            smsHasValid: false
-          };
-          Storage.setItem('user', cacheData);
-        }
-      }).catch((err)=> {
-      dispatch(receiveValidCode(err));
-      toastShort('网络发生错误,请重试')
-    })
-  };
-}
 
 export function getDict(data,resolve,reject) {
   return (dispatch)=> {
@@ -61,35 +21,5 @@ export function getSmsCode(data, resolve, reject) {
 export function validSmsCode(data,resolve,reject) {
   return (dispatch)=> {
     postFetch('/device/'+data+'', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
-  }
-}
-
-function requestValidCode(data) {
-  return {
-    type: ActionTypes.FETCH_VALID_CODE,
-    data
-  }
-}
-
-function receiveValidCode(data, json) {
-  return {
-    type: ActionTypes.RECEIVE_VALID_CODE,
-    data,
-    json
-  }
-}
-
-function beginValidCode(data) {
-  return {
-    type: ActionTypes.VALID_CODE_BEGIN,
-    data
-  }
-}
-
-function endValidCode(data, json) {
-  return {
-    type: ActionTypes.VALID_CODE_END,
-    data,
-    json
   }
 }
