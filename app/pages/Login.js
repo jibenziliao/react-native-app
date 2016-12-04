@@ -131,7 +131,6 @@ class Login extends BaseComponent {
     const {dispatch}= this.props;
     Storage.getItem('hasInit').then((response)=> {
       if (!response) {
-        //dispatch(InitialAppActions.initialApp(data));
         dispatch(InitialAppActions.initDevice(data, (json)=> {
           Storage.setItem('hasInit', true);
         }, (json)=> {

@@ -64,40 +64,6 @@ export function validSmsCode(data,resolve,reject) {
   }
 }
 
-export function validCode(data, navigator) {
-  return (dispatch)=> {
-    dispatch(beginValidCode(data));
-    fetch(URL_DEV + '/device/' + data, fetchOptions(data))
-      .then(response => response.json())
-      .then(json => {
-        dispatch(endValidCode(data, json));
-        if ('OK' !== json.Code) {
-          toastShort(json.Message);
-        } else {
-          Storage.getItem('user').then((response)=> {
-            response.smsHasValid = true;
-            Storage.setItem('user', response);
-          });
-
-          if(json.Result===false){
-            navigator.push({
-              component: UserProfile,
-              name: 'UserProfile'
-            });
-          }else{
-            navigator.push({
-              component: Home,
-              name: 'Home'
-            });
-          }
-        }
-      }).catch((err)=> {
-      dispatch(endValidCode(err));
-      toastShort('网络发生错误,请重试')
-    })
-  };
-}
-
 function requestValidCode(data) {
   return {
     type: ActionTypes.FETCH_VALID_CODE,

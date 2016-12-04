@@ -4,10 +4,7 @@
  * @description
  */
 import * as ActionTypes from './ActionTypes'
-import {URL_DEV} from '../constants/Constant'
 import DeviceInfo from 'react-native-device-info'
-import {toastShort} from '../utils/ToastUtil'
-import * as Storage from '../utils/Storage'
 import {postFetch, getFetch} from '../utils/NetUtil'
 
 console.log("Device Unique ID", DeviceInfo.getUniqueID());  // e.g. FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9
@@ -41,52 +38,8 @@ console.log("Device Locale", DeviceInfo.getDeviceLocale()); // e.g en-US
 
 console.log("Device Country", DeviceInfo.getDeviceCountry()); // e.g US
 
-export function initialApp(data) {
-  let fetchOptions = {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  };
-  return (dispatch)=> {
-    dispatch(beginInitial(data));
-    fetch(URL_DEV + '/initial', fetchOptions)
-      .then(response => response.json())
-      .then(json => {
-        dispatch(endInitial(data, json));
-        if ('OK' !== json.Code) {
-          toastShort(json.Message)
-        } else {
-          Storage.setItem('hasInit', true);
-        }
-      }).catch((err)=> {
-      dispatch(endInitial(data, err));
-      toastShort('网络发生错误,请重试')
-    })
-  };
-}
-
-
-
 export function initDevice(data, resolve, reject) {
   return (dispatch)=> {
     postFetch('/initial', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
-  }
-}
-
-function beginInitial(data) {
-  return {
-    type: ActionTypes.APP_INITIAL_BEGIN,
-    data
-  }
-}
-
-function endInitial(data, json) {
-  return {
-    type: ActionTypes.APP_INITIAL_END,
-    data,
-    json
   }
 }
