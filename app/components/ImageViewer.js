@@ -101,6 +101,7 @@ class ImageViewer extends Component {
     )
   }
 
+  //TODO: 需要调整为动态获取权限
   renderPermissionText(text) {
     if (text == 'Everybody') {
       return '所有人可见';

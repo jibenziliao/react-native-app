@@ -3,7 +3,7 @@
  * @author keyy/1501718947@qq.com 16/11/10 10:03
  * @description
  */
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {
   TouchableOpacity,
   Image,
@@ -12,7 +12,7 @@ import {
   StyleSheet,
   Dimensions,
   Platform
-} from 'react-native';
+} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const {width, height} = Dimensions.get('window');
@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     ...Platform.select({
-      ios:{
-        top:20
+      ios: {
+        top: 20
       },
-      android:{
-        top:0
+      android: {
+        top: 0
       }
     })
   },
@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
     width: 60,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingHorizontal:20,
+    paddingHorizontal: 20,
     ...Platform.select({
-      ios:{
-        top:20
+      ios: {
+        top: 20
       },
-      android:{
-        top:0
+      android: {
+        top: 0
       }
     })
   },
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'flex-end',
     justifyContent: 'center',
-    paddingHorizontal:20,
+    paddingHorizontal: 20,
     ...Platform.select({
-      ios:{
-        top:20
+      ios: {
+        top: 20
       },
-      android:{
-        top:0
+      android: {
+        top: 0
       }
     })
   },

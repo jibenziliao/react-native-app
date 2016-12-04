@@ -61,15 +61,12 @@ export default class MapCallout extends Component {
   }
 
   render() {
-    /* ***********************************************************
-     * Customize the appearance of the callout that opens when the user interacts with a marker.
-     * Note: if you don't want your callout surrounded by the default tooltip, pass `tooltip={true}` to `MapView.Callout`
-     *************************************************************/
     const {location} = this.props;
     //##############原交友目的################
     //const datingPurposes = location.DatingPurpose.split(', ');
     //##############################
 
+    //TODO: 获取附近的人的概略信息
     //模拟假数据
     const datingPurposes = ['Love','FriendShip'];
 
