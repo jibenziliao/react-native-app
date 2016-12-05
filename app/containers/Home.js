@@ -397,7 +397,11 @@ class Home extends BaseComponent {
   //点击头像和名字,跳转个人信息详情页
   _goUserInfo(id) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getUserInfo({UserId: id}, (json)=> {
+    let data={
+      UserId:id,
+      ...currentLocation
+    };
+    dispatch(HomeActions.getUserInfo(data, (json)=> {
       dispatch(HomeActions.getUserPhotos({UserId:id},(result)=>{
         navigator.push({
           component: UserInfo,

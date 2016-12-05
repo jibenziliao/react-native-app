@@ -61,7 +61,7 @@ export function getCommentList(data, resolve, reject) {
 
 export function getUserInfo(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/profiles/', `${data.UserId}`, dispatch, {
+    getFetch('/profiles/', `${data.UserId}?lat=${data.Lat}&lng=${data.Lng}`, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
       data
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
