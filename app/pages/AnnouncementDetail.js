@@ -148,7 +148,7 @@ class AnnouncementDetail extends BaseComponent {
       refreshing: false,
       loadingMore: false,
       ...this.props.route.params,
-      callBack:this.props.route.params.callBack
+      callBack: this.props.route.params.callBack
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -165,7 +165,7 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     clearTimeout(this.deleteTimer);
   }
 
@@ -210,7 +210,7 @@ class AnnouncementDetail extends BaseComponent {
         name: 'Addannouncement',
         params: {
           myLocation: this.state.myLocation,
-          callBack:this.state.callBack
+          callBack: this.state.callBack
         }
       })
     }
@@ -340,7 +340,7 @@ class AnnouncementDetail extends BaseComponent {
           loadingMore: false,
           pageIndex: 1,
           pageSize: 10,
-          callBack:this.state.callBack,
+          callBack: this.state.callBack,
           ...json.Result,
           myLocation: this.state.myLocation,
           commentList: result.Result,
@@ -420,9 +420,9 @@ class AnnouncementDetail extends BaseComponent {
   //处理距离
   _distance(data) {
     data = data + '';
-    if(data.indexOf('.')>-1 && data.length-3>data.indexOf(".")){
+    if (data.indexOf('.') > -1 && data.length - 3 > data.indexOf(".")) {
       return data.substr(0, data.indexOf(".") + 3);
-    }else{
+    } else {
       return data
     }
   }
@@ -430,6 +430,12 @@ class AnnouncementDetail extends BaseComponent {
   //处理到期日期
   _expirationDate(data) {
     return data.split("T")[0];
+  }
+
+  //处理回复日期
+  _createTime(data){
+    let tmpTime=data.split('T')[1];
+    return data.split('T')[0]+' '+tmpTime.split('.')[0];
   }
 
   //渲染公告中的图片
@@ -469,7 +475,7 @@ class AnnouncementDetail extends BaseComponent {
                   <Text style={styles.userInfoText}>{rowData.CommentUserInfo.Age}{'岁'}</Text>
                 </View>
               </View>
-              <Text>{rowData.CreateTime}</Text>
+              <Text>{this._createTime(rowData.CreateTime)}</Text>
             </View>
             <View>
               <TouchableOpacity

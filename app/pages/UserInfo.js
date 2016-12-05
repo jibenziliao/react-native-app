@@ -177,6 +177,5 @@ class UserInfo extends BaseComponent {
       </View>
     )
   }
-
 }
 export default UserInfo
