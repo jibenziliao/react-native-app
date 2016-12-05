@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import Spinner from '../components/Spinner'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
+import EditUserInfo from '../pages/EditUserInfo'
 
 const styles = StyleSheet.create({
   container: {
@@ -90,7 +91,12 @@ class Mine extends BaseComponent {
   }
 
   componentWillMount() {
+    this._getUserInfo();
+  }
+
+  _getUserInfo() {
     this.setState({pending: true});
+    console.log('开始获取用户信息');
     Storage.getItem('userInfo').then(
       (response)=> {
         if (response !== null) {
@@ -110,13 +116,22 @@ class Mine extends BaseComponent {
     navigator.push({
       component: EditPersonalSignature,
       name: 'EditPersonalSignature',
-      params: data
-    })
+      params: {
+        personalSignature: data,
+        callBack: ()=> {
+          this._getUserInfo()
+        }
+      },
+    });
   }
 
   //前往编辑我的详细资料
   _editMyDetail(data) {
-
+    navigator.push({
+      component: EditUserInfo,
+      name: 'EditUserInfo',
+      params: data
+    });
   }
 
   //前往设置页

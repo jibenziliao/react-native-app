@@ -147,8 +147,7 @@ class AnnouncementDetail extends BaseComponent {
       forCommentId: null,
       refreshing: false,
       loadingMore: false,
-      ...this.props.route.params,
-      callBack: this.props.route.params.callBack
+      ...this.props.route.params
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;

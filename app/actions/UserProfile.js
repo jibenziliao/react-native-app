@@ -116,3 +116,9 @@ export function getDict() {
     }
   };
 }
+
+export function savePersonalSignature(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/profiles/personsignal', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
