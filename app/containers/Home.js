@@ -216,7 +216,7 @@ class Home extends BaseComponent {
       pageIndex: this.state.pageIndex
     };
     Storage.getItem('currentLocation').then((response)=> {
-      if (response != null) {
+      if (response !== null) {
         data = {
           ...data,
           ...response
@@ -254,6 +254,7 @@ class Home extends BaseComponent {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
       currentUser = json.Result;
+      Storage.setItem('userInfo',currentUser);
     }, (error)=> {
 
     }));
