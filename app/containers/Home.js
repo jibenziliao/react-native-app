@@ -404,13 +404,12 @@ class Home extends BaseComponent {
           name: 'UserInfo',
           params: {
             ...json.Result,
-            ...result.Result,
+            userPhotos:result.Result,
             myLocation: currentLocation
           }
         });
       },(error)=>{}));
-    }, (error)=> {
-    }));
+    }, (error)=> {}));
   }
 
   //点赞/取消赞(不论是否已赞,点赞取消赞,isLike都传true,isLike可能的值null,true,false)
