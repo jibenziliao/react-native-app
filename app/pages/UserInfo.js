@@ -7,17 +7,42 @@ import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
-  Text
+  Text,
+  ScrollView,
+  Image
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#E2E2E2'
+  },
+  scrollViewContainer: {
+    flex: 1,
+    padding: 10
+  },
+  photoContainer: {
+    flexDirection:'row',
+  },
+  photos: {
+    width: 100,
+    height: 100,
+    marginRight: 10
+  }
+});
 
 class UserInfo extends BaseComponent {
   constructor(props) {
     super(props);
-    console.log(this.props);
+    this.state = {
+      ...this.props.route.params
+    };
+    console.log(this.props.route.params);
   }
 
   componentDidMount() {
@@ -26,7 +51,7 @@ class UserInfo extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '个人信息',
+      title: this.state.Nickname,
       hideRightButton: false,
       rightIcon: {
         name: 'ellipsis-v'
@@ -34,10 +59,29 @@ class UserInfo extends BaseComponent {
     };
   }
 
+  //渲染用户的相册
+  _renderPhotos(arr) {
+    console.log(arr);
+    return arr.map((item, index)=> {
+      return (
+        <Image
+          key={index}
+          style={styles.photos}
+          source={{uri: URL_DEV + item.PhotoUrl}}/>
+      )
+    })
+  }
+
   renderBody() {
     return (
-      <View style={componentStyles.container}>
-        <Text>{'用户详情'}</Text>
+      <View style={styles.container}>
+        <View style={styles.scrollViewContainer}>
+          <ScrollView
+            horizontal={true}
+            style={styles.photoContainer}>
+            {this._renderPhotos(this.state.userPhotos)}
+          </ScrollView>
+        </View>
       </View>
     )
   }

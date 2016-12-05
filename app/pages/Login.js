@@ -174,14 +174,14 @@ class Login extends BaseComponent {
   }
 
   loginSuccess(json) {
-    //如果新装APP登录老账号,这里默认用户已注册,以便下次打开APP时,直接进入首页
-    Storage.setItem('hasRegistered',true);
     if (json.Result === false) {
       navigator.push({
         component: UserProfile,
         name: 'UserProfile'
       });
     } else {
+      //如果新装APP登录老账号,这里默认用户已注册,以便下次打开APP时,直接进入首页
+      Storage.setItem('hasRegistered',true);
       navigator.resetTo({
         component: MainContainer,
         name: 'MainContainer'
