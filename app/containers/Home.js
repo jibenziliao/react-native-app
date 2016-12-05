@@ -398,14 +398,17 @@ class Home extends BaseComponent {
   _goUserInfo(id) {
     const {dispatch}=this.props;
     dispatch(HomeActions.getUserInfo({UserId: id}, (json)=> {
-      navigator.push({
-        component: UserInfo,
-        name: 'UserInfo',
-        params: {
-          ...json.Result,
-          myLocation: currentLocation
-        }
-      });
+      dispatch(HomeActions.getUserPhotos({UserId:id},(result)=>{
+        navigator.push({
+          component: UserInfo,
+          name: 'UserInfo',
+          params: {
+            ...json.Result,
+            ...result.Result,
+            myLocation: currentLocation
+          }
+        });
+      },(error)=>{}));
     }, (error)=> {
     }));
   }

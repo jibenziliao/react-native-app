@@ -261,8 +261,8 @@ class UserProfile extends BaseComponent {
   saveUserProfile(data, datingPurpose, bool) {
     const {dispatch} =this.props;
     dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json)=> {
+      Storage.setItem('hasRegistered', true);
       if (bool) {
-        Storage.setItem('hasRegistered', true);
         this.goPhotos();
       } else {
         this.goHome();

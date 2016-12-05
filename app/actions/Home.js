@@ -68,6 +68,15 @@ export function getUserInfo(data, resolve, reject) {
   }
 }
 
+export function getUserPhotos(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch('/users/', `${data.UserId}/photos`, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
 export function gore(data, resolve, reject) {
   return (dispatch)=> {
     putFetch(`/post/up/${data.PostId}`, data, dispatch, {

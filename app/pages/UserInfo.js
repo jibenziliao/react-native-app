@@ -17,6 +17,7 @@ import BaseComponent from '../base/BaseComponent'
 class UserInfo extends BaseComponent {
   constructor(props) {
     super(props);
+    console.log(this.props);
   }
 
   componentDidMount() {
