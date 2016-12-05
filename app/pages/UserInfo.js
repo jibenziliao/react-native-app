@@ -9,13 +9,19 @@ import {
   StyleSheet,
   Text,
   ScrollView,
-  Image
+  Image,
+  Dimensions
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import * as HomeActions from '../actions/Home'
+import {Button as NBButton,Icon as NBIcon} from 'native-base'
+import AnnouncementList from '../pages/AnnouncemenetList'
+
+const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +30,8 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flex: 1,
-    padding: 10
+    paddingHorizontal:10,
+    paddingTop:10
   },
   photoContainer: {
     flexDirection: 'row'
@@ -41,6 +48,9 @@ const styles = StyleSheet.create({
   },
   signature: {
     marginTop: 10
+  },
+  scrollViewBottom:{
+    marginBottom:70
   },
   signatureText: {
     fontSize: 20,
@@ -62,6 +72,27 @@ const styles = StyleSheet.create({
   userInfoItem: {
     flexDirection: 'row',
     paddingVertical: 5
+  },
+  itemLeft:{
+    width:100
+  },
+  itemRight:{
+    flex:1
+  },
+  bottomBtnGroup:{
+    flexDirection:'row',
+    position:'absolute',
+    bottom:0,
+    left:0,
+    width:width
+  },
+  bottomBtn:{
+    flex:1,
+    height:40,
+    borderRadius:0
+  },
+  attention:{
+    backgroundColor:'#FF9933'
   }
 });
 
@@ -84,6 +115,39 @@ class UserInfo extends BaseComponent {
     };
   }
 
+  //前往指定用户的历史公告
+  _goHistoryAnnouncementList(){
+    const {dispatch,navigator}=this.props;
+    let data={
+      postId:this.state.UserId,
+      pageIndex:1,
+      pageSize:10,
+      ...this.state.myLocation,
+      postOrderTyp:3
+    };
+    dispatch(HomeActions.getAllAnnouncement(data,(json)=>{
+      navigator.push({
+        component:AnnouncementList,
+        name:'AnnouncementList',
+        params:{
+          ...json.Result,
+          Nickname:this.state.Nickname
+        }
+      });
+    },(error)=>{}));
+  }
+
+  //关注/取消关注
+  _attention(id){
+    const {dispatch}=this.props;
+    let params={
+      attentionUserId:id
+    };
+    dispatch(HomeActions.attention(params,(json)=>{
+      this.setState({AmIFollowedHim:!this.state.AmIFollowedHim});
+    },(error)=>{}));
+  }
+
   //渲染用户的相册
   _renderPhotos(arr) {
     return arr.map((item, index)=> {
@@ -97,43 +161,14 @@ class UserInfo extends BaseComponent {
   }
 
   //渲染用户的个人信息
-  _renderUserInfo() {
-    const userInfo = [
-      {Key: 'Gender', Value: '男', Label: '性别'},
-      {Key: 'Age', Value: '24岁', Label: '年龄'},
-      {Key: 'BirthDay', Value: '1992-1-27', Label: '出生年月'},
-      {Key: 'Height', Value: '177cm', Label: '身高'},
-      {Key: 'Weight', Value: '69kg', Label: '体重'},
-      {Key: 'JobType', Value: 'IT', Label: '职业'}
-    ];
-    return userInfo.map((item, index)=> {
+  _renderUserInfo(data) {
+    return data.map((item, index)=> {
       return (
         <View
           key={index}
           style={styles.userInfoItem}>
-          <Text>{item.Label}{':'}</Text>
-          <Text>{item.Value}</Text>
-        </View>
-      )
-    });
-  }
-
-  //渲染交友条件
-  _renderDatingPurpose() {
-    const datingPrupose = [
-      {Key: 'Height', Value: '155-165cm', Label: '身高'},
-      {Key: 'Age', Value: '不限', Label: '年龄'},
-      {Key: 'Weight', Value: '不限', Label: '体重'},
-      {Key: 'EducationLevel', Value: '不限', Label: '学历'},
-      {Key: 'DatingPurpose', Value: '男女朋友', Label: '目的'},
-    ];
-    return datingPrupose.map((item, index)=> {
-      return (
-        <View
-          key={index}
-          style={styles.userInfoItem}>
-          <Text>{item.Label}{':'}</Text>
-          <Text>{item.Value}</Text>
+          <Text style={styles.itemLeft}>{item.Key}{':'}</Text>
+          <Text style={styles.itemRight}>{item.Value}</Text>
         </View>
       )
     });
@@ -150,32 +185,56 @@ class UserInfo extends BaseComponent {
           </ScrollView>
           <View style={[styles.listItem, styles.signature]}>
             <Text style={styles.signatureText}>{'个性签名'}</Text>
-            <Text>{'这个个性签名的假数据'}</Text>
+            <Text>{this.state.PersonSignal?this.state.PersonSignal:'这家伙很懒,没有留下任何签名'}</Text>
           </View>
           <View style={styles.listItem}>
             <Text style={styles.signatureText}>{'求关注消息'}</Text>
             <View style={styles.announcementArea}>
               <Image
                 style={styles.userAvatar}
-                source={{uri: URL_DEV + this.state.PhotoUrl}}/>
+                source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}/>
               <Text
                 onPress={()=> {
-                  console.log('123')
+                  this._goHistoryAnnouncementList()
                 }}
                 style={styles.link}>{'点击查看用户历史公告列表>>'}</Text>
             </View>
           </View>
           <View style={[styles.listItem, styles.signature]}>
             <Text style={styles.signatureText}>{'个人信息'}</Text>
-            {this._renderUserInfo()}
+            {this._renderUserInfo(this.state.BasicInfo)}
           </View>
-          <View style={[styles.listItem, styles.signature]}>
+          <View style={[styles.listItem, styles.signature,styles.scrollViewBottom]}>
             <Text style={styles.signatureText}>{'交友条件'}</Text>
-            {this._renderDatingPurpose()}
+            {this._renderUserInfo(this.state.DataFilter)}
           </View>
         </ScrollView>
+        <View style={styles.bottomBtnGroup}>
+          <NBButton
+            block
+            style={[styles.bottomBtn]}
+            onPress={()=>{
+              console.log('你点击了对话')
+            }}>
+            <NBIcon name={'ios-chatbubbles-outline'}/>
+            对话
+          </NBButton>
+          <NBButton
+            block
+            style={[styles.bottomBtn,styles.attention]}
+            onPress={()=>{
+              this._attention(this.state.UserId)
+            }}>
+            <NBIcon name={'ios-heart-outline'}/>
+            {this.state.AmIFollowedHim?'取消关注':'关注'}
+          </NBButton>
+        </View>
       </View>
     )
   }
 }
-export default UserInfo
+export default connect((state)=>{
+  return{
+    ...state
+  }
+})(UserInfo)

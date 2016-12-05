@@ -189,3 +189,15 @@ export function postAnnouncement(data, navigator) {
   }
 }
 
+export function getAllAnnouncement(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch(`/post/getuserpostlist/${data.postId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function attention(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch(`/follower/follower/${data.UserId}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+

@@ -172,7 +172,7 @@ class AnnouncementDetail extends BaseComponent {
     return {
       title: '公告详情',
       hideRightButton: false,
-      rightTitle: this.state.isSelf ? null : '关注TA',
+      rightTitle: this.state.isSelf ? null : (this.state.AmIFollowedHim ? '取消关注' : '关注TA'),
       rightIcon: this._renderRightIcon()
     };
   }
@@ -184,7 +184,7 @@ class AnnouncementDetail extends BaseComponent {
       this.ActionSheet.show();
     } else {
       //关注用户
-      console.log('你点击了关注TA');
+      this._attention();
     }
   }
 
@@ -215,25 +215,40 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  //点击头像和名字,跳转个人信息详情页
-  _goUserInfo(id) {
+  //关注用户
+  _attention() {
     const {dispatch}=this.props;
-    let data={
-      UserId:id,
+    let data = {
+      attentionUserId: this.state.PosterInfo.UserId
+    };
+    dispatch(HomeActions.attention(data, (json)=> {
+      this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
+    }, (error)=> {
+    }))
+  }
+
+  //点击头像和名字,跳转个人信息详情页
+  _goUserInfo(data) {
+    const {dispatch}=this.props;
+    let params = {
+      UserId: data.UserId,
       ...this.state.myLocation
     };
-    dispatch(HomeActions.getUserInfo(data, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId:id},(result)=>{
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
         navigator.push({
           component: UserInfo,
           name: 'UserInfo',
           params: {
+            Nickname: data.Nickname,
+            UserId:data.UserId,
             ...json.Result,
-            userPhotos:result.Result,
+            userPhotos: result.Result,
             myLocation: this.state.myLocation
           }
         });
-      },(error)=>{}));
+      }, (error)=> {
+      }));
     }, (error)=> {
     }));
   }
@@ -440,9 +455,9 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   //处理回复日期
-  _createTime(data){
-    let tmpTime=data.split('T')[1];
-    return data.split('T')[0]+' '+tmpTime.split('.')[0];
+  _createTime(data) {
+    let tmpTime = data.split('T')[1];
+    return data.split('T')[0] + ' ' + tmpTime.split('.')[0];
   }
 
   //渲染公告中的图片
@@ -508,7 +523,7 @@ class AnnouncementDetail extends BaseComponent {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={()=> {
-            this._goUserInfo(this.state.CreaterId);
+            this._goUserInfo(this.state.PosterInfo);
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>

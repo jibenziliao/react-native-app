@@ -242,9 +242,9 @@ class Home extends BaseComponent {
   //处理距离
   _distance(data) {
     data = data + '';
-    if(data.indexOf('.')>-1 && data.length-3>data.indexOf(".")){
+    if (data.indexOf('.') > -1 && data.length - 3 > data.indexOf(".")) {
       return data.substr(0, data.indexOf(".") + 3);
-    }else{
+    } else {
       return data
     }
   }
@@ -254,7 +254,7 @@ class Home extends BaseComponent {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
       currentUser = json.Result;
-      Storage.setItem('userInfo',currentUser);
+      Storage.setItem('userInfo', currentUser);
     }, (error)=> {
 
     }));
@@ -396,25 +396,29 @@ class Home extends BaseComponent {
   }
 
   //点击头像和名字,跳转个人信息详情页
-  _goUserInfo(id) {
+  _goUserInfo(data) {
     const {dispatch}=this.props;
-    let data={
-      UserId:id,
+    let params = {
+      UserId: data.UserId,
       ...currentLocation
     };
-    dispatch(HomeActions.getUserInfo(data, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId:id},(result)=>{
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
         navigator.push({
           component: UserInfo,
           name: 'UserInfo',
           params: {
+            Nickname: data.Nickname,
+            UserId:data.UserId,
             ...json.Result,
-            userPhotos:result.Result,
+            userPhotos: result.Result,
             myLocation: currentLocation
           }
         });
-      },(error)=>{}));
-    }, (error)=> {}));
+      }, (error)=> {
+      }));
+    }, (error)=> {
+    }));
   }
 
   //点赞/取消赞(不论是否已赞,点赞取消赞,isLike都传true,isLike可能的值null,true,false)
@@ -518,7 +522,7 @@ class Home extends BaseComponent {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={()=> {
-            this._goUserInfo(rowData.PosterInfo.UserId)
+            this._goUserInfo(rowData.PosterInfo)
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
