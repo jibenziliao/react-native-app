@@ -130,6 +130,7 @@ class AnnouncementList extends BaseComponent{
       commentModalOpen: false,
       ...this.props.route.params
     };
+    console.log(this.props.route.params);
   }
 
   //处理距离
@@ -160,7 +161,7 @@ class AnnouncementList extends BaseComponent{
     const {dispatch} = this.props;
     this.state.pageIndex += 1;
     let data = {
-      targetUserId: this.state.UserId,
+      targetUserId: this.state.targetUserId,
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize,
       ...this.state.myLocation,
@@ -183,7 +184,7 @@ class AnnouncementList extends BaseComponent{
     const {dispatch}=this.props;
     this.setState({refreshing: true, pageIndex: 1});
     let data = {
-      targetUserId: this.state.UserId,
+      targetUserId: this.state.targetUserId,
       pageIndex: 1,
       pageSize: this.state.pageSize,
       ...this.state.myLocation,
