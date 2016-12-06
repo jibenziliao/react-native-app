@@ -130,13 +130,15 @@ class UserInfo extends BaseComponent {
   onRightPressed() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      this._initDict((data,result)=>{this._goEditUserInfo(data,result)},json.Result);
+      dispatch(HomeActions.getDatingFilter('',(res)=>{
+        this._initDict((data,result,res)=>{this._goEditUserInfo(data,result,res)},json.Result,res.Result);
+      },(error)=>{}));
     }, (error)=> {
 
     }));
   }
 
-  _goEditUserInfo(data,result){
+  _goEditUserInfo(data,result,res){
     const {navigator}=this.props;
     navigator.push({
       component: EditUserInfo,
@@ -144,6 +146,7 @@ class UserInfo extends BaseComponent {
       params:{
         DictMap:data,
         ...result,
+        friendInfo:res,
         userPhotos:this._initOnlinePhotos(this.state.userPhotos)
       }
     });
@@ -159,7 +162,7 @@ class UserInfo extends BaseComponent {
     return tmpArr;
   }
 
-  _initDict(callBack,result) {
+  _initDict(callBack,result,res) {
     //下面是选填项的字典
     for (let i = 0; i < DictMapArrKey.length; i++) {
       Storage.getItem(`${DictMapArrKey[i]}`).then((response)=> {
@@ -168,7 +171,7 @@ class UserInfo extends BaseComponent {
             DictMap[DictMapArrKey[i]].push(response[j].Value)
           }
           if (i === DictMapArrKey.length - 1) {
-            callBack(DictMap,result);
+            callBack(DictMap,result,res);
           }
         } else {
           console.error('获取下拉选项字典出错');
