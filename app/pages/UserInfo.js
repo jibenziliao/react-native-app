@@ -111,15 +111,23 @@ class UserInfo extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: this.state.Nickname
+      title: this.state.Nickname,
+      hideRightButton: !this.state.isSelf,
+      rightTitle: !this.state.isSelf ? null : '编辑'
     };
+  }
+
+  //如果查看的用户详情时当前用户自己的详细资料,则导航栏显示编辑按钮
+  onRightPressed() {
+    const {dispatch}=this.props;
+    console.log('你点击了编辑按钮');
   }
 
   //前往指定用户的历史公告
   _goHistoryAnnouncementList() {
     const {dispatch, navigator}=this.props;
     let data = {
-      postId: this.state.UserId,
+      targetUserId: this.state.UserId,
       pageIndex: 1,
       pageSize: 10,
       ...this.state.myLocation,
@@ -131,6 +139,7 @@ class UserInfo extends BaseComponent {
         name: 'AnnouncementList',
         params: {
           postList:json.Result,
+          targetUserId:this.state.UserId,
           Nickname: this.state.Nickname,
           myLocation: this.state.myLocation,
           myUserId:this.state.myUserId
@@ -178,6 +187,36 @@ class UserInfo extends BaseComponent {
     });
   }
 
+  //渲染屏幕下方的操作按钮(如果查看的是自己的用户资料,则不需要对话和关注)
+  _renderButtonGroup(){
+    if(!this.state.isSelf){
+      return(
+      <View style={styles.bottomBtnGroup}>
+        <NBButton
+          block
+          style={[styles.bottomBtn]}
+          onPress={()=> {
+            console.log('你点击了对话')
+          }}>
+          <NBIcon name={'ios-chatbubbles-outline'}/>
+          对话
+        </NBButton>
+        <NBButton
+          block
+          style={[styles.bottomBtn, styles.attention]}
+          onPress={()=> {
+            this._attention(this.state.UserId)
+          }}>
+          <NBIcon name={'ios-heart-outline'}/>
+          {this.state.AmIFollowedHim ? '取消关注' : '关注'}
+        </NBButton>
+      </View>
+      )
+    }else{
+      return null;
+    }
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -213,26 +252,7 @@ class UserInfo extends BaseComponent {
             {this._renderUserInfo(this.state.DataFilter)}
           </View>
         </ScrollView>
-        <View style={styles.bottomBtnGroup}>
-          <NBButton
-            block
-            style={[styles.bottomBtn]}
-            onPress={()=> {
-              console.log('你点击了对话')
-            }}>
-            <NBIcon name={'ios-chatbubbles-outline'}/>
-            对话
-          </NBButton>
-          <NBButton
-            block
-            style={[styles.bottomBtn, styles.attention]}
-            onPress={()=> {
-              this._attention(this.state.UserId)
-            }}>
-            <NBIcon name={'ios-heart-outline'}/>
-            {this.state.AmIFollowedHim ? '取消关注' : '关注'}
-          </NBButton>
-        </View>
+        {this._renderButtonGroup()}
       </View>
     )
   }

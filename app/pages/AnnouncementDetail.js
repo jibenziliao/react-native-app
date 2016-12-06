@@ -245,7 +245,8 @@ class AnnouncementDetail extends BaseComponent {
             myUserId:this.state.myUserId,
             ...json.Result,
             userPhotos: result.Result,
-            myLocation: this.state.myLocation
+            myLocation: this.state.myLocation,
+            isSelf:this.state.isSelf
           }
         });
       }, (error)=> {

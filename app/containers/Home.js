@@ -178,7 +178,10 @@ class Home extends BaseComponent {
   _getCurrentUserProfile() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      currentUser = json.Result;
+      currentUser={
+        ...json.Result,
+        myLocation:currentLocation
+      };
       Storage.setItem('userInfo', currentUser);
     }, (error)=> {
 
@@ -338,7 +341,8 @@ class Home extends BaseComponent {
             myUserId:currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
-            myLocation: currentLocation
+            myLocation: currentLocation,
+            isSelf: currentUser.UserId === data.UserId,
           }
         });
       }, (error)=> {

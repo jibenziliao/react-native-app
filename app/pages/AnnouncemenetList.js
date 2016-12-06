@@ -160,7 +160,7 @@ class AnnouncementList extends BaseComponent{
     const {dispatch} = this.props;
     this.state.pageIndex += 1;
     let data = {
-      postId: this.state.UserId,
+      targetUserId: this.state.UserId,
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize,
       ...this.state.myLocation,
@@ -183,7 +183,7 @@ class AnnouncementList extends BaseComponent{
     const {dispatch}=this.props;
     this.setState({refreshing: true, pageIndex: 1});
     let data = {
-      postId: this.state.UserId,
+      targetUserId: this.state.UserId,
       pageIndex: 1,
       pageSize: this.state.pageSize,
       ...this.state.myLocation,
