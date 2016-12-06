@@ -22,6 +22,8 @@ import ImagePicker from 'react-native-image-picker'
 import Spinner from '../components/Spinner'
 import {Button as NBButton} from 'native-base'
 import RNPicker from 'react-native-picker'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import EditFriendFilter from '../pages/EditFriendFilter'
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +59,16 @@ const styles = StyleSheet.create({
   },
   bottomItem:{
     borderBottomWidth:0
+  },
+  itemRow:{
+    flexDirection:'row'
+  },
+  itemEnter:{
+    justifyContent:'space-between',
+    alignItems:'center'
+  },
+  itemIcon:{
+    marginRight:10
   },
   fullInput: {
     flex: 1
@@ -133,6 +145,18 @@ class EditUserInfo extends BaseComponent {
   //点击完成(保存编辑后的个人资料)
   onRightPressed() {
 
+  }
+
+  //前往编辑个人信息中的交友信息
+  _editFriendFilter(){
+    const {navigator}=this.props;
+    navigator.push({
+      component:EditFriendFilter,
+      name:'EditFriendFilter',
+      params:{
+        ...this.state.friendInfo
+      }
+    })
   }
 
   _createHeightData() {
@@ -463,6 +487,15 @@ class EditUserInfo extends BaseComponent {
                 maxLength={50}/>
             </View>
           </View>
+          <TouchableOpacity
+            onPress={()=>{this._editFriendFilter()}}
+            style={[styles.userInfo,styles.itemRow,styles.itemEnter]}>
+            <Text style={styles.itemTitle}>{'交友信息'}</Text>
+            <Icon
+              style={styles.itemIcon}
+              name={'angle-right'}
+              size={20}/>
+        </TouchableOpacity>
           <View style={styles.userInfo}>
             <Text style={styles.itemTitle}>{'交友信息'}</Text>
             <View style={[styles.listItem,styles.topItem]}>
@@ -495,7 +528,7 @@ class EditUserInfo extends BaseComponent {
           <View style={styles.userInfo}>
             <Text style={styles.itemTitle}>{'其他'}</Text>
             <View style={[styles.listItem,styles.topItem]}>
-              <Text style={styles.inputLabel}>{'昵称'}</Text>
+              <Text style={styles.inputLabel}>{'学历'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
@@ -504,7 +537,7 @@ class EditUserInfo extends BaseComponent {
                 maxLength={15}/>
             </View>
             <View style={styles.listItem}>
-              <Text style={styles.inputLabel}>{'所在地'}</Text>
+              <Text style={styles.inputLabel}>{'信仰'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
@@ -513,7 +546,25 @@ class EditUserInfo extends BaseComponent {
                 maxLength={15}/>
             </View>
             <View style={styles.listItem}>
-              <Text style={styles.inputLabel}>{'家乡'}</Text>
+              <Text style={styles.inputLabel}>{'联系方式'}</Text>
+              <TextInput
+                style={[styles.input, styles.fullInput]}
+                underlineColorAndroid={'transparent'}
+                value={this.state.Hometown}
+                onChangeText={(Hometown)=>this.setState({Hometown})}
+                maxLength={15}/>
+            </View>
+            <View style={styles.listItem}>
+              <Text style={styles.inputLabel}>{'兴趣爱好'}</Text>
+              <TextInput
+                style={[styles.input, styles.fullInput]}
+                underlineColorAndroid={'transparent'}
+                value={this.state.Hometown}
+                onChangeText={(Hometown)=>this.setState({Hometown})}
+                maxLength={15}/>
+            </View>
+            <View style={styles.listItem}>
+              <Text style={styles.inputLabel}>{'自我评价'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}

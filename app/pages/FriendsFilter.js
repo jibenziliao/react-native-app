@@ -117,23 +117,6 @@ const styles = StyleSheet.create({
 const tmpGenderArr = ['不限', '男', '女'];
 const tmpPhotoOnlyArr = ['不限', '是', '否'];
 
-let DictMap = {
-  EducationLevelDict: [],
-  IncomeLevelDict: [],
-  JobTypeDict: [],
-  MarriageStatusDict: []
-  //DatingPurposeDict:[]
-};
-
-let DatingPurposeSelect = [
-  {Key: 'Love', Value: '男女朋友', Checked: false},
-  {Key: 'RelationShip', Value: '异性知己', Checked: false},
-  {Key: 'FriendShip', Value: '好友', Checked: false},
-  {Key: 'Other', Value: '中介或其他', Checked: false}
-];
-
-let DatingPurposeSelectCopy = [];
-
 class FriendsFilter extends BaseComponent {
   constructor(props) {
     super(props);
@@ -159,20 +142,6 @@ class FriendsFilter extends BaseComponent {
       },
       photoOnly: false,
       photoOnlyText:'不限'
-    }
-  }
-
-  componentWillMount() {
-    for (let i in DictMap) {
-      Storage.getItem(`${i}`).then((response)=> {
-        if (response && response.length > 0) {
-          response.forEach((j)=> {
-            DictMap[i].push(j.Value);
-          });
-        } else {
-          console.error('获取下拉选项字典出错');
-        }
-      })
     }
   }
 
