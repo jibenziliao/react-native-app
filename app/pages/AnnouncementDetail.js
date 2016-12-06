@@ -242,6 +242,7 @@ class AnnouncementDetail extends BaseComponent {
           params: {
             Nickname: data.Nickname,
             UserId:data.UserId,
+            myUserId:this.state.myUserId,
             ...json.Result,
             userPhotos: result.Result,
             myLocation: this.state.myLocation
@@ -365,6 +366,7 @@ class AnnouncementDetail extends BaseComponent {
           callBack: this.state.callBack,
           ...json.Result,
           myLocation: this.state.myLocation,
+          myUserId:this.state.myUserId,
           commentList: result.Result,
           isSelf: this.state.isSelf
         });

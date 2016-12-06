@@ -111,81 +111,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const listViewData = [
-  {
-    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-    userId: 110,
-    userName: '张三',
-    age: 23,
-    gender: 1,
-    text: 'hello world',
-    distance: '3.9',
-    second: 19,
-    comment: 8,
-    read: 10
-  },
-  {
-    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-    userId: 111,
-    userName: '李四',
-    age: 23,
-    gender: 1,
-    text: 'hello world',
-    distance: '3.9',
-    second: 19,
-    comment: 8,
-    read: 10
-  },
-  {
-    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-    userId: 112,
-    userName: '李四',
-    age: 23,
-    gender: 1,
-    text: 'hello world',
-    distance: '3.9',
-    second: 19,
-    comment: 8,
-    read: 10
-  },
-  {
-    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-    userId: 113,
-    userName: '李四',
-    age: 23,
-    gender: 1,
-    text: 'hello world',
-    distance: '3.9',
-    second: 19,
-    comment: 8,
-    read: 10
-  },
-  {
-    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-    userId: 114,
-    userName: '李四',
-    age: 23,
-    gender: 1,
-    text: 'hello world',
-    distance: '3.9',
-    second: 19,
-    comment: 8,
-    read: 10
-  },
-  {
-    avatarUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-    userId: 115,
-    userName: '李四',
-    age: 23,
-    gender: 1,
-    text: 'hello world',
-    distance: '3.9',
-    second: 19,
-    comment: 8,
-    read: 10
-  }
-];
-
 const {height, width} = Dimensions.get('window');
 
 let navigator;
@@ -410,6 +335,7 @@ class Home extends BaseComponent {
           params: {
             Nickname: data.Nickname,
             UserId:data.UserId,
+            myUserId:currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
             myLocation: currentLocation
@@ -487,6 +413,7 @@ class Home extends BaseComponent {
             ...json.Result,
             myLocation: currentLocation,
             commentList: result.Result,
+            myUserId:currentUser.UserId,
             isSelf: currentUser.UserId === rowData.CreaterId,
             callBack: ()=> {
               this._onRefresh()

@@ -215,7 +215,7 @@ class Login extends BaseComponent {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.hasSendValidCode) {
-      let second = 120;
+      let second = 10;
       let phone = this.state.phone;
       let phoneCountry = this.state.phoneCountry;
       this.setState({
