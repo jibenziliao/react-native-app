@@ -191,7 +191,7 @@ export function postAnnouncement(data, navigator) {
 
 export function getAllAnnouncement(data,resolve,reject) {
   return (dispatch)=> {
-    getFetch(`/post/getuserpostlist/${data.postId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
