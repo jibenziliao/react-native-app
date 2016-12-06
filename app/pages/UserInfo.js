@@ -20,6 +20,8 @@ import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import * as HomeActions from '../actions/Home'
 import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import AnnouncementList from '../pages/AnnouncemenetList'
+import EditUserInfo from '../pages/EditUserInfo'
+import * as Storage from '../utils/Storage'
 
 const {width, height}=Dimensions.get('window');
 
@@ -96,6 +98,17 @@ const styles = StyleSheet.create({
   }
 });
 
+let DictMap = {
+  EducationLevelDict: [],
+  IncomeLevelDict: [],
+  JobTypeDict: [],
+  MarriageStatusDict: [],
+  DatingPurposeDict: []
+};
+
+//保存字典索引
+let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'MarriageStatusDict', 'DatingPurposeDict'];
+
 class UserInfo extends BaseComponent {
   constructor(props) {
     super(props);
@@ -103,10 +116,6 @@ class UserInfo extends BaseComponent {
       ...this.props.route.params
     };
     console.log(this.props.route.params);
-  }
-
-  componentDidMount() {
-
   }
 
   getNavigationBarProps() {
@@ -120,7 +129,53 @@ class UserInfo extends BaseComponent {
   //如果查看的用户详情时当前用户自己的详细资料,则导航栏显示编辑按钮
   onRightPressed() {
     const {dispatch}=this.props;
-    console.log('你点击了编辑按钮');
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      this._initDict((data,result)=>{this._goEditUserInfo(data,result)},json.Result);
+    }, (error)=> {
+
+    }));
+  }
+
+  _goEditUserInfo(data,result){
+    const {navigator}=this.props;
+    navigator.push({
+      component: EditUserInfo,
+      name: 'EditUserInfo',
+      params:{
+        DictMap:data,
+        ...result,
+        userPhotos:this._initOnlinePhotos(this.state.userPhotos)
+      }
+    });
+  }
+
+  //将从后台获取的相册重新包装,标明照片是从线上获取,而非本地拍摄
+  _initOnlinePhotos(data){
+    let tmpArr=[];
+    for(let i=0;i<data.length;i++){
+      data[i].onLine=true;
+      tmpArr.push(data[i])
+    }
+    return tmpArr;
+  }
+
+  _initDict(callBack,result) {
+    //下面是选填项的字典
+    for (let i = 0; i < DictMapArrKey.length; i++) {
+      Storage.getItem(`${DictMapArrKey[i]}`).then((response)=> {
+        if (response && response.length > 0) {
+          for (let j = 0; j < response.length; j++) {
+            DictMap[DictMapArrKey[i]].push(response[j].Value)
+          }
+          if (i === DictMapArrKey.length - 1) {
+            callBack(DictMap,result);
+          }
+        } else {
+          console.error('获取下拉选项字典出错');
+        }
+      })
+    }
+
   }
 
   //前往指定用户的历史公告
@@ -138,11 +193,11 @@ class UserInfo extends BaseComponent {
         component: AnnouncementList,
         name: 'AnnouncementList',
         params: {
-          postList:json.Result,
-          targetUserId:this.state.UserId,
+          postList: json.Result,
+          targetUserId: this.state.UserId,
           Nickname: this.state.Nickname,
           myLocation: this.state.myLocation,
-          myUserId:this.state.myUserId
+          myUserId: this.state.myUserId
         }
       });
     }, (error)=> {
@@ -188,31 +243,31 @@ class UserInfo extends BaseComponent {
   }
 
   //渲染屏幕下方的操作按钮(如果查看的是自己的用户资料,则不需要对话和关注)
-  _renderButtonGroup(){
-    if(!this.state.isSelf){
-      return(
-      <View style={styles.bottomBtnGroup}>
-        <NBButton
-          block
-          style={[styles.bottomBtn]}
-          onPress={()=> {
-            console.log('你点击了对话')
-          }}>
-          <NBIcon name={'ios-chatbubbles-outline'}/>
-          对话
-        </NBButton>
-        <NBButton
-          block
-          style={[styles.bottomBtn, styles.attention]}
-          onPress={()=> {
-            this._attention(this.state.UserId)
-          }}>
-          <NBIcon name={'ios-heart-outline'}/>
-          {this.state.AmIFollowedHim ? '取消关注' : '关注'}
-        </NBButton>
-      </View>
+  _renderButtonGroup() {
+    if (!this.state.isSelf) {
+      return (
+        <View style={styles.bottomBtnGroup}>
+          <NBButton
+            block
+            style={[styles.bottomBtn]}
+            onPress={()=> {
+              console.log('你点击了对话')
+            }}>
+            <NBIcon name={'ios-chatbubbles-outline'}/>
+            对话
+          </NBButton>
+          <NBButton
+            block
+            style={[styles.bottomBtn, styles.attention]}
+            onPress={()=> {
+              this._attention(this.state.UserId)
+            }}>
+            <NBIcon name={'ios-heart-outline'}/>
+            {this.state.AmIFollowedHim ? '取消关注' : '关注'}
+          </NBButton>
+        </View>
       )
-    }else{
+    } else {
       return null;
     }
   }
