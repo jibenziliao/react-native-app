@@ -33,11 +33,11 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingBottom:30
+    paddingBottom: 30
   },
   photoContainer: {
     flexDirection: 'row',
-    marginTop:10
+    marginTop: 10
   },
   photos: {
     width: 100,
@@ -101,11 +101,13 @@ let DictMap = {
   IncomeLevelDict: [],
   JobTypeDict: [],
   MarriageStatusDict: [],
-  DatingPurposeDict: []
+  DatingPurposeDict: [],
+  PhotoPermissionDict: [],
+  ReligionDict: []
 };
 
 //保存字典索引
-let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'MarriageStatusDict', 'DatingPurposeDict'];
+let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'MarriageStatusDict', 'DatingPurposeDict', 'PhotoPermissionDict', 'ReligionDict'];
 
 class UserInfo extends BaseComponent {
   constructor(props) {
@@ -128,60 +130,66 @@ class UserInfo extends BaseComponent {
   onRightPressed() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      dispatch(HomeActions.getDatingFilter('',(res)=>{
-        this._initDict((data,result,res)=>{this._goEditUserInfo(data,result,res)},json.Result,res.Result);
-      },(error)=>{}));
+      dispatch(HomeActions.getDatingFilter('', (res)=> {
+        this._initDict((data, result, res)=> {
+          this._goEditUserInfo(data, result, res)
+        }, json.Result, res.Result);
+      }, (error)=> {
+      }));
     }, (error)=> {
 
     }));
   }
 
-  _goEditUserInfo(data,result,res){
+  _goEditUserInfo(data, result, res) {
     const {navigator}=this.props;
     navigator.push({
       component: EditUserInfo,
       name: 'EditUserInfo',
-      params:{
-        DictMap:data,
+      params: {
+        DictMap: data,
         ...result,
-        friendInfo:res,
-        userPhotos:this._initOnlinePhotos(this.state.userPhotos)
+        friendInfo: res,
+        userPhotos: this._initOnlinePhotos(this.state.userPhotos)
       }
     });
   }
 
-  //将从后台获取的相册重新包装,标明照片是从线上获取,而非本地拍摄
-  _initOnlinePhotos(data){
-    let tmpArr=[];
-    for(let i=0;i<data.length;i++){
-      data[i].onLine=true;
+  //将从后台获取的相册重新包装,标明照片是从线上获取,而非本地拍摄。并标明头像
+  _initOnlinePhotos(data) {
+    let tmpArr = [];
+    for (let i = 0; i < data.length; i++) {
+      data[i].onLine = true;
+      data[i].isAvatar = data[i].PhotoUrl == this.state.PrimaryPhotoFilename;
       tmpArr.push(data[i])
     }
     return tmpArr;
   }
 
-  _initDict(callBack,result,res) {
+  _initDict(callBack, result, res) {
     //每次初始化字典时,需要把之前的数据清空
     DictMap = {
       EducationLevelDict: [],
       IncomeLevelDict: [],
       JobTypeDict: [],
       MarriageStatusDict: [],
-      DatingPurposeDict: []
+      DatingPurposeDict: [],
+      PhotoPermissionDict: [],
+      ReligionDict: []
     };
     //下面是选填项的字典
     for (let i = 0; i < DictMapArrKey.length; i++) {
       Storage.getItem(`${DictMapArrKey[i]}`).then((response)=> {
         if (response && response.length > 0) {
           for (let j = 0; j < response.length; j++) {
-            if(DictMapArrKey[i]=='DatingPurposeDict'){
+            if (DictMapArrKey[i] == 'DatingPurposeDict' || DictMapArrKey[i] == 'PhotoPermissionDict' || DictMapArrKey[i] == 'ReligionDict') {
               DictMap[DictMapArrKey[i]].push(response[j])
-            }else{
+            } else {
               DictMap[DictMapArrKey[i]].push(response[j].Value)
             }
           }
           if (i === DictMapArrKey.length - 1) {
-            callBack(DictMap,result,res);
+            callBack(DictMap, result, res);
           }
         } else {
           console.error('获取下拉选项字典出错');

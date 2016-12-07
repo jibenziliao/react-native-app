@@ -30,6 +30,15 @@ import EditFriendFilter from '../pages/EditFriendFilter'
 import CheckBox from '../components/CheckBox'
 import * as UserProfileActions from '../actions/UserProfile'
 import {toastShort} from '../utils/ToastUtil'
+import Menu, {
+  MenuContext,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu'
+import * as PhotoAction from '../actions/Photo'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import PhotoViewer from '../components/PhotoViewer'
 
 const {width, height}=Dimensions.get('window');
 
@@ -45,7 +54,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    padding: 10
+    paddingTop: 10,
+    paddingLeft: 10
   },
   userInfo: {
     backgroundColor: '#fff',
@@ -145,6 +155,25 @@ const styles = StyleSheet.create({
   datingPurposeTitle: {
     borderBottomWidth: 1,
     borderBottomColor: '#d4cfcf'
+  },
+  takePhotoBtn: {
+    height: (width - 40) / 3,
+    width: (width - 40) / 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    marginRight: 10,
+    marginBottom: 10
+  },
+  imageStar: {
+    position: 'absolute',
+    top: 0,
+    left: 0
+  },
+  imageBorder: {
+    borderWidth: 0
   }
 });
 
@@ -165,7 +194,6 @@ class EditUserInfo extends BaseComponent {
     console.log(this.props.route.params);
   }
 
-  //TODO: 需要注册安卓返回监听
   componentDidMount() {
     this._initDatingPurpose();
     if (Platform.OS === 'android') {
@@ -413,13 +441,111 @@ class EditUserInfo extends BaseComponent {
     )
   }
 
+  _initImagePicker() {
+    const options = {
+      title: '',
+      takePhotoButtonTitle: '拍照',
+      chooseFromLibraryButtonTitle: '从相册中选择',
+      cancelButtonTitle: '取消',
+      mediaType: 'photo',
+      maxHeight: 800,
+      maxWidth: 800,
+      quality: 0.7
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      else {
+        let source;
+
+        // You can display the image using either data...
+        //source = {uri: 'data:image/jpeg;base64,' + response.data, isStatic: true};
+
+        // or a reference to the platform specific asset location
+        if (Platform.OS === 'ios') {
+          source = {PhotoUrl: response.uri.replace('file://', ''), onLine: false};
+        } else {
+          source = {PhotoUrl: response.uri, onLine: false};
+        }
+
+        this.state.userPhotos.push({
+          Id: (new Date()).getTime().toString(),
+          ...source,
+          Permission: 'Everybody'
+        });
+        this.setState({userPhotos: this.state.userPhotos});
+      }
+    });
+  }
+
+  _renderPhotoArea() {
+    return (
+      <View style={styles.photosContainer}>
+        {/*<TouchableOpacity
+         onPress={()=> {
+         this._initImagePicker()
+         }}
+         style={[styles.takePhotoBtn,{height:(width - 40) / 3+70}]}>
+         <Icon name={'picture-o'} size={30}/>
+         <Text>{'添加照片'}</Text>
+         </TouchableOpacity>*/}
+        {this._renderPhotos(this.state.userPhotos)}
+      </View>
+    )
+  }
+
+  _renderPhotos(arr) {
+    return (
+      <PhotoViewer
+        imageArr={arr}
+        imageArrChanges={(data)=>{this._userPhotosChanges(data)}}
+        permissionOptions={this.state.DictMap.PhotoPermissionDict}
+        deletePhotoOnline={(data)=> {
+          this._deletePhotoOnline(data)
+        }}
+        deletePhotoOffline={(data)=> {
+          this._deletePhotoOffline(data)
+        }}
+      />
+    )
+  }
+
+  //拍摄新照片后,重绘页面
+  _userPhotosChanges(data){
+    
+  }
+
+  //删除照片(本地)
+  _deletePhotoOffline(data) {
+    let index = this.state.userPhotos.findIndex((item)=> {
+      return item.Id == data.Id;
+    });
+    this.state.userPhotos.splice(index, 1);
+    this.setState({
+      userPhotos: [
+        ...this.state.userPhotos
+      ]
+    });
+  }
+
+  //删除照片(在线)
+  _deletePhotoOnline(data) {
+    console.log(data);
+  }
+
   renderBody() {
     return (
-      <View style={styles.container}>
+      <MenuContext style={styles.container}>
         <ScrollView style={styles.scrollViewContainer}>
-          <View style={styles.photosContainer}>
-            <Text>{'这里相册显示区域'}</Text>
-          </View>
+          {/*{this._renderPhotoArea()}*/}
+          {this._renderPhotos(this.state.userPhotos)}
           <View style={styles.userInfo}>
             <Text style={styles.itemTitle}>{'基本资料'}</Text>
             <View style={[styles.listItem, styles.topItem]}>
@@ -535,7 +661,7 @@ class EditUserInfo extends BaseComponent {
             {this.renderDatingPurpose()}
           </View>
         </ScrollView>
-      </View>
+      </MenuContext>
     )
   }
 
