@@ -179,88 +179,6 @@ class EditUserInfo extends BaseComponent {
     return ['0m(精确定位)', '200m', '500m', '1000m', '隐身'];
   }
 
-  _createAgeRangeData() {
-    let data = [], unLimitAge = [];
-    unLimitAge.push('不限');
-    for (let m = 18; m < 81; m++) {
-      unLimitAge.push(m + '');
-    }
-    data.push({'不限': unLimitAge});
-    for (let i = 18; i < 80; i++) {
-      let maxAge = [];
-      for (let j = 19; j < 81; j++) {
-        if (i < j) {
-          if (maxAge.indexOf('不限') < 0) {
-            maxAge.push('不限');
-          }
-          maxAge.push(j + '');
-        }
-      }
-      let _maxAge = {};
-      _maxAge[i + ''] = maxAge;
-      data.push(_maxAge);
-    }
-    return data;
-  }
-
-  _createHeightRangeData() {
-    let data = [];
-    data.push({'不限': ['不限']});
-    for (let i = 100; i < 200; i++) {
-      let maxHeight = [];
-      for (let j = 101; j < 201; j++) {
-        if (i < j) {
-          if (maxHeight.indexOf('不限') < 0) {
-            maxHeight.push('不限');
-          }
-          maxHeight.push(j + '');
-        }
-      }
-      let _maxHeight = {};
-      _maxHeight[i + ''] = maxHeight;
-      data.push(_maxHeight);
-    }
-    return data;
-  }
-
-  _renderDoublePicker(text, title, minValue, maxValue, _createData) {
-    return (
-      <TouchableHighlight
-        onPress={()=> {
-          this._showDoublePicker(_createData, text, title, minValue, maxValue);
-        }}
-        style={styles.pickerItem}
-        activeOpacity={0.5}
-        underlayColor="rgba(247,245,245,0.7)">
-        <View style={styles.pickerTextView}>
-          <Text style={styles.pickerText}>
-            {this.state[`${text}`]}
-          </Text>
-        </View>
-      </TouchableHighlight>
-    )
-  }
-
-  //双选择项范围弹窗
-  _showDoublePicker(_createData, text, title, minValue, maxValue){
-    RNPicker.init({
-      pickerTitleText: title,
-      pickerData: _createData,
-      selectedValue: [`${minValue}`, `${maxValue}`],
-      onPickerConfirm: pickedValue => {
-        this._updateDoubleState(text, pickedValue);
-        RNPicker.hide();
-      },
-      onPickerCancel: pickedValue => {
-        RNPicker.hide();
-      },
-      onPickerSelect: pickedValue => {
-        this._updateDoubleState(text, pickedValue);
-      }
-    });
-    RNPicker.show();
-  }
-
   //通用选择弹窗显示文本方法
   renderSinglePicker(text, value, _createData) {
     return (
@@ -340,75 +258,6 @@ class EditUserInfo extends BaseComponent {
         break;
     }
   }
-
-  _updateDoubleState(text, pickedValue) {
-    switch (text) {
-      case 'ageRangeText':
-        if (pickedValue[0] == '不限' && pickedValue[1] == '不限') {
-          this.setState({
-            ageRangeText: '不限',
-            AgeMin: null,
-            AgeMax: null
-          });
-        } else if (pickedValue[0] == '不限' && pickedValue[1] != '不限') {
-          this.setState({
-            ageRangeText: `${pickedValue[1]}岁以下`,
-            AgeMin: null,
-            AgeMax: parseInt(pickedValue[1])
-          });
-        } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
-          this.setState({
-            ageRangeText: `${pickedValue[0]}岁以上`,
-            AgeMin: parseInt(pickedValue[0]),
-            AgeMax: null
-          });
-        } else {
-          this.setState({
-            ageRangeText: `${pickedValue[0]}-${pickedValue[1]}岁`,
-            AgeMin: parseInt(pickedValue[0]),
-            AgeMax: parseInt(pickedValue[1])
-          });
-        }
-        break;
-      case 'heightRangeText':
-        if (pickedValue[0] == '不限') {
-          this.setState({
-            heightRangeText: '不限',
-            HeightMin: 100,
-            HeightMax: 200
-          });
-        } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
-          this.setState({
-            heightRangeText: `${pickedValue[0]}cm以上`,
-            HeightMin: parseInt(pickedValue[0]),
-            HeightMax: 80
-          });
-        } else {
-          this.setState({
-            heightRangeText: `${pickedValue[0]}-${pickedValue[1]}cm`,
-            HeightMin: parseInt(pickedValue[0]),
-            HeightMax: parseInt(pickedValue[1])
-          });
-        }
-        break;
-      case 'genderText':
-        this.setState({
-          genderText: pickedValue[0],
-          gender: pickedValue[0] == '不限' ? null : pickedValue[0] == '男'
-        });
-        break;
-      case 'photoOnlyText':
-        this.setState({
-          photoOnlyText: pickedValue[0],
-          photoOnly: pickedValue[0] == '不限' ? null : pickedValue[0] == '是'
-        });
-        break;
-      default:
-        console.error('设置数据出错!');
-        break;
-    }
-  }
-
 
   _showPicker(_createData, text, value) {
     RNPicker.init({
@@ -496,35 +345,6 @@ class EditUserInfo extends BaseComponent {
               name={'angle-right'}
               size={20}/>
         </TouchableOpacity>
-          <View style={styles.userInfo}>
-            <Text style={styles.itemTitle}>{'交友信息'}</Text>
-            <View style={[styles.listItem,styles.topItem]}>
-              <Text style={styles.inputLabel}>{'年龄'}</Text>
-              {this._renderDoublePicker('ageRangeText', '请选择年龄范围', this.state.friendInfo.AgeMin + '', this.state.friendInfo.AgeMax + '', this._createAgeRangeData())}
-            </View>
-            <View style={styles.listItem}>
-              <Text style={styles.inputLabel}>{'身高'}</Text>
-              {this._renderDoublePicker('heightRangeText', '请选择身高范围', this.state.friendInfo.HeightMin + '', this.state.friendInfo.HeightMax + '', this._createHeightRangeData())}
-            </View>
-            <View style={styles.listItem}>
-              <Text style={styles.inputLabel}>{'所在地'}</Text>
-              <TextInput
-                style={[styles.input, styles.fullInput]}
-                underlineColorAndroid={'transparent'}
-                value={this.state.Location}
-                onChangeText={(Location)=>this.setState({Location})}
-                maxLength={15}/>
-            </View>
-            <View style={styles.listItem}>
-              <Text style={styles.inputLabel}>{'家乡'}</Text>
-              <TextInput
-                style={[styles.input, styles.fullInput]}
-                underlineColorAndroid={'transparent'}
-                value={this.state.Hometown}
-                onChangeText={(Hometown)=>this.setState({Hometown})}
-                maxLength={15}/>
-            </View>
-          </View>
           <View style={styles.userInfo}>
             <Text style={styles.itemTitle}>{'其他'}</Text>
             <View style={[styles.listItem,styles.topItem]}>

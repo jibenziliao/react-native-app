@@ -197,7 +197,7 @@ export function getAllAnnouncement(data,resolve,reject) {
 
 export function attention(data,resolve,reject) {
   return (dispatch)=> {
-    postFetch(`/follower/follower/${data.UserId}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    postFetch(`/follower/follower/${data.attentionUserId}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 

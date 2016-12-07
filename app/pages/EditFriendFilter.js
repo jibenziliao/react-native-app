@@ -96,14 +96,13 @@ class EditFriendFilter extends BaseComponent {
     super(props);
     this.state = {
       ...this.props.route.params,
-      WeightMin:30,
-      WeightMax:70,//后台暂时没返回这两个字段,用假数据代替
       ageRangeText:`${this.props.route.params.AgeMin}-${this.props.route.params.AgeMax}岁`,
       heightRangeText:`${this.props.route.params.HeightMin}-${this.props.route.params.HeightMax}cm`,
-      weightRangeText:`${30}-${79}kg`,
+      weightRangeText:`${this.props.route.params.WeightMin}-${this.props.route.params.WeightMin}kg`,
       genderText:'不限',
       photoOnlyText:this.props.route.params.PhotoOnly===null?'不限':(this.props.route.params.PhotoOnly?'是':'否')
     };
+    console.log(this.props.route.params);
   }
 
   getNavigationBarProps() {
@@ -111,7 +110,6 @@ class EditFriendFilter extends BaseComponent {
       title: '交友信息'
     };
   }
-
 
   _createAgeRangeData() {
     let data = [], unLimitAge = [];

@@ -14,13 +14,16 @@ import {connect} from 'react-redux'
 import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 
+const styles=StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#E2E2E2'
+  },
+});
+
 class VicinityList extends BaseComponent{
   constructor(props){
     super(props);
-  }
-
-  componentDidMount(){
-
   }
 
   getNavigationBarProps() {
@@ -35,7 +38,7 @@ class VicinityList extends BaseComponent{
 
   renderBody(){
     return(
-      <View style={componentStyles.container}>
+      <View style={styles.container}>
         <Text>{'附近列表模式'}</Text>
       </View>
     )
