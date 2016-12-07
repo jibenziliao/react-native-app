@@ -10,7 +10,8 @@ import {
   Text,
   ScrollView,
   Image,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -22,6 +23,7 @@ import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import EditUserInfo from '../pages/EditUserInfo'
 import * as Storage from '../utils/Storage'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const {width, height}=Dimensions.get('window');
 
@@ -32,45 +34,22 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flex: 1,
-    paddingHorizontal: 10,
-    paddingBottom: 30
+    paddingHorizontal: 10
   },
   photoContainer: {
     flexDirection: 'row',
-    marginTop: 10
+    marginTop:10
   },
   photos: {
     width: 100,
     height: 100,
     marginRight: 10
   },
-  listItem: {
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderColor: 'gray'
-  },
-  signature: {
-    marginTop: 10
-  },
-  scrollViewBottom: {
-    marginBottom: 30
-  },
-  signatureText: {
-    fontSize: 20,
-    marginBottom: 10
-  },
-  announcementArea: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
   userAvatar: {
-    height: 50,
-    width: 50,
-    marginRight: 10
-  },
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
+    height: width/9,
+    width: width/9,
+    marginRight: 10,
+    borderRadius:4
   },
   userInfoItem: {
     flexDirection: 'row',
@@ -93,6 +72,40 @@ const styles = StyleSheet.create({
   },
   attention: {
     backgroundColor: '#FF9933'
+  },
+  section: {
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    padding:10,
+    marginTop:10
+  },
+  sectionTitle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth:1,
+    borderBottomColor:'#cec5c5',
+    paddingBottom:10
+  },
+  sectionTitleText: {
+    fontSize: 16
+  },
+  sectionContent:{
+    marginTop:10
+  },
+  bottomSection:{
+    marginBottom:10
+  },
+  announcementCard:{
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  editIconBtn: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  editText: {
+    marginLeft: 5
   }
 });
 
@@ -297,35 +310,95 @@ class UserInfo extends BaseComponent {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollViewContainer}>
-          <ScrollView
-            horizontal={true}
-            style={styles.photoContainer}>
-            {this._renderPhotos(this.state.userPhotos)}
-          </ScrollView>
-          <View style={[styles.listItem, styles.signature]}>
-            <Text style={styles.signatureText}>{'个性签名'}</Text>
-            <Text>{this.state.PersonSignal ? this.state.PersonSignal : '这家伙很懒,没有留下任何签名'}</Text>
+          <View style={styles.section}>
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>{'个人相册'}</Text>
+              <TouchableOpacity
+                onPress={()=> {
+                  console.log('123')
+                }}
+                style={styles.editIconBtn}>
+                <Icon
+                  name={'edit'}
+                  size={20}/>
+                <Text style={styles.editText}>{'编辑'}</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={true}
+              style={styles.photoContainer}>
+              {this._renderPhotos(this.state.userPhotos)}
+            </ScrollView>
           </View>
-          <View style={styles.listItem}>
-            <Text style={styles.signatureText}>{'求关注消息'}</Text>
-            <View style={styles.announcementArea}>
+          <View style={styles.section}>
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>{'个性签名'}</Text>
+              <TouchableOpacity
+                onPress={()=> {
+                  console.log('123')
+                }}
+                style={styles.editIconBtn}>
+                <Icon
+                  name={'edit'}
+                  size={20}/>
+                <Text style={styles.editText}>{'编辑'}</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.sectionContent}>{this.state.PersonSignal ? this.state.PersonSignal : '这家伙很懒,没有留下任何签名'}</Text>
+          </View>
+          <View style={styles.section}>
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>{'求关注消息'}</Text>
+            </View>
+            <View style={[styles.sectionContent,styles.announcementCard]}>
               <Image
                 style={styles.userAvatar}
                 source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}/>
-              <Text
-                onPress={()=> {
-                  this._goHistoryAnnouncementList()
-                }}
-                style={styles.link}>{'点击查看用户历史公告列表>>'}</Text>
+              <NBButton
+                bordered
+              onPress={()=>{
+                this._goHistoryAnnouncementList()
+              }}>
+                点击查看用户历史公告列表>>
+              </NBButton>
             </View>
           </View>
-          <View style={[styles.listItem, styles.signature]}>
-            <Text style={styles.signatureText}>{'个人信息'}</Text>
-            {this._renderUserInfo(this.state.BasicInfo)}
+          <View style={styles.section}>
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>{'个人信息'}</Text>
+              <TouchableOpacity
+                onPress={()=> {
+                  console.log('123')
+                }}
+                style={styles.editIconBtn}>
+                <Icon
+                  name={'edit'}
+                  size={20}/>
+                <Text style={styles.editText}>{'编辑'}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.sectionContent]}>
+              {this._renderUserInfo(this.state.BasicInfo)}
+            </View>
           </View>
-          <View style={[styles.listItem, styles.signature]}>
-            <Text style={styles.signatureText}>{'交友条件'}</Text>
-            {this._renderUserInfo(this.state.DataFilter)}
+          <View style={[styles.section,styles.bottomSection]}>
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>{'交友信息'}</Text>
+              <TouchableOpacity
+                onPress={()=> {
+                  console.log('123')
+                }}
+                style={styles.editIconBtn}>
+                <Icon
+                  name={'edit'}
+                  size={20}/>
+                <Text style={styles.editText}>{'编辑'}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.sectionContent]}>
+              {this._renderUserInfo(this.state.DataFilter)}
+            </View>
           </View>
         </ScrollView>
         {this._renderButtonGroup()}

@@ -519,7 +519,7 @@ class EditUserInfo extends BaseComponent {
 
   //拍摄新照片后,重绘页面
   _userPhotosChanges(data){
-    
+
   }
 
   //删除照片(本地)
