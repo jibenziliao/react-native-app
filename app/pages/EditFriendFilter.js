@@ -21,42 +21,43 @@ import {Button as NBButton} from 'native-base'
 import * as HomeActions from '../actions/Home'
 import RNPicker from 'react-native-picker'
 import * as FriendFilterActions from '../actions/FriendFilter'
+import {toastShort} from '../utils/ToastUtil'
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E2E2E2'
   },
-  friendInfo:{
-    backgroundColor:'#fff',
-    paddingHorizontal:10,
-    marginTop:10
+  friendInfo: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    marginTop: 10
   },
-  scrollViewContainer:{
-    paddingHorizontal:10,
-    flex:1
+  scrollViewContainer: {
+    paddingHorizontal: 10,
+    flex: 1
   },
-  inputLabel:{
-    width:100
+  inputLabel: {
+    width: 100
   },
-  topItem:{
-    borderTopWidth:1,
-    borderTopColor:'#d4cfcf'
+  topItem: {
+    borderTopWidth: 1,
+    borderTopColor: '#d4cfcf'
   },
-  bottomItem:{
-    borderBottomWidth:0
+  bottomItem: {
+    borderBottomWidth: 0
   },
-  itemRow:{
-    flexDirection:'row'
+  itemRow: {
+    flexDirection: 'row'
   },
-  listItem:{
+  listItem: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#d4cfcf',
     alignItems: 'center'
   },
-  saveBtn:{
-    marginVertical:30
+  saveBtn: {
+    marginVertical: 30
   },
   pickerItem: {
     flex: 1,
@@ -96,14 +97,8 @@ class EditFriendFilter extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.route.params,
-      ageRangeText:`${this.props.route.params.AgeMin}-${this.props.route.params.AgeMax}岁`,
-      heightRangeText:`${this.props.route.params.HeightMin}-${this.props.route.params.HeightMax}cm`,
-      weightRangeText:`${this.props.route.params.WeightMin}-${this.props.route.params.WeightMax}kg`,
-      genderText:'不限',
-      photoOnlyText:this.props.route.params.PhotoOnly===null?'不限':(this.props.route.params.PhotoOnly?'是':'否')
+      loading: true
     };
-    console.log(this.props.route.params);
   }
 
   getNavigationBarProps() {
@@ -112,22 +107,44 @@ class EditFriendFilter extends BaseComponent {
     };
   }
 
-  _saveFriendFilter(){
-    const{dispatch,navigator}=this.props;
-    let data={
-      AgeMin:this.state.AgeMin,
-      AgeMax:this.state.AgeMax,
-      HeightMin:this.state.HeightMin,
-      HeightMax:this.state.HeightMax,
-      Gender:this.state.Gender,
-      PhotoOnly:this.state.PhotoOnly,
-      WeightMin:this.state.WeightMin,
-      WeightMax:this.state.WeightMax
+  _saveFriendFilter() {
+    const {dispatch}=this.props;
+    let data = {
+      AgeMin: this.state.AgeMin,
+      AgeMax: this.state.AgeMax,
+      HeightMin: this.state.HeightMin,
+      HeightMax: this.state.HeightMax,
+      Gender: this.state.Gender,
+      PhotoOnly: this.state.PhotoOnly,
+      WeightMin: this.state.WeightMin,
+      WeightMax: this.state.WeightMax
     };
-    dispatch(FriendFilterActions.editFriendFilter(data,(json)=>{
-      navigator.pop();
-      this.state.callBack(data);
-    },(error)=>{}));
+    dispatch(FriendFilterActions.editFriendFilter(data, (json)=> {
+      toastShort('保存成功!');
+    }, (error)=> {
+    }));
+  }
+
+  componentWillMount() {
+    this._initDatingFilter();
+  }
+
+
+
+  _initDatingFilter() {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getDatingFilter('', (json)=> {
+      this.setState({
+        ...json.Result,
+        ageRangeText: `${json.Result.AgeMin}-${json.Result.AgeMax}岁`,
+        heightRangeText: `${json.Result.HeightMin}-${json.Result.HeightMax}cm`,
+        weightRangeText: `${json.Result.WeightMin}-${json.Result.WeightMax}kg`,
+        genderText: '不限',
+        photoOnlyText: json.Result.PhotoOnly === null ? '不限' : (json.Result.PhotoOnly ? '是' : '否'),
+        loading: false
+      })
+    }, (error)=> {
+    }));
   }
 
   _createAgeRangeData() {
@@ -174,17 +191,17 @@ class EditFriendFilter extends BaseComponent {
     return data;
   }
 
-  _createWeightRangeData(){
-    let data=[];
-    data.push({'不限':['不限']});
-    for(let i=20;i<200;i++){
-      let maxWeight=[];
-      for(let j=21;j<201;j++){
-        if(i<j){
-          if(maxWeight.indexOf('不限')<0){
+  _createWeightRangeData() {
+    let data = [];
+    data.push({'不限': ['不限']});
+    for (let i = 20; i < 200; i++) {
+      let maxWeight = [];
+      for (let j = 21; j < 201; j++) {
+        if (i < j) {
+          if (maxWeight.indexOf('不限') < 0) {
             maxWeight.push('不限');
           }
-          maxWeight.push(j+'');
+          maxWeight.push(j + '');
         }
       }
       let _maxWeight = {};
@@ -213,7 +230,7 @@ class EditFriendFilter extends BaseComponent {
   }
 
   //双选择项范围弹窗
-  _showDoublePicker(_createData, text, title, minValue, maxValue){
+  _showDoublePicker(_createData, text, title, minValue, maxValue) {
     RNPicker.init({
       pickerTitleText: title,
       pickerData: _createData,
@@ -320,19 +337,19 @@ class EditFriendFilter extends BaseComponent {
         }
         break;
       case 'weightRangeText':
-        if(pickedValue[0]=='不限'){
+        if (pickedValue[0] == '不限') {
           this.setState({
-            weightRangeText:'不限',
-            WeightMin:20,
-            WeightMax:200
+            weightRangeText: '不限',
+            WeightMin: 20,
+            WeightMax: 200
           })
-        }else if(pickedValue[0] != '不限' && pickedValue[1] == '不限'){
+        } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
           this.setState({
             weightRangeText: `${pickedValue[0]}kg以上`,
             WeightMin: parseInt(pickedValue[0]),
             WeightMax: 200
           });
-        }else{
+        } else {
           this.setState({
             weightRangeText: `${pickedValue[0]}-${pickedValue[1]}kg`,
             WeightMin: parseInt(pickedValue[0]),
@@ -359,42 +376,46 @@ class EditFriendFilter extends BaseComponent {
   }
 
   renderBody() {
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.scrollViewContainer}>
-          <View style={styles.friendInfo}>
-            <View style={[styles.listItem]}>
-              <Text style={styles.inputLabel}>{'年龄'}</Text>
-              {this._renderDoublePicker('ageRangeText', '请选择年龄范围', this.state.AgeMin + '', this.state.AgeMax + '', this._createAgeRangeData())}
+    if (this.state.loading) {
+      return null
+    } else {
+      return (
+        <View style={styles.container}>
+          <ScrollView style={styles.scrollViewContainer}>
+            <View style={styles.friendInfo}>
+              <View style={[styles.listItem]}>
+                <Text style={styles.inputLabel}>{'年龄'}</Text>
+                {this._renderDoublePicker('ageRangeText', '请选择年龄范围', this.state.AgeMin + '', this.state.AgeMax + '', this._createAgeRangeData())}
+              </View>
+              <View style={[styles.listItem]}>
+                <Text style={styles.inputLabel}>{'性别'}</Text>
+                {this._renderSinglePicker('genderText', '请选择性别', 'Gender', tmpGenderArr)}
+              </View>
+              <View style={[styles.listItem]}>
+                <Text style={styles.inputLabel}>{'身高'}</Text>
+                {this._renderDoublePicker('heightRangeText', '请选择身高范围', this.state.HeightMin + '', this.state.HeightMax + '', this._createHeightRangeData())}
+              </View>
+              <View style={[styles.listItem]}>
+                <Text style={styles.inputLabel}>{'体重'}</Text>
+                {this._renderDoublePicker('weightRangeText', '请选择体重范围', this.state.WeightMin + '', this.state.WeightMax + '', this._createWeightRangeData())}
+              </View>
+              <View style={[styles.listItem, styles.bottomItem]}>
+                <Text style={styles.inputLabel}>{'只看有照片的人'}</Text>
+                {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.Gender, tmpPhotoOnlyArr)}
+              </View>
             </View>
-            <View style={[styles.listItem]}>
-              <Text style={styles.inputLabel}>{'性别'}</Text>
-              {this._renderSinglePicker('genderText', '请选择性别', 'Gender', tmpGenderArr)}
-            </View>
-            <View style={[styles.listItem]}>
-              <Text style={styles.inputLabel}>{'身高'}</Text>
-              {this._renderDoublePicker('heightRangeText', '请选择身高范围', this.state.HeightMin + '', this.state.HeightMax + '', this._createHeightRangeData())}
-            </View>
-            <View style={[styles.listItem]}>
-              <Text style={styles.inputLabel}>{'体重'}</Text>
-              {this._renderDoublePicker('weightRangeText', '请选择体重范围', this.state.WeightMin + '', this.state.WeightMax + '', this._createWeightRangeData())}
-            </View>
-            <View style={[styles.listItem,styles.bottomItem]}>
-              <Text style={styles.inputLabel}>{'只看有照片的人'}</Text>
-              {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.Gender, tmpPhotoOnlyArr)}
-            </View>
-          </View>
-          <NBButton
-            block
-            style={styles.saveBtn}
-            onPress={()=> {
-              this._saveFriendFilter()
-            }}>
-            保存
-          </NBButton>
-        </ScrollView>
-      </View>
-    )
+            <NBButton
+              block
+              style={styles.saveBtn}
+              onPress={()=> {
+                this._saveFriendFilter()
+              }}>
+              保存
+            </NBButton>
+          </ScrollView>
+        </View>
+      )
+    }
   }
 
 }

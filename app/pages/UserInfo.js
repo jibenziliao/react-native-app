@@ -26,6 +26,7 @@ import * as Storage from '../utils/Storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import EditUserProfile from '../pages/EditUserProfile'
+import EditFriendFilter from '../pages/EditFriendFilter'
 
 const {width, height}=Dimensions.get('window');
 
@@ -359,7 +360,10 @@ class UserInfo extends BaseComponent {
   }
 
   _editMyDatingFilter() {
-    console.log('编辑我的交友信息');
+    navigator.push({
+      component: EditFriendFilter,
+      name: 'EditFriendFilter'
+    })
   }
 
   renderBody() {
