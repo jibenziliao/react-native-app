@@ -33,10 +33,11 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingTop: 10
+    paddingBottom:30
   },
   photoContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginTop:10
   },
   photos: {
     width: 100,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   scrollViewBottom: {
-    marginBottom: 70
+    marginBottom: 30
   },
   signatureText: {
     fontSize: 20,
@@ -83,9 +84,6 @@ const styles = StyleSheet.create({
   },
   bottomBtnGroup: {
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
     width: width
   },
   bottomBtn: {
@@ -305,7 +303,7 @@ class UserInfo extends BaseComponent {
             <Text style={styles.signatureText}>{'个人信息'}</Text>
             {this._renderUserInfo(this.state.BasicInfo)}
           </View>
-          <View style={[styles.listItem, styles.signature, styles.scrollViewBottom]}>
+          <View style={[styles.listItem, styles.signature]}>
             <Text style={styles.signatureText}>{'交友条件'}</Text>
             {this._renderUserInfo(this.state.DataFilter)}
           </View>
