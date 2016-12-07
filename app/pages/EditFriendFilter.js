@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-  TouchableHighlight
+  TouchableHighlight,
+  InteractionManager
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -126,10 +127,10 @@ class EditFriendFilter extends BaseComponent {
   }
 
   componentWillMount() {
-    this._initDatingFilter();
+    InteractionManager.runAfterInteractions(()=> {
+      this._initDatingFilter();
+    })
   }
-
-
 
   _initDatingFilter() {
     const {dispatch}=this.props;

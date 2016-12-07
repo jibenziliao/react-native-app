@@ -16,7 +16,8 @@ import {
   TouchableHighlight,
   Dimensions,
   BackAndroid,
-  Alert
+  Alert,
+  InteractionManager
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -197,7 +198,9 @@ class EditUserProfile extends BaseComponent {
   }
 
   componentWillMount() {
-    this._initUserProfile();
+    InteractionManager.runAfterInteractions(()=>{
+      this._initUserProfile();
+    });
   }
 
   _initUserProfile() {
