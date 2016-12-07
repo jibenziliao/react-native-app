@@ -64,7 +64,7 @@ class EditPersonalSignature extends BaseComponent {
         toastShort('保存成功');
         this.saveSignatureTimer = setTimeout(()=> {
           navigator.pop();
-          this.state.callBack();
+          this.state.callBack(data);
         }, 2000)
       }, (error)=> {
       }));

@@ -24,6 +24,8 @@ import AnnouncementList from '../pages/AnnouncemenetList'
 import EditUserInfo from '../pages/EditUserInfo'
 import * as Storage from '../utils/Storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import EditPersonalSignature from '../pages/EditPersonalSignature'
+import EditUserProfile from '../pages/EditUserProfile'
 
 const {width, height}=Dimensions.get('window');
 
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
   },
   photoContainer: {
     flexDirection: 'row',
-    marginTop:10
+    marginTop: 10
   },
   photos: {
     width: 100,
@@ -46,10 +48,10 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   userAvatar: {
-    height: width/9,
-    width: width/9,
+    height: width / 9,
+    width: width / 9,
     marginRight: 10,
-    borderRadius:4
+    borderRadius: 4
   },
   userInfoItem: {
     flexDirection: 'row',
@@ -76,29 +78,29 @@ const styles = StyleSheet.create({
   section: {
     backgroundColor: '#fff',
     borderRadius: 4,
-    padding:10,
-    marginTop:10
+    padding: 10,
+    marginTop: 10
   },
   sectionTitle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth:1,
-    borderBottomColor:'#cec5c5',
-    paddingBottom:10
+    borderBottomWidth: 1,
+    borderBottomColor: '#cec5c5',
+    paddingBottom: 10
   },
   sectionTitleText: {
     fontSize: 16
   },
-  sectionContent:{
-    marginTop:10
+  sectionContent: {
+    marginTop: 10
   },
-  bottomSection:{
-    marginBottom:10
+  bottomSection: {
+    marginBottom: 10
   },
-  announcementCard:{
-    flexDirection:'row',
-    alignItems:'center'
+  announcementCard: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   editIconBtn: {
     flexDirection: 'row',
@@ -106,6 +108,13 @@ const styles = StyleSheet.create({
   },
   editText: {
     marginLeft: 5
+  },
+  textBtnContainer: {
+    paddingVertical: 5,
+    paddingHorizontal: 10
+  },
+  textBtn: {
+    color: '#5067FF'
   }
 });
 
@@ -122,20 +131,21 @@ let DictMap = {
 //保存字典索引
 let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'MarriageStatusDict', 'DatingPurposeDict', 'PhotoPermissionDict', 'ReligionDict'];
 
+let navigator;
+
 class UserInfo extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
       ...this.props.route.params
     };
+    navigator=this.props.navigator;
     console.log(this.props.route.params);
   }
 
   getNavigationBarProps() {
     return {
-      title: this.state.Nickname,
-      hideRightButton: !this.state.isSelf,
-      rightTitle: !this.state.isSelf ? null : '编辑'
+      title: this.state.Nickname
     };
   }
 
@@ -155,7 +165,6 @@ class UserInfo extends BaseComponent {
   }
 
   _goEditUserInfo(data, result, res) {
-    const {navigator}=this.props;
     navigator.push({
       component: EditUserInfo,
       name: 'EditUserInfo',
@@ -306,6 +315,53 @@ class UserInfo extends BaseComponent {
     }
   }
 
+  _renderEditLink(linkFn) {
+    if (this.state.isSelf) {
+      return (
+        <TouchableOpacity
+          onPress={()=> {
+            linkFn()
+          }}
+          style={styles.editIconBtn}>
+          <Icon
+            name={'edit'}
+            size={20}/>
+          <Text style={styles.editText}>{'编辑'}</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return null;
+    }
+  }
+
+  _editMyPhotos() {
+    console.log('编辑我的相册');
+  }
+
+  _editMySignature() {
+    navigator.push({
+      component: EditPersonalSignature,
+      name: 'EditPersonalSignature',
+      params: {
+        personalSignature: this.state.PersonSignal,
+        callBack: (data)=> {
+          this.setState({PersonSignal:data})
+        }
+      },
+    });
+  }
+
+  _editMyProfile() {
+    navigator.push({
+      component: EditUserProfile,
+      name: 'EditUserProfile'
+    });
+  }
+
+  _editMyDatingFilter() {
+    console.log('编辑我的交友信息');
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -313,16 +369,9 @@ class UserInfo extends BaseComponent {
           <View style={styles.section}>
             <View style={styles.sectionTitle}>
               <Text style={styles.sectionTitleText}>{'个人相册'}</Text>
-              <TouchableOpacity
-                onPress={()=> {
-                  console.log('123')
-                }}
-                style={styles.editIconBtn}>
-                <Icon
-                  name={'edit'}
-                  size={20}/>
-                <Text style={styles.editText}>{'编辑'}</Text>
-              </TouchableOpacity>
+              {this._renderEditLink(()=> {
+                this._editMyPhotos()
+              })}
             </View>
             <ScrollView
               horizontal={true}
@@ -334,67 +383,47 @@ class UserInfo extends BaseComponent {
           <View style={styles.section}>
             <View style={styles.sectionTitle}>
               <Text style={styles.sectionTitleText}>{'个性签名'}</Text>
-              <TouchableOpacity
-                onPress={()=> {
-                  console.log('123')
-                }}
-                style={styles.editIconBtn}>
-                <Icon
-                  name={'edit'}
-                  size={20}/>
-                <Text style={styles.editText}>{'编辑'}</Text>
-              </TouchableOpacity>
+              {this._renderEditLink(()=> {
+                this._editMySignature()
+              })}
             </View>
-            <Text style={styles.sectionContent}>{this.state.PersonSignal ? this.state.PersonSignal : '这家伙很懒,没有留下任何签名'}</Text>
+            <Text
+              style={styles.sectionContent}>{this.state.PersonSignal ? this.state.PersonSignal : '这家伙很懒,没有留下任何签名'}</Text>
           </View>
           <View style={styles.section}>
             <View style={styles.sectionTitle}>
               <Text style={styles.sectionTitleText}>{'求关注消息'}</Text>
             </View>
-            <View style={[styles.sectionContent,styles.announcementCard]}>
+            <View style={[styles.sectionContent, styles.announcementCard]}>
               <Image
                 style={styles.userAvatar}
                 source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}/>
-              <NBButton
-                bordered
-              onPress={()=>{
-                this._goHistoryAnnouncementList()
-              }}>
-                点击查看用户历史公告列表>>
-              </NBButton>
+              <TouchableOpacity
+                onPress={()=> {
+                  this._goHistoryAnnouncementList()
+                }}
+                style={styles.textBtnContainer}>
+                <Text style={styles.textBtn}>{this.state.isSelf ? '点击查看我的历史求关注消息' : '点击查看用户历史求关注消息'}</Text>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.section}>
             <View style={styles.sectionTitle}>
               <Text style={styles.sectionTitleText}>{'个人信息'}</Text>
-              <TouchableOpacity
-                onPress={()=> {
-                  console.log('123')
-                }}
-                style={styles.editIconBtn}>
-                <Icon
-                  name={'edit'}
-                  size={20}/>
-                <Text style={styles.editText}>{'编辑'}</Text>
-              </TouchableOpacity>
+              {this._renderEditLink(()=> {
+                this._editMyProfile()
+              })}
             </View>
             <View style={[styles.sectionContent]}>
               {this._renderUserInfo(this.state.BasicInfo)}
             </View>
           </View>
-          <View style={[styles.section,styles.bottomSection]}>
+          <View style={[styles.section, styles.bottomSection]}>
             <View style={styles.sectionTitle}>
               <Text style={styles.sectionTitleText}>{'交友信息'}</Text>
-              <TouchableOpacity
-                onPress={()=> {
-                  console.log('123')
-                }}
-                style={styles.editIconBtn}>
-                <Icon
-                  name={'edit'}
-                  size={20}/>
-                <Text style={styles.editText}>{'编辑'}</Text>
-              </TouchableOpacity>
+              {this._renderEditLink(()=> {
+                this._editMyDatingFilter()
+              })}
             </View>
             <View style={[styles.sectionContent]}>
               {this._renderUserInfo(this.state.DataFilter)}
@@ -406,6 +435,7 @@ class UserInfo extends BaseComponent {
     )
   }
 }
+
 export default connect((state)=> {
   return {
     ...state

@@ -7,14 +7,16 @@ import * as ActionTypes from './ActionTypes'
 import {postFetch, getFetch} from '../utils/NetUtil'
 import * as Storage from '../utils/Storage'
 
-let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus;
+let JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus,Religion;
 
 let DictMap = {
   EducationLevelDict: [],
   IncomeLevelDict: [],
   JobTypeDict: [],
   MarriageStatusDict: [],
-  DatingPurposeDict: []
+  DatingPurposeDict: [],
+  PhotoPermissionDict:[],
+  ReligionDict:[]
 };
 
 async function getSelectedValue(data) {
@@ -91,6 +93,7 @@ async function getSelectedItem(data) {
   let incomeLevelArr = await Storage.getItem('IncomeLevelDict');
   let educationLevelArr = await Storage.getItem('EducationLevelDict');
   let marriageStatusArr = await Storage.getItem('MarriageStatusDict');
+  let ReligionArr= await Storage.getItem('ReligionDict');
 
   JobTypeObj = jobTypeArr.find((item)=> {
     return item.Value == data.JobTypeName;
@@ -104,6 +107,10 @@ async function getSelectedItem(data) {
   MarriageStatus = marriageStatusArr.find((item)=> {
     return item.Value == data.MarriageStatusName;
   });
+  Religion = ReligionArr.find((item)=> {
+    return item.Value == data.ReligionName;
+  });
+
   //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
   return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus});
 }
@@ -131,7 +138,7 @@ export function editProfile(data, datingPurpose, resolve, reject) {
           IncomeLevel: result.IncomeLevel && result.IncomeLevel.Key ? result.IncomeLevel.Key : null,
           EducationLevel: result.EducationLevel && result.EducationLevel.Key ? result.EducationLevel.Key : null,
           MarriageStatus: result.MarriageStatus && result.MarriageStatus.Key ? result.MarriageStatus.Key : null,
-          Religion: data.religion,
+          Religion: result.Religion && result.Religion.Key ? result.Religion.Key : null,
           DatingPurpose: tmpDatingPurposeArr.join(','),
           MapPrecision: data.MapPrecision,
           Hometown: data.Hometown,
@@ -151,7 +158,6 @@ export function editProfile(data, datingPurpose, resolve, reject) {
       dispatch({type: ActionTypes.GET_ITEM_FAILED, data, error});
     });
   }
-
 }
 
 
