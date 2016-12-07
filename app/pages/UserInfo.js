@@ -161,6 +161,14 @@ class UserInfo extends BaseComponent {
   }
 
   _initDict(callBack,result,res) {
+    //每次初始化字典时,需要把之前的数据清空
+    DictMap = {
+      EducationLevelDict: [],
+      IncomeLevelDict: [],
+      JobTypeDict: [],
+      MarriageStatusDict: [],
+      DatingPurposeDict: []
+    };
     //下面是选填项的字典
     for (let i = 0; i < DictMapArrKey.length; i++) {
       Storage.getItem(`${DictMapArrKey[i]}`).then((response)=> {

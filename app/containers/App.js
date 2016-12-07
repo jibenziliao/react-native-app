@@ -244,7 +244,12 @@ class App extends Component {
       lastClickTime = now;
       toastShort('再按一次退出情缘结');
       return true;
-    } else {
+    } else if(routers[routers.length - 1].name=='EditUserInfo'){
+      RNPicker.isPickerShow((status)=> {
+        if (status) RNPicker.hide()
+      });
+      return true;
+    }else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
       RNPicker.isPickerShow((status)=> {
         if (status) RNPicker.hide()

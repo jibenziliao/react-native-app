@@ -14,7 +14,9 @@ import {
   Image,
   Platform,
   TouchableHighlight,
-  Dimensions
+  Dimensions,
+  BackAndroid,
+  Alert
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -26,6 +28,8 @@ import RNPicker from 'react-native-picker'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import EditFriendFilter from '../pages/EditFriendFilter'
 import CheckBox from '../components/CheckBox'
+import * as UserProfileActions from '../actions/UserProfile'
+import {toastShort} from '../utils/ToastUtil'
 
 const {width, height}=Dimensions.get('window');
 
@@ -126,7 +130,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingTop:10
+    paddingTop: 10
   },
   checkBoxItem: {
     width: (width - 30) / 2,
@@ -138,13 +142,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'nowrap'
   },
-  datingPurposeTitle:{
-    borderBottomWidth:1,
-    borderBottomColor:'#d4cfcf'
+  datingPurposeTitle: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#d4cfcf'
   }
 });
 
 let DatingPurposeSelectCopy = [];
+let navigator;
 
 class EditUserInfo extends BaseComponent {
   constructor(props) {
@@ -152,22 +157,59 @@ class EditUserInfo extends BaseComponent {
     this.state = {
       ...this.props.route.params,
       ageRangeText: `${this.props.route.params.friendInfo.AgeMin}-${this.props.route.params.friendInfo.AgeMax}岁`,
-      heightRangeText: `${this.props.route.params.friendInfo.HeightMin}-${this.props.route.params.friendInfo.HeightMax}cm`
+      heightRangeText: `${this.props.route.params.friendInfo.HeightMin}-${this.props.route.params.friendInfo.HeightMax}cm`,
+      hasChanged: false
     };
+    navigator = this.props.navigator;
+    this.onBackAndroid = this.onBackAndroid.bind(this);
     console.log(this.props.route.params);
   }
 
+  //TODO: 需要注册安卓返回监听
   componentDidMount() {
-
+    this._initDatingPurpose();
+    if (Platform.OS === 'android') {
+      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
   }
 
-  //TODO: 需要注册安卓返回监听
-  componentWillMount() {
-    this._initDatingPurpose();
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
+    }
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+    }
+  }
+
+  onBackAndroid() {
+    this._backAlert();
+  }
+
+  _backAlert() {
+    if (this.state.hasChanged) {
+      Alert.alert('提示', '您修改的资料未保存,确定要离开吗?', [
+        {
+          text: '确定', onPress: () => {
+          navigator.pop()
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
+      ]);
+    } else {
+      navigator.pop();
+    }
+  }
+
+  onLeftPressed() {
+    this._backAlert();
   }
 
   //初始化交友目的的选中情况
-  _initDatingPurpose(){
+  _initDatingPurpose() {
     let tmpArr = this.state.DatingPurposeName.split(',');
     for (let i = 0; i < this.state.DictMap.DatingPurposeDict.length; i++) {
       for (let j = 0; j < tmpArr.length; j++) {
@@ -195,8 +237,13 @@ class EditUserInfo extends BaseComponent {
   //点击完成(保存编辑后的个人资料)
   onRightPressed() {
     const {dispatch, navigator}=this.props;
-    let data = {};
-
+    dispatch(UserProfileActions.editProfile(this.state, DatingPurposeSelectCopy, (json)=> {
+      toastShort('保存成功!');
+      this.saveTimer = setTimeout(()=> {
+        navigator.pop();
+      }, 1000)
+    }, (error)=> {
+    }))
   }
 
   //前往编辑个人信息中的交友信息
@@ -254,6 +301,7 @@ class EditUserInfo extends BaseComponent {
   }
 
   _updateState(text, value, pickedValue) {
+    this.setState({hasChanged: true});
     switch (text) {
       case 'MarriageStatusName':
         this.setState({MarriageStatusName: pickedValue});
@@ -315,6 +363,19 @@ class EditUserInfo extends BaseComponent {
     return (
       <View style={styles.checkBoxView}>
         {arr.map((item, index)=> {
+          //勾选/取消勾选会引起重绘,这里需要再次判断DatingPurposeSelectCopy中是否有已勾选的项,如果有则跳过,没有则添加
+          //TODO: 代码冗余,待封装,待优化
+          if (item.Checked) {
+            let index = 0;
+            for (let m = 0; m < DatingPurposeSelectCopy.length; m++) {
+              if (DatingPurposeSelectCopy[m].Value == item.Value) {
+                index += 1;
+              }
+            }
+            if (index === 0) {
+              DatingPurposeSelectCopy.push(item);
+            }
+          }
           return (
             <CheckBox
               key={index}
@@ -324,8 +385,17 @@ class EditUserInfo extends BaseComponent {
               style={styles.checkBoxItem}
               onChange={(checked)=> {
                 item.Checked = checked;
+                this.setState({hasChanged: true});
                 if (checked) {
-                  DatingPurposeSelectCopy.push(item);
+                  let index = 0;
+                  for (let m = 0; m < DatingPurposeSelectCopy.length; m++) {
+                    if (DatingPurposeSelectCopy[m].Value == item.Value) {
+                      index += 1;
+                    }
+                  }
+                  if (index === 0) {
+                    DatingPurposeSelectCopy.push(item);
+                  }
                 } else {
                   let index = 0;
                   for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
@@ -358,7 +428,7 @@ class EditUserInfo extends BaseComponent {
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
                 value={this.state.Nickname}
-                onChangeText={(Nickname)=>this.setState({Nickname})}
+                onChangeText={(Nickname)=>this.setState({Nickname: Nickname, hasChanged: true})}
                 maxLength={15}/>
             </View>
             <View style={styles.listItem}>
@@ -385,7 +455,7 @@ class EditUserInfo extends BaseComponent {
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
                 value={this.state.Location}
-                onChangeText={(Location)=>this.setState({Location})}
+                onChangeText={(Location)=>this.setState({Location: Location, hasChanged: true})}
                 maxLength={50}/>
             </View>
             <View style={styles.listItem}>
@@ -398,7 +468,7 @@ class EditUserInfo extends BaseComponent {
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
                 value={this.state.Hometown}
-                onChangeText={(Hometown)=>this.setState({Hometown})}
+                onChangeText={(Hometown)=>this.setState({Hometown: Hometown, hasChanged: true})}
                 maxLength={50}/>
             </View>
           </View>
@@ -450,7 +520,7 @@ class EditUserInfo extends BaseComponent {
                 onChangeText={(Hobby)=>this.setState({Hobby})}
                 maxLength={15}/>
             </View>
-            <View style={[styles.listItem,styles.bottomItem]}>
+            <View style={[styles.listItem, styles.bottomItem]}>
               <Text style={styles.inputLabel}>{'自我评价'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
@@ -461,7 +531,7 @@ class EditUserInfo extends BaseComponent {
             </View>
           </View>
           <View style={styles.userInfo}>
-            <Text style={[styles.itemTitle,styles.datingPurposeTitle]}>{'交友目的'}</Text>
+            <Text style={[styles.itemTitle, styles.datingPurposeTitle]}>{'交友目的'}</Text>
             {this.renderDatingPurpose()}
           </View>
         </ScrollView>
@@ -470,4 +540,8 @@ class EditUserInfo extends BaseComponent {
   }
 
 }
-export default EditUserInfo
+export default connect((state)=> {
+  return {
+    ...state
+  }
+})(EditUserInfo)

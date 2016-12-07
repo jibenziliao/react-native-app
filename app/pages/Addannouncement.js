@@ -33,6 +33,7 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import * as HomeActions from '../actions/Home'
+import AnnouncementList from '../pages/AnnouncemenetList'
 
 const styles = StyleSheet.create({
   container: {
@@ -117,9 +118,9 @@ class Addannouncement extends BaseComponent {
     this.state = {
       PostContent: '',
       imageArr: [],
-      myLocation: this.props.route.params.myLocation,
+      ...this.props.route.params,
       days: '1',
-      callBack:this.props.route.params.callBack
+      callBack:this.props.route.params.callBack,
     };
   }
 
@@ -204,6 +205,32 @@ class Addannouncement extends BaseComponent {
         }
       }
     ]);
+  }
+
+  //前往我的历史公告列表
+  _goAnnouncementList(){
+    const {dispatch, navigator}=this.props;
+    let data = {
+      targetUserId: this.state.myUserId,
+      pageIndex: 1,
+      pageSize: 10,
+      ...this.state.myLocation,
+      postOrderTyp: 3
+    };
+    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
+      navigator.push({
+        component: AnnouncementList,
+        name: 'AnnouncementList',
+        params: {
+          postList: json.Result,
+          targetUserId: this.state.myUserId,
+          Nickname: this.state.Nickname,
+          myLocation: this.state.myLocation,
+          myUserId: this.state.myUserId
+        }
+      });
+    }, (error)=> {
+    }));
   }
 
   //渲染拍好的照片
@@ -323,7 +350,7 @@ class Addannouncement extends BaseComponent {
           <Text>{'注:持续时间过期后,将不在广场上显示'}</Text>
           <Text
             onPress={()=> {
-              console.log('123')
+              this._goAnnouncementList()
             }}
             style={styles.link}>{'查看求关注历程'}</Text>
         </View>

@@ -86,6 +86,75 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
   }
 }
 
+async function getSelectedItem(data) {
+  let jobTypeArr = await Storage.getItem('JobTypeDict');
+  let incomeLevelArr = await Storage.getItem('IncomeLevelDict');
+  let educationLevelArr = await Storage.getItem('EducationLevelDict');
+  let marriageStatusArr = await Storage.getItem('MarriageStatusDict');
+
+  JobTypeObj = jobTypeArr.find((item)=> {
+    return item.Value == data.JobTypeName;
+  });
+  IncomeLevel = incomeLevelArr.find((item)=> {
+    return item.Value == data.IncomeLevelName;
+  });
+  EducationLevel = educationLevelArr.find((item)=> {
+    return item.Value == data.EducationLevelName;
+  });
+  MarriageStatus = marriageStatusArr.find((item)=> {
+    return item.Value == data.MarriageStatusName;
+  });
+  //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
+  return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus});
+}
+
+export function editProfile(data, datingPurpose, resolve, reject) {
+  let tmpDatingPurposeArr = [];
+  if (datingPurpose.length > 0) {
+    for (let i = 0; i < datingPurpose.length; i++) {
+      tmpDatingPurposeArr.push(datingPurpose[i].Key);
+    }
+  }
+  return (dispatch)=> {
+    dispatch({type: ActionTypes.GET_ITEM_BEGIN});
+    getSelectedItem(data).then(
+      (result)=> {
+        dispatch({type: ActionTypes.GET_ITEM_END, data, result});
+        let params = {
+          Nickname: data.Nickname,
+          BirthDate: data.BirthDate,
+          Ethnicity: data.Ethnicity,
+          Gender: data.Gender,
+          Height: data.Height,
+          Weight: data.Weight,
+          JobType: result.JobTypeObj && result.JobTypeObj.Key ? result.JobTypeObj.Key : null,
+          IncomeLevel: result.IncomeLevel && result.IncomeLevel.Key ? result.IncomeLevel.Key : null,
+          EducationLevel: result.EducationLevel && result.EducationLevel.Key ? result.EducationLevel.Key : null,
+          MarriageStatus: result.MarriageStatus && result.MarriageStatus.Key ? result.MarriageStatus.Key : null,
+          Religion: data.religion,
+          DatingPurpose: tmpDatingPurposeArr.join(','),
+          MapPrecision: data.MapPrecision,
+          Hometown: data.Hometown,
+          Hobby: data.Hobby,
+          Location: data.Location,
+          SelfEvaluation: data.SelfEvaluation
+        };
+        postFetch('/profile', params, dispatch,
+          {type: ActionTypes.FETCH_BEGIN},
+          {type: ActionTypes.FETCH_END},
+          {type: ActionTypes.FETCH_FAILED},
+          resolve,
+          reject
+        );
+      }
+    ).catch((error)=> {
+      dispatch({type: ActionTypes.GET_ITEM_FAILED, data, error});
+    });
+  }
+
+}
+
+
 export function getDict() {
   return (dispatch)=> {
     dispatch({type: ActionTypes.FETCH_BEGIN});

@@ -315,6 +315,8 @@ class Home extends BaseComponent {
         name: 'Addannouncement',
         params: {
           myLocation: currentLocation,
+          myUserId:currentUser.UserId,
+          Nickname:currentUser.Nickname,
           callBack: ()=> {
             this._onRefresh()
           }
