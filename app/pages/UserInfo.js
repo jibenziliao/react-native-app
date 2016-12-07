@@ -166,7 +166,11 @@ class UserInfo extends BaseComponent {
       Storage.getItem(`${DictMapArrKey[i]}`).then((response)=> {
         if (response && response.length > 0) {
           for (let j = 0; j < response.length; j++) {
-            DictMap[DictMapArrKey[i]].push(response[j].Value)
+            if(DictMapArrKey[i]=='DatingPurposeDict'){
+              DictMap[DictMapArrKey[i]].push(response[j])
+            }else{
+              DictMap[DictMapArrKey[i]].push(response[j].Value)
+            }
           }
           if (i === DictMapArrKey.length - 1) {
             callBack(DictMap,result,res);

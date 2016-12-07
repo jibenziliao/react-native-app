@@ -26,3 +26,15 @@ export function saveFriendFilter(data,resolve,reject) {
     );
   }
 }
+
+export function editFriendFilter(data,resolve,reject) {
+  return(dispatch)=>{
+    postFetch('/profile/filter', data, dispatch,
+      {type: ActionTypes.FETCH_BEGIN},
+      {type: ActionTypes.FETCH_END},
+      {type: ActionTypes.FETCH_FAILED},
+      resolve,
+      reject
+    );
+  }
+}

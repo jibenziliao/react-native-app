@@ -13,7 +13,8 @@ import {
   TextInput,
   Image,
   Platform,
-  TouchableHighlight
+  TouchableHighlight,
+  Dimensions
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -24,6 +25,9 @@ import {Button as NBButton} from 'native-base'
 import RNPicker from 'react-native-picker'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import EditFriendFilter from '../pages/EditFriendFilter'
+import CheckBox from '../components/CheckBox'
+
+const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -39,36 +43,36 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 10
   },
-  userInfo:{
-    backgroundColor:'#fff',
-    marginBottom:10,
-    paddingHorizontal:10
+  userInfo: {
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    paddingHorizontal: 10
   },
-  itemTitle:{
-    paddingVertical:10
+  itemTitle: {
+    paddingVertical: 10
   },
-  listItem:{
+  listItem: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#d4cfcf',
     alignItems: 'center'
   },
-  topItem:{
-    borderTopWidth:1,
-    borderTopColor:'#d4cfcf'
+  topItem: {
+    borderTopWidth: 1,
+    borderTopColor: '#d4cfcf'
   },
-  bottomItem:{
-    borderBottomWidth:0
+  bottomItem: {
+    borderBottomWidth: 0
   },
-  itemRow:{
-    flexDirection:'row'
+  itemRow: {
+    flexDirection: 'row'
   },
-  itemEnter:{
-    justifyContent:'space-between',
-    alignItems:'center'
+  itemEnter: {
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  itemIcon:{
-    marginRight:10
+  itemIcon: {
+    marginRight: 10
   },
   fullInput: {
     flex: 1
@@ -80,8 +84,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
-  inputLabel:{
-    width:100
+  inputLabel: {
+    width: 100
   },
   rightLabel: {
     width: 80,
@@ -117,21 +121,67 @@ const styles = StyleSheet.create({
   pickerText: {
     textAlignVertical: 'center'
   },
+  checkBoxView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingTop:10
+  },
+  checkBoxItem: {
+    width: (width - 30) / 2,
+    height: 40
+  },
+  checkBoxLabel: {
+    marginLeft: 10,
+    flexDirection: 'row',
+    flex: 1,
+    flexWrap: 'nowrap'
+  },
+  datingPurposeTitle:{
+    borderBottomWidth:1,
+    borderBottomColor:'#d4cfcf'
+  }
 });
+
+let DatingPurposeSelectCopy = [];
 
 class EditUserInfo extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
       ...this.props.route.params,
-      ageRangeText:`${this.props.route.params.friendInfo.AgeMin}-${this.props.route.params.friendInfo.AgeMax}岁`,
-      heightRangeText:`${this.props.route.params.friendInfo.HeightMin}-${this.props.route.params.friendInfo.HeightMax}cm`
+      ageRangeText: `${this.props.route.params.friendInfo.AgeMin}-${this.props.route.params.friendInfo.AgeMax}岁`,
+      heightRangeText: `${this.props.route.params.friendInfo.HeightMin}-${this.props.route.params.friendInfo.HeightMax}cm`
     };
     console.log(this.props.route.params);
   }
 
   componentDidMount() {
 
+  }
+
+  //TODO: 需要注册安卓返回监听
+  componentWillMount() {
+    this._initDatingPurpose();
+  }
+
+  //初始化交友目的的选中情况
+  _initDatingPurpose(){
+    let tmpArr = this.state.DatingPurposeName.split(',');
+    for (let i = 0; i < this.state.DictMap.DatingPurposeDict.length; i++) {
+      for (let j = 0; j < tmpArr.length; j++) {
+        if (this.state.DictMap.DatingPurposeDict[i].Value == tmpArr[j]) {
+          this.state.DictMap.DatingPurposeDict[i].Checked = true;
+          this.setState({
+            DictMap: {
+              ...this.state.DictMap,
+              DatingPurposeDict: this.state.DictMap.DatingPurposeDict
+            }
+          })
+        }
+      }
+    }
   }
 
   getNavigationBarProps() {
@@ -144,17 +194,22 @@ class EditUserInfo extends BaseComponent {
 
   //点击完成(保存编辑后的个人资料)
   onRightPressed() {
+    const {dispatch, navigator}=this.props;
+    let data = {};
 
   }
 
   //前往编辑个人信息中的交友信息
-  _editFriendFilter(){
+  _editFriendFilter() {
     const {navigator}=this.props;
     navigator.push({
-      component:EditFriendFilter,
-      name:'EditFriendFilter',
-      params:{
-        ...this.state.friendInfo
+      component: EditFriendFilter,
+      name: 'EditFriendFilter',
+      params: {
+        ...this.state.friendInfo,
+        callBack: (data)=> {
+          this.setState({friendInfo: data})
+        }
       }
     })
   }
@@ -203,8 +258,8 @@ class EditUserInfo extends BaseComponent {
       case 'MarriageStatusName':
         this.setState({MarriageStatusName: pickedValue});
         break;
-      case 'educationStatusText':
-        this.setState({educationStatusText: pickedValue});
+      case 'EducationLevelName':
+        this.setState({EducationLevelName: pickedValue});
         break;
       case 'Height':
         this.setState({heightText: pickedValue});
@@ -219,42 +274,20 @@ class EditUserInfo extends BaseComponent {
         this.setState({IncomeLevelName: pickedValue});
         break;
       case 'mapPrecisionText':
-        this.setState({mapPrecisionText: pickedValue});
-        break;
-      default:
-        console.error('设置数据出错!');
-        break;
-    }
-    let index;
-    switch (value) {
-      case 'MarriageStatusName':
-        this.setState({MarriageStatusName: pickedValue});
-        break;
-      case 'educationStatus':
-        this.setState({educationStatus: pickedValue});
-        break;
-      case 'Height':
-        this.setState({Height: parseInt(pickedValue)});
-        break;
-      case 'Weight':
-        this.setState({Weight: parseInt(pickedValue)});
-        break;
-      case 'JobTypeName':
-        this.setState({JobTypeName: pickedValue});
-        break;
-      case 'IncomeLevelName':
-        this.setState({IncomeLevelName: pickedValue});
-        break;
-      case 'mapPrecision':
         if (pickedValue == '隐身') {
-          this.setState({mapPrecision: null});
+          this.setState({
+            MapPrecision: null,
+            mapPrecisionText: pickedValue
+          });
         } else {
-          pickedValue = pickedValue.substring(0, pickedValue.indexOf('m'));
-          this.setState({mapPrecision: pickedValue});
+          this.setState({
+            MapPrecision: parseInt(pickedValue.split('m')[0]),
+            mapPrecisionText: pickedValue
+          });
         }
         break;
       default:
-        console.error('设置数据出错');
+        console.error('设置数据出错!');
         break;
     }
   }
@@ -277,6 +310,39 @@ class EditUserInfo extends BaseComponent {
     RNPicker.show();
   }
 
+  renderDatingPurpose() {
+    let arr = this.state.DictMap.DatingPurposeDict;
+    return (
+      <View style={styles.checkBoxView}>
+        {arr.map((item, index)=> {
+          return (
+            <CheckBox
+              key={index}
+              label={item.Value}
+              labelStyle={styles.checkBoxLabel}
+              checked={item.Checked}
+              style={styles.checkBoxItem}
+              onChange={(checked)=> {
+                item.Checked = checked;
+                if (checked) {
+                  DatingPurposeSelectCopy.push(item);
+                } else {
+                  let index = 0;
+                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
+                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
+                      index = i;
+                      break;
+                    }
+                  }
+                  DatingPurposeSelectCopy.splice(index, 1);
+                }
+              }}/>
+          )
+        })}
+      </View>
+    )
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -286,7 +352,7 @@ class EditUserInfo extends BaseComponent {
           </View>
           <View style={styles.userInfo}>
             <Text style={styles.itemTitle}>{'基本资料'}</Text>
-            <View style={[styles.listItem,styles.topItem]}>
+            <View style={[styles.listItem, styles.topItem]}>
               <Text style={styles.inputLabel}>{'昵称'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
@@ -303,11 +369,11 @@ class EditUserInfo extends BaseComponent {
             <View style={styles.listItem}>
               <Text style={styles.inputLabel}>{'体重'}</Text>
               {this.renderSinglePicker('Weight', 'Weight', this._createWeightData())}
-              <Text style={styles.rightLabel}>{'cm'}</Text>
+              <Text style={styles.rightLabel}>{'kg'}</Text>
             </View>
             <View style={styles.listItem}>
               <Text style={styles.inputLabel}>{'职业'}</Text>
-              {this.renderSinglePicker('JobTypeName', 'IncomeLevelName', this.state.DictMap.JobTypeDict)}
+              {this.renderSinglePicker('JobTypeName', 'JobTypeName', this.state.DictMap.JobTypeDict)}
             </View>
             <View style={styles.listItem}>
               <Text style={styles.inputLabel}>{'收入'}</Text>
@@ -326,7 +392,7 @@ class EditUserInfo extends BaseComponent {
               <Text style={styles.inputLabel}>{'情感状态'}</Text>
               {this.renderSinglePicker('MarriageStatusName', 'MarriageStatusName', this.state.DictMap.MarriageStatusDict)}
             </View>
-            <View style={[styles.listItem,styles.bottomItem]}>
+            <View style={[styles.listItem, styles.bottomItem]}>
               <Text style={styles.inputLabel}>{'家乡'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
@@ -337,32 +403,33 @@ class EditUserInfo extends BaseComponent {
             </View>
           </View>
           <TouchableOpacity
-            onPress={()=>{this._editFriendFilter()}}
-            style={[styles.userInfo,styles.itemRow,styles.itemEnter]}>
+            onPress={()=> {
+              this._editFriendFilter()
+            }}
+            style={[styles.userInfo, styles.itemRow, styles.itemEnter]}>
             <Text style={styles.itemTitle}>{'交友信息'}</Text>
             <Icon
               style={styles.itemIcon}
               name={'angle-right'}
               size={20}/>
-        </TouchableOpacity>
+          </TouchableOpacity>
           <View style={styles.userInfo}>
             <Text style={styles.itemTitle}>{'其他'}</Text>
-            <View style={[styles.listItem,styles.topItem]}>
+            <View style={[styles.listItem, styles.topItem]}>
               <Text style={styles.inputLabel}>{'学历'}</Text>
-              <TextInput
-                style={[styles.input, styles.fullInput]}
-                underlineColorAndroid={'transparent'}
-                value={this.state.Nickname}
-                onChangeText={(Nickname)=>this.setState({Nickname})}
-                maxLength={15}/>
+              {this.renderSinglePicker('EducationLevelName', 'EducationLevelName', this.state.DictMap.EducationLevelDict)}
+            </View>
+            <View style={[styles.listItem]}>
+              <Text style={styles.inputLabel}>{'地图精度'}</Text>
+              {this.renderSinglePicker('mapPrecisionText', 'MapPrecision', this._createMapData())}
             </View>
             <View style={styles.listItem}>
               <Text style={styles.inputLabel}>{'信仰'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
-                value={this.state.Location}
-                onChangeText={(Location)=>this.setState({Location})}
+                value={this.state.Religion}
+                onChangeText={(Religion)=>this.setState({Religion})}
                 maxLength={15}/>
             </View>
             <View style={styles.listItem}>
@@ -370,8 +437,8 @@ class EditUserInfo extends BaseComponent {
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
-                value={this.state.Hometown}
-                onChangeText={(Hometown)=>this.setState({Hometown})}
+                value={this.state.MobileNo}
+                onChangeText={(MobileNo)=>this.setState({MobileNo})}
                 maxLength={15}/>
             </View>
             <View style={styles.listItem}>
@@ -379,19 +446,23 @@ class EditUserInfo extends BaseComponent {
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
-                value={this.state.Hometown}
-                onChangeText={(Hometown)=>this.setState({Hometown})}
+                value={this.state.Hobby}
+                onChangeText={(Hobby)=>this.setState({Hobby})}
                 maxLength={15}/>
             </View>
-            <View style={styles.listItem}>
+            <View style={[styles.listItem,styles.bottomItem]}>
               <Text style={styles.inputLabel}>{'自我评价'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
-                value={this.state.Hometown}
-                onChangeText={(Hometown)=>this.setState({Hometown})}
-                maxLength={15}/>
+                value={this.state.SelfEvaluation}
+                onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation})}
+                maxLength={50}/>
             </View>
+          </View>
+          <View style={styles.userInfo}>
+            <Text style={[styles.itemTitle,styles.datingPurposeTitle]}>{'交友目的'}</Text>
+            {this.renderDatingPurpose()}
           </View>
         </ScrollView>
       </View>

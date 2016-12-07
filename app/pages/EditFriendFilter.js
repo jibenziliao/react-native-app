@@ -20,6 +20,7 @@ import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
 import * as HomeActions from '../actions/Home'
 import RNPicker from 'react-native-picker'
+import * as FriendFilterActions from '../actions/FriendFilter'
 
 const styles = StyleSheet.create({
   container: {
@@ -98,7 +99,7 @@ class EditFriendFilter extends BaseComponent {
       ...this.props.route.params,
       ageRangeText:`${this.props.route.params.AgeMin}-${this.props.route.params.AgeMax}岁`,
       heightRangeText:`${this.props.route.params.HeightMin}-${this.props.route.params.HeightMax}cm`,
-      weightRangeText:`${this.props.route.params.WeightMin}-${this.props.route.params.WeightMin}kg`,
+      weightRangeText:`${this.props.route.params.WeightMin}-${this.props.route.params.WeightMax}kg`,
       genderText:'不限',
       photoOnlyText:this.props.route.params.PhotoOnly===null?'不限':(this.props.route.params.PhotoOnly?'是':'否')
     };
@@ -109,6 +110,24 @@ class EditFriendFilter extends BaseComponent {
     return {
       title: '交友信息'
     };
+  }
+
+  _saveFriendFilter(){
+    const{dispatch,navigator}=this.props;
+    let data={
+      AgeMin:this.state.AgeMin,
+      AgeMax:this.state.AgeMax,
+      HeightMin:this.state.HeightMin,
+      HeightMax:this.state.HeightMax,
+      Gender:this.state.Gender,
+      PhotoOnly:this.state.PhotoOnly,
+      WeightMin:this.state.WeightMin,
+      WeightMax:this.state.WeightMax
+    };
+    dispatch(FriendFilterActions.editFriendFilter(data,(json)=>{
+      navigator.pop();
+      this.state.callBack(data);
+    },(error)=>{}));
   }
 
   _createAgeRangeData() {
@@ -369,7 +388,7 @@ class EditFriendFilter extends BaseComponent {
             block
             style={styles.saveBtn}
             onPress={()=> {
-              console.log('保存交友信息')
+              this._saveFriendFilter()
             }}>
             保存
           </NBButton>
