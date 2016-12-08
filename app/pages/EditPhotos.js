@@ -32,6 +32,8 @@ import {Button as NBButton} from 'native-base'
 import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import PhotoViewer from '../components/PhotoViewer'
+import * as PhotoActions from '../actions/Photo'
+import Spinner from '../components/Spinner'
 
 const styles = StyleSheet.create({
   container: {
@@ -61,7 +63,9 @@ class EditPhotos extends BaseComponent {
     super(props);
     this.state = {
       ...this.props.route.params,
-      loading:true
+      loading: true,
+      uploaded: true,
+      localPhotos:[]
     };
   }
 
@@ -78,17 +82,28 @@ class EditPhotos extends BaseComponent {
         console.log({
           DictMap: DictMap,
           ...result,
-          userPhotos:json.Result
+          userPhotos: json.Result
         });
         this.setState({
           DictMap: DictMap,
           ...result,
-          userPhotos:json.Result,
-          loading:false
+          userPhotos: this._initOnlinePhotos(json.Result),
+          loading: false
         });
       });
-    }, ()=> {
+    }, (error)=> {
     }));
+  }
+
+  //将从后台获取的相册重新包装,标明照片是从线上获取,而非本地拍摄。并标明头像
+  _initOnlinePhotos(data) {
+    let tmpArr = [];
+    for (let i = 0; i < data.length; i++) {
+      data[i].onLine = true;
+      data[i].isAvatar = data[i].PhotoUrl == this.props.route.params.PrimaryPhotoFilename;
+      tmpArr.push(data[i])
+    }
+    return tmpArr;
   }
 
   _initDict(callBack, result) {
@@ -127,32 +142,58 @@ class EditPhotos extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '编辑相册',
-      rightTitle:'保存'
+      hideRightButton:false,
+      rightTitle: '保存'
     };
   }
 
-  onRightPressed(){
+  onRightPressed() {
+    const {dispatch}=this.props;
+
+  }
+
+  _userPhotosChanges(data) {
+    console.log(data);
+    this.state.userPhotos.push(data);
+    this.setState({
+      uploaded:false,
+      ...this.state.userPhotos
+    })
+  }
+
+  _deletePhotoOnline(data) {
     const{dispatch}=this.props;
-
+    dispatch(PhotoActions.deletePhoto(data),(json)=>{
+      this._initPhotos()
+    },(error)=>{})
   }
 
-  _userPhotosChanges(data){
+  _deletePhotoOffline(data) {
     console.log(data);
   }
 
-  _deletePhotoOnline(data){
-    console.log(data);
-  }
-
-  _deletePhotoOffline(data){
-    console.log(data);
+  _uploadPhotos(){
+    const{dispatch}=this.props;
+    let tmpArr=[];
+    for(let i=0;i<this.state.userPhotos.length;i++){
+      if(!this.state.userPhotos[i].onLine){
+        tmpArr.push(this.state.userPhotos[i]);
+      }
+    }
+    dispatch(PhotoActions.uploadPhoto(tmpArr,()=>{
+      console.log('照片上传成功的回调');
+      this._initPhotos();
+    },(error)=>{}));
   }
 
   _renderPhotos(arr) {
     return (
       <PhotoViewer
         imageArr={arr}
-        imageArrChanges={(data)=>{this._userPhotosChanges(data)}}
+        imageArrChanges={(data)=> {
+          this._userPhotosChanges(data)
+        }}
+        upload={()=>{this._uploadPhotos()}}
         permissionOptions={this.state.DictMap.PhotoPermissionDict}
         deletePhotoOnline={(data)=> {
           this._deletePhotoOnline(data)
@@ -160,28 +201,48 @@ class EditPhotos extends BaseComponent {
         deletePhotoOffline={(data)=> {
           this._deletePhotoOffline(data)
         }}
+        changePermission={(data)=>{
+          this._changePermission(data)
+        }}
       />
     )
   }
 
+  _changePermission(data){
+    const{dispatch}=this.props;
+    console.log(data);
+    dispatch(PhotoActions.setPhotoPermission(data),(json)=>{
+      this._initPhotos()
+    },(error)=>{})
+  }
+
   renderBody() {
-    if(this.state.loading){
+    if (this.state.loading) {
       return null
-    }else{
-    return (
-      <MenuContext style={styles.container}>
-        <ScrollView
-          style={styles.scrollViewContainer}>
-          {this._renderPhotos(this.state.userPhotos)}
-        </ScrollView>
-      </MenuContext>
-    )
+    } else {
+      return (
+        <MenuContext style={styles.container}>
+          <ScrollView
+            style={styles.scrollViewContainer}>
+            {this._renderPhotos(this.state.userPhotos)}
+          </ScrollView>
+        </MenuContext>
+      )
     }
   }
+
+  renderSpinner() {
+    if (this.props.pendingStatus) {
+      return (
+        <Spinner animating={this.props.pendingStatus}/>
+      )
+    }
+  }
+
 }
 
 export default connect((state)=> {
   return {
-    ...state
+    pendingStatus:state.Photo.pending
   }
 })(EditPhotos)

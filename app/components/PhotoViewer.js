@@ -76,7 +76,8 @@ class PhotoViewer extends Component {
     super(props);
     this.state = {
       imageArr: this.props.imageArr,
-      permissionOptions: this.props.permissionOptions
+      permissionOptions: this.props.permissionOptions,
+      uploaded: true
     }
   }
 
@@ -93,6 +94,12 @@ class PhotoViewer extends Component {
 
   _renderImageStarStatus() {
 
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.imageArr[nextProps.imageArr.length - 1].onLine) {
+      this.setState({uploaded: true});
+    }
   }
 
   _initImagePicker() {
@@ -129,13 +136,13 @@ class PhotoViewer extends Component {
           source = {PhotoUrl: response.uri, onLine: false};
         }
 
-        this.state.imageArr.push({
-          Id: (new Date()).getTime().toString(),
-          ...source,
-          isAvatar: false,
-          Permission: 'Everybody',
-          PermissionKey: 'Everybody'
-        });
+        /*this.state.imageArr.push({
+         Id: (new Date()).getTime().toString(),
+         ...source,
+         isAvatar: false,
+         Permission: 'Everybody',
+         PermissionKey: 'Everybody'
+         });*/
         this.props.imageArrChanges({
           Id: (new Date()).getTime().toString(),
           ...source,
@@ -143,26 +150,53 @@ class PhotoViewer extends Component {
           Permission: 'Everybody',
           PermissionKey: 'Everybody'
         });
-        this.setState({imageArr: this.state.imageArr});
+        this.setState({
+          uploaded: false
+        });
       }
     });
   }
 
-  _deletePhoto(data){
-    if(!data.onLine){
+  _deletePhoto(data) {
+    if (!data.onLine) {
       this.props.deletePhotoOffline(data);
-    }else{
+    } else {
       this.props.deletePhotoOnline(data);
     }
   }
 
-  _deletePhotoAlert(data){
+  _deletePhotoAlert(data) {
     Alert.alert('提示', '您确定要删除这张照片吗?', [
-      {text: '确定', onPress: () => {
+      {
+        text: '确定', onPress: () => {
         this._deletePhoto(data)
-      }},
-      {text: '取消', onPress: () => {}}
+      }
+      },
+      {
+        text: '取消', onPress: () => {
+      }
+      }
     ]);
+  }
+
+  _changePermissionAlert(data, value) {
+    if (!this.state.uploaded) {
+      Alert.alert('提示', '您有照片未上传,点击确定上传照片!', [
+        {
+          text: '确定', onPress: () => {
+          this.props.upload(data)
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
+      ]);
+    } else {
+      data.PermissionKey = value;
+      this.props.changePermission(data)
+    }
+
   }
 
   _renderPermissionOptions(data) {
@@ -170,7 +204,7 @@ class PhotoViewer extends Component {
       <Menu
         style={{flex: 1}}
         onSelect={(value) => {
-          data.PermissionKey = value;
+          this._changePermissionAlert(data, value);
         }}>
         <MenuTrigger>
           <View style={{
@@ -227,7 +261,7 @@ class PhotoViewer extends Component {
                 }}
                 style={styles.imageStar}>
                 <Icon
-                  name={item.isAvatar?'star':'star-o'}
+                  name={item.isAvatar ? 'star' : 'star-o'}
                   size={32}
                   color={'blue'}/>
               </TouchableOpacity>

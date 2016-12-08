@@ -341,7 +341,8 @@ class UserInfo extends BaseComponent {
       component: EditPhotos,
       name: 'EditPhotos',
       params: {
-        UserId: this.state.UserId
+        UserId: this.state.UserId,
+        PrimaryPhotoFilename:this.state.PrimaryPhotoFilename
       },
     });
   }
