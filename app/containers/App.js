@@ -107,7 +107,7 @@ class App extends Component {
       },
       (error) => {
         console.log(JSON.stringify(error));
-        this._Alert();
+        //this._Alert();
         this.setState({loading: false, getRegistered: true});
         if ('"No available location provider."' == JSON.stringify(error)) {
           //toastShort('请打开GPS开关');

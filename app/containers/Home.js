@@ -71,6 +71,10 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'space-between',
+    alignItems: 'flex-start'
+  },
+  genderLabel: {
+    paddingHorizontal: 4
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -178,9 +182,9 @@ class Home extends BaseComponent {
   _getCurrentUserProfile() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      currentUser={
+      currentUser = {
         ...json.Result,
-        myLocation:currentLocation
+        myLocation: currentLocation
       };
       Storage.setItem('userInfo', currentUser);
     }, (error)=> {
@@ -315,8 +319,8 @@ class Home extends BaseComponent {
         name: 'Addannouncement',
         params: {
           myLocation: currentLocation,
-          myUserId:currentUser.UserId,
-          Nickname:currentUser.Nickname,
+          myUserId: currentUser.UserId,
+          Nickname: currentUser.Nickname,
           callBack: ()=> {
             this._onRefresh()
           }
@@ -339,8 +343,8 @@ class Home extends BaseComponent {
           name: 'UserInfo',
           params: {
             Nickname: data.Nickname,
-            UserId:data.UserId,
-            myUserId:currentUser.UserId,
+            UserId: data.UserId,
+            myUserId: currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
             myLocation: currentLocation,
@@ -419,7 +423,7 @@ class Home extends BaseComponent {
             ...json.Result,
             myLocation: currentLocation,
             commentList: result.Result,
-            myUserId:currentUser.UserId,
+            myUserId: currentUser.UserId,
             isSelf: currentUser.UserId === rowData.CreaterId,
             callBack: ()=> {
               this._onRefresh()
@@ -435,11 +439,19 @@ class Home extends BaseComponent {
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
+      let imageWidth = 0;
+      if (arr.length % 3 ===0) {
+        imageWidth = (width - 60) / 3;
+      } else if (arr.length % 2 ===0) {
+        imageWidth = (width - 50) / 2;
+      } else if (arr.length === 1) {
+        imageWidth = width - 40;
+      }
       return arr.map((item, index)=> {
         return (
           <Image
             key={index}
-            style={{width: 80, height: 80, marginBottom: 5, marginRight: 5}}
+            style={{width: imageWidth, height: imageWidth, marginBottom: 10}}
             source={{uri: URL_DEV + '/' + item}}/>
         )
       })
@@ -463,14 +475,12 @@ class Home extends BaseComponent {
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
-                <View style={{flex: 1}}>
-                  <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                    <Icon
-                      name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                      size={12}
-                      style={styles.userInfoIcon}/>
-                    <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
-                  </View>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                  <Icon
+                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                    size={12}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
             </View>

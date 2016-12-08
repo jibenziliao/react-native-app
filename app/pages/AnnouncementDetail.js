@@ -32,6 +32,8 @@ import Addannouncement from '../pages/Addannouncement'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import ActionSheet from 'react-native-actionsheet'
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -240,12 +242,12 @@ class AnnouncementDetail extends BaseComponent {
           name: 'UserInfo',
           params: {
             Nickname: data.Nickname,
-            UserId:data.UserId,
-            myUserId:this.state.myUserId,
+            UserId: data.UserId,
+            myUserId: this.state.myUserId,
             ...json.Result,
             userPhotos: result.Result,
             myLocation: this.state.myLocation,
-            isSelf:this.state.isSelf
+            isSelf: this.state.isSelf
           }
         });
       }, (error)=> {
@@ -366,7 +368,7 @@ class AnnouncementDetail extends BaseComponent {
           callBack: this.state.callBack,
           ...json.Result,
           myLocation: this.state.myLocation,
-          myUserId:this.state.myUserId,
+          myUserId: this.state.myUserId,
           commentList: result.Result,
           isSelf: this.state.isSelf
         });
@@ -465,11 +467,19 @@ class AnnouncementDetail extends BaseComponent {
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
+      let imageWidth = 0;
+      if (arr.length % 3 ===0) {
+        imageWidth = (width - 60) / 3;
+      } else if (arr.length % 2 ===0) {
+        imageWidth = (width - 50) / 2;
+      } else if (arr.length === 1) {
+        imageWidth = width - 40;
+      }
       return arr.map((item, index)=> {
         return (
           <Image
             key={index}
-            style={{width: 80, height: 80, marginRight: 5, marginBottom: 5}}
+            style={{width: imageWidth, height: imageWidth, marginBottom: 10}}
             source={{uri: URL_DEV + '/' + item}}/>
         )
       })
@@ -533,14 +543,12 @@ class AnnouncementDetail extends BaseComponent {
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{this.state.PosterInfo.Nickname}</Text>
-                <View style={{flex: 1}}>
-                  <View style={[styles.userInfoLabel, this._renderGenderStyle(this.state.PosterInfo.Gender)]}>
-                    <Icon
-                      name={this.state.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                      size={12}
-                      style={styles.userInfoIcon}/>
-                    <Text style={styles.userInfoText}>{this.state.PosterInfo.Age}{'岁'}</Text>
-                  </View>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(this.state.PosterInfo.Gender)]}>
+                  <Icon
+                    name={this.state.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                    size={12}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{this.state.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
             </View>
