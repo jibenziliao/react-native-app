@@ -92,13 +92,33 @@ class PhotoViewer extends Component {
     return result;
   }
 
-  _renderImageStarStatus() {
+  _setAvatar(item){
+    if (!this.state.uploaded) {
+      Alert.alert('提示', '您有照片未上传,点击确定上传照片!', [
+        {
+          text: '确定', onPress: () => {
+          this.props.upload()
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
+      ]);
+    } else {
+      this.props.setPrimaryPhoto(item);
+      this.setState({
 
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.imageArr[nextProps.imageArr.length - 1].onLine) {
-      this.setState({uploaded: true});
+    if (nextProps.imageArr[nextProps.imageArr.length - 1].OnLine) {
+      this.setState({
+        uploaded: true,
+        imageArr:nextProps.imageArr
+      });
     }
   }
 
@@ -131,22 +151,22 @@ class PhotoViewer extends Component {
 
         // or a reference to the platform specific asset location
         if (Platform.OS === 'ios') {
-          source = {PhotoUrl: response.uri.replace('file://', ''), onLine: false};
+          source = {PhotoUrl: response.uri.replace('file://', ''), OnLine: false};
         } else {
-          source = {PhotoUrl: response.uri, onLine: false};
+          source = {PhotoUrl: response.uri, OnLine: false};
         }
 
         /*this.state.imageArr.push({
          Id: (new Date()).getTime().toString(),
          ...source,
-         isAvatar: false,
+         IsPrimary: false,
          Permission: 'Everybody',
          PermissionKey: 'Everybody'
          });*/
         this.props.imageArrChanges({
           Id: (new Date()).getTime().toString(),
           ...source,
-          isAvatar: false,
+          IsPrimary: false,
           Permission: 'Everybody',
           PermissionKey: 'Everybody'
         });
@@ -184,7 +204,7 @@ class PhotoViewer extends Component {
       Alert.alert('提示', '您有照片未上传,点击确定上传照片!', [
         {
           text: '确定', onPress: () => {
-          this.props.upload(data)
+          this.props.upload()
         }
         },
         {
@@ -253,17 +273,17 @@ class PhotoViewer extends Component {
               key={index}
               style={styles.imageContainer}>
               <Image
-                source={{uri: item.onLine ? URL_DEV + item.PhotoUrl : item.PhotoUrl}}
+                source={{uri: item.OnLine ? URL_DEV + item.PhotoUrl : item.PhotoUrl}}
                 style={styles.image}/>
               <TouchableOpacity
                 onPress={()=> {
-                  this._renderImageStarStatus()
+                  this._setAvatar(item)
                 }}
                 style={styles.imageStar}>
                 <Icon
-                  name={item.isAvatar ? 'star' : 'star-o'}
+                  name={item.IsPrimary ? 'star' : 'star-o'}
                   size={32}
-                  color={'blue'}/>
+                  color={'yellow'}/>
               </TouchableOpacity>
               <NBButton
                 block

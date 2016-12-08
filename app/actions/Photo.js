@@ -118,6 +118,12 @@ export function setPhotoPermission(data,resolve,reject) {
 
 export function deletePhoto(data,resolve,reject) {
   return (dispatch)=> {
-    deleteFetch(`/profile/photos/${data.Id}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    deleteFetch(`/profile/photos/${data.Id}`,'', dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function setPrimaryPhoto(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch(`/profile/photos/${data.Id}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }

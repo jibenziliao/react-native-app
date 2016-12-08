@@ -58,6 +58,8 @@ let DictMap = {
 //保存字典索引
 let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'MarriageStatusDict', 'DatingPurposeDict', 'PhotoPermissionDict', 'ReligionDict'];
 
+let navigator;
+
 class EditPhotos extends BaseComponent {
   constructor(props) {
     super(props);
@@ -65,14 +67,41 @@ class EditPhotos extends BaseComponent {
       ...this.props.route.params,
       loading: true,
       uploaded: true,
-      localPhotos:[]
+      changed:false
     };
+    navigator=this.props.navigator;
+    this.onBackAndroid = this.onBackAndroid.bind(this);
   }
 
   componentWillMount() {
     InteractionManager.runAfterInteractions(()=> {
       this._initPhotos();
     });
+    if (Platform.OS === 'android') {
+      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
+  }
+
+  onBackAndroid() {
+    this._backAlert();
+  }
+
+  _backAlert() {
+    if (this.state.changed) {
+      Alert.alert('提示', '您修改的资料未保存,确定要离开吗?', [
+        {
+          text: '确定', onPress: () => {
+          navigator.pop();
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
+      ]);
+    } else {
+      navigator.pop();
+    }
   }
 
   _initPhotos() {
@@ -87,23 +116,12 @@ class EditPhotos extends BaseComponent {
         this.setState({
           DictMap: DictMap,
           ...result,
-          userPhotos: this._initOnlinePhotos(json.Result),
+          userPhotos: json.Result,
           loading: false
         });
       });
     }, (error)=> {
     }));
-  }
-
-  //将从后台获取的相册重新包装,标明照片是从线上获取,而非本地拍摄。并标明头像
-  _initOnlinePhotos(data) {
-    let tmpArr = [];
-    for (let i = 0; i < data.length; i++) {
-      data[i].onLine = true;
-      data[i].isAvatar = data[i].PhotoUrl == this.props.route.params.PrimaryPhotoFilename;
-      tmpArr.push(data[i])
-    }
-    return tmpArr;
   }
 
   _initDict(callBack, result) {
@@ -142,48 +160,67 @@ class EditPhotos extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '编辑相册',
-      hideRightButton:false,
+      hideRightButton: false,
       rightTitle: '保存'
     };
   }
 
   onRightPressed() {
-    const {dispatch}=this.props;
-
+    this._uploadPhotos();
   }
 
   _userPhotosChanges(data) {
-    console.log(data);
     this.state.userPhotos.push(data);
     this.setState({
-      uploaded:false,
+      uploaded: false,
+      changed:true,
       ...this.state.userPhotos
     })
   }
 
   _deletePhotoOnline(data) {
-    const{dispatch}=this.props;
-    dispatch(PhotoActions.deletePhoto(data),(json)=>{
+    const {dispatch}=this.props;
+    dispatch(PhotoActions.deletePhoto(data, (json)=> {
       this._initPhotos()
-    },(error)=>{})
+    }, (error)=> {
+    }));
   }
 
   _deletePhotoOffline(data) {
-    console.log(data);
+    let index = this.state.userPhotos.findIndex((item)=> {
+      return data.Id == item.Id;
+    });
+    this.state.userPhotos.splice(index, 1);
+    this.setState({
+      userPhotos: this.state.userPhotos
+    })
   }
 
-  _uploadPhotos(){
-    const{dispatch}=this.props;
-    let tmpArr=[];
-    for(let i=0;i<this.state.userPhotos.length;i++){
-      if(!this.state.userPhotos[i].onLine){
+  _uploadPhotos() {
+    const {dispatch}=this.props;
+    let tmpArr = [];
+    for (let i = 0; i < this.state.userPhotos.length; i++) {
+      if (!this.state.userPhotos[i].OnLine) {
         tmpArr.push(this.state.userPhotos[i]);
       }
     }
-    dispatch(PhotoActions.uploadPhoto(tmpArr,()=>{
-      console.log('照片上传成功的回调');
+    if(tmpArr.length>0){
+      dispatch(PhotoActions.uploadPhoto(tmpArr, ()=> {
+        this.setState({changed:false});
+        this._initPhotos();
+      }, (error)=> {
+      }));
+    }else{
+      //不做任何操作
+    }
+  }
+
+  _setPrimaryPhoto(data) {
+    const {dispatch}=this.props;
+    dispatch(PhotoActions.setPrimaryPhoto(data, (json)=> {
       this._initPhotos();
-    },(error)=>{}));
+    }, (error)=> {
+    }))
   }
 
   _renderPhotos(arr) {
@@ -193,7 +230,12 @@ class EditPhotos extends BaseComponent {
         imageArrChanges={(data)=> {
           this._userPhotosChanges(data)
         }}
-        upload={()=>{this._uploadPhotos()}}
+        upload={()=> {
+          this._uploadPhotos()
+        }}
+        setPrimaryPhoto={(data)=> {
+          this._setPrimaryPhoto(data)
+        }}
         permissionOptions={this.state.DictMap.PhotoPermissionDict}
         deletePhotoOnline={(data)=> {
           this._deletePhotoOnline(data)
@@ -201,19 +243,19 @@ class EditPhotos extends BaseComponent {
         deletePhotoOffline={(data)=> {
           this._deletePhotoOffline(data)
         }}
-        changePermission={(data)=>{
+        changePermission={(data)=> {
           this._changePermission(data)
         }}
       />
     )
   }
 
-  _changePermission(data){
-    const{dispatch}=this.props;
-    console.log(data);
-    dispatch(PhotoActions.setPhotoPermission(data),(json)=>{
+  _changePermission(data) {
+    const {dispatch}=this.props;
+    dispatch(PhotoActions.setPhotoPermission(data, (json)=> {
       this._initPhotos()
-    },(error)=>{})
+    }, (error)=> {
+    }));
   }
 
   renderBody() {
@@ -243,6 +285,6 @@ class EditPhotos extends BaseComponent {
 
 export default connect((state)=> {
   return {
-    pendingStatus:state.Photo.pending
+    pendingStatus: state.Photo.pending
   }
 })(EditPhotos)

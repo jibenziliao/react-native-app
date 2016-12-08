@@ -72,10 +72,10 @@ export function postFetch(url, data, dispatch, fetchReq, receive, error, resolve
         resolveFn(json);
       }
     })
-    .catch((error) => {
+    .catch(() => {
       toastShort('网络发生错误,请重试');
       dispatch({...error, error});
-      rejectFn(error);
+      rejectFn({error:'请求错误'});
     });
 }
 
@@ -92,10 +92,10 @@ export function getFetch(url, data, dispatch, fetchReq, receive, error, resolveF
         resolveFn(json);
       }
     })
-    .catch((error) => {
+    .catch(() => {
       toastShort('网络发生错误,请重试');
-      dispatch({...error, error});
-      rejectFn(error);
+      dispatch({...error});
+      rejectFn({error:'请求错误'});
     });
 }
 
@@ -112,10 +112,10 @@ export function putFetch(url, data, dispatch, fetchReq, receive, error, resolveF
         resolveFn(json);
       }
     })
-    .catch((error) => {
+    .catch(() => {
       toastShort('网络发生错误,请重试');
-      dispatch({...error, error});
-      rejectFn(error);
+      dispatch({...error});
+      rejectFn({error:'请求错误'});
     });
 }
 
@@ -132,9 +132,9 @@ export function deleteFetch(url, data, dispatch, fetchReq, receive, error, resol
         resolveFn(json);
       }
     })
-    .catch((error) => {
+    .catch(() => {
       toastShort('网络发生错误,请重试');
-      dispatch({...error, error});
-      rejectFn(error);
+      dispatch({...error});
+      rejectFn({error:'请求错误'});
     });
 }
