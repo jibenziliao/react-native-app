@@ -189,7 +189,7 @@ class Mine extends BaseComponent {
                 style={styles.avatarText}
                 name={this.state.Gender ? 'mars-stroke' : 'venus'}
                 size={14}/>
-              <Text style={styles.avatarText}>{this.state.UserId}{'岁'}</Text>
+              <Text style={styles.avatarText}>{this.state.Age}</Text>
               {this._renderLocation(this.state.Location)}
             </View>
           </View>

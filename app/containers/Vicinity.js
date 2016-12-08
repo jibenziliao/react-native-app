@@ -22,6 +22,7 @@ import {URL_DEV} from '../constants/Constant'
 import VicinityList from '../pages/VicinityList'
 import UserInfo from '../pages/UserInfo'
 import * as HomeActions from '../actions/Home'
+import * as Storage from '../utils/Storage'
 
 const styles = StyleSheet.create({
   container: {
@@ -55,6 +56,8 @@ let compareCenterRegion = {
 let searchTimes = 0;
 let pageNavigator;
 let hasMove = false;
+let myLocation = {};
+let currentUser = {};
 
 class Vicinity extends BaseComponent {
   constructor(props) {
@@ -72,7 +75,22 @@ class Vicinity extends BaseComponent {
   }
 
   componentWillMount() {
-    this.getPosition();
+    this._getUserInfo(()=> {
+      this.getPosition()
+    });
+  }
+
+  _getUserInfo(callBack) {
+    console.log('开始获取用户信息');
+    Storage.getItem('userInfo').then(
+      (response)=> {
+        if (response !== null) {
+          console.log(response);
+          currentUser = response;
+          callBack()
+        }
+      }
+    );
   }
 
   getPosition() {
@@ -124,6 +142,7 @@ class Vicinity extends BaseComponent {
         Lat: this.state.lastPosition.LastLocation.Lat,
         Lng: this.state.lastPosition.LastLocation.Lng
       };
+      myLocation = params;
       dispatch(VicinityActions.saveCoordinate(params));
       navigator.geolocation.clearWatch(watchId);
     });
@@ -212,16 +231,29 @@ class Vicinity extends BaseComponent {
     }
   }
 
-  calloutPress(location) {
+  calloutPress(data) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getUserInfo({UserId: location.UserId}, (json)=> {
-      pageNavigator.push({
-        component: UserInfo,
-        name: 'UserInfo',
-        params: {
-          ...json.Result,
-        }
-      });
+    let params = {
+      UserId: data.UserId,
+      ...myLocation
+    };
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
+        pageNavigator.push({
+          component: UserInfo,
+          name: 'UserInfo',
+          params: {
+            Nickname: data.Nickname,
+            UserId: data.UserId,
+            myUserId: currentUser.UserId,
+            ...json.Result,
+            userPhotos: result.Result,
+            myLocation: myLocation,
+            isSelf: data.UserId === currentUser.UserId
+          }
+        });
+      }, (error)=> {
+      }));
     }, (error)=> {
     }));
   }

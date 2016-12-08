@@ -177,7 +177,6 @@ class AnnouncementDetail extends BaseComponent {
     };
   }
 
-  //关注用户
   onRightPressed() {
     if (this.state.isSelf) {
       //弹出下拉菜单
