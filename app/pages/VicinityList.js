@@ -43,6 +43,6 @@ class VicinityList extends BaseComponent{
       </View>
     )
   }
-
 }
+
 export default VicinityList

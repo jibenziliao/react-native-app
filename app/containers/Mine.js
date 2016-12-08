@@ -119,8 +119,8 @@ class Mine extends BaseComponent {
       name: 'EditPersonalSignature',
       params: {
         personalSignature: data,
-        callBack: ()=> {
-          this._getUserInfo()
+        callBack: (result)=> {
+          this.setState({PersonSignal:result})
         }
       },
     });

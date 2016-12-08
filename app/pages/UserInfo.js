@@ -27,6 +27,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import EditUserProfile from '../pages/EditUserProfile'
 import EditFriendFilter from '../pages/EditFriendFilter'
+import EditPhotos from '../pages/EditPhotos'
 
 const {width, height}=Dimensions.get('window');
 
@@ -336,7 +337,13 @@ class UserInfo extends BaseComponent {
   }
 
   _editMyPhotos() {
-    console.log('编辑我的相册');
+    navigator.push({
+      component: EditPhotos,
+      name: 'EditPhotos',
+      params: {
+        UserId: this.state.UserId
+      },
+    });
   }
 
   _editMySignature() {
