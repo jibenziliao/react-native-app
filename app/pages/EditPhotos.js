@@ -82,6 +82,12 @@ class EditPhotos extends BaseComponent {
     }
   }
 
+  componentWillUnmount(){
+    if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
+    }
+  }
+
   onBackAndroid() {
     this._backAlert();
   }

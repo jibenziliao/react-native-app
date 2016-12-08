@@ -178,7 +178,7 @@ class PhotoViewer extends Component {
   }
 
   _deletePhoto(data) {
-    if (!data.onLine) {
+    if (!data.OnLine) {
       this.props.deletePhotoOffline(data);
     } else {
       this.props.deletePhotoOnline(data);

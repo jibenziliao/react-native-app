@@ -18,6 +18,8 @@ import MessageDetail from '../pages/MessageDetail'
 import {componentStyles} from '../style'
 
 let navigator;
+let connection;
+let proxy;
 
 class Message extends BaseComponent{
   constructor(props){
@@ -30,6 +32,13 @@ class Message extends BaseComponent{
       title: '消息',
       hideLeftButton:true
     };
+  }
+
+  _initWebSocket(){
+    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
+    connection.logging = true;
+    console.log(connection);
+    proxy = connection.createHubProxy('ChatCore');
   }
 
   goLogin() {

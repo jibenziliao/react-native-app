@@ -11,7 +11,8 @@ import {
   StyleSheet,
   Navigator,
   Platform,
-  BackAndroid
+  BackAndroid,
+  Alert
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
@@ -80,11 +81,22 @@ class App extends Component {
         console.log('尚未完成注册流程');
       }
       this.getCurrentPosition();
-      this.setState({loading: false, getRegistered: true});
+      this.setState({
+        getRegistered: true
+      });
+      //this.setState({loading: false, getRegistered: true});
     } catch (error) {
       console.log('加载缓存注册状态时出错', error.message);
     }
   };
+
+  _Alert(){
+    Alert.alert('提示', '本APP依赖手机的GPS,请打开手机的GPS后,重新打开本APP', [
+      {
+        text: '确定', onPress: () => {}
+      }
+    ]);
+  }
 
   getCurrentPosition() {
     console.log('定位开始');
@@ -95,11 +107,14 @@ class App extends Component {
       },
       (error) => {
         console.log(JSON.stringify(error));
+        this._Alert();
+        this.setState({loading: false, getRegistered: true});
         if ('"No available location provider."' == JSON.stringify(error)) {
-          toastShort('请打开GPS开关');
+          //toastShort('请打开GPS开关');
+          this._Alert();
         }
       },
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 5000}
+      {enableHighAccuracy: true, timeout: 10000, maximumAge: 5000}
     );
     watchId = navigator.geolocation.watchPosition((position) => {
       const lastPosition = {
@@ -128,6 +143,9 @@ class App extends Component {
         Lat: lastPosition.LastLocation.Lat,
         Lng: lastPosition.LastLocation.Lng
       };
+
+      //定位成功后,关闭加载指示器
+      this.setState({loading: false, getRegistered: true});
 
       async function saveLocation() {
         await Storage.setItem('currentLocation', params);
@@ -236,7 +254,7 @@ class App extends Component {
   onBackAndroid() {
     const routers = this.navigator.getCurrentRoutes();
     console.log(routers);
-    if((routers[routers.length - 1].name == 'MainContainer')||(routers[routers.length - 1].name == 'Home')||(routers[routers.length - 1].name == 'Login')){
+    if ((routers[routers.length - 1].name == 'MainContainer') || (routers[routers.length - 1].name == 'Home') || (routers[routers.length - 1].name == 'Login')) {
       let now = new Date().getTime();
       if (now - lastClickTime < 2500) {
         return false;
@@ -244,12 +262,7 @@ class App extends Component {
       lastClickTime = now;
       toastShort('再按一次退出情缘结');
       return true;
-    } else if(routers[routers.length - 1].name=='EditUserInfo'){
-      RNPicker.isPickerShow((status)=> {
-        if (status) RNPicker.hide()
-      });
-      return true;
-    }else {
+    } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
       RNPicker.isPickerShow((status)=> {
         if (status) RNPicker.hide()

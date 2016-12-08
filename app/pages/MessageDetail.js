@@ -62,7 +62,7 @@ class MessageDetail extends BaseComponent{
       };
     });*/
 
-    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/mobile/chat/signalr/hubs');
+    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
     connection.logging = true;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
@@ -101,8 +101,6 @@ class MessageDetail extends BaseComponent{
     connection.error(function (error) {
       console.log('SignalR error: ' + error)
     });
-
-
 
     proxy.on('getNewMsg', (text) => {
       console.log(text);
