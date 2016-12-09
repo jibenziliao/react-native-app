@@ -94,7 +94,7 @@ export function getCurrentUserProfile(data, resolve, reject) {
 
 export function newPost(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/post/doihaveanotexpiredpost', data, dispatch, {type: ActionTypes.FETCH_BEGIN,}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/post/doihaveanotexpiredpost', data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 

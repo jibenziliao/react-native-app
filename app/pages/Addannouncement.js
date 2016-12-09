@@ -53,9 +53,9 @@ const styles = StyleSheet.create({
   },
   scrollViewHorizontal: {
     flex: 1,
-    padding: 10,
     backgroundColor: '#FFF',
-    marginTop: 10
+    marginTop: 10,
+    paddingVertical:10
   },
   takePhotoBtn: {
     height: 80,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 4,
-    marginRight: 10
+    marginHorizontal:10
   },
   image: {
     height: 80,
