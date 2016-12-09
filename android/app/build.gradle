@@ -133,6 +133,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-cookies')
     compile project(':react-native-maps')
     compile project(':react-native-picker')
     compile project(':react-native-image-picker')

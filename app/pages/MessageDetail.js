@@ -16,6 +16,8 @@ import {componentStyles} from '../style'
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
 import signalr from 'react-native-signalr'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import CookieManager from 'react-native-cookies'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -32,6 +34,7 @@ const styles = StyleSheet.create({
 
 let connection;
 let proxy;
+let cookie;
 
 class MessageDetail extends BaseComponent{
   constructor(props) {
@@ -54,7 +57,19 @@ class MessageDetail extends BaseComponent{
     this._isAlright = null;
   }
 
+  _getCookie(){
+    // Get cookies as a request header string
+    CookieManager.get(URL_DEV, (err, res) => {
+      console.log('Got cookies for url', res);
+      // Outputs 'user_session=abcdefg; path=/;'
+      cookie=res.rkt;
+      this._initWebSocket();
+    })
+  }
+
   componentWillMount() {
+
+    this._getCookie();
     this._isMounted = true;
     /*this.setState(() => {
       return {
@@ -62,7 +77,7 @@ class MessageDetail extends BaseComponent{
       };
     });*/
 
-    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
+/*    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
     connection.logging = true;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
@@ -79,6 +94,10 @@ class MessageDetail extends BaseComponent{
       }).fail(function (error) {
         console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
       });
+    });
+
+    proxy.on('log',(str)=>{
+      console.log(str);
     });
 
     proxy.on('sayHey', (message) => {
@@ -106,8 +125,61 @@ class MessageDetail extends BaseComponent{
       console.log(text);
       console.log(text[0]['MsgList'][0]['MsgContent']);
       this.onReceive(text[0]['MsgList'][0]['MsgContent']);
+    });*/
+
+
+  }
+
+  _initWebSocket(){
+    connection = signalr.hubConnection('http://192.168.2.143:12580/signalr/hubs');
+    connection.logging = true;
+    console.log(connection);
+    proxy = connection.createHubProxy('ChatCore');
+
+    //receives broadcast messages from a hub function, called "messageFromServer"
+    proxy.on('messageFromServer', (message) => {
+      console.log(message);
+
+      //Respond to message, invoke messageToServer on server with arg 'hej'
+      // let messagePromise =
+      //message-status-handling
+      messagePromise.done(() => {
+        console.log('Invocation of NewContosoChatMessage succeeded');
+      }).fail(function (error) {
+        console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
+      });
     });
 
+    proxy.on('sayHey', (message) => {
+      console.log(message);
+    });
+
+    proxy.on('log',(str)=>{
+      console.log(str);
+    });
+
+    // atempt connection, and handle errors
+    connection.start().done(() => {
+      proxy.invoke('login', cookie);
+      console.log('Now connected, connection ID=' + connection.id);
+    }).fail(() => {
+      console.log('Failed');
+    });
+
+    //connection-handling
+    connection.connectionSlow(function () {
+      console.log('We are currently experiencing difficulties with the connection.')
+    });
+
+    connection.error(function (error) {
+      console.log('SignalR error: ' + error)
+    });
+
+    proxy.on('getNewMsg', (text) => {
+      console.log(text);
+      console.log(text[0]['MsgList'][0]['MsgContent']);
+      this.onReceive(text[0]['MsgList'][0]['MsgContent']);
+    });
 
   }
 
@@ -144,7 +216,7 @@ class MessageDetail extends BaseComponent{
 
     console.log(messages);
 
-    proxy.invoke('userSendMsgToUser','1|Test',messages[0].text);
+    proxy.invoke('userSendMsgToUser',messages[0].text.split('|')[0],messages[0].text.split('|')[1]);
 
 
     // for demo purpose

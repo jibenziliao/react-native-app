@@ -31,6 +31,8 @@ import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import * as HomeActions from '../actions/Home'
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -46,15 +48,16 @@ const styles = StyleSheet.create({
     flex: 1
   },
   card: {
-    padding: 10,
     backgroundColor: '#FFF',
     flex: 1,
     marginTop: 10,
-    marginHorizontal: 10
+    marginHorizontal: 10,
+    paddingVertical:10
   },
   cardRow: {
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
+    paddingHorizontal:10
   },
   cardLeft: {
     flexDirection: 'row',
@@ -96,14 +99,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    paddingHorizontal:10
   },
   postImage: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
     paddingVertical: 5,
-    justifyContent: 'space-between'
+    justifyContent: 'flex-start',
+    paddingLeft:10
   },
   cardBtn: {
     marginTop: 10,
@@ -298,11 +303,21 @@ class AnnouncementList extends BaseComponent{
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
+      let imageWidth = 0;
+      if (arr.length % 3 === 0) {
+        imageWidth = (width - 60) / 3;
+      } else if (arr.length % 2 === 0) {
+        imageWidth = (width - 50) / 2;
+      } else if (arr.length === 1) {
+        imageWidth = width - 40;
+      } else {
+        imageWidth = (width - 60) / 3;
+      }
       return arr.map((item, index)=> {
         return (
           <Image
             key={index}
-            style={{width: 80, height: 80, marginBottom: 5, marginRight: 5}}
+            style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
             source={{uri: URL_DEV + '/' + item}}/>
         )
       })
@@ -513,6 +528,7 @@ class AnnouncementList extends BaseComponent{
   }
 
 }
+
 export default connect((state)=>{
   return{
     ...state
