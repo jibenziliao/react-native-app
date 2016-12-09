@@ -26,6 +26,7 @@ let navigator;
 let connection;
 let proxy;
 let cookie;
+let ws;
 
 class Message extends BaseComponent{
   constructor(props){
@@ -52,7 +53,33 @@ class Message extends BaseComponent{
       // Outputs 'user_session=abcdefg; path=/;'
       cookie=res.rkt;
       //this._initWebSocket();
+      this._openWebSocket();
     })
+  }
+
+  _openWebSocket(){
+    ws=new WebSocket('http://192.168.2.143:12580/signalr/hubs');
+    ws.onopen = () => {
+      // connection opened
+
+      ws.send('something'); // send a message
+    };
+    ws.onmessage = (e) => {
+      // a message was received
+      console.log(e.data);
+    };
+    ws.onerror = (e) => {
+      // an error occurred
+      console.log(e.message);
+    };
+    /*ws.onclose = (e) => {
+      // connection closed
+      console.log(e.code, e.reason);
+    };*/
+  }
+
+  sendMsg(){
+    ws.send('something'); // send a message
   }
 
   _initWebSocket(){
@@ -146,6 +173,17 @@ class Message extends BaseComponent{
             this.goLogin()
           }}>
           测试登录
+        </NBButton>
+        <NBButton
+          block
+          style={{
+            height: 40,
+            marginBottom: 30
+          }}
+          onPress={()=> {
+            this.sendMsg()
+          }}>
+          测试发消息
         </NBButton>
       </View>
     )

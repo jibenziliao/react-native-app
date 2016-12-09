@@ -213,7 +213,9 @@ class AnnouncementDetail extends BaseComponent {
         name: 'Addannouncement',
         params: {
           myLocation: this.state.myLocation,
-          callBack: this.state.callBack
+          myUserId:this.state.CreaterId,
+          callBack: this.state.callBack,
+          Nickname:this.state.PosterInfo.Nickname
         }
       })
     }

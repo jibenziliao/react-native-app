@@ -131,7 +131,7 @@ class MessageDetail extends BaseComponent{
   }
 
   _initWebSocket(){
-    connection = signalr.hubConnection('http://192.168.2.143:12580/signalr/hubs');
+    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
     connection.logging = true;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');

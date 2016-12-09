@@ -85,14 +85,14 @@ export default class MapCallout extends Component {
           <View style={styles.userInfo}>
             <View style={styles.nickRow}>
               <Text>{location.Nickname}</Text>
-              {this.renderGenderIcon(location.Gender)}
             </View>
+            {this.renderGenderIcon(location.Gender)}
             <View>
               <Text>ID: {location.UserId}</Text>
             </View>
-            <View style={styles.datingPurposeRow}>
+            {/*<View style={styles.datingPurposeRow}>
               {datingPurposes.map((datingPurpose, index)=>this.renderDatingPurpose(datingPurpose, index))}
-            </View>
+            </View>*/}
           </View>
           <View style={styles.link}>
             <Icon name="angle-double-right" size={28} style={styles.linkIcon}/>
