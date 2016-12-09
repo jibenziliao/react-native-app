@@ -6,6 +6,7 @@
 import * as ActionTypes from './ActionTypes'
 import {URL_DEV} from '../constants/Constant'
 import {toastShort} from '../utils/ToastUtil'
+import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 
 function fetchOptions(data) {
   return {
@@ -41,7 +42,7 @@ export function searchNearby(data) {
   }
 }
 
-export function saveCoordinate(data) {
+export function saveCoordinate(data,resolve,reject) {
   return (dispatch)=> {
     dispatch({type: ActionTypes.SAVE_USER_COORDINATE_BEGIN, data});
     fetch(URL_DEV + '/profile/ping', fetchOptions(data))
@@ -55,6 +56,12 @@ export function saveCoordinate(data) {
       dispatch({type: ActionTypes.SAVE_USER_COORDINATE_END, data, err});
       toastShort('网络发生错误,请重试')
     })
+  };
+}
+
+export function saveLocation(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/profile/ping', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 

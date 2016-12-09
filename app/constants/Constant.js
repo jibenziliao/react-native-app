@@ -5,6 +5,8 @@
  */
 export const URL_DEV='http://nrb-stage.azurewebsites.net/mobile';
 
+export const URL_WS_DEV='http://nrb-stage.azurewebsites.net/chat/signalr/hubs';
+
 export const TIME_OUT=10000;
 
 export const DEBUG_SETTINGS = {

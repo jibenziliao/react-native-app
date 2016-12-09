@@ -153,7 +153,7 @@ class App extends Component {
           (response)=> {
             if (response != null) {
               console.log('用户已注册,开始向后台发送用户位置信息');
-              dispatch(VicinityActions.saveCoordinate(params));
+              dispatch(VicinityActions.saveLocation(params,(json)=>{},(error)=>{}));
             }
           }, (error)=> {
             console.log('读取缓存出错!', error);
@@ -275,6 +275,7 @@ class App extends Component {
   }
 
 }
+
 export default connect((state)=> {
   return {
     pendingStatus: state.InitialApp.pending
