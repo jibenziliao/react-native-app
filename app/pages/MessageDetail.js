@@ -20,6 +20,7 @@ import signalr from 'react-native-signalr'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import * as Storage from '../utils/Storage'
+import temGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -144,9 +145,9 @@ class MessageDetail extends BaseComponent {
   }
 
   _getNewMsg(){
-    this.state.proxy.on('getNewMsg', (obj) => {
+    temGlobal.proxy.on('getNewMsg', (obj) => {
       console.log(obj);
-      console.log('收到了新消息');
+      console.log('2@@@收到了新消息');
       let resMsg = this._getSingleMsg(obj, this.state.UserId);
       if (resMsg.length > 0 && !this.state.destroyed) {
         this.onReceive(this._getSingleMsg(obj, this.state.UserId)[0].MsgContent);
@@ -288,7 +289,7 @@ class MessageDetail extends BaseComponent {
       };
     });
 
-    this.state.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
+    temGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
 
   }
 
@@ -364,7 +365,7 @@ class MessageDetail extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '消息详情'
+      title: `${this.state.Nickname}`
     };
   }
 

@@ -28,6 +28,7 @@ import * as Storage from '../utils/Storage'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import Spinner from '../components/Spinner'
+import temGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -108,22 +109,22 @@ class Message extends BaseComponent {
   }
 
   componentDidMount() {
-    this.subscription=DeviceEventEmitter.addListener('getMsgFromServer',this._receiveMsg);
+    this.subscription = DeviceEventEmitter.addListener('getMsgFromServer', this._receiveMsg);
   }
 
   componentWillUnmount() {
     this.subscription.remove();
   }
 
-  _receiveMsg(data){
-    console.log('这是从服务器获取的数据',data);
+  _receiveMsg(data) {
+    console.log('这是从服务器获取的数据', data);
   }
 
-  _getCurrentUserInfo(){
-    Storage.getItem('userInfo').then((res)=>{
-      if(res!==null){
-        this.setState({currentUser:res});
-      }else{
+  _getCurrentUserInfo() {
+    Storage.getItem('userInfo').then((res)=> {
+      if (res !== null) {
+        this.setState({currentUser: res});
+      } else {
         console.error('获取当前用户信息出错');
       }
     })
@@ -143,6 +144,9 @@ class Message extends BaseComponent {
     connection.logging = true;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
+
+    //将proxy保存在全局变量中,以便其他地方使用
+    temGlobal.proxy = proxy;
 
     proxy.on('messageFromServer', (message) => {
       console.log(message);
@@ -179,14 +183,14 @@ class Message extends BaseComponent {
 
     proxy.on('getNewMsg', (obj) => {
       console.log(obj);
-      console.log('收到了新消息');
+      console.log('1###收到了新消息');
       this._margeMessage(obj);
     });
   }
 
   //合并后台推送过来的消息
   _margeMessage(obj) {
-    let newMsgList=[];
+    let newMsgList = [];
     newMsgList = newMsgList.concat(obj.MsgPackage);
     for (let i = 0; i < this.state.messageList.length; i++) {
       for (let j = 0; j < obj.MsgPackage.length; j++) {
@@ -202,7 +206,7 @@ class Message extends BaseComponent {
       messageList: this.state.messageList
     });
 
-    DeviceEventEmitter.emit('getMsgFromServer',obj.MsgPackage);
+    DeviceEventEmitter.emit('getMsgFromServer', obj.MsgPackage);
 
   }
 
@@ -221,9 +225,8 @@ class Message extends BaseComponent {
       params: {
         UserId: rowData.SenderId,
         Nickname: rowData.SenderNickname,
-        UserAvatar:URL_DEV+rowData.SenderAvatar,
-        myUserId:this.state.currentUser.UserId,
-        proxy:proxy
+        UserAvatar: URL_DEV + rowData.SenderAvatar,
+        myUserId: this.state.currentUser.UserId
       }
     })
   }

@@ -28,6 +28,7 @@ import EditPersonalSignature from '../pages/EditPersonalSignature'
 import EditUserProfile from '../pages/EditUserProfile'
 import EditFriendFilter from '../pages/EditFriendFilter'
 import EditPhotos from '../pages/EditPhotos'
+import MessageDetail from '../pages/MessageDetail'
 
 const {width, height}=Dimensions.get('window');
 
@@ -177,6 +178,20 @@ class UserInfo extends BaseComponent {
     }));
   }
 
+  //与TA聊天
+  _chatWithUser(){
+    navigator.push({
+      component: MessageDetail,
+      name: 'MessageDetail',
+      params: {
+        UserId: this.state.UserId,
+        Nickname: this.state.Nickname,
+        UserAvatar: URL_DEV + this.state.PrimaryPhotoFilename,
+        myUserId: this.state.myUserId
+      }
+    })
+  }
+
   //关注/取消关注
   _attention(id) {
     const {dispatch}=this.props;
@@ -224,7 +239,7 @@ class UserInfo extends BaseComponent {
             block
             style={[styles.bottomBtn]}
             onPress={()=> {
-              console.log('你点击了对话')
+              this._chatWithUser()
             }}>
             <NBIcon name={'ios-chatbubbles-outline'}/>
             对话
