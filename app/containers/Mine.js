@@ -98,7 +98,7 @@ class Mine extends BaseComponent {
   }
 
   componentDidMount() {
-    this.subscription = DeviceEventEmitter.addListener('avatarChanged', ()=>{this._getCurrentUserInfo()});
+    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=>{this._getCurrentUserInfo()});
   }
 
   componentWillUnmount() {

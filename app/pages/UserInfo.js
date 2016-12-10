@@ -11,7 +11,8 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  DeviceEventEmitter
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -29,6 +30,7 @@ import EditUserProfile from '../pages/EditUserProfile'
 import EditFriendFilter from '../pages/EditFriendFilter'
 import EditPhotos from '../pages/EditPhotos'
 import MessageDetail from '../pages/MessageDetail'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {width, height}=Dimensions.get('window');
 
@@ -150,6 +152,33 @@ class UserInfo extends BaseComponent {
     return {
       title: this.state.Nickname
     };
+  }
+
+  componentDidMount(){
+    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=>{this._getUserInfo()});
+  }
+
+  componentWillUnmount() {
+    this.subscription.remove();
+  }
+
+  _getUserInfo(){
+    const{dispatch}=this.props;
+    let params = {
+      UserId: this.state.UserId,
+      ...tmpGlobal.currentLocation
+    };
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      dispatch(HomeActions.getUserPhotos({UserId: this.state.UserId}, (result)=> {
+        this.setState({
+          ...json.Result,
+          userPhotos:result.Result,
+        });
+      }, (error)=> {
+      }))
+    }, (error)=> {
+    }));
+
   }
 
   //前往指定用户的历史公告

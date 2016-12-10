@@ -188,6 +188,7 @@ class EditPhotos extends BaseComponent {
   _deletePhotoOnline(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.deletePhoto(data, (json)=> {
+      DeviceEventEmitter.emit('photoChanged','相册有改动');
       this._initPhotos();
     }, (error)=> {
     }));
@@ -213,6 +214,7 @@ class EditPhotos extends BaseComponent {
     }
     if(tmpArr.length>0){
       dispatch(PhotoActions.uploadPhoto(tmpArr, ()=> {
+        DeviceEventEmitter.emit('photoChanged','相册有改动');
         this.setState({changed:false});
         this._initPhotos();
       }, (error)=> {
@@ -225,7 +227,7 @@ class EditPhotos extends BaseComponent {
   _setPrimaryPhoto(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.setPrimaryPhoto(data, (json)=> {
-      DeviceEventEmitter.emit('avatarChanged','头像设置成功');
+      DeviceEventEmitter.emit('photoChanged','相册有改动');
       this._initPhotos();
     }, (error)=> {
     }));
@@ -261,6 +263,7 @@ class EditPhotos extends BaseComponent {
   _changePermission(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.setPhotoPermission(data, (json)=> {
+      DeviceEventEmitter.emit('photoChanged','相册有改动');
       this._initPhotos()
     }, (error)=> {
     }));
