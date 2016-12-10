@@ -74,6 +74,14 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: '#fff'
+  },
+  tips:{
+    flexDirection:'row',
+    flex:1,
+    margin:40
+  },
+  tipsText:{
+    fontSize:20
   }
 });
 
@@ -271,7 +279,11 @@ class Message extends BaseComponent {
           pageSize={10}/>
       )
     } else {
-      return null
+      return (
+        <View style={styles.tips}>
+          <Text style={styles.tipsText}>{'暂无消息'}</Text>
+        </View>
+      )
     }
 
   }
