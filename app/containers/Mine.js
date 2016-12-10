@@ -98,25 +98,11 @@ class Mine extends BaseComponent {
   }
 
   componentDidMount() {
-    this.subscription = DeviceEventEmitter.addListener('avatarChanged', this._userAvatarChanged);
-    this.getCurrentUserInfoListener = DeviceEventEmitter.addListener('getCurrentUserInfo', this._updateCurrentUserInfo);
+    this.subscription = DeviceEventEmitter.addListener('avatarChanged', ()=>{this._getCurrentUserInfo()});
   }
-
+  
   componentWillUnmount() {
     this.subscription.remove();
-    this.getCurrentUserInfoListener.remove();
-  }
-
-  _userAvatarChanged(data) {
-    this.setState({
-      PhotoUrl: data
-    });
-  }
-
-  _updateCurrentUserInfo(data) {
-    this.setState({
-      ...data
-    });
   }
 
   _getCurrentUserInfo() {

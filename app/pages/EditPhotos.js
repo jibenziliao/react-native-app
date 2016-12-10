@@ -83,15 +83,10 @@ class EditPhotos extends BaseComponent {
     }
   }
 
-  componentDidMount(){
-    this.subscription=DeviceEventEmitter.addListener('avatarChanged',this._setPrimaryPhoto);
-  }
-
   componentWillUnmount(){
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
-    this.subscription.remove();
   }
 
   onBackAndroid() {
@@ -230,6 +225,7 @@ class EditPhotos extends BaseComponent {
   _setPrimaryPhoto(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.setPrimaryPhoto(data, (json)=> {
+      DeviceEventEmitter.emit('avatarChanged','头像设置成功');
       this._initPhotos();
     }, (error)=> {
     }));
