@@ -99,10 +99,13 @@ class Mine extends BaseComponent {
 
   componentDidMount() {
     this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=>{this._getCurrentUserInfo()});
+    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=>{this._updateSignature(data)});
+
   }
 
   componentWillUnmount() {
     this.subscription.remove();
+    this.signatureListener.remove();
   }
 
   _getCurrentUserInfo() {
@@ -125,12 +128,16 @@ class Mine extends BaseComponent {
       component: EditPersonalSignature,
       name: 'EditPersonalSignature',
       params: {
-        personalSignature: data,
-        callBack: (result)=> {
-          this.setState({PersonSignal: result})
-        }
+        personalSignature: data
       },
     });
+  }
+
+  //刷新签名
+  _updateSignature(data){
+    this.setState({
+      PersonSignal:data.data
+    })
   }
 
   //前往查看我的详细资料(需要先获取我的相册)

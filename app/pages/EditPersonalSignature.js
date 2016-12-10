@@ -8,7 +8,8 @@ import {
   View,
   StyleSheet,
   Text,
-  TextInput
+  TextInput,
+  DeviceEventEmitter
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -61,11 +62,8 @@ class EditPersonalSignature extends BaseComponent {
     dispatch(UserProfileActions.savePersonalSignature({personSignal: data}, (result)=> {
       dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
         Storage.setItem('userInfo', json.Result);
+        DeviceEventEmitter.emit('signatureChanged',{data:data,message:'签名更改成功'});
         toastShort('保存成功');
-        this.saveSignatureTimer = setTimeout(()=> {
-          navigator.pop();
-          this.state.callBack(data);
-        }, 2000)
       }, (error)=> {
       }));
     }, (error)=> {

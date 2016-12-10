@@ -156,10 +156,17 @@ class UserInfo extends BaseComponent {
 
   componentDidMount(){
     this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=>{this._getUserInfo()});
+    this.userProfileListener=DeviceEventEmitter.addListener('userInfoChanged', ()=>{this._getUserInfo()});
+    this.friendFilterListener=DeviceEventEmitter.addListener('friendFilterChanged', ()=>{this._getUserInfo()});
+    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=>{this._updateSignature(data)});
+
   }
 
   componentWillUnmount() {
     this.subscription.remove();
+    this.userProfileListener.remove();
+    this.friendFilterListener.remove();
+    this.signatureListener.remove();
   }
 
   _getUserInfo(){
@@ -178,7 +185,13 @@ class UserInfo extends BaseComponent {
       }))
     }, (error)=> {
     }));
+  }
 
+  //刷新签名
+  _updateSignature(data){
+    this.setState({
+      PersonSignal:data.data
+    })
   }
 
   //前往指定用户的历史公告

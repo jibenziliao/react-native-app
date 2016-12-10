@@ -12,7 +12,8 @@ import {
   ScrollView,
   Platform,
   TouchableHighlight,
-  InteractionManager
+  InteractionManager,
+  DeviceEventEmitter
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -121,6 +122,7 @@ class EditFriendFilter extends BaseComponent {
       WeightMax: this.state.WeightMax
     };
     dispatch(FriendFilterActions.editFriendFilter(data, (json)=> {
+      DeviceEventEmitter.emit('friendFilterChanged','编辑交友信息成功');
       toastShort('保存成功!');
     }, (error)=> {
     }));

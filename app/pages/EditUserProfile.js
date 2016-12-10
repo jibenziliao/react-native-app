@@ -17,7 +17,8 @@ import {
   Dimensions,
   BackAndroid,
   Alert,
-  InteractionManager
+  InteractionManager,
+  DeviceEventEmitter
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -30,6 +31,7 @@ import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import * as UserProfileActions from '../actions/UserProfile'
 import {toastShort} from '../utils/ToastUtil'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {width, height}=Dimensions.get('window');
 
@@ -192,7 +194,8 @@ class EditUserProfile extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true
+      loading: true,
+
     };
     navigator = this.props.navigator;
   }
@@ -281,6 +284,7 @@ class EditUserProfile extends BaseComponent {
   onRightPressed() {
     const {dispatch}=this.props;
     dispatch(UserProfileActions.editProfile(this.state, DatingPurposeSelectCopy, (json)=> {
+      DeviceEventEmitter.emit('userInfoChanged','编辑用户资料成功');
       toastShort('保存成功!');
       /*this.saveTimer = setTimeout(()=> {
        navigator.pop();
@@ -393,10 +397,10 @@ class EditUserProfile extends BaseComponent {
         this.setState({EducationLevelName: pickedValue});
         break;
       case 'Height':
-        this.setState({heightText: pickedValue});
+        this.setState({Height: parseInt(pickedValue)});
         break;
       case 'Weight':
-        this.setState({weightText: pickedValue});
+        this.setState({Weight: parseInt(pickedValue)});
         break;
       case 'JobTypeName':
         this.setState({JobTypeName: pickedValue});
@@ -404,16 +408,14 @@ class EditUserProfile extends BaseComponent {
       case 'IncomeLevelName':
         this.setState({IncomeLevelName: pickedValue});
         break;
-      case 'mapPrecisionText':
+      case 'MapPrecision':
         if (pickedValue == '隐身') {
           this.setState({
             MapPrecision: null,
-            mapPrecisionText: pickedValue
           });
         } else {
           this.setState({
             MapPrecision: parseInt(pickedValue.split('m')[0]),
-            mapPrecisionText: pickedValue
           });
         }
         break;
@@ -511,7 +513,7 @@ class EditUserProfile extends BaseComponent {
               </View>
               <View style={[styles.listItem]}>
                 <Text style={styles.inputLabel}>{'地图精度'}</Text>
-                {this.renderSinglePicker('mapPrecisionText', 'MapPrecision', this._createMapData())}
+                {this.renderSinglePicker('MapPrecision', 'MapPrecision', this._createMapData())}
               </View>
               <View style={styles.listItem}>
                 <Text style={styles.inputLabel}>{'信仰'}</Text>
