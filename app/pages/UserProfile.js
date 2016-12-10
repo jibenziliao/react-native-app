@@ -166,7 +166,9 @@ let DictMap = {
   IncomeLevelDict: [],
   JobTypeDict: [],
   MarriageStatusDict: [],
-  DatingPurposeDict: []
+  DatingPurposeDict: [],
+  PhotoPermissionDict: [],
+  ReligionDict: []
 };
 
 let DatingPurposeSelectCopy = [];
@@ -175,6 +177,7 @@ class UserProfile extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       genderArr: [
         {text: '男', iconName: 'check-circle-o', checked: true},
         {text: '女', iconName: 'circle-o', checked: false}
@@ -195,9 +198,10 @@ class UserProfile extends BaseComponent {
       educationStatusText: '',
       professionText: '',
       profession: null,
+      religionText:'',
+      religion: '',
       income: null,
       incomeText: '',
-      religion: '',
       mapPrecision: 1000,
       mapPrecisionText: '',
       hometown: '',
@@ -212,27 +216,33 @@ class UserProfile extends BaseComponent {
   };
 
   componentWillMount() {
+    this.setState({
+      loading: true
+    });
+    this._initDict();
+  }
+
+  _initDict() {
     const {dispatch}=this.props;
-    //如果交友目的已经渲染过,返回到登录页,在进入此页,不需要重新渲染。
-    if(!(this.props.DictMap && this.props.DictMap.DictMap)){
-      dispatch(UserProfileActions.getDict());
-    }
-    //下面是选填项的字典
-    for (let i in DictMap) {
-      Storage.getItem(`${i}`).then((response)=> {
-        if (response && response.length > 0) {
-          response.forEach((j)=> {
-            if (`${i}` == 'DatingPurposeDict') {
-              DictMap[i].push(j);
-            } else {
-              DictMap[i].push(j.Value);
-            }
-          })
-        } else {
-          console.error('获取下拉选项字典出错');
-        }
-      })
-    }
+
+    //每次初始化字典时,需要把之前的数据清空
+    DictMap = {
+      EducationLevelDict: [],
+      IncomeLevelDict: [],
+      JobTypeDict: [],
+      MarriageStatusDict: [],
+      DatingPurposeDict: [],
+      PhotoPermissionDict: [],
+      ReligionDict: []
+    };
+
+    dispatch(UserProfileActions.getDict('', (json)=> {
+      DictMap = json;
+      this.setState({
+        loading: false
+      });
+    }, (error)=> {
+    }));
   }
 
   getNavigationBarProps() {
@@ -398,44 +408,11 @@ class UserProfile extends BaseComponent {
       case 'mapPrecisionText':
         this.setState({mapPrecisionText: pickedValue});
         break;
+      case 'religionText':
+        this.setState({religionText:pickedValue});
+        break;
       default:
         console.error('设置数据出错!');
-        break;
-    }
-    let index;
-    switch (value) {
-      case 'emotionStatus':
-        index = DictMap['MarriageStatusDict'].indexOf(pickedValue);
-        this.setState({emotionStatus: index});
-        break;
-      case 'educationStatus':
-        index = DictMap['EducationLevelDict'].indexOf(pickedValue);
-        this.setState({educationStatus: index});
-        break;
-      case 'height':
-        this.setState({height: parseInt(pickedValue)});
-        break;
-      case 'weight':
-        this.setState({weight: parseInt(pickedValue)});
-        break;
-      case 'profession':
-        index = DictMap['JobTypeDict'].indexOf(pickedValue);
-        this.setState({profession: pickedValue});
-        break;
-      case 'income':
-        index = DictMap['IncomeLevelDict'].indexOf(pickedValue);
-        this.setState({income: pickedValue});
-        break;
-      case 'mapPrecision':
-        if (pickedValue == '隐身') {
-          this.setState({mapPrecision: null});
-        } else {
-          pickedValue = pickedValue.substring(0, pickedValue.indexOf('m'));
-          this.setState({mapPrecision: pickedValue});
-        }
-        break;
-      default:
-        console.error('设置数据出错');
         break;
     }
   }
@@ -541,76 +518,54 @@ class UserProfile extends BaseComponent {
 
   //出生年
   renderBirthYearBtn() {
-    if (Platform.OS == 'ios') {
-      return (
-        <TouchableHighlight
-          onPress={()=> {
-            this._showDatePicker()
-          }}
-          style={styles.emotionStatusIOS}
-          activeOpacity={0.5}
-          underlayColor="rgba(247,245,245,0.7)">
-          <View style={styles.emotionStatusIOSView}>
-            <Text style={styles.emotionStatusIOSText}>
-              {this.state.birthYearText}
-            </Text>
-          </View>
-        </TouchableHighlight>
-      )
-    } else {
-      return (
-        <TouchableHighlight
-          onPress={()=> {
-            this._showDatePicker()
-          }}
-          style={styles.emotionStatusIOS}
-          activeOpacity={0.5}
-          underlayColor="rgba(247,245,245,0.7)">
-          <View style={styles.emotionStatusIOSView}>
-            <Text style={styles.emotionStatusIOSText}>
-              {this.state.birthYearText}
-            </Text>
-          </View>
-        </TouchableHighlight>
-      )
-    }
+    return (
+      <TouchableHighlight
+        onPress={()=> {
+          this._showDatePicker()
+        }}
+        style={styles.emotionStatusIOS}
+        activeOpacity={0.5}
+        underlayColor="rgba(247,245,245,0.7)">
+        <View style={styles.emotionStatusIOSView}>
+          <Text style={styles.emotionStatusIOSText}>
+            {this.state.birthYearText}
+          </Text>
+        </View>
+      </TouchableHighlight>
+    )
   }
 
   renderDatingPurpose() {
-    if (this.props.DictMap && this.props.DictMap.DictMap) {
-      let arr = this.props.DictMap.DictMap.DatingPurposeDict;
-      return (
-        <View style={styles.checkBoxView}>
-          {arr.map((item,index)=> {
-            return (
-              <CheckBox
-                key={index}
-                label={item.Value}
-                labelStyle={styles.checkBoxLabel}
-                checked={item.Checked}
-                style={styles.checkBoxItem}
-                onChange={(checked)=> {
-                  item.Checked = checked;
-                  if (checked) {
-                    DatingPurposeSelectCopy.push(item);
-                  } else {
-                    let index = 0;
-                    for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
-                      if (DatingPurposeSelectCopy[i].Key == item.Key) {
-                        index = i;
-                        break;
-                      }
+    let arr = DictMap.DatingPurposeDict;
+    return (
+      <View style={styles.checkBoxView}>
+        {arr.map((item, index)=> {
+          return (
+            <CheckBox
+              key={index}
+              label={item.Value}
+              labelStyle={styles.checkBoxLabel}
+              checked={item.Checked}
+              style={styles.checkBoxItem}
+              onChange={(checked)=> {
+                item.Checked = checked;
+                if (checked) {
+                  DatingPurposeSelectCopy.push(item);
+                } else {
+                  let index = 0;
+                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
+                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
+                      index = i;
+                      break;
                     }
-                    DatingPurposeSelectCopy.splice(index, 1);
                   }
-                }}/>
-            )
-          })}
-        </View>
-      )
-    } else {
-      return null;
-    }
+                  DatingPurposeSelectCopy.splice(index, 1);
+                }
+              }}/>
+          )
+        })}
+      </View>
+    )
   }
 
   renderMoreForm() {
@@ -675,12 +630,7 @@ class UserProfile extends BaseComponent {
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'信仰'}</Text>
-          <TextInput
-            style={[styles.input, styles.fullInput]}
-            underlineColorAndroid={'transparent'}
-            value={this.state.religion}
-            onChangeText={(religion)=>this.setState({religion})}
-            maxLength={15}/>
+          {this.renderSinglePicker('religionText', 'religion', DictMap['ReligionDict'])}
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'联系方式'}</Text>
@@ -753,30 +703,30 @@ class UserProfile extends BaseComponent {
             下一步
           </NBButton>
           {/*<NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goPhotos()
-            }}>
-            去拍照
-          </NBButton>
-          <NBButton
-            block
-            style={{marginBottom: 30}}
-            onPress={()=> {
-              this.goHome()
-            }}>
-            去首页(Test)
-          </NBButton>*/}
+           block
+           style={{marginBottom: 30}}
+           onPress={()=> {
+           this.goPhotos()
+           }}>
+           去拍照
+           </NBButton>
+           <NBButton
+           block
+           style={{marginBottom: 30}}
+           onPress={()=> {
+           this.goHome()
+           }}>
+           去首页(Test)
+           </NBButton>*/}
         </ScrollView>
       </View>
     )
   }
 
   renderSpinner() {
-    if (this.props.pendingStatus) {
+    if (this.state.loading) {
       return (
-        <Spinner animating={this.props.pendingStatus}/>
+        <Spinner animating={this.state.loading}/>
       )
     }
   }
@@ -784,7 +734,6 @@ class UserProfile extends BaseComponent {
 
 export default connect((state)=> {
   return {
-    DictMap: state.InitialApp.res,
-    pendingStatus: state.UserProfile.pending || state.InitialApp.pending
+    ...state
   }
 })(UserProfile)
