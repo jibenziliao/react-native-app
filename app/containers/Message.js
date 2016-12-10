@@ -9,27 +9,88 @@ import {
   Text,
   View,
   InteractionManager,
-  ScrollView
+  ScrollView,
+  ListView,
+  RefreshControl,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  DeviceEventEmitter
 } from 'react-native'
 import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
-import Login from '../pages/Login'
+import {connect} from 'react-redux'
 import MessageDetail from '../pages/MessageDetail'
 import {componentStyles} from '../style'
 import signalr from 'react-native-signalr'
 import * as Storage from '../utils/Storage'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
+import Spinner from '../components/Spinner'
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#E2E2E2'
+  },
+  listView: {
+    flex: 1
+  },
+  cardLast: {
+    marginBottom: 10
+  },
+  cardItem: {
+    padding: 10,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#cec5c5'
+  },
+  avatar: {
+    width: 60,
+    height: 60
+  },
+  cardContent: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  cardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  cardText: {
+    flexWrap: 'nowrap'
+  },
+  badge: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2
+  },
+  badgeText: {
+    color: '#fff'
+  }
+});
 
 let navigator;
 let connection;
 let proxy;
 let cookie;
 
+const {height, width} = Dimensions.get('window');
+
 class Message extends BaseComponent {
+
   constructor(props) {
     super(props);
+    this.state = {
+      messageList: [],
+      loading: false,
+      currentUser: null
+    };
     navigator = this.props.navigator;
   }
 
@@ -41,13 +102,37 @@ class Message extends BaseComponent {
   }
 
   componentWillMount() {
+    this.setState({loading: false});
+    this._getCurrentUserInfo();
     this._getCookie();
+  }
 
+  componentDidMount() {
+    this.subscription=DeviceEventEmitter.addListener('getMsgFromServer',this._receiveMsg);
+  }
+
+  componentWillUnmount() {
+    this.subscription.remove();
+  }
+
+  _receiveMsg(data){
+    console.log('这是从服务器获取的数据',data);
+  }
+
+  _getCurrentUserInfo(){
+    Storage.getItem('userInfo').then((res)=>{
+      if(res!==null){
+        this.setState({currentUser:res});
+      }else{
+        console.error('获取当前用户信息出错');
+      }
+    })
   }
 
   _getCookie() {
     CookieManager.get(URL_DEV, (err, res) => {
       console.log('Got cookies for url', res);
+      //rkt为当前cookie的key
       cookie = res.rkt;
       this._initWebSocket();
     })
@@ -92,11 +177,33 @@ class Message extends BaseComponent {
       console.log('SignalR error: ' + error)
     });
 
-    proxy.on('getNewMsg', (text) => {
-      console.log(text);
-      console.log(text[0]['MsgList'][0]['MsgContent']);
-      this.onReceive(text[0]['MsgList'][0]['MsgContent']);
+    proxy.on('getNewMsg', (obj) => {
+      console.log(obj);
+      console.log('收到了新消息');
+      this._margeMessage(obj);
     });
+  }
+
+  //合并后台推送过来的消息
+  _margeMessage(obj) {
+    let newMsgList=[];
+    newMsgList = newMsgList.concat(obj.MsgPackage);
+    for (let i = 0; i < this.state.messageList.length; i++) {
+      for (let j = 0; j < obj.MsgPackage.length; j++) {
+        if (this.state.messageList[i].SenderId === obj.MsgPackage[j].SenderId) {
+          this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(obj.MsgPackage[j].MsgList);
+          newMsgList.splice(j, 1);
+        }
+      }
+    }
+    this.state.messageList = this.state.messageList.concat(newMsgList);
+    this.setState({
+      loading: false,
+      messageList: this.state.messageList
+    });
+
+    DeviceEventEmitter.emit('getMsgFromServer',obj.MsgPackage);
+
   }
 
   goMessageDetail() {
@@ -106,10 +213,86 @@ class Message extends BaseComponent {
     })
   }
 
-  renderBody() {
-    return (
-      <View style={componentStyles.container}>
+  _goChat(rowData) {
+    //去聊天
+    navigator.push({
+      component: MessageDetail,
+      name: 'MessageDetail',
+      params: {
+        UserId: rowData.SenderId,
+        Nickname: rowData.SenderNickname,
+        UserAvatar:URL_DEV+rowData.SenderAvatar,
+        myUserId:this.state.currentUser.UserId,
+        proxy:proxy
+      }
+    })
+  }
 
+  _renderMsgTime(str) {
+    return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
+  }
+
+  renderRowData(rowData) {
+    console.log(rowData);
+    return (
+      <TouchableOpacity
+        key={rowData.SenderId}
+        onPress={()=> {
+          this._goChat(rowData)
+        }}
+        style={styles.cardItem}>
+        <Image
+          style={styles.avatar}
+          source={{uri: URL_DEV + rowData.SenderAvatar}}/>
+        <View style={styles.cardContent}>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardText}>
+              {rowData.SenderNickname}
+            </Text>
+            <Text>
+              {this._renderMsgTime(rowData.MsgList[rowData.MsgList.length - 1].SendTime)}
+            </Text>
+          </View>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardText}>
+              {rowData.MsgList[rowData.MsgList.length - 1].MsgContent}
+            </Text>
+            <View style={styles.badge}>
+              <Text style={[styles.cardText, styles.badgeText]}>
+                {rowData.MsgList.length}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  renderListView(ds, messageList) {
+    if (messageList) {
+      return (
+        <ListView
+          style={styles.listView}
+          dataSource={ds.cloneWithRows(messageList)}
+          renderRow={
+            this.renderRowData.bind(this)
+          }
+          enableEmptySections={true}
+          onEndReachedThreshold={10}
+          initialListSize={10}
+          pageSize={10}/>
+      )
+    } else {
+      return null
+    }
+
+  }
+
+  renderBody() {
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    return (
+      <View style={styles.container}>
+        {this.renderListView(ds, this.state.messageList)}
         <NBButton
           block
           style={{
@@ -124,6 +307,19 @@ class Message extends BaseComponent {
       </View>
     )
   }
+
+  renderSpinner() {
+    if (this.state.loading) {
+      return (
+        <Spinner animating={this.state.loading}/>
+      )
+    }
+  }
+
 }
 
-export default Message
+export default connect((state)=> {
+  return {
+    ...state
+  }
+})(Message);

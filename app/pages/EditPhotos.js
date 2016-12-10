@@ -15,7 +15,8 @@ import {
   BackAndroid,
   Dimensions,
   Platform,
-  InteractionManager
+  InteractionManager,
+  DeviceEventEmitter
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -82,10 +83,15 @@ class EditPhotos extends BaseComponent {
     }
   }
 
+  componentDidMount(){
+    this.subscription=DeviceEventEmitter.addListener('setAvatar',this._setPrimaryPhoto)
+  }
+
   componentWillUnmount(){
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
+    this.subscription.remove();
   }
 
   onBackAndroid() {

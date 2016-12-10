@@ -10,7 +10,8 @@ import {
   View,
   InteractionManager,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  DeviceEventEmitter
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import * as Storage from '../utils/Storage'

@@ -60,7 +60,7 @@ class MainContainer extends Component {
         tabBarPosition="bottom"
         locked={false}
         scrollWithoutAnimation={false}
-        prerenderingSiblingsNumber={0}
+        prerenderingSiblingsNumber={4}
         initialPage={0}
         renderTabBar={() => {
           return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
