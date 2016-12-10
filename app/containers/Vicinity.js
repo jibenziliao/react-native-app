@@ -23,6 +23,7 @@ import VicinityList from '../pages/VicinityList'
 import UserInfo from '../pages/UserInfo'
 import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
+import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -75,22 +76,17 @@ class Vicinity extends BaseComponent {
   }
 
   componentWillMount() {
-    this._getUserInfo(()=> {
-      this.getPosition()
-    });
+    this._getUserInfo();
   }
 
-  _getUserInfo(callBack) {
+  _getUserInfo() {
     console.log('开始获取用户信息');
-    Storage.getItem('userInfo').then(
-      (response)=> {
-        if (response !== null) {
-          console.log(response);
-          currentUser = response;
-          callBack()
-        }
-      }
-    );
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      currentUser = json.Result;
+      this.getPosition();
+    }, (error)=> {
+    }));
   }
 
   getPosition() {

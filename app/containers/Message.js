@@ -29,6 +29,7 @@ import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import Spinner from '../components/Spinner'
 import temGlobal from '../utils/TmpVairables'
+import * as HomeActions from '../actions/Home'
 
 const styles = StyleSheet.create({
   container: {
@@ -105,29 +106,23 @@ class Message extends BaseComponent {
   componentWillMount() {
     this.setState({loading: false});
     this._getCurrentUserInfo();
-    this._getCookie();
   }
 
   componentDidMount() {
-    this.subscription = DeviceEventEmitter.addListener('getMsgFromServer', this._receiveMsg);
+
   }
 
   componentWillUnmount() {
-    this.subscription.remove();
-  }
 
-  _receiveMsg(data) {
-    console.log('这是从服务器获取的数据', data);
   }
 
   _getCurrentUserInfo() {
-    Storage.getItem('userInfo').then((res)=> {
-      if (res !== null) {
-        this.setState({currentUser: res});
-      } else {
-        console.error('获取当前用户信息出错');
-      }
-    })
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      this.setState({currentUser: json.Result});
+      this._getCookie();
+    }, (error)=> {
+    }));
   }
 
   _getCookie() {
@@ -206,15 +201,6 @@ class Message extends BaseComponent {
       messageList: this.state.messageList
     });
 
-    DeviceEventEmitter.emit('getMsgFromServer', obj.MsgPackage);
-
-  }
-
-  goMessageDetail() {
-    navigator.push({
-      component: MessageDetail,
-      name: 'MessageDetail'
-    })
   }
 
   _goChat(rowData) {
@@ -236,7 +222,6 @@ class Message extends BaseComponent {
   }
 
   renderRowData(rowData) {
-    console.log(rowData);
     return (
       <TouchableOpacity
         key={rowData.SenderId}
@@ -296,17 +281,6 @@ class Message extends BaseComponent {
     return (
       <View style={styles.container}>
         {this.renderListView(ds, this.state.messageList)}
-        <NBButton
-          block
-          style={{
-            height: 40,
-            marginVertical: 30
-          }}
-          onPress={()=> {
-            this.goMessageDetail()
-          }}>
-          测试页面跳转
-        </NBButton>
       </View>
     )
   }

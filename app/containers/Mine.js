@@ -22,6 +22,7 @@ import EditPersonalSignature from '../pages/EditPersonalSignature'
 import UserInfo from '../pages/UserInfo'
 import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
+import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -93,24 +94,43 @@ class Mine extends BaseComponent {
   }
 
   componentWillMount() {
-    this._getUserInfo();
+    this._getCurrentUserInfo();
   }
 
-  _getUserInfo() {
+  componentDidMount() {
+    this.subscription = DeviceEventEmitter.addListener('avatarChanged', this._userAvatarChanged);
+    this.getCurrentUserInfoListener = DeviceEventEmitter.addListener('getCurrentUserInfo', this._updateCurrentUserInfo);
+  }
+
+  componentWillUnmount() {
+    this.subscription.remove();
+    this.getCurrentUserInfoListener.remove();
+  }
+
+  _userAvatarChanged(data) {
+    this.setState({
+      PhotoUrl: data
+    });
+  }
+
+  _updateCurrentUserInfo(data) {
+    this.setState({
+      ...data
+    });
+  }
+
+  _getCurrentUserInfo() {
     this.setState({pending: true});
-    console.log('开始获取用户信息,包含当前用户经纬度');
-    Storage.getItem('userInfo').then(
-      (response)=> {
-        if (response !== null) {
-          console.log(response);
-          this.setState({
-            pending: false,
-            loadUserInfo: true,
-            ...response
-          });
-        }
-      }
-    );
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      this.setState({
+        ...json.Result,
+        pending: false,
+        myLocation: tmpGlobal.currentLocation,
+        loadUserInfo: true,
+      });
+    }, (error)=> {
+    }));
   }
 
   //编辑签名
@@ -121,7 +141,7 @@ class Mine extends BaseComponent {
       params: {
         personalSignature: data,
         callBack: (result)=> {
-          this.setState({PersonSignal:result})
+          this.setState({PersonSignal: result})
         }
       },
     });
@@ -151,7 +171,8 @@ class Mine extends BaseComponent {
         });
       }, (error)=> {
       }))
-    },(error)=>{}));
+    }, (error)=> {
+    }));
   }
 
   //前往设置页
@@ -254,8 +275,8 @@ class Mine extends BaseComponent {
   }
 }
 
-export default connect((state)=>{
-  return{
+export default connect((state)=> {
+  return {
     ...state
   }
 })(Mine)

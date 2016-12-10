@@ -4,6 +4,10 @@
  * @description
  */
 
-let tmpGlobal = {};
+let tmpGlobal = {
+  proxy:null,
+  currentLocation:null,
+  currentUser:null
+};
 
 export default tmpGlobal

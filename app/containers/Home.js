@@ -30,6 +30,7 @@ import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -50,12 +51,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     marginHorizontal: 10,
-    paddingVertical:10
+    paddingVertical: 10
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   cardLeft: {
     flexDirection: 'row',
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   postImage: {
     flexDirection: 'row',
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 5,
     justifyContent: 'flex-start',
-    paddingLeft:10
+    paddingLeft: 10
   },
   cardBtn: {
     marginTop: 10,
@@ -142,33 +143,26 @@ class Home extends BaseComponent {
   }
 
   componentWillMount() {
+    this._getCurrentUserProfile();
+    this._getAnnouncementList();
+  }
+
+  _getAnnouncementList() {
     const {dispatch}=this.props;
     let data = {
       pageSize: this.state.pageSize,
-      pageIndex: this.state.pageIndex
+      pageIndex: this.state.pageIndex,
+      ...tmpGlobal.currentLocation
     };
-    Storage.getItem('currentLocation').then((response)=> {
-      if (response !== null) {
-        data = {
-          ...data,
-          ...response
-        };
-        currentLocation = {
-          ...response
-        };
-        dispatch(HomeActions.getPostList(data, (json)=> {
-          lastCount = json.Result.length;
-          this.setState({
-            postList: json.Result
-          });
-          this._getCurrentUserProfile();
-        }, (error)=> {
-
-        }));
-      }
+    currentLocation = tmpGlobal.currentLocation;
+    dispatch(HomeActions.getPostList(data, (json)=> {
+      lastCount = json.Result.length;
+      this.setState({
+        postList: json.Result
+      });
     }, (error)=> {
-      console.log('读取缓存出错!', error);
-    });
+
+    }));
   }
 
   //处理距离
@@ -185,10 +179,11 @@ class Home extends BaseComponent {
   _getCurrentUserProfile() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      currentUser = {
+      currentUser = tmpGlobal.currentUser = {
         ...json.Result,
         myLocation: currentLocation
       };
+
       Storage.setItem('userInfo', currentUser);
     }, (error)=> {
 
@@ -456,7 +451,7 @@ class Home extends BaseComponent {
         return (
           <Image
             key={index}
-            style={{width: imageWidth, height: imageWidth, marginBottom: 10,marginRight:10}}
+            style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
             source={{uri: URL_DEV + '/' + item}}/>
         )
       })

@@ -24,6 +24,7 @@ import * as VicinityActions from '../actions/Vicinity'
 import {calculateRegion} from '../utils/MapHelpers'
 import Spinner from '../components/Spinner'
 import RNPicker from 'react-native-picker'
+import tmpGlobal from '../utils/TmpVairables'
 
 let lastClickTime = 0;
 let watchId;
@@ -72,10 +73,9 @@ class App extends Component {
 
   loadRegisteredStatus = async()=> {
     try {
-      var value = await Storage.getItem('hasRegistered');
+      let value = await Storage.getItem('hasRegistered');
       if (value !== null) {
         this.setState({hasRegistered: value});
-        //this.getCurrentPosition();
         console.log('已完成注册流程');
       } else {
         console.log('尚未完成注册流程');
@@ -90,10 +90,11 @@ class App extends Component {
     }
   };
 
-  _Alert(){
+  _Alert() {
     Alert.alert('提示', '本APP依赖手机的GPS,请打开手机的GPS后,重新打开本APP', [
       {
-        text: '确定', onPress: () => {}
+        text: '确定', onPress: () => {
+      }
       }
     ]);
   }
@@ -139,7 +140,7 @@ class App extends Component {
       console.log('成功获取当前位置', lastPosition);
 
       const {dispatch}=this.props;
-      const params = {
+      const params = tmpGlobal.currentLocation = {
         Lat: lastPosition.LastLocation.Lat,
         Lng: lastPosition.LastLocation.Lng
       };
@@ -153,7 +154,9 @@ class App extends Component {
           (response)=> {
             if (response != null) {
               console.log('用户已注册,开始向后台发送用户位置信息');
-              dispatch(VicinityActions.saveLocation(params,(json)=>{},(error)=>{}));
+              dispatch(VicinityActions.saveLocation(params, (json)=> {
+              }, (error)=> {
+              }));
             }
           }, (error)=> {
             console.log('读取缓存出错!', error);
@@ -262,9 +265,9 @@ class App extends Component {
       lastClickTime = now;
       toastShort('再按一次退出情缘结');
       return true;
-    } else if(routers[routers.length - 1].name == 'EditPhotos'){
+    } else if (routers[routers.length - 1].name == 'EditPhotos') {
       return true;
-    }else {
+    } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
       RNPicker.isPickerShow((status)=> {
         if (status) RNPicker.hide()

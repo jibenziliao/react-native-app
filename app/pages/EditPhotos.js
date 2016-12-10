@@ -84,7 +84,7 @@ class EditPhotos extends BaseComponent {
   }
 
   componentDidMount(){
-    this.subscription=DeviceEventEmitter.addListener('setAvatar',this._setPrimaryPhoto)
+    this.subscription=DeviceEventEmitter.addListener('avatarChanged',this._setPrimaryPhoto);
   }
 
   componentWillUnmount(){
@@ -193,7 +193,7 @@ class EditPhotos extends BaseComponent {
   _deletePhotoOnline(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.deletePhoto(data, (json)=> {
-      this._initPhotos()
+      this._initPhotos();
     }, (error)=> {
     }));
   }
@@ -232,7 +232,7 @@ class EditPhotos extends BaseComponent {
     dispatch(PhotoActions.setPrimaryPhoto(data, (json)=> {
       this._initPhotos();
     }, (error)=> {
-    }))
+    }));
   }
 
   _renderPhotos(arr) {
