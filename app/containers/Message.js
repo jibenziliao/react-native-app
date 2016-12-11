@@ -144,7 +144,7 @@ class Message extends BaseComponent {
 
   _initWebSocket() {
     connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = true;
+    connection.logging = false;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
 
@@ -166,7 +166,7 @@ class Message extends BaseComponent {
     });
 
     proxy.on('log', (str)=> {
-      console.log(str);
+      //console.log(str);
     });
 
     connection.start().done(() => {
