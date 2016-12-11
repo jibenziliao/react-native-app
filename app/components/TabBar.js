@@ -17,15 +17,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderTopColor: 'gray',
-    ...Platform.select({
-      ios:{
-        height:46
-      },
-      android:{
-        height:50
-      }
-    })
+    height:46
   },
   touchableContainer: {
     flex: 1,
