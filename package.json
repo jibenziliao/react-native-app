@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "bundle": "react-native bundle --platform ios --entry-file index.ios.js --bundle-output bundle/main.ios.jsbundle --assets-dest bundle/ --dev false",
+    "postinstall": "find ./node_modules/react-native \\( -name *.h -o -name *.m \\) -print0 | xargs -0 sed -i '' -e 's:<CSSLayout/\\(.*\\)>:\"\\1\":g'"
   },
   "dependencies": {
     "native-base": "^0.5.13",
