@@ -23,6 +23,7 @@ import UserInfo from '../pages/UserInfo'
 import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
+import Settings from '../pages/Settings'
 
 const styles = StyleSheet.create({
   container: {
@@ -170,7 +171,10 @@ class Mine extends BaseComponent {
 
   //前往设置页
   _goSettings() {
-
+    navigator.push({
+      component:Settings,
+      name:'Settings'
+    })
   }
 
   _renderLocation(data) {
