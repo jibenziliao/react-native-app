@@ -197,7 +197,8 @@ class Login extends BaseComponent {
     };
     const {dispatch} = this.props;
     dispatch(LoginActions.getSmsCode(data, (json)=> {
-      this.initDict()
+      this.initDict();
+      this._startCountdown();
     }, (error)=> {
       //不做特殊处理
     }));
@@ -213,30 +214,27 @@ class Login extends BaseComponent {
     }));
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.hasSendValidCode) {
-      let second = 10;
-      let phone = this.state.phone;
-      let phoneCountry = this.state.phoneCountry;
-      this.setState({
-        validCodeBtnAccessible: false,
-        validCodeText: `剩余${second}秒`,
-        tipsText: `我们已经给你的手机号码+${phoneCountry}-${phone}发送了一条验证短息`
-      });
-
-      this.timer = BackgroundTimer.setInterval(()=> {
-        this.setState({validCodeText: `剩余${second - 1}秒`});
-        second -= 1;
-        if (second === 0) {
-          BackgroundTimer.clearInterval(this.timer);
-          this.setState({
-            validCodeBtnAccessible: true,
-            validCodeText: '获取验证码',
-            tipsText: '使用手机号一键登录'
-          });
-        }
-      }, 1000)
-    }
+  _startCountdown(){
+    let second = 10;
+    let phone = this.state.phone;
+    let phoneCountry = this.state.phoneCountry;
+    this.setState({
+      validCodeBtnAccessible: false,
+      validCodeText: `剩余${second}秒`,
+      tipsText: `我们已经给你的手机号码+${phoneCountry}-${phone}发送了一条验证短息`
+    });
+    this.timer = BackgroundTimer.setInterval(()=> {
+      this.setState({validCodeText: `剩余${second - 1}秒`});
+      second -= 1;
+      if (second === 0) {
+        BackgroundTimer.clearInterval(this.timer);
+        this.setState({
+          validCodeBtnAccessible: true,
+          validCodeText: '获取验证码',
+          tipsText: '使用手机号一键登录'
+        });
+      }
+    }, 1000);
   }
 
   componentWillUnmount() {
