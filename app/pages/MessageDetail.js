@@ -10,17 +10,14 @@ import {
   Text,
   DeviceEventEmitter
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {componentStyles} from '../style'
 import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
-import signalr from 'react-native-signalr'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
-import CookieManager from 'react-native-cookies'
 import * as Storage from '../utils/Storage'
 import temGlobal from '../utils/TmpVairables'
+import {strToDateTime} from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -44,15 +41,14 @@ class MessageDetail extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      messages:[],
+      messages: [],
       loadEarlier: false,//关闭加载历史记录功能
-      destroyed:false,
+      destroyed: false,
       typingText: null,
       isLoadingEarlier: false,
       ...this.props.route.params
     };
 
-    this._isMounted = false;
     this.onSend = this.onSend.bind(this);
     this.onReceive = this.onReceive.bind(this);
     this.renderCustomActions = this.renderCustomActions.bind(this);
@@ -62,234 +58,203 @@ class MessageDetail extends BaseComponent {
 
   }
 
-  _getCookie() {
-    CookieManager.get(URL_DEV, (err, res) => {
-      console.log('Got cookies for url', res);
-      cookie = res.rkt;
-      this._initWebSocket();
-    });
-  }
-
   _initOldMessage() {
-    Storage.getItem(`${this.state.myUserId}_ChatWith_${this.state.UserId}`).then((res)=> {
+    Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
       if (res !== null) {
-        this.setState({messages: res});
+        let tmpArr=this._getChatRecord(res);
+        console.log(tmpArr);
+        this.setState({
+          messages: [].concat(this._getChatRecord(res).MsgList)
+        })
       } else {
-        console.log('没有历史聊天记录');
+        console.log(res,this.state.myUserId);
+        console.log('没有聊天记录');
       }
     });
   }
 
-  componentWillMount() {
-    this._initOldMessage();
-    //this._getCookie();
-    this._isMounted = true;
-    /*this.setState(() => {
-     return {
-     messages: require('../data/messages'),
-     };
-     });*/
-
-    /*    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
-     connection.logging = true;
-     console.log(connection);
-     proxy = connection.createHubProxy('ChatCore');
-
-     //receives broadcast messages from a hub function, called "messageFromServer"
-     proxy.on('messageFromServer', (message) => {
-     console.log(message);
-
-     //Respond to message, invoke messageToServer on server with arg 'hej'
-     // let messagePromise =
-     //message-status-handling
-     messagePromise.done(() => {
-     console.log('Invocation of NewContosoChatMessage succeeded');
-     }).fail(function (error) {
-     console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
-     });
-     });
-
-     proxy.on('log',(str)=>{
-     console.log(str);
-     });
-
-     proxy.on('sayHey', (message) => {
-     console.log(message);
-     });
-
-     // atempt connection, and handle errors
-     connection.start().done(() => {
-     proxy.invoke('login', '1|Test');
-     console.log('Now connected, connection ID=' + connection.id);
-     }).fail(() => {
-     console.log('Failed');
-     });
-
-     //connection-handling
-     connection.connectionSlow(function () {
-     console.log('We are currently experiencing difficulties with the connection.')
-     });
-
-     connection.error(function (error) {
-     console.log('SignalR error: ' + error)
-     });
-
-     proxy.on('getNewMsg', (text) => {
-     console.log(text);
-     console.log(text[0]['MsgList'][0]['MsgContent']);
-     this.onReceive(text[0]['MsgList'][0]['MsgContent']);
-     });*/
-
-    this._getNewMsg();
-
+  //从缓存中找出当前用户与聊天对象用户之间的聊天记录
+  _getChatRecord(data) {
+    let tmpArr = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].SenderId === this.state.UserId) {
+        tmpArr.push(data[i]);
+      }
+    }
+    return tmpArr[0];
   }
 
-  _getNewMsg(){
+  componentDidMount() {
+    this._initOldMessage();
+    this._getNewMsg();
+  }
+
+  _getNewMsg() {
     temGlobal.proxy.on('getNewMsg', (obj) => {
       console.log(obj);
+      let objCopy = {...obj};
+      console.log(objCopy);
       console.log('2@@@收到了新消息');
-      let resMsg = this._getSingleMsg(obj, this.state.UserId);
-      if (resMsg.length > 0 && !this.state.destroyed) {
-        this.onReceive(this._getSingleMsg(obj, this.state.UserId)[0].MsgContent);
+      //离开此页面后,不在此页面缓存消息
+      if(!this.state.destroyed){
+        this._receiveSaveRecord(obj.MsgPackage);
+      }
+      let resMsg = this._getSingleMsg(objCopy, this.state.UserId);
+      //页面销毁后,不在此页面接收消息(如果对方在极短的时间内发了多条,就循环接收)
+      if (resMsg.MsgList.length > 0 && !this.state.destroyed) {
+        for (let i = 0; i < resMsg.length; i++) {
+          this.onReceive(resMsg.MsgList[i]);
+        }
       }
     });
   }
 
-  _initWebSocket() {
-    connection = signalr.hubConnection('http://nrb-stage.azurewebsites.net/chat/signalr/hubs');
-    connection.logging = true;
-    console.log(connection);
-    proxy = connection.createHubProxy('ChatCore');
-
-    proxy.on('messageFromServer', (message) => {
-      console.log('只是服务器返回的数据',message);
-
-      //Respond to message, invoke messageToServer on server with arg 'hej'
-      // let messagePromise =
-      //message-status-handling
-      messagePromise.done(() => {
-        console.log('Invocation of NewContosoChatMessage succeeded');
-      }).fail(function (error) {
-        console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
-      });
-    });
-
-    proxy.on('sayHey', (message) => {
-      console.log(message);
-    });
-
-    proxy.on('log', (str)=> {
-      console.log(str);
-    });
-
-    /*connection.start().done(() => {
-      proxy.invoke('login', cookie);
-      console.log('Now connected, connection ID=' + connection.id);
-    }).fail(() => {
-      console.warn('WS连接开启失败');
-    });*/
-
-    this._socketLogin();
-
-    connection.connectionSlow(function () {
-      console.log('We are currently experiencing difficulties with the connection.')
-    });
-
-    connection.error(function (error) {
-      console.log('SignalR error: ' + error)
-    });
-
-    proxy.on('getNewMsg', (obj) => {
-      console.log(obj);
-      console.log('收到了新消息');
-      let resMsg = this._getSingleMsg(obj, this.state.UserId);
-      if (resMsg.length > 0 && !this.state.destroyed) {
-        this.onReceive(this._getSingleMsg(obj, this.state.UserId)[0].MsgContent);
-      }
-    });
-
-  }
-
-  _socketLogin(){
-    connection.start().done(() => {
-      proxy.invoke('login', cookie);
-      console.log('Now connected, connection ID=' + connection.id);
-    }).fail(() => {
-      console.warn('WS连接开启失败');
-      this._socketLogin();
-    });
-  }
-
+  //从服务器返回的消息列表中筛选出与当前用户聊天的对象的消息
   _getSingleMsg(obj, id) {
-    let newMsgList = [];
-    newMsgList = newMsgList.concat(obj.MsgPackage);
-    let SingleMsg = [];
+    let newMsgList = [...obj.MsgPackage];
+    for (let i = 0; i < newMsgList.length; i++) {
+      for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
+        newMsgList[i].MsgList[j] = {
+          ...newMsgList[i].MsgList[j],
+          _id: Math.round(Math.random() * 1000000),
+          text: newMsgList[i].MsgList[j].MsgContent,
+          createdAt: this._handleSendDate(newMsgList[i].MsgList[j].SendTime),
+          user: {
+            _id: newMsgList[i].SenderId,
+            name: newMsgList[i].SenderNickname,
+            avatar: newMsgList[i].SenderAvatar,
+            myUserId: this.state.myUserId
+          }
+        };
+      }
+    }
+
+    let SingleMsg = {};
     for (let i = 0; i < newMsgList.length; i++) {
       if (id === newMsgList[i].SenderId) {
-        SingleMsg = newMsgList[i].MsgList;
+        SingleMsg = newMsgList[i];
+        break;
       }
     }
     return SingleMsg;
   }
 
-  componentDidUpdate() {
-    this._saveMsgRecord();
-  }
-
-  //TODO: 缓存聊天记录方法需与消息列表保持一致,这里待调整(缓存整体消息)
-  _saveMsgRecord() {
-    Storage.setItem(`${this.state.myUserId}_ChatWith_${this.state.UserId}`, this.state.messages);
-  }
-
-  //页面销毁之前,保存聊天记录
-  componentWillUnmount() {
-    this.state.destroyed=true;
-    this._isMounted = false;
-  }
-
-  //TODO: 加载历史记录
-  onLoadEarlier() {
-    this.setState((previousState) => {
-      return {
-        isLoadingEarlier: true,
-      };
-    });
-
-    setTimeout(() => {
-      if (this._isMounted === true) {
-        this.setState((previousState) => {
-          return {
-            messages: GiftedChat.prepend(previousState.messages, require('../data/old_messages.js')),
-            loadEarlier: false,
-            isLoadingEarlier: false,
-          };
-        });
+  //接收时缓存
+  _receiveSaveRecord(data){
+    let newMsgList = [];
+    let dataCopy=[];
+    newMsgList = newMsgList.concat(data);
+    for (let i = 0; i < newMsgList.length; i++) {
+      for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
+        newMsgList[i].MsgList[j] = {
+          ...newMsgList[i].MsgList[j],
+          _id: Math.round(Math.random() * 1000000),
+          text: newMsgList[i].MsgList[j].MsgContent,
+          createdAt: this._handleSendDate(newMsgList[i].MsgList[j].SendTime),
+          user: {
+            _id: newMsgList[i].SenderId,
+            name: newMsgList[i].SenderNickname,
+            avatar: newMsgList[i].SenderAvatar,
+            myUserId: this.state.myUserId
+          }
+        };
       }
-    }, 1000); // simulating network
+    }
+    dataCopy=[...newMsgList];
+    Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
+      if (res !== null && res.length > 0) {
+        for (let i = 0; i < res.length; i++) {
+          for (let j = 0; j < data.length; j++) {
+            if (res[i].SenderId === data[j].SenderId) {
+              res[i].MsgList=res[i].MsgList.concat(data[j].MsgList);
+              newMsgList.splice(j, 1);
+            }
+          }
+        }
+        res=res.concat(newMsgList);
+        Storage.setItem(`${this.state.myUserId}_MsgList`,res);
+      }else{
+        //没有历史记录,且服务器第一次推送消息
+        Storage.setItem(`${this.state.myUserId}_MsgList`, dataCopy);
+      }
+    });
   }
 
-  onSend(messages = []) {
+  //发送时缓存
+  _sendSaveRecord(data) {
+    Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
+      if (res !== null && res.length > 0) {
+        let index=res.findIndex((item)=>{
+          return item.SenderId===this.state.UserId
+        });
+        res[index].MsgList.push(data);
+        Storage.setItem(`${this.state.myUserId}_MsgList`, res);
+      }else{
+        //没有历史记录,且服务器没有推送任何消息
+        let allMsg = [{
+          SenderAvatar: this.state.UserAvatar,
+          SenderId: this.state.UserId,
+          SenderNickname: this.state.Nickname,
+          MsgList: [data]
+        }];
+        Storage.setItem(`${this.state.myUserId}_MsgList`, allMsg);
+      }
+    });
+  }
+
+  //页面销毁之前,切换销毁开关,离开此页面后,不再接收消息
+  componentWillUnmount() {
+    this.state.destroyed = true;
+  }
+
+  onLoadEarlier() {
+    console.log('点击了加载历史记录');
+  }
+
+  //发消息的同时,将消息缓存在本地
+  onSend(messages) {
+    let singleMsg = {
+      HasSend: true,
+      _id: Math.round(Math.random() * 1000000),
+      text: messages[0].text,
+      createdAt: messages[0].createdAt,
+      user: {
+        _id: this.state.myUserId,
+        name: null,//当前用户不需要显示名字
+        avatar: null//当前用户不需要显示头像
+      },
+    };
+
+    this._sendSaveRecord(singleMsg);
+
     this.setState((previousState) => {
       return {
-        messages: GiftedChat.append(previousState.messages, messages),
+        messages: GiftedChat.append(previousState.messages, singleMsg),
       };
     });
 
     temGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
-
   }
 
-  onReceive(text) {
+  //2016-12-12T20:08:27.723355+11:00
+  _handleSendDate(str) {
+    let newStr = str.split('T')[0] + ' ' + str.split('T')[1].split('.')[0];
+    return strToDateTime(newStr);
+  }
+
+  onReceive(data) {
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, {
-          _id: Math.round(Math.random() * 1000000),
-          text: text,
-          createdAt: new Date(),
+          ...data,
+          HasSend: true,
+          _id: data._id,
+          text: data.text,
+          createdAt: data.createdAt,
           user: {
-            _id: this.state.UserId,
-            name: this.state.Nickname,
-            avatar: this.state.UserAvatar
+            _id: data.user._id,
+            name: data.user.name,
+            avatar: data.user.avatar
           },
         }),
       };

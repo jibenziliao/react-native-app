@@ -17,17 +17,13 @@ import {
   Dimensions,
   DeviceEventEmitter
 } from 'react-native'
-import {getNavigator} from '../navigation/Route'
 import BaseComponent from '../base/BaseComponent'
-import {Button as NBButton} from 'native-base'
 import {connect} from 'react-redux'
 import MessageDetail from '../pages/MessageDetail'
-import {componentStyles} from '../style'
 import signalr from 'react-native-signalr'
 import * as Storage from '../utils/Storage'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
-import Spinner from '../components/Spinner'
 import temGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
 import {strToDateTime} from '../utils/DateUtil'
@@ -92,7 +88,6 @@ let connection;
 let proxy;
 let cookie;
 let LastMsgId = null;
-let newSingleMsg = null;
 
 const {height, width} = Dimensions.get('window');
 
@@ -102,7 +97,6 @@ class Message extends BaseComponent {
     super(props);
     this.state = {
       messageList: [],
-      loading: false,
       currentUser: null
     };
     navigator = this.props.navigator;
@@ -115,13 +109,8 @@ class Message extends BaseComponent {
     };
   }
 
-  componentWillMount() {
-    this.setState({loading: false});
-    this._getCurrentUserInfo();
-  }
-
   componentDidMount() {
-
+    this._getCurrentUserInfo();
   }
 
   componentWillUnmount() {
@@ -130,14 +119,35 @@ class Message extends BaseComponent {
 
   //每次收到新的消息,缓存消息列表
   _cacheMessageList(data) {
+    for (let i = 0; i < data.length; i++) {
+      for (let j = 0; j < data[i].MsgList.length; j++) {
+        data[i].MsgList[j] = {
+          ...data[i].MsgList[j],
+          _id: Math.round(Math.random() * 1000000),
+          text: data[i].MsgList[j].MsgContent,
+          createdAt: this._handleSendDate(data[i].MsgList[j].SendTime),
+          user: {
+            _id: data[i].SenderId,
+            name: data[i].SenderNickname,
+            avatar: data[i].SenderAvatar
+          }
+        };
+      }
+    }
     Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, data);
   }
 
-  //消息标为已读(更改本地状态,同时webSocket请求标为已读)
-  _markAsRead(LastMsgId, SenderId) {
-
-    //标记成功后,需要把已读状态更新到缓存中
-    this._updateMsgReadState(SenderId);
+  //消息标为已读(更改本地状态)
+  _markAsRead(SenderId) {
+    let index = this.state.messageList.findIndex((item)=> {
+      return item.SenderId === SenderId;
+    });
+    for (let j = 0; j < this.state.messageList[index].MsgList.length; j++) {
+      this.state.messageList[index].MsgList[j].HasSend = true;
+    }
+    this.setState({
+      messageList: this.state.messageList
+    });
   }
 
   _getCurrentUserInfo() {
@@ -163,7 +173,9 @@ class Message extends BaseComponent {
       console.log('Got cookies for url', res);
       //rkt为当前cookie的key
       cookie = res.rkt;
-      this._initWebSocket();
+      if (temGlobal.proxy === null) {
+        this._initWebSocket();
+      }
     })
   }
 
@@ -213,7 +225,11 @@ class Message extends BaseComponent {
       console.log(obj);
       console.log('1###收到了新消息');
       LastMsgId = obj.LastMsgId;
-      this._margeMessage(obj);
+      let routes = navigator.getCurrentRoutes();
+      //Message和MessageDetail页面的obj联动(proxy的原因),当前页面不是Message时,此页面停止marge
+      if(routes[routes.length-1]=='MainContainer'){
+        this._margeMessage(obj);
+      }
     });
   }
 
@@ -221,31 +237,36 @@ class Message extends BaseComponent {
   _margeMessage(obj) {
     let newMsgList = [];
     newMsgList = newMsgList.concat(obj.MsgPackage);
+    for (let i = 0; i < newMsgList.length; i++) {
+      for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
+        newMsgList[i].MsgList[j] = {
+          ...newMsgList[i].MsgList[j],
+          _id: Math.round(Math.random() * 1000000),
+          text: newMsgList[i].MsgList[j].MsgContent,
+          createdAt: this._handleSendDate(newMsgList[i].MsgList[j].SendTime),
+          user: {
+            _id: newMsgList[i].SenderId,
+            name: newMsgList[i].SenderNickname,
+            avatar: newMsgList[i].SenderAvatar,
+            myUserId: this.state.currentUser.UserId
+          }
+        };
+      }
+    }
+
     for (let i = 0; i < this.state.messageList.length; i++) {
       for (let j = 0; j < obj.MsgPackage.length; j++) {
         if (this.state.messageList[i].SenderId === obj.MsgPackage[j].SenderId) {
-          this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(obj.MsgPackage[j].MsgList);
+          this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(newMsgList[j].MsgList);
           newMsgList.splice(j, 1);
         }
       }
     }
+    //剩下的新消息不和已存在的对话合并,单独占一(多)行
     this.state.messageList = this.state.messageList.concat(newMsgList);
     this.setState({
-      loading: false,
       messageList: this.state.messageList
     });
-
-  }
-
-  //找出指定用户当前没有读过的消息
-  _handleSingleUnReadMsg(rowData) {
-    let tmpArr = [];
-    for (let i = 0; i < rowData.MsgList.length; i++) {
-      if (rowData.MsgList[i].HasSend === false) {
-        tmpArr.push(rowData.MsgList[i]);
-      }
-    }
-    return tmpArr;
   }
 
   //2016-12-12T20:08:27.723355+11:00
@@ -254,29 +275,9 @@ class Message extends BaseComponent {
     return strToDateTime(newStr);
   }
 
-  //处理聊天界面需要接受的消息
-  _handleSingleMsg(rowData) {
-    let messages = [];
-    let tmpArr = this._handleSingleUnReadMsg(rowData);
-    for (let i = 0; i < tmpArr.length; i++) {
-      let tmpObj = {
-        _id: Math.round(Math.random() * 1000000),
-        text: tmpArr[i].MsgContent,
-        createdAt: this._handleSendDate(tmpArr[i].SendTime),
-        user: {
-          _id: rowData.SenderId,
-          name: rowData.SenderNickname,
-          avatar: rowData.SenderAvatar
-        },
-      };
-      messages.push(tmpObj);
-    }
-    return messages;
-  }
-
   //如果在消息列表界面收到新消息,点击进入聊天界面,聊天界面需要从缓存中加载历史聊天记录
   _goChat(rowData) {
-    this._markAsRead(LastMsgId, rowData.SenderId);
+    this._markAsRead(rowData.SenderId);
     //去聊天
     navigator.push({
       component: MessageDetail,
@@ -285,30 +286,21 @@ class Message extends BaseComponent {
         UserId: rowData.SenderId,
         Nickname: rowData.SenderNickname,
         UserAvatar: URL_DEV + rowData.SenderAvatar,
-        myUserId: this.state.currentUser.UserId
+        myUserId:this.state.currentUser.UserId
       }
     })
   }
 
-  //点击消息之后,需要把与此用户相关的所有消息标为已读
-  _updateMsgReadState(id) {
-    let index = this.state.messageList.findIndex((item)=> {
-      return item.SenderId === id;
-    });
-    for (let j = 0; j < this.state.messageList[index].MsgList.length; j++) {
-      this.state.messageList[index].MsgList[j].HasSend = true;
-    }
-    this.setState({
-      messageList: this.state.messageList
-    });
-  }
-
   componentDidUpdate() {
+    let routes = navigator.getCurrentRoutes();
+    console.log(routes);
     if (LastMsgId) {
       proxy.invoke('userReadMsg', LastMsgId);
       console.log('成功标为已读');
     }
-    if (this.state.currentUser) {
+    if (this.state.currentUser && routes[routes.length - 1].name == 'MainContainer') {
+      console.log('Message页面数据有更新');
+      console.log(this.state.messageList);
       this._cacheMessageList(this.state.messageList);
     }
   }
@@ -337,6 +329,17 @@ class Message extends BaseComponent {
     }
   }
 
+  //渲染对象用户最新的一条消息(一个rowData.MsgList中包含了对方与自己的聊天信息,这里需显示对方的最新一条聊天)
+  _renderLastMsgContent(rowData) {
+    let content = [];
+    for (let i = 0; i < rowData.MsgList.length; i++) {
+      if (rowData.MsgList[i].user._id === rowData.SenderId) {
+        content.push(rowData.MsgList[i].text);
+      }
+    }
+    return content[content.length-1];
+  }
+
   renderRowData(rowData) {
     return (
       <TouchableOpacity
@@ -359,7 +362,7 @@ class Message extends BaseComponent {
           </View>
           <View style={styles.cardRow}>
             <Text style={styles.cardText}>
-              {rowData.MsgList[rowData.MsgList.length - 1].MsgContent}
+              {this._renderLastMsgContent(rowData)}
             </Text>
             {this._renderUnReadCount(rowData.MsgList)}
           </View>
@@ -400,15 +403,6 @@ class Message extends BaseComponent {
       </View>
     )
   }
-
-  renderSpinner() {
-    if (this.state.loading) {
-      return (
-        <Spinner animating={this.state.loading}/>
-      )
-    }
-  }
-
 }
 
 export default connect((state)=> {
