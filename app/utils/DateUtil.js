@@ -46,3 +46,12 @@ export function dateMath(date, value, type) {
   date["set" + fn[type]](date["get" + fn[type]]() + value);
   return date;
 }
+
+/**
+ * 字符串转日期
+ * @param {String} data 2016-12-12 20:08:27
+ * @returns {Date}
+ */
+export function strToDateTime(data) {
+  return new Date(data.replace(/-/g,"/"));
+}

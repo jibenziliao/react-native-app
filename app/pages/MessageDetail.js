@@ -44,7 +44,7 @@ class MessageDetail extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [],
+      messages:[],
       loadEarlier: false,//关闭加载历史记录功能
       destroyed:false,
       typingText: null,
@@ -232,25 +232,11 @@ class MessageDetail extends BaseComponent {
     return SingleMsg;
   }
 
-  componentDidMount() {
-    let arr = [
-      {
-        userData: {
-          userId: 1,
-          userName: 'abc',
-          msgContent: '124ewafdsfa',
-          time: '',
-          userAvatar: ''
-        }
-      },
-      {}
-    ];
-  }
-
   componentDidUpdate() {
     this._saveMsgRecord();
   }
 
+  //TODO: 缓存聊天记录方法需与消息列表保持一致,这里待调整(缓存整体消息)
   _saveMsgRecord() {
     Storage.setItem(`${this.state.myUserId}_ChatWith_${this.state.UserId}`, this.state.messages);
   }

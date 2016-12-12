@@ -30,6 +30,7 @@ import CookieManager from 'react-native-cookies'
 import Spinner from '../components/Spinner'
 import temGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
+import {strToDateTime} from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   container: {
@@ -51,7 +52,9 @@ const styles = StyleSheet.create({
   },
   avatar: {
     width: 60,
-    height: 60
+    height: 60,
+    borderRadius: 4,
+    marginRight: 10
   },
   cardContent: {
     flex: 1,
@@ -75,13 +78,12 @@ const styles = StyleSheet.create({
   badgeText: {
     color: '#fff'
   },
-  tips:{
-    flexDirection:'row',
-    flex:1,
-    margin:40
+  tips: {
+    flexDirection: 'row',
+    margin: 40
   },
-  tipsText:{
-    fontSize:20
+  tipsText: {
+    fontSize: 20
   }
 });
 
@@ -89,6 +91,8 @@ let navigator;
 let connection;
 let proxy;
 let cookie;
+let LastMsgId = null;
+let newSingleMsg = null;
 
 const {height, width} = Dimensions.get('window');
 
@@ -124,10 +128,31 @@ class Message extends BaseComponent {
 
   }
 
+  //每次收到新的消息,缓存消息列表
+  _cacheMessageList(data) {
+    Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, data);
+  }
+
+  //消息标为已读(更改本地状态,同时webSocket请求标为已读)
+  _markAsRead(LastMsgId, SenderId) {
+
+    //标记成功后,需要把已读状态更新到缓存中
+    this._updateMsgReadState(SenderId);
+  }
+
   _getCurrentUserInfo() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      this.setState({currentUser: json.Result});
+      Storage.getItem(`${json.Result.UserId}_MsgList`).then((res)=> {
+        if (res !== null) {
+          this.setState({
+            messageList: res
+          });
+        }
+      });
+      this.setState({
+        currentUser: json.Result,
+      });
       this._getCookie();
     }, (error)=> {
     }));
@@ -187,6 +212,7 @@ class Message extends BaseComponent {
     proxy.on('getNewMsg', (obj) => {
       console.log(obj);
       console.log('1###收到了新消息');
+      LastMsgId = obj.LastMsgId;
       this._margeMessage(obj);
     });
   }
@@ -211,7 +237,46 @@ class Message extends BaseComponent {
 
   }
 
+  //找出指定用户当前没有读过的消息
+  _handleSingleUnReadMsg(rowData) {
+    let tmpArr = [];
+    for (let i = 0; i < rowData.MsgList.length; i++) {
+      if (rowData.MsgList[i].HasSend === false) {
+        tmpArr.push(rowData.MsgList[i]);
+      }
+    }
+    return tmpArr;
+  }
+
+  //2016-12-12T20:08:27.723355+11:00
+  _handleSendDate(str) {
+    let newStr = str.split('T')[0] + ' ' + str.split('T')[1].split('.')[0];
+    return strToDateTime(newStr);
+  }
+
+  //处理聊天界面需要接受的消息
+  _handleSingleMsg(rowData) {
+    let messages = [];
+    let tmpArr = this._handleSingleUnReadMsg(rowData);
+    for (let i = 0; i < tmpArr.length; i++) {
+      let tmpObj = {
+        _id: Math.round(Math.random() * 1000000),
+        text: tmpArr[i].MsgContent,
+        createdAt: this._handleSendDate(tmpArr[i].SendTime),
+        user: {
+          _id: rowData.SenderId,
+          name: rowData.SenderNickname,
+          avatar: rowData.SenderAvatar
+        },
+      };
+      messages.push(tmpObj);
+    }
+    return messages;
+  }
+
+  //如果在消息列表界面收到新消息,点击进入聊天界面,聊天界面需要从缓存中加载历史聊天记录
   _goChat(rowData) {
+    this._markAsRead(LastMsgId, rowData.SenderId);
     //去聊天
     navigator.push({
       component: MessageDetail,
@@ -225,8 +290,51 @@ class Message extends BaseComponent {
     })
   }
 
+  //点击消息之后,需要把与此用户相关的所有消息标为已读
+  _updateMsgReadState(id) {
+    let index = this.state.messageList.findIndex((item)=> {
+      return item.SenderId === id;
+    });
+    for (let j = 0; j < this.state.messageList[index].MsgList.length; j++) {
+      this.state.messageList[index].MsgList[j].HasSend = true;
+    }
+    this.setState({
+      messageList: this.state.messageList
+    });
+  }
+
+  componentDidUpdate() {
+    if (LastMsgId) {
+      proxy.invoke('userReadMsg', LastMsgId);
+      console.log('成功标为已读');
+    }
+    if (this.state.currentUser) {
+      this._cacheMessageList(this.state.messageList);
+    }
+  }
+
   _renderMsgTime(str) {
     return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
+  }
+
+  _renderUnReadCount(data) {
+    let tmpArr = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].HasSend === false) {
+        tmpArr.push(i);
+      }
+    }
+    if (tmpArr.length > 0) {
+      return (
+        <View style={styles.badge}>
+          <Text style={[styles.cardText, styles.badgeText]}>
+            {tmpArr.length}
+          </Text>
+        </View>
+      )
+    } else {
+      return null;
+    }
   }
 
   renderRowData(rowData) {
@@ -253,11 +361,7 @@ class Message extends BaseComponent {
             <Text style={styles.cardText}>
               {rowData.MsgList[rowData.MsgList.length - 1].MsgContent}
             </Text>
-            <View style={styles.badge}>
-              <Text style={[styles.cardText, styles.badgeText]}>
-                {rowData.MsgList.length}
-              </Text>
-            </View>
+            {this._renderUnReadCount(rowData.MsgList)}
           </View>
         </View>
       </TouchableOpacity>
@@ -265,7 +369,7 @@ class Message extends BaseComponent {
   }
 
   renderListView(ds, messageList) {
-    if (messageList) {
+    if (messageList.length > 0) {
       return (
         <ListView
           style={styles.listView}
