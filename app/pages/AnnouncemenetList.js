@@ -140,12 +140,7 @@ class AnnouncementList extends BaseComponent{
 
   //处理距离
   _distance(data) {
-    data = data + '';
-    if (data.indexOf('.') > -1 && data.length - 3 > data.indexOf(".")) {
-      return data.substr(0, data.indexOf(".") + 3);
-    } else {
-      return data
-    }
+    return (parseFloat(data)/1000).toFixed(2);
   }
 
   _toEnd() {
