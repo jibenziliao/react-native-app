@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   DeviceEventEmitter,
+  TouchableOpacity
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -30,6 +31,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#aaa',
   },
+  container: {
+    height: 44,
+    justifyContent: 'flex-end',
+  },
+  text: {
+    color: '#0084ff',
+    fontWeight: '600',
+    fontSize: 17,
+    backgroundColor: 'transparent',
+    marginBottom: 12,
+    marginLeft: 10,
+    marginRight: 10,
+  },
 });
 
 class MessageDetail extends BaseComponent {
@@ -40,7 +54,7 @@ class MessageDetail extends BaseComponent {
       messages: [],
       loadEarlier: false,//关闭加载历史记录功能
       destroyed: true,
-      typingText: null,
+      typingText: '',
       isLoadingEarlier: false,
       ...this.props.route.params
     };
@@ -51,6 +65,7 @@ class MessageDetail extends BaseComponent {
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
+    this.renderSend=this.renderSend.bind(this);
   }
 
   _initOldMessage() {
@@ -361,6 +376,22 @@ class MessageDetail extends BaseComponent {
     return null;
   }
 
+  renderSend(props){
+    if (props.text.trim().length > 0) {
+      return (
+        <TouchableOpacity
+          style={[styles.container, this.props.containerStyle]}
+          onPress={() => {
+            props.onSend({text: props.text.trim()}, true);
+          }}
+        >
+          <Text style={[styles.text, props.textStyle]}>{props.label}</Text>
+        </TouchableOpacity>
+      );
+    }
+    return <View/>;
+  }
+
   getNavigationBarProps() {
     return {
       title: `${this.state.Nickname}`
@@ -378,14 +409,22 @@ class MessageDetail extends BaseComponent {
         user={{
           _id: this.state.myUserId, // sent messages should have same user._id
         }}
+        locale={'zh-CN'}
+        label={'发送'}
+        placeholder={'输入消息内容'}
         renderActions={this.renderCustomActions}
         renderBubble={this.renderBubble}
         renderCustomView={this.renderCustomView}
         renderFooter={this.renderFooter}
+        renderSend={this.renderSend}
       />
     )
   }
 
 }
+
+MessageDetail.childContextTypes = {
+  getLocale: React.PropTypes.string.isRequired
+};
 
 export default MessageDetail

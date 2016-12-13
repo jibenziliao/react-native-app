@@ -243,8 +243,8 @@ class Message extends BaseComponent {
     });
 
     const _start = ()=> {
-      connection.start().done(() => {
-        proxy.invoke('login', cookie);
+      temGlobal.connection.start().done(() => {
+        temGlobal.proxy.invoke('login', cookie);
         console.log('Now connected, connection ID=' + connection.id);
       }).fail(() => {
         console.log('Failed');
