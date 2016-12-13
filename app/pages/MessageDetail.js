@@ -8,7 +8,7 @@ import {
   View,
   StyleSheet,
   Text,
-  DeviceEventEmitter
+  DeviceEventEmitter,
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -17,7 +17,7 @@ import CustomView from '../components/CustomView'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import temGlobal from '../utils/TmpVairables'
-import {strToDateTime} from '../utils/DateUtil'
+import {strToDateTime, dateFormat} from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -32,10 +32,6 @@ const styles = StyleSheet.create({
   },
 });
 
-let connection;
-let proxy;
-let cookie;
-
 class MessageDetail extends BaseComponent {
 
   constructor(props) {
@@ -43,7 +39,7 @@ class MessageDetail extends BaseComponent {
     this.state = {
       messages: [],
       loadEarlier: false,//关闭加载历史记录功能
-      destroyed: false,
+      destroyed: true,
       typingText: null,
       isLoadingEarlier: false,
       ...this.props.route.params
@@ -55,20 +51,23 @@ class MessageDetail extends BaseComponent {
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
-
   }
 
   _initOldMessage() {
     Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
       if (res !== null) {
-        let tmpArr=this._getChatRecord(res);
+        console.log('MessageDetail加载缓存', res);
+        let tmpArr = this._getChatRecord(res);
         console.log(tmpArr);
         this.setState({
-          messages: [].concat(this._getChatRecord(res).MsgList)
-        })
+          messages: [].concat(this._getChatRecord(res).MsgList.reverse())
+        }, ()=> {
+          this._getNewMsg();
+        });
       } else {
-        console.log(res,this.state.myUserId);
+        console.log(res, this.state.myUserId);
         console.log('没有聊天记录');
+        this._getNewMsg();
       }
     });
   }
@@ -85,24 +84,28 @@ class MessageDetail extends BaseComponent {
   }
 
   componentDidMount() {
-    this._initOldMessage();
-    this._getNewMsg();
+    this.setState({
+      destroyed: false
+    }, ()=> {
+      this._initOldMessage();
+    });
   }
 
   _getNewMsg() {
     temGlobal.proxy.on('getNewMsg', (obj) => {
-      console.log(obj);
-      let objCopy = {...obj};
-      console.log(objCopy);
-      console.log('2@@@收到了新消息');
-      //离开此页面后,不在此页面缓存消息
-      if(!this.state.destroyed){
-        this._receiveSaveRecord(obj.MsgPackage);
+      //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
+      if (!this.state.destroyed) {
+        temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+        console.log('MessageDetail页面成功标为已读');
+        console.log('MessageDetail页面开始缓存消息');
+        this._receiveSaveRecord(JSON.parse(JSON.stringify(obj.MsgPackage)));
       }
-      let resMsg = this._getSingleMsg(objCopy, this.state.UserId);
-      //页面销毁后,不在此页面接收消息(如果对方在极短的时间内发了多条,就循环接收)
+      let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(obj.MsgPackage)), this.state.UserId);
+      //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
       if (resMsg.MsgList.length > 0 && !this.state.destroyed) {
-        for (let i = 0; i < resMsg.length; i++) {
+        console.log(obj);
+        console.log('MessageDetail页面收到了新消息');
+        for (let i = 0; i < resMsg.MsgList.length; i++) {
           this.onReceive(resMsg.MsgList[i]);
         }
       }
@@ -110,15 +113,18 @@ class MessageDetail extends BaseComponent {
   }
 
   //从服务器返回的消息列表中筛选出与当前用户聊天的对象的消息
-  _getSingleMsg(obj, id) {
-    let newMsgList = [...obj.MsgPackage];
+  _getSingleMsg(data, id) {
+    let newMsgList = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newMsgList.length; i++) {
       for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
         newMsgList[i].MsgList[j] = {
-          ...newMsgList[i].MsgList[j],
+          HasSend: true,
+          MsgContent: newMsgList[i].MsgList[j].MsgContent,
+          MsgId: newMsgList[i].MsgList[j].MsgId,
+          SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
           text: newMsgList[i].MsgList[j].MsgContent,
-          createdAt: this._handleSendDate(newMsgList[i].MsgList[j].SendTime),
+          createdAt: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           user: {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
@@ -136,21 +142,34 @@ class MessageDetail extends BaseComponent {
         break;
       }
     }
+    console.log(SingleMsg);
     return SingleMsg;
   }
 
-  //接收时缓存
-  _receiveSaveRecord(data){
+  _renderMsgTime(str) {
+    if(str.indexOf('T')>-1){
+      return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
+    }else{
+      return str;
+    }
+  }
+
+  //接收时缓存(同时需要发布缓存成功的订阅,供Message页面监听)
+  _receiveSaveRecord(data) {
+    console.log('这是从服务器返回的消息',data);
     let newMsgList = [];
-    let dataCopy=[];
-    newMsgList = newMsgList.concat(data);
+    let dataCopy = [];
+    newMsgList = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newMsgList.length; i++) {
       for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
         newMsgList[i].MsgList[j] = {
-          ...newMsgList[i].MsgList[j],
+          MsgContent: newMsgList[i].MsgList[j].MsgContent,
+          MsgId: newMsgList[i].MsgList[j].MsgId,
+          HasSend: true,
+          SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
           text: newMsgList[i].MsgList[j].MsgContent,
-          createdAt: this._handleSendDate(newMsgList[i].MsgList[j].SendTime),
+          createdAt: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           user: {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
@@ -160,36 +179,45 @@ class MessageDetail extends BaseComponent {
         };
       }
     }
-    dataCopy=[...newMsgList];
+    dataCopy = JSON.parse(JSON.stringify(newMsgList));
+    console.log('待缓存的数据', dataCopy);
     Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
       if (res !== null && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
           for (let j = 0; j < data.length; j++) {
             if (res[i].SenderId === data[j].SenderId) {
-              res[i].MsgList=res[i].MsgList.concat(data[j].MsgList);
+              res[i].MsgList = res[i].MsgList.concat(dataCopy[j].MsgList);
               newMsgList.splice(j, 1);
             }
           }
         }
-        res=res.concat(newMsgList);
-        Storage.setItem(`${this.state.myUserId}_MsgList`,res);
-      }else{
+        res = res.concat(newMsgList);
+        console.log('已有缓存时,待缓存的数据', res);
+        Storage.setItem(`${this.state.myUserId}_MsgList`, res).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
+      } else {
         //没有历史记录,且服务器第一次推送消息
-        Storage.setItem(`${this.state.myUserId}_MsgList`, dataCopy);
+        Storage.setItem(`${this.state.myUserId}_MsgList`, dataCopy).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
       }
     });
   }
 
-  //发送时缓存
+  //发送时缓存(同时需要发布订阅,供Message页面监听)
   _sendSaveRecord(data) {
     Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
       if (res !== null && res.length > 0) {
-        let index=res.findIndex((item)=>{
-          return item.SenderId===this.state.UserId
+        let index = res.findIndex((item)=> {
+          return item.SenderId === this.state.UserId
         });
         res[index].MsgList.push(data);
-        Storage.setItem(`${this.state.myUserId}_MsgList`, res);
-      }else{
+        console.log('发送时更新消息缓存数据', res, data);
+        Storage.setItem(`${this.state.myUserId}_MsgList`, res).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
+      } else {
         //没有历史记录,且服务器没有推送任何消息
         let allMsg = [{
           SenderAvatar: this.state.UserAvatar,
@@ -197,7 +225,9 @@ class MessageDetail extends BaseComponent {
           SenderNickname: this.state.Nickname,
           MsgList: [data]
         }];
-        Storage.setItem(`${this.state.myUserId}_MsgList`, allMsg);
+        Storage.setItem(`${this.state.myUserId}_MsgList`, allMsg).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
       }
     });
   }
@@ -213,7 +243,11 @@ class MessageDetail extends BaseComponent {
 
   //发消息的同时,将消息缓存在本地
   onSend(messages) {
+    console.log(messages);
     let singleMsg = {
+      MsgContent: messages[0].text,
+      MsgId: Math.round(Math.random() * 1000000),
+      SendTime: messages[0].createdAt,
       HasSend: true,
       _id: Math.round(Math.random() * 1000000),
       text: messages[0].text,
@@ -243,14 +277,17 @@ class MessageDetail extends BaseComponent {
   }
 
   onReceive(data) {
+    console.log('onReceive渲染方法', data);
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, {
-          ...data,
+          MsgContent:data.text,
+          MsgId:data.id,
           HasSend: true,
           _id: data._id,
           text: data.text,
-          createdAt: data.createdAt,
+          SendTime:data.createdAt,
+          createdAt: strToDateTime(data.createdAt),//从服务器接收的是字符串类型的时间,这里只支持Date类型,存入缓存之前,需要转成字符串时间
           user: {
             _id: data.user._id,
             name: data.user.name,

@@ -55,3 +55,47 @@ export function dateMath(date, value, type) {
 export function strToDateTime(data) {
   return new Date(data.replace(/-/g,"/"));
 }
+
+/**
+ * 日期转字符串 转换成"2016-06-14 14:24:13"
+ * @param {Date} data Date日期
+ * @returns {String} str 字符串日期2016-06-14 14:24:13
+ */
+export function dateFormat(data) {
+  let year, month, day, hours, minutes, seconds, formatDate;
+  // 初始化时间
+  year = data.getFullYear();
+  month = data.getMonth() + 1;
+  day = data.getDate();
+  hours = data.getHours();
+  minutes = data.getMinutes();
+  seconds = data.getSeconds();
+  formatDate = year;
+
+  if (month >= 10) {
+    formatDate = formatDate + "-" + month;
+  } else {
+    formatDate = formatDate + "-0" + month;
+  }
+  if (day >= 10) {
+    formatDate = formatDate + "-" + day;
+  } else {
+    formatDate = formatDate + "-0" + day;
+  }
+  if (hours >= 10) {
+    formatDate = formatDate + " " + hours;
+  } else {
+    formatDate = formatDate + " 0" + hours;
+  }
+  if (minutes >= 10) {
+    formatDate = formatDate + ":" + minutes;
+  } else {
+    formatDate = formatDate + ":0" + minutes;
+  }
+  if (seconds >= 10) {
+    formatDate = formatDate + ":" + seconds;
+  } else {
+    formatDate = formatDate + ":0" + seconds;
+  }
+  return formatDate;
+}

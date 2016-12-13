@@ -7,7 +7,9 @@
 let tmpGlobal = {
   proxy:null,
   currentLocation:null,
-  currentUser:null
+  currentUser:null,
+  connection:null,
+  Msg:[]
 };
 
 export default tmpGlobal

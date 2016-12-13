@@ -26,7 +26,7 @@ import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import temGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
-import {strToDateTime} from '../utils/DateUtil'
+import {strToDateTime, dateFormat} from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   container: {
@@ -87,7 +87,6 @@ let navigator;
 let connection;
 let proxy;
 let cookie;
-let LastMsgId = null;
 
 const {height, width} = Dimensions.get('window');
 
@@ -110,11 +109,28 @@ class Message extends BaseComponent {
   }
 
   componentDidMount() {
+    console.log('Message页面加载完成');
+    this.subscription = DeviceEventEmitter.addListener('MessageCached', (data)=> {
+      this._cacheMessageListener(data)
+    });
     this._getCurrentUserInfo();
   }
 
-  componentWillUnmount() {
+  //MessageDetail页面更新缓存后,这个页面需要监听,并被动更新
+  _cacheMessageListener(data) {
+    console.log('Message页面成功监听到MessageDetail页面缓存成功的信号');
+    console.log(data);
+    Storage.getItem(`${this.state.currentUser.UserId}_MsgList`).then((res)=> {
+      if (res !== null) {
+        this.setState({
+          messageList: res
+        });
+      }
+    });
+  }
 
+  componentWillUnmount() {
+    this.subscription.remove();
   }
 
   //每次收到新的消息,缓存消息列表
@@ -122,10 +138,13 @@ class Message extends BaseComponent {
     for (let i = 0; i < data.length; i++) {
       for (let j = 0; j < data[i].MsgList.length; j++) {
         data[i].MsgList[j] = {
-          ...data[i].MsgList[j],
+          MsgContent: data[i].MsgList[j].MsgContent,
+          MsgId: data[i].MsgList[j].MsgId,
+          HasSend: false,
+          SendTime: data[i].MsgList[j].SendTime,
           _id: Math.round(Math.random() * 1000000),
           text: data[i].MsgList[j].MsgContent,
-          createdAt: this._handleSendDate(data[i].MsgList[j].SendTime),
+          createdAt: data[i].MsgList[j].SendTime,
           user: {
             _id: data[i].SenderId,
             name: data[i].SenderNickname,
@@ -147,6 +166,18 @@ class Message extends BaseComponent {
     }
     this.setState({
       messageList: this.state.messageList
+    }, ()=> {
+      //更新缓存中相关消息记录为已读状态
+      Storage.getItem(`${this.state.currentUser.UserId}_MsgList`).then((res)=> {
+        for (let i = 0; i < res.length; i++) {
+          for (let j = 0; j < res[i].MsgList.length; j++) {
+            if (res[i].SenderId === SenderId) {
+              res[i].MsgList[j].HasSend = true;
+            }
+          }
+        }
+        Storage.setItem(`${this.state.currentUser.UserId}_MsgList`,res);
+      });
     });
   }
 
@@ -159,6 +190,7 @@ class Message extends BaseComponent {
             messageList: res
           });
         }
+        console.log('Message页面从缓存中取出的消息记录',res);
       });
       this.setState({
         currentUser: json.Result,
@@ -186,7 +218,10 @@ class Message extends BaseComponent {
     proxy = connection.createHubProxy('ChatCore');
 
     //将proxy保存在全局变量中,以便其他地方使用
+
     temGlobal.proxy = proxy;
+
+    temGlobal.connection = connection;
 
     proxy.on('messageFromServer', (message) => {
       console.log(message);
@@ -206,44 +241,59 @@ class Message extends BaseComponent {
       //console.log(str);
     });
 
-    connection.start().done(() => {
-      proxy.invoke('login', cookie);
-      console.log('Now connected, connection ID=' + connection.id);
-    }).fail(() => {
-      console.log('Failed');
-    });
+    this._start = ()=> {
+      connection.start().done(() => {
+        proxy.invoke('login', cookie);
+        console.log('Now connected, connection ID=' + connection.id);
+      }).fail(() => {
+        console.log('Failed');
+        this._start();
+      })
+    };
 
     connection.connectionSlow(function () {
       console.log('We are currently experiencing difficulties with the connection.')
     });
 
+    //断开需要重连
     connection.error(function (error) {
-      console.log('SignalR error: ' + error)
+      console.log('SignalR error: ' + error);
+      this._start();
     });
 
+    this._start();
+
     proxy.on('getNewMsg', (obj) => {
-      console.log(obj);
-      console.log('1###收到了新消息');
-      LastMsgId = obj.LastMsgId;
+      console.log('服务器返回的原始数据',obj);
       let routes = navigator.getCurrentRoutes();
-      //Message和MessageDetail页面的obj联动(proxy的原因),当前页面不是Message时,此页面停止marge
-      if(routes[routes.length-1]=='MainContainer'){
-        this._margeMessage(obj);
+      console.log('路由栈',routes);
+      //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
+      if (routes[routes.length - 1].name != 'MessageDetail') {
+        console.log('服务器返回的原始数据',obj);
+        console.log('Message页面收到了新消息');
+        proxy.invoke('userReadMsg', obj.LastMsgId);
+        console.log('Message页面成功标为已读');
+        //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
+        //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
+        this._margeMessage(JSON.parse(JSON.stringify(obj.MsgPackage)));
       }
     });
   }
 
-  //合并后台推送过来的消息
-  _margeMessage(obj) {
-    let newMsgList = [];
-    newMsgList = newMsgList.concat(obj.MsgPackage);
+  //合并后台推送过来的消息(存缓存时,需要将时间以字符串时间形式存储,不能直接存Date类型,JSON.stringify将Date会转换成字符串)
+  _margeMessage(data) {
+    console.log('需要合并的数据',data);
+    let newMsgList = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newMsgList.length; i++) {
       for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
         newMsgList[i].MsgList[j] = {
-          ...newMsgList[i].MsgList[j],
+          MsgContent: newMsgList[i].MsgList[j].MsgContent,
+          MsgId: newMsgList[i].MsgList[j].MsgId,
+          HasSend: false,
+          SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
           text: newMsgList[i].MsgList[j].MsgContent,
-          createdAt: this._handleSendDate(newMsgList[i].MsgList[j].SendTime),
+          createdAt: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           user: {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
@@ -253,19 +303,31 @@ class Message extends BaseComponent {
         };
       }
     }
+    let objCopy = JSON.parse(JSON.stringify(newMsgList));
+    console.log(newMsgList);
+    console.log(objCopy);
 
     for (let i = 0; i < this.state.messageList.length; i++) {
-      for (let j = 0; j < obj.MsgPackage.length; j++) {
-        if (this.state.messageList[i].SenderId === obj.MsgPackage[j].SenderId) {
-          this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(newMsgList[j].MsgList);
+      for (let j = 0; j < data.length; j++) {
+        if (this.state.messageList[i].SenderId === data[j].SenderId) {
+          this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(objCopy[j].MsgList);
           newMsgList.splice(j, 1);
         }
       }
     }
+    console.log(newMsgList);
+    console.log(objCopy);
     //剩下的新消息不和已存在的对话合并,单独占一(多)行
     this.state.messageList = this.state.messageList.concat(newMsgList);
     this.setState({
       messageList: this.state.messageList
+    }, ()=> {
+      //在setState的回调里开始缓存消息
+      console.log('Message页面开始缓存消息');
+      console.log(this.state.messageList);
+      //深拷贝
+      let params = JSON.parse(JSON.stringify(this.state.messageList));
+      this._cacheMessageList(params);
     });
   }
 
@@ -286,23 +348,9 @@ class Message extends BaseComponent {
         UserId: rowData.SenderId,
         Nickname: rowData.SenderNickname,
         UserAvatar: URL_DEV + rowData.SenderAvatar,
-        myUserId:this.state.currentUser.UserId
+        myUserId: this.state.currentUser.UserId
       }
     })
-  }
-
-  componentDidUpdate() {
-    let routes = navigator.getCurrentRoutes();
-    console.log(routes);
-    if (LastMsgId) {
-      proxy.invoke('userReadMsg', LastMsgId);
-      console.log('成功标为已读');
-    }
-    if (this.state.currentUser && routes[routes.length - 1].name == 'MainContainer') {
-      console.log('Message页面数据有更新');
-      console.log(this.state.messageList);
-      this._cacheMessageList(this.state.messageList);
-    }
   }
 
   _renderMsgTime(str) {
@@ -337,7 +385,7 @@ class Message extends BaseComponent {
         content.push(rowData.MsgList[i].text);
       }
     }
-    return content[content.length-1];
+    return content[content.length - 1];
   }
 
   renderRowData(rowData) {
@@ -357,7 +405,7 @@ class Message extends BaseComponent {
               {rowData.SenderNickname}
             </Text>
             <Text>
-              {this._renderMsgTime(rowData.MsgList[rowData.MsgList.length - 1].SendTime)}
+              {rowData.MsgList[rowData.MsgList.length - 1].SendTime}
             </Text>
           </View>
           <View style={styles.cardRow}>

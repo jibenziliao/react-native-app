@@ -115,7 +115,7 @@ class App extends Component {
           this._Alert();
         }
       },
-      {enableHighAccuracy: true, timeout: 10000, maximumAge: 5000}
+      {enableHighAccuracy: true, timeout: 30000, maximumAge: 5000}
     );
     watchId = navigator.geolocation.watchPosition((position) => {
       const lastPosition = {
