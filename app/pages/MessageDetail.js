@@ -259,7 +259,23 @@ class MessageDetail extends BaseComponent {
       },
     };
 
-    this._sendSaveRecord(singleMsg);
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params={
+      MsgContent: messages[0].text,
+      MsgId: Math.round(Math.random() * 1000000),
+      SendTime: dateFormat(messages[0].createdAt),
+      HasSend: true,
+      _id: Math.round(Math.random() * 1000000),
+      text: messages[0].text,
+      createdAt: dateFormat(messages[0].createdAt),
+      user: {
+        _id: this.state.myUserId,
+        name: null,//当前用户不需要显示名字
+        avatar: null//当前用户不需要显示头像
+      },
+    };
+
+    this._sendSaveRecord(params);
 
     this.setState((previousState) => {
       return {
@@ -268,12 +284,6 @@ class MessageDetail extends BaseComponent {
     });
 
     temGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
-  }
-
-  //2016-12-12T20:08:27.723355+11:00
-  _handleSendDate(str) {
-    let newStr = str.split('T')[0] + ' ' + str.split('T')[1].split('.')[0];
-    return strToDateTime(newStr);
   }
 
   onReceive(data) {

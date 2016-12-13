@@ -146,13 +146,14 @@ class Message extends BaseComponent {
           text: data[i].MsgList[j].MsgContent,
           createdAt: data[i].MsgList[j].SendTime,
           user: {
-            _id: data[i].SenderId,
-            name: data[i].SenderNickname,
-            avatar: data[i].SenderAvatar
+            _id: data[i].MsgList[j].user._id,
+            name: data[i].MsgList[j].name,
+            avatar: data[i].MsgList[j].avatar
           }
         };
       }
     }
+    console.log('Message页面准备写入缓存的数据',data);
     Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, data);
   }
 
@@ -241,13 +242,13 @@ class Message extends BaseComponent {
       //console.log(str);
     });
 
-    this._start = ()=> {
+    const _start = ()=> {
       connection.start().done(() => {
         proxy.invoke('login', cookie);
         console.log('Now connected, connection ID=' + connection.id);
       }).fail(() => {
         console.log('Failed');
-        this._start();
+        _start();
       })
     };
 
@@ -258,10 +259,10 @@ class Message extends BaseComponent {
     //断开需要重连
     connection.error(function (error) {
       console.log('SignalR error: ' + error);
-      this._start();
+      _start();
     });
 
-    this._start();
+    _start();
 
     proxy.on('getNewMsg', (obj) => {
       console.log('服务器返回的原始数据',obj);
