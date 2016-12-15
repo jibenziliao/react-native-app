@@ -497,8 +497,13 @@ class AnnouncementDetail extends BaseComponent {
         key={rowData.Id}
         style={styles.commentCard}>
         <View style={styles.cardLeft}>
-          <Image source={{uri: URL_DEV+rowData.CommentUserInfo.PrimaryPhotoFilename}}
-                 style={styles.commentImg}/>
+          <TouchableOpacity
+          onPress={()=>{
+            this._goUserInfo(rowData.CommentUserInfo)
+          }}>
+            <Image source={{uri: URL_DEV+rowData.CommentUserInfo.PrimaryPhotoFilename}}
+                   style={styles.commentImg}/>
+          </TouchableOpacity>
           <View style={styles.commentArea}>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
