@@ -21,23 +21,9 @@ import {
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import Modal from 'react-native-modalbox'
 import {Button as NBButton} from 'native-base'
-import {StyleConfig, CommonStyles} from '../style'
-import ImagePicker from 'react-native-image-picker'
-import ImageViewer from '../components/ImageViewer'
 import Spinner from '../components/Spinner'
-import Menu, {
-  MenuContext,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from 'react-native-popup-menu'
 import RNPicker from 'react-native-picker'
-import {List, ListItem, Text as NBText, CheckBox as NBCheckBox} from 'native-base'
-import CheckBox from '../components/CheckBox'
-import * as Storage from '../utils/Storage'
 import {connect} from 'react-redux'
 import * as FriendFilterActions from '../actions/FriendFilter'
 
@@ -160,15 +146,6 @@ class FriendsFilter extends BaseComponent {
     const {navigator} =this.props;
     //TODO: 这里的resetTo动画异常
     navigator.resetTo({
-      component: MainContainer,
-      name: 'MainContainer'
-    });
-  }
-
-  //下一步
-  goNext() {
-    const {navigator} =this.props;
-    navigator.push({
       component: MainContainer,
       name: 'MainContainer'
     });
