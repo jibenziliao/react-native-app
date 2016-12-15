@@ -8,7 +8,9 @@ import {
   View,
   ActivityIndicator,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  StatusBar,
+  Platform
 } from 'react-native';
 
 const {width, height}=Dimensions.get('window');
@@ -40,11 +42,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(142, 142, 142, 0.1)',
     width: width,
     height: height,
+    alignItems:'center',
+    justifyContent:'center',
+    ...Platform.select({
+      ios:{
+        paddingBottom:20
+      },
+      android:{
+        paddingBottom:StatusBar.currentHeight
+      },
+    })
   },
   loading: {
-    position: 'absolute',
-    left: width / 2 - 80,
-    top: 200,
     width: 160,
     height: 120,
     backgroundColor: 'rgba(176, 176, 176, 0.5)',
