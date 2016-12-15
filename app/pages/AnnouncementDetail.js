@@ -496,7 +496,7 @@ class AnnouncementDetail extends BaseComponent {
         key={rowData.Id}
         style={styles.commentCard}>
         <View style={styles.cardLeft}>
-          <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
+          <Image source={{uri: URL_DEV+rowData.CommentUserInfo.PrimaryPhotoFilename}}
                  style={styles.commentImg}/>
           <View style={styles.commentArea}>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -541,7 +541,7 @@ class AnnouncementDetail extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
-              <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
+              <Image source={{uri: this.state.PosterInfo.PrimaryPhotoFilename}}
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{this.state.PosterInfo.Nickname}</Text>

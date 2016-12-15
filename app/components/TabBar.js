@@ -9,7 +9,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-Platform
+  Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 
@@ -17,7 +17,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    height:46
+    //...Platform.select({
+    //  ios: {
+    //    height: 46
+    //  },
+    //  android: {
+    //    height: 48
+    //  }
+    //})
   },
   touchableContainer: {
     flex: 1,

@@ -214,7 +214,7 @@ class Message extends BaseComponent {
 
   _initWebSocket() {
     connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = true;
+    connection.logging = false;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
 
@@ -268,11 +268,12 @@ class Message extends BaseComponent {
       console.log('服务器返回的原始数据',obj);
       let routes = navigator.getCurrentRoutes();
       console.log('路由栈',routes);
+      temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
       //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
       if (routes[routes.length - 1].name != 'MessageDetail') {
         console.log('服务器返回的原始数据',obj);
         console.log('Message页面收到了新消息');
-        proxy.invoke('userReadMsg', obj.LastMsgId);
+
         console.log('Message页面成功标为已读');
         //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
         //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#

@@ -14,22 +14,19 @@ import {
   PickerIOS,
   Platform,
   TouchableHighlight,
-  Animated
+  Animated,
+  Keyboard
 } from 'react-native'
-import {getNavigator} from '../navigation/Route'
 import * as Storage from '../utils/Storage'
 import BaseComponent from '../base/BaseComponent'
-import dismissKeyboard from 'dismissKeyboard'
 import MainContainer from '../containers/MainContainer'
 import {connect} from 'react-redux'
 import DeviceInfo from 'react-native-device-info'
 import * as InitialAppActions from '../actions/InitialApp'
 import * as LoginActions from '../actions/Login'
-import Spinner from '../components/Spinner'
 import UserProfile from './UserProfile'
 import BackgroundTimer from 'react-native-background-timer'
 import {Button as NBButton} from 'native-base'
-import {StyleConfig, CommonStyles} from '../style'
 import Menu, {
   MenuContext,
   MenuOptions,
@@ -37,9 +34,7 @@ import Menu, {
   MenuTrigger,
 } from 'react-native-popup-menu'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Home from '../containers/Home'
 import {setDictArr} from '../utils/Dict'
-import Photos from '../pages/Photos'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -100,11 +95,12 @@ class Login extends BaseComponent {
       phoneCountry: '86',
       pending: false,
       validCodeBtnAccessible: false,
-      nextBtnAccessible: false,
       maxLength: 11,
       validCodeText: '获取验证码',
-      tipsText: '使用手机号一键登录'
+      tipsText: '使用手机号一键登录',
+      hasSendCode:false
     };
+    navigator = this.props.navigator;
     this.login = this.login.bind(this);
   }
 
@@ -151,17 +147,8 @@ class Login extends BaseComponent {
     });
   }
 
-  goPhotos(){
-    navigator = this.props.navigator;
-    navigator.push({
-      component: Photos,
-      name: 'Photos'
-    });
-  }
-
   login(data) {
-    navigator = this.props.navigator;
-    dismissKeyboard();
+    Keyboard.dismiss();
     const {dispatch} = this.props;
     dispatch(LoginActions.validSmsCode(data,
       (json)=> {
@@ -174,6 +161,9 @@ class Login extends BaseComponent {
   }
 
   loginSuccess(json) {
+    this.setState({
+      hasSendCode:false,
+    });
     if (json.Result === false) {
       navigator.push({
         component: UserProfile,
@@ -190,7 +180,7 @@ class Login extends BaseComponent {
   }
 
   getValidCode(phoneCountry, phone) {
-    dismissKeyboard();
+    Keyboard.dismiss();
     const data = {
       Country: phoneCountry,
       Mobile: phone
@@ -219,6 +209,7 @@ class Login extends BaseComponent {
     let phone = this.state.phone;
     let phoneCountry = this.state.phoneCountry;
     this.setState({
+      hasSendCode:true,
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
       tipsText: `我们已经给你的手机号码+${phoneCountry}-${phone}发送了一条验证短息`
@@ -231,7 +222,7 @@ class Login extends BaseComponent {
         this.setState({
           validCodeBtnAccessible: true,
           validCodeText: '获取验证码',
-          tipsText: '使用手机号一键登录'
+          tipsText: '使用手机号一键登录',
         });
       }
     }, 1000);
@@ -320,21 +311,8 @@ class Login extends BaseComponent {
     )
   }
 
-  nextTest() {
-    const {navigator}=this.props;
-    navigator.push({
-      component: UserProfile,
-      name: 'UserProfile'
-    });
-  }
-
-  //去首页
-  goHome() {
-    const {navigator} =this.props;
-    navigator.push({
-      component: MainContainer,
-      name: 'MainContainer'
-    });
+  _renderLoginBtnStatus() {
+    return !(this.state.hasSendCode && this.state.validCode.length === 6);
   }
 
   renderBody() {
@@ -382,44 +360,17 @@ class Login extends BaseComponent {
             block
             style={{marginTop: 20, height: 40, alignItems: 'center'}}
             onPress={()=>this.login(this.state.validCode)}
-            disabled={!(this.props.hasSendValidCode && this.state.validCode.length === 6)}>
+            disabled={this._renderLoginBtnStatus()}>
             登录
           </NBButton>
-          {/*<NBButton
-            block
-            style={{marginTop: 20, height: 40}}
-            onPress={()=>this.nextTest()}>
-            下一步(Test){}
-          </NBButton>
-          <NBButton
-            block
-            style={{marginTop: 20, height: 40}}
-            onPress={()=>this.goHome()}>
-            首页(Test)
-          </NBButton>
-          <NBButton
-            block
-            style={{marginTop: 20, height: 40}}
-            onPress={()=>this.goPhotos()}>
-            拍照(Test)
-          </NBButton>*/}
         </ScrollView>
       </MenuContext>
     )
-  }
-
-  renderSpinner() {
-    if (this.props.pendingStatus) {
-      return (
-        <Spinner animating={this.props.pendingStatus}/>
-      )
-    }
   }
 }
 
 export default connect((state)=> {
   return {
-    pendingStatus: state.Login.pending || state.UserProfile.pending,
-    hasSendValidCode: state.Login.hasSendValidCode
+    ...state
   }
 })(Login)

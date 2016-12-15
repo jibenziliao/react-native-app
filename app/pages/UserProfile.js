@@ -198,7 +198,7 @@ class UserProfile extends BaseComponent {
       educationStatusText: '',
       professionText: '',
       profession: null,
-      religionText:'',
+      religionText: '',
       religion: '',
       income: null,
       incomeText: '',
@@ -225,7 +225,7 @@ class UserProfile extends BaseComponent {
   _initDict() {
     const {dispatch}=this.props;
 
-    //每次初始化字典时,需要把之前的数据清空
+    //每次初始化字典时,需要把之前的数据清空,还要把选中交友目的的数组清空。(已选中,返回登录,再进入时)
     DictMap = {
       EducationLevelDict: [],
       IncomeLevelDict: [],
@@ -235,6 +235,8 @@ class UserProfile extends BaseComponent {
       PhotoPermissionDict: [],
       ReligionDict: []
     };
+
+    DatingPurposeSelectCopy = [];
 
     dispatch(UserProfileActions.getDict('', (json)=> {
       DictMap = json;
@@ -262,27 +264,37 @@ class UserProfile extends BaseComponent {
 
   //下一步
   goNext(data, datingPurpose) {
-    this._validForm();
+    if (this._validForm()) {
+      this._nextAlert(data, datingPurpose);
+    }
+  }
+
+  _nextAlert(data, datingPurpose) {
     Alert.alert('提示', '是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料', [
       {text: '确定', onPress: () => this.saveUserProfile(data, datingPurpose, true)},
       {text: '跳过', onPress: () => this.saveUserProfile(data, datingPurpose, false)}
     ]);
   }
 
-  _validForm(){
-    let nickNameReg=/^[\u4E00-\u9FA5\uF900-\uFA2D\da-zA-Z]+$/;
-    if(this.state.Nickname.split('').length){
+  _validForm() {
+    let nickNameReg = /^[\u4E00-\u9FA5\uF900-\uFA2D\da-zA-Z]+$/;
+    if (this.state.nickName == '') {
+      toastShort('请填写昵称');
+      return false;
+    } else if (this.state.nickName.split('').length < 3) {
       toastShort('昵称长度不能小于3位');
       return false;
-    }else if(!nickNameReg.test(this.state.Nickname)){
+    } else if (!nickNameReg.test(this.state.nickName)) {
       toastShort('昵称只能为英文、数字、汉字');
       return false;
-    }else if(!this.state.birthYearText){
+    } else if (!this.state.birthYearText) {
       toastShort('请选择出生年月日');
       return false;
-    }else if(DatingPurposeSelectCopy.length==0){
+    } else if (DatingPurposeSelectCopy.length == 0) {
       toastShort('请选择交友目的');
       return false;
+    }else{
+      return true;
     }
   }
 
@@ -427,7 +439,7 @@ class UserProfile extends BaseComponent {
         this.setState({mapPrecisionText: pickedValue});
         break;
       case 'religionText':
-        this.setState({religionText:pickedValue});
+        this.setState({religionText: pickedValue});
         break;
       default:
         console.error('设置数据出错!');
@@ -570,14 +582,12 @@ class UserProfile extends BaseComponent {
                 if (checked) {
                   DatingPurposeSelectCopy.push(item);
                 } else {
-                  let index = 0;
-                  for (let i = 0; i < DatingPurposeSelectCopy.length; i++) {
-                    if (DatingPurposeSelectCopy[i].Key == item.Key) {
-                      index = i;
-                      break;
-                    }
+                  let index = DatingPurposeSelectCopy.findIndex((i)=> {
+                    return i.Key == item.Key;
+                  });
+                  if (index >= 0) {
+                    DatingPurposeSelectCopy.splice(index, 1);
                   }
-                  DatingPurposeSelectCopy.splice(index, 1);
                 }
               }}/>
           )

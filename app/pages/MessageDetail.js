@@ -108,9 +108,10 @@ class MessageDetail extends BaseComponent {
 
   _getNewMsg() {
     temGlobal.proxy.on('getNewMsg', (obj) => {
+      temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
       //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
       if (!this.state.destroyed) {
-        temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+
         console.log('MessageDetail页面成功标为已读');
         console.log('MessageDetail页面开始缓存消息');
         this._receiveSaveRecord(JSON.parse(JSON.stringify(obj.MsgPackage)));
