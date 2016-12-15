@@ -3,28 +3,20 @@
  * @author keyy/1501718947@qq.com 16/11/10 09:47
  * @description
  */
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Text,
   Platform
-} from 'react-native';
+} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
-    //...Platform.select({
-    //  ios: {
-    //    height: 46
-    //  },
-    //  android: {
-    //    height: 48
-    //  }
-    //})
+    alignItems: 'center'
   },
   touchableContainer: {
     flex: 1,

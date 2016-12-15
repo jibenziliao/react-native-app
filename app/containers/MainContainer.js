@@ -5,9 +5,7 @@
  */
 import React, {Component} from 'react'
 import {
-  StyleSheet,
-  Dimensions,
-  Platform
+  StyleSheet
 } from 'react-native'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import Home from './Home'
@@ -15,8 +13,6 @@ import Vicinity from './Vicinity'
 import Message from './Message'
 import Mine from './Mine'
 import TabBar from '../components/TabBar'
-
-const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   /**
@@ -29,14 +25,6 @@ const styles = StyleSheet.create({
   },
   scrollTabView: {
     bottom: 0,
-    ...Platform.select({
-      ios: {
-        height: height - 25
-      },
-      android: {
-        height: height - 18
-      }
-    })
   }
 });
 
