@@ -12,7 +12,8 @@ import {
   Navigator,
   Platform,
   BackAndroid,
-  Alert
+  Alert,
+  NetInfo
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
@@ -59,7 +60,9 @@ class App extends Component {
       pending: false,
       hasRegistered: false,
       loading: false,
-      getRegistered: false
+      getRegistered: false,
+      isConnected: null,
+      connectionInfo: null
     }
   }
 
@@ -69,6 +72,28 @@ class App extends Component {
     }
     this.setState({loading: true});
     this.loadRegisteredStatus().done();
+  }
+
+  componentDidMount() {
+    NetInfo.addEventListener('change', this._handleConnectivityChange);
+    this.setState({loading: true});
+  }
+
+  _getNetStatus() {
+    //检测网络是否连接
+    NetInfo.fetch().done(
+      (isConnected) => {
+        console.log('###isConnected', isConnected);
+        this.setState({isConnected});
+      }
+    );
+    //检测网络连接信息
+    NetInfo.fetch().done(
+      (connectionInfo) => {
+        console.log('###connectionInfo', connectionInfo);
+        this.setState({connectionInfo});
+      }
+    );
   }
 
   loadRegisteredStatus = async()=> {
@@ -174,6 +199,13 @@ class App extends Component {
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
+    NetInfo.removeEventListener('change', this._handleConnectivityChange
+    );
+  }
+
+  _handleConnectivityChange(data) {
+    this._getNetStatus();
+    console.log('###监听网络,返回的结果', data);
   }
 
   renderNavigator(status) {
@@ -201,6 +233,8 @@ class App extends Component {
             }}/>
         )
       }
+    } else {
+      <Spinner animating={!status}/>
     }
   }
 
