@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     flex: 1,
     marginTop: 10,
+    marginBottom:5,
     marginHorizontal: 10,
     paddingVertical:10
   },
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   },
   commentCard: {
     padding: 10,
-    marginTop: 5,
+    marginBottom:5,
     backgroundColor: '#fff',
     borderRadius: 4,
     borderColor: '#fff',
@@ -541,7 +542,7 @@ class AnnouncementDetail extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
-              <Image source={{uri: this.state.PosterInfo.PrimaryPhotoFilename}}
+              <Image source={{uri: URL_DEV+this.state.PosterInfo.PrimaryPhotoFilename}}
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{this.state.PosterInfo.Nickname}</Text>
