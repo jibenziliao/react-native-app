@@ -124,7 +124,7 @@ class Vicinity extends BaseComponent {
         longitude: position.coords.longitude
       }];
       //根据坐标计算区域(latPadding=0.15时,zoomLevel是10)
-      const region = calculateRegion(initLocation, {latPadding: 0.15, longPadding: 0.15});
+      const region = calculateRegion(initLocation, {latPadding: 0.02, longPadding: 0.02});
 
       console.log('成功获取当前区域', region);
       console.log('成功获取当前位置', lastPosition);

@@ -75,7 +75,7 @@ class MessageDetail extends BaseComponent {
         let tmpArr = this._getChatRecord(res);
         console.log(tmpArr);
         this.setState({
-          messages: [].concat(this._getChatRecord(res).MsgList.reverse())
+          messages: this._getChatRecord(res).MsgList.reverse()
         }, ()=> {
           this._getNewMsg();
         });
@@ -117,7 +117,7 @@ class MessageDetail extends BaseComponent {
       }
       let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(obj.MsgPackage)), this.state.UserId);
       //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
-      if (resMsg.MsgList.length > 0 && !this.state.destroyed) {
+      if (resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
         console.log(obj);
         console.log('MessageDetail页面收到了新消息');
         for (let i = 0; i < resMsg.MsgList.length; i++) {

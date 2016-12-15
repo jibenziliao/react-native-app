@@ -24,13 +24,13 @@ import MainContainer from '../containers/MainContainer'
 import Photos from './Photos'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
-import {StyleConfig, CommonStyles} from '../style'
 import RNPicker from 'react-native-picker'
 import {connect} from 'react-redux'
 import * as UserProfileActions from '../actions/UserProfile'
 import * as Storage from '../utils/Storage'
 import CheckBox from '../components/CheckBox'
 import Spinner from '../components/Spinner'
+import {toastShort} from '../utils/ToastUtil'
 
 const {width, height}=Dimensions.get('window');
 
@@ -262,10 +262,28 @@ class UserProfile extends BaseComponent {
 
   //下一步
   goNext(data, datingPurpose) {
+    this._validForm();
     Alert.alert('提示', '是否继续编辑资料?点击跳过后,您可以在【个人设置】中完善你的资料', [
       {text: '确定', onPress: () => this.saveUserProfile(data, datingPurpose, true)},
       {text: '跳过', onPress: () => this.saveUserProfile(data, datingPurpose, false)}
     ]);
+  }
+
+  _validForm(){
+    let nickNameReg=/^[\u4E00-\u9FA5\uF900-\uFA2D\da-zA-Z]+$/;
+    if(this.state.Nickname.split('').length){
+      toastShort('昵称长度不能小于3位');
+      return false;
+    }else if(!nickNameReg.test(this.state.Nickname)){
+      toastShort('昵称只能为英文、数字、汉字');
+      return false;
+    }else if(!this.state.birthYearText){
+      toastShort('请选择出生年月日');
+      return false;
+    }else if(DatingPurposeSelectCopy.length==0){
+      toastShort('请选择交友目的');
+      return false;
+    }
   }
 
   saveUserProfile(data, datingPurpose, bool) {

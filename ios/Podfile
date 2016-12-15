@@ -1,4 +1,4 @@
-# Uncomment this line to define a global platform for your project
+# Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
 source 'https://github.com/CocoaPods/Specs.git'
@@ -6,11 +6,12 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
 use_frameworks!
 
-target 'qingyuanjie' do
-# Uncomment this line if you're using Swift or would like to use dynamic frameworks
-# use_frameworks!
 
-# Pods for qingyuanjie
+target 'qingyuanjie' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for qingyuanjie
 
 pod 'React', path: '../node_modules/react-native', :subspecs => [
 'Core',
@@ -27,9 +28,9 @@ pod 'React', path: '../node_modules/react-native', :subspecs => [
 pod 'GoogleMaps'
 
 
-target 'qingyuanjieTests' do
-inherit! :search_paths
-# Pods for testing
-end
+  target 'qingyuanjieTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
 
 end

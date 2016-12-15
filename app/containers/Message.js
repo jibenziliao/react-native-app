@@ -214,7 +214,7 @@ class Message extends BaseComponent {
 
   _initWebSocket() {
     connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = false;
+    connection.logging = true;
     console.log(connection);
     proxy = connection.createHubProxy('ChatCore');
 
@@ -224,7 +224,7 @@ class Message extends BaseComponent {
 
     temGlobal.connection = connection;
 
-    proxy.on('messageFromServer', (message) => {
+    temGlobal.proxy.on('messageFromServer', (message) => {
       console.log(message);
 
       messagePromise.done(() => {
@@ -234,11 +234,11 @@ class Message extends BaseComponent {
       });
     });
 
-    proxy.on('sayHey', (message) => {
+    temGlobal.proxy.on('sayHey', (message) => {
       console.log(message);
     });
 
-    proxy.on('log', (str)=> {
+    temGlobal.proxy.on('log', (str)=> {
       //console.log(str);
     });
 
@@ -252,19 +252,19 @@ class Message extends BaseComponent {
       })
     };
 
-    connection.connectionSlow(function () {
+    temGlobal.connection.connectionSlow(function () {
       console.log('We are currently experiencing difficulties with the connection.')
     });
 
     //断开需要重连
-    connection.error(function (error) {
+    temGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
       _start();
     });
 
     _start();
 
-    proxy.on('getNewMsg', (obj) => {
+    temGlobal.proxy.on('getNewMsg', (obj) => {
       console.log('服务器返回的原始数据',obj);
       let routes = navigator.getCurrentRoutes();
       console.log('路由栈',routes);
