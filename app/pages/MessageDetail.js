@@ -65,22 +65,20 @@ class MessageDetail extends BaseComponent {
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
-    this.renderSend=this.renderSend.bind(this);
+    this.renderSend = this.renderSend.bind(this);
   }
 
   _initOldMessage() {
     Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
-      if (res !== null) {
+      if (res !== null && this._getChatRecord(res) && this._getChatRecord(res).MsgList.length > 0) {
         console.log('MessageDetail加载缓存', res);
-        let tmpArr = this._getChatRecord(res);
-        console.log(tmpArr);
         this.setState({
           messages: this._getChatRecord(res).MsgList.reverse()
         }, ()=> {
           this._getNewMsg();
         });
       } else {
-        console.log(res, this.state.myUserId);
+        console.log(res, this.state.myUserId,this.state.UserId);
         console.log('没有聊天记录');
         this._getNewMsg();
       }
@@ -89,13 +87,10 @@ class MessageDetail extends BaseComponent {
 
   //从缓存中找出当前用户与聊天对象用户之间的聊天记录
   _getChatRecord(data) {
-    let tmpArr = [];
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].SenderId === this.state.UserId) {
-        tmpArr.push(data[i]);
-      }
-    }
-    return tmpArr[0];
+    console.log(data);
+    return data.find((item)=> {
+      return item.SenderId === this.state.UserId
+    });
   }
 
   componentDidMount() {
@@ -118,7 +113,7 @@ class MessageDetail extends BaseComponent {
       }
       let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(obj.MsgPackage)), this.state.UserId);
       //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
-      if (resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
+      if (resMsg && resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
         console.log(obj);
         console.log('MessageDetail页面收到了新消息');
         for (let i = 0; i < resMsg.MsgList.length; i++) {
@@ -150,29 +145,22 @@ class MessageDetail extends BaseComponent {
         };
       }
     }
-
-    let SingleMsg = {};
-    for (let i = 0; i < newMsgList.length; i++) {
-      if (id === newMsgList[i].SenderId) {
-        SingleMsg = newMsgList[i];
-        break;
-      }
-    }
-    console.log(SingleMsg);
-    return SingleMsg;
+    return newMsgList.find((item)=> {
+      return item.SenderId === id;
+    });
   }
 
   _renderMsgTime(str) {
-    if(str.indexOf('T')>-1){
+    if (str.indexOf('T') > -1) {
       return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
-    }else{
+    } else {
       return str;
     }
   }
 
   //接收时缓存(同时需要发布缓存成功的订阅,供Message页面监听)
   _receiveSaveRecord(data) {
-    console.log('这是从服务器返回的消息',data);
+    console.log('这是从服务器返回的消息', data);
     let newMsgList = [];
     let dataCopy = [];
     newMsgList = JSON.parse(JSON.stringify(data));
@@ -189,7 +177,7 @@ class MessageDetail extends BaseComponent {
           user: {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
-            avatar: newMsgList[i].SenderAvatar,
+            avatar:URL_DEV+newMsgList[i].SenderAvatar,
             myUserId: this.state.myUserId
           }
         };
@@ -223,26 +211,30 @@ class MessageDetail extends BaseComponent {
 
   //发送时缓存(同时需要发布订阅,供Message页面监听)
   _sendSaveRecord(data) {
+    //跟当前用户没有聊天记录
+    let allMsg = {
+      SenderAvatar: this.state.UserAvatar,
+      SenderId: this.state.UserId,
+      SenderNickname: this.state.Nickname,
+      MsgList: [data]
+    };
     Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
       if (res !== null && res.length > 0) {
         let index = res.findIndex((item)=> {
           return item.SenderId === this.state.UserId
         });
-        res[index].MsgList.push(data);
+        if(index>-1){
+          res[index].MsgList.push(data);
+        }else{
+          res.push(allMsg);
+        }
         console.log('发送时更新消息缓存数据', res, data);
         Storage.setItem(`${this.state.myUserId}_MsgList`, res).then(()=> {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
-        //没有历史记录,且服务器没有推送任何消息
-        let allMsg = [{
-          SenderAvatar: this.state.UserAvatar,
-          SenderId: this.state.UserId,
-          SenderNickname: this.state.Nickname,
-          MsgList: [data]
-        }];
-        Storage.setItem(`${this.state.myUserId}_MsgList`, allMsg).then(()=> {
-          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        Storage.setItem(`${this.state.myUserId}_MsgList`, [allMsg]).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
         });
       }
     });
@@ -276,7 +268,7 @@ class MessageDetail extends BaseComponent {
     };
 
     //单条发送的消息存入缓存中时,需要将日期转成字符串存储
-    let params={
+    let params = {
       MsgContent: messages[0].text,
       MsgId: Math.round(Math.random() * 1000000),
       SendTime: dateFormat(messages[0].createdAt),
@@ -290,7 +282,7 @@ class MessageDetail extends BaseComponent {
         avatar: null//当前用户不需要显示头像
       },
     };
-
+    console.log(params);
     this._sendSaveRecord(params);
 
     this.setState((previousState) => {
@@ -307,17 +299,17 @@ class MessageDetail extends BaseComponent {
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, {
-          MsgContent:data.text,
-          MsgId:data.id,
+          MsgContent: data.text,
+          MsgId: data.id,
           HasSend: true,
           _id: data._id,
           text: data.text,
-          SendTime:data.createdAt,
+          SendTime: data.createdAt,
           createdAt: strToDateTime(data.createdAt),//从服务器接收的是字符串类型的时间,这里只支持Date类型,存入缓存之前,需要转成字符串时间
           user: {
             _id: data.user._id,
             name: data.user.name,
-            avatar: data.user.avatar
+            avatar: URL_DEV + data.user.avatar
           },
         }),
       };
@@ -377,7 +369,7 @@ class MessageDetail extends BaseComponent {
     return null;
   }
 
-  renderSend(props){
+  renderSend(props) {
     if (props.text.trim().length > 0) {
       return (
         <TouchableOpacity

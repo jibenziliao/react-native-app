@@ -88,7 +88,7 @@ export function gore(data, resolve, reject) {
 
 export function getCurrentUserProfile(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/profile/', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch('/profile', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 

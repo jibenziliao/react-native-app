@@ -58,10 +58,12 @@ class Settings extends BaseComponent {
   }
 
   _logOut() {
-    //注销后,关闭signalr连接
-    temGlobal.connection.stop();
+    //注销后,重置signalr连接
+    temGlobal.connection=null;
+    temGlobal.proxy=null;
     Storage.removeItem('hasRegistered');
     Storage.removeItem('userInfo');
+    Storage.removeItem('hasInit');
     toastShort('注销成功');
     this.timer=setTimeout(()=>{
       navigator.resetTo({

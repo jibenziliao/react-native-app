@@ -228,7 +228,7 @@ class UserInfo extends BaseComponent {
       params: {
         UserId: this.state.UserId,
         Nickname: this.state.Nickname,
-        UserAvatar: URL_DEV + this.state.PrimaryPhotoFilename,
+        UserAvatar: this.state.PrimaryPhotoFilename,
         myUserId: this.state.myUserId
       }
     })

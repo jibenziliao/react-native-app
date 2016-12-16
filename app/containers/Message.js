@@ -131,30 +131,29 @@ class Message extends BaseComponent {
 
   componentWillUnmount() {
     this.subscription.remove();
-    temGlobal.connection.stop();
   }
 
   //每次收到新的消息,缓存消息列表
   _cacheMessageList(data) {
-    for (let i = 0; i < data.length; i++) {
-      for (let j = 0; j < data[i].MsgList.length; j++) {
-        data[i].MsgList[j] = {
-          MsgContent: data[i].MsgList[j].MsgContent,
-          MsgId: data[i].MsgList[j].MsgId,
-          HasSend: false,
-          SendTime: data[i].MsgList[j].SendTime,
-          _id: Math.round(Math.random() * 1000000),
-          text: data[i].MsgList[j].MsgContent,
-          createdAt: data[i].MsgList[j].SendTime,
-          user: {
-            _id: data[i].MsgList[j].user._id,
-            name: data[i].MsgList[j].name,
-            avatar: data[i].MsgList[j].avatar
-          }
-        };
-      }
-    }
-    console.log('Message页面准备写入缓存的数据',data);
+    /*for (let i = 0; i < data.length; i++) {
+     for (let j = 0; j < data[i].MsgList.length; j++) {
+     data[i].MsgList[j] = {
+     MsgContent: data[i].MsgList[j].MsgContent,
+     MsgId: data[i].MsgList[j].MsgId,
+     HasSend: false,
+     SendTime: data[i].MsgList[j].SendTime,
+     _id: data[i].MsgList[j]._id,
+     text: data[i].MsgList[j].MsgContent,
+     createdAt: data[i].MsgList[j].SendTime,
+     user: {
+     _id: data[i].MsgList[j].user._id,
+     name: data[i].MsgList[j].name,
+     avatar: data[i].MsgList[j].avatar
+     }
+     };
+     }
+     }*/
+    console.log('Message页面准备写入缓存的数据', data);
     Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, data);
   }
 
@@ -178,7 +177,7 @@ class Message extends BaseComponent {
             }
           }
         }
-        Storage.setItem(`${this.state.currentUser.UserId}_MsgList`,res);
+        Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, res);
       });
     });
   }
@@ -192,7 +191,7 @@ class Message extends BaseComponent {
             messageList: res
           });
         }
-        console.log('Message页面从缓存中取出的消息记录',res);
+        console.log('Message页面从缓存中取出的消息记录', res);
       });
       this.setState({
         currentUser: json.Result,
@@ -203,29 +202,31 @@ class Message extends BaseComponent {
   }
 
   _getCookie() {
+    //先重置cookie
+    cookie = null;
     CookieManager.get(URL_DEV, (err, res) => {
       console.log('Got cookies for url', res);
       //rkt为当前cookie的key
       cookie = res.rkt;
       if (temGlobal.proxy === null) {
-        this._initWebSocket();
+        this._initWebSocket('');
       }
     })
   }
 
-  _initWebSocket() {
-    //注销重新登录,会重新初始化此页面,connect需要重置
-    temGlobal.connection=null;
-    connection=null;
+  _initWebSocket(data) {
+    console.log(data);
+    //注销重新登录,会重新初始化此页面,connect,proxy需要重置
+    temGlobal.connection = null;
+    temGlobal.proxy = null;
+    connection = null;
 
     connection = signalr.hubConnection(URL_WS_DEV);
     connection.logging = false;
-    console.log(connection);
-    proxy = connection.createHubProxy('ChatCore');
+    //console.log(connection);
 
     //将proxy保存在全局变量中,以便其他地方使用
-
-    temGlobal.proxy = proxy;
+    temGlobal.proxy = connection.createHubProxy('ChatCore');
 
     temGlobal.connection = connection;
 
@@ -251,7 +252,9 @@ class Message extends BaseComponent {
       temGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + connection.id);
 
-      temGlobal._initWebSocket=()=>{this._initWebSocket()};
+      temGlobal._initWebSocket = ()=> {
+        this._initWebSocket('这是连接成功后,将初始化方法赋值给全局变量')
+      };
 
     }).fail(() => {
       console.log('Failed');
@@ -269,16 +272,14 @@ class Message extends BaseComponent {
     });
 
     temGlobal.proxy.on('getNewMsg', (obj) => {
-      console.log('服务器返回的原始数据',obj);
+      console.log('服务器返回的原始数据', obj);
       let routes = navigator.getCurrentRoutes();
-      console.log('路由栈',routes);
+      console.log('路由栈', routes);
       temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+      console.log('Message页面成功标为已读');
       //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
       if (routes[routes.length - 1].name != 'MessageDetail') {
-        console.log('服务器返回的原始数据',obj);
         console.log('Message页面收到了新消息');
-
-        console.log('Message页面成功标为已读');
         //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
         //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
         this._margeMessage(JSON.parse(JSON.stringify(obj.MsgPackage)));
@@ -288,7 +289,7 @@ class Message extends BaseComponent {
 
   //合并后台推送过来的消息(存缓存时,需要将时间以字符串时间形式存储,不能直接存Date类型,JSON.stringify将Date会转换成字符串)
   _margeMessage(data) {
-    console.log('需要合并的数据',data);
+    console.log('需要合并的数据', data);
     let newMsgList = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newMsgList.length; i++) {
       for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
@@ -303,7 +304,7 @@ class Message extends BaseComponent {
           user: {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
-            avatar: newMsgList[i].SenderAvatar,
+            avatar: URL_DEV + newMsgList[i].SenderAvatar,
             myUserId: this.state.currentUser.UserId
           }
         };
@@ -325,9 +326,11 @@ class Message extends BaseComponent {
     console.log(objCopy);
     //剩下的新消息不和已存在的对话合并,单独占一(多)行
     this.state.messageList = this.state.messageList.concat(newMsgList);
+    console.log('合并后的页面消息列表',this.state.messageList);
+
     this.setState({
       messageList: this.state.messageList
-    }, ()=> {
+    },()=> {
       //在setState的回调里开始缓存消息
       console.log('Message页面开始缓存消息');
       console.log(this.state.messageList);
@@ -347,7 +350,7 @@ class Message extends BaseComponent {
       params: {
         UserId: rowData.SenderId,
         Nickname: rowData.SenderNickname,
-        UserAvatar: URL_DEV + rowData.SenderAvatar,
+        UserAvatar: rowData.SenderAvatar,
         myUserId: this.state.currentUser.UserId
       }
     })
