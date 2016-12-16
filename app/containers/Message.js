@@ -131,6 +131,7 @@ class Message extends BaseComponent {
 
   componentWillUnmount() {
     this.subscription.remove();
+    temGlobal.connection.stop();
   }
 
   //每次收到新的消息,缓存消息列表
@@ -213,6 +214,10 @@ class Message extends BaseComponent {
   }
 
   _initWebSocket() {
+    //注销重新登录,会重新初始化此页面,connect需要重置
+    temGlobal.connection=null;
+    connection=null;
+
     connection = signalr.hubConnection(URL_WS_DEV);
     connection.logging = false;
     console.log(connection);
@@ -242,15 +247,15 @@ class Message extends BaseComponent {
       //console.log(str);
     });
 
-    const _start = ()=> {
-      temGlobal.connection.start().done(() => {
-        temGlobal.proxy.invoke('login', cookie);
-        console.log('Now connected, connection ID=' + connection.id);
-      }).fail(() => {
-        console.log('Failed');
-        _start();
-      })
-    };
+    temGlobal.connection.start().done(() => {
+      temGlobal.proxy.invoke('login', cookie);
+      console.log('Now connected, connection ID=' + connection.id);
+
+      temGlobal._initWebSocket=()=>{this._initWebSocket()};
+
+    }).fail(() => {
+      console.log('Failed');
+    });
 
     temGlobal.connection.connectionSlow(function () {
       console.log('We are currently experiencing difficulties with the connection.')
@@ -259,10 +264,9 @@ class Message extends BaseComponent {
     //断开需要重连
     temGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
-      _start();
+      console.log('开始重新连接');
+      temGlobal._initWebSocket();
     });
-
-    _start();
 
     temGlobal.proxy.on('getNewMsg', (obj) => {
       console.log('服务器返回的原始数据',obj);
@@ -331,12 +335,6 @@ class Message extends BaseComponent {
       let params = JSON.parse(JSON.stringify(this.state.messageList));
       this._cacheMessageList(params);
     });
-  }
-
-  //2016-12-12T20:08:27.723355+11:00
-  _handleSendDate(str) {
-    let newStr = str.split('T')[0] + ' ' + str.split('T')[1].split('.')[0];
-    return strToDateTime(newStr);
   }
 
   //如果在消息列表界面收到新消息,点击进入聊天界面,聊天界面需要从缓存中加载历史聊天记录

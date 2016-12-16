@@ -9,7 +9,7 @@ let tmpGlobal = {
   currentLocation:null,
   currentUser:null,
   connection:null,
-  Msg:[]
+  _initWebSocket:null
 };
 
 export default tmpGlobal

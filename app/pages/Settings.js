@@ -16,6 +16,7 @@ import * as Storage from '../utils/Storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Login from '../pages/Login'
 import {toastShort} from '../utils/ToastUtil'
+import temGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +58,8 @@ class Settings extends BaseComponent {
   }
 
   _logOut() {
+    //注销后,关闭signalr连接
+    temGlobal.connection.stop();
     Storage.removeItem('hasRegistered');
     Storage.removeItem('userInfo');
     toastShort('注销成功');

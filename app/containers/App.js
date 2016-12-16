@@ -56,6 +56,7 @@ class App extends Component {
     super(props);
     this.renderScene = this.renderScene.bind(this);
     this.onBackAndroid = this.onBackAndroid.bind(this);
+    this._handleConnectivityChange=this._handleConnectivityChange.bind(this);
     this.state = {
       pending: false,
       hasRegistered: false,
