@@ -9,7 +9,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Keyboard
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -60,6 +61,7 @@ class EditPersonalSignature extends BaseComponent {
 
   //保存签名
   _saveSignature(data) {
+    Keyboard.dismiss();
     const {dispatch, navigator}=this.props;
     dispatch(UserProfileActions.savePersonalSignature({personSignal: data}, (result)=> {
       dispatch(HomeActions.getCurrentUserProfile('', (json)=> {

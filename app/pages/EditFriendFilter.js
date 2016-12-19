@@ -15,9 +15,7 @@ import {
   InteractionManager,
   DeviceEventEmitter
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
 import * as HomeActions from '../actions/Home'
@@ -125,7 +123,7 @@ class EditFriendFilter extends BaseComponent {
       WeightMax: this.state.WeightMax
     };
     dispatch(FriendFilterActions.editFriendFilter(data, (json)=> {
-      DeviceEventEmitter.emit('friendFilterChanged','编辑交友信息成功');
+      DeviceEventEmitter.emit('friendFilterChanged', '编辑交友信息成功');
       toastShort('保存成功!');
       this.saveTimer = setTimeout(()=> {
         navigator.pop();
@@ -140,8 +138,8 @@ class EditFriendFilter extends BaseComponent {
     })
   }
 
-  componentWillUnmount(){
-    if(this.saveTimer){
+  componentWillUnmount() {
+    if (this.saveTimer) {
       clearTimeout(this.saveTimer)
     }
   }
@@ -151,15 +149,27 @@ class EditFriendFilter extends BaseComponent {
     dispatch(HomeActions.getDatingFilter('', (json)=> {
       this.setState({
         ...json.Result,
-        ageRangeText: `${json.Result.AgeMin}-${json.Result.AgeMax}岁`,
-        heightRangeText: `${json.Result.HeightMin}-${json.Result.HeightMax}cm`,
-        weightRangeText: `${json.Result.WeightMin}-${json.Result.WeightMax}kg`,
-        genderText: '不限',
+        ageRangeText: this._handleRange(json.Result.AgeMin, json.Result.AgeMax, '岁'),
+        heightRangeText: this._handleRange(json.Result.HeightMin, json.Result.HeightMax, 'cm'),
+        weightRangeText: this._handleRange(json.Result.WeightMin, json.Result.WeightMax, 'kg'),
+        genderText: json.Result.Gender === null ? '不限' : (json.Result.Gender ? '男' : '女'),
         photoOnlyText: json.Result.PhotoOnly === null ? '不限' : (json.Result.PhotoOnly ? '是' : '否'),
         loading: false
       })
     }, (error)=> {
     }));
+  }
+
+  _handleRange(min, max, str) {
+    if (min === null && max === null) {
+      return '不限';
+    } else if (min !== null && max === null) {
+      return `${min}${str}以上`
+    } else if (min === null && max !== null) {
+      return `${max}${str}以下`
+    } else {
+      return `${min}-${max}${str}`
+    }
   }
 
   _createAgeRangeData() {

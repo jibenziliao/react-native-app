@@ -18,7 +18,8 @@ import {
   PickerIOS,
   ActionSheetIOS,
   Picker,
-  Alert
+  Alert,
+  Keyboard
 } from 'react-native'
 import {connect} from 'react-redux'
 import {componentStyles} from '../style'
@@ -138,6 +139,7 @@ class Addannouncement extends BaseComponent {
 
   //点击完成
   onRightPressed() {
+    Keyboard.dismiss();
     const {dispatch, navigator}=this.props;
     dispatch(HomeActions.postAnnouncement(this.state, navigator));
   }

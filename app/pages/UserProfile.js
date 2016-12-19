@@ -453,7 +453,7 @@ class UserProfile extends BaseComponent {
     Keyboard.dismiss();
     RNPicker.init({
       pickerData: _createData,
-      selectedValue: [this.state[`${text}`]],
+      selectedValue: [this.state[`${text}`] !=''?this.state[`${text}`]:_createData[0]],
       onPickerConfirm: pickedValue => {
         this._updateState(text, value, pickedValue[0]);
         RNPicker.hide();
@@ -466,6 +466,12 @@ class UserProfile extends BaseComponent {
       }
     });
     RNPicker.show();
+  }
+
+  _hidePicker(){
+    RNPicker.isPickerShow((status)=> {
+      if (status) RNPicker.hide()
+    });
   }
 
   _createDateData() {
@@ -626,6 +632,7 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            onFocus={()=>{this._hidePicker()}}
             value={this.state.location}
             onChangeText={(location)=>this.setState({location})}
             maxLength={50}/>
@@ -639,6 +646,7 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            onFocus={()=>{this._hidePicker()}}
             value={this.state.hometown}
             onChangeText={(hometown)=>this.setState({hometown})}
             maxLength={15}/>
@@ -669,13 +677,17 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            maxLength={15}/>
+            onFocus={()=>{this._hidePicker()}}
+            //这里的联系方式暂时无效,默认为用户手机号
+            //onChangeText={(ethnicity)=>this.setState({ethnicity})}
+            maxLength={20}/>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'兴趣爱好'}</Text>
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            onFocus={()=>{this._hidePicker()}}
             value={this.state.interest}
             onChangeText={(interest)=>this.setState({interest})}
             maxLength={15}/>
@@ -685,6 +697,7 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            onFocus={()=>{this._hidePicker()}}
             value={this.state.selfEvaluation}
             onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
             maxLength={100}/>
@@ -710,6 +723,7 @@ class UserProfile extends BaseComponent {
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
+                onFocus={()=>{this._hidePicker()}}
                 value={this.state.nickName}
                 onChangeText={(nickName)=>this.setState({nickName})}
                 maxLength={15}/>
