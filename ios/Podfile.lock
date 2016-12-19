@@ -4,6 +4,7 @@ PODS:
   - GoogleMaps/Base (2.1.1)
   - GoogleMaps/Maps (2.1.1):
     - GoogleMaps/Base
+  - IQKeyboardManager (4.0.7)
   - React/Core (0.38.0)
   - React/RCTActionSheet (0.38.0):
     - React/Core
@@ -27,6 +28,7 @@ PODS:
 
 DEPENDENCIES:
   - GoogleMaps
+  - IQKeyboardManager
   - React/Core (from `../node_modules/react-native`)
   - React/RCTActionSheet (from `../node_modules/react-native`)
   - React/RCTGeolocation (from `../node_modules/react-native`)
@@ -44,8 +46,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
+  IQKeyboardManager: 69002bb4fea60596b710e57d426abc00e5063630
   React: 3cdd13d7c8f6ad5c20216aa83e032f0ce4087944
 
-PODFILE CHECKSUM: e7be162accd7b57d32f1332367f49d91d7c580f5
+PODFILE CHECKSUM: 17db0c40702eb027b69d1fe19f9205fa7c763d1e
 
 COCOAPODS: 1.1.1

@@ -607,19 +607,27 @@ class Home extends BaseComponent {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
+            <View style={{
+              flexDirection:'row',
+              alignItems:'center',
+              justifyContent:'center',
+              flex:1
+            }}>
             <TextInput
               multiline={false}
               style={{
                 height: 40,
                 flex: 1,
                 backgroundColor: '#fff',
-                borderRadius: 4
+                borderRadius: 4,
+                paddingHorizontal:10
               }}
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
               maxLength={50}
               onChangeText={(comment)=>this.setState({comment})}
               value={this.state.comment}/>
+              </View>
             <View>
               <NBButton
                 primary

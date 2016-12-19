@@ -3,7 +3,7 @@
  * @author keyy/1501718947@qq.com 16/12/5 17:27
  * @description
  */
-import React,{Component} from 'react'
+import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
@@ -52,12 +52,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     marginHorizontal: 10,
-    paddingVertical:10
+    paddingVertical: 10
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   cardLeft: {
     flexDirection: 'row',
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'space-between',
+    alignItems: 'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   postImage: {
     flexDirection: 'row',
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 5,
     justifyContent: 'flex-start',
-    paddingLeft:10
+    paddingLeft: 10
   },
   cardBtn: {
     marginTop: 10,
@@ -122,8 +123,8 @@ let commentId;
 let lastCount;
 let currentUser;
 
-class AnnouncementList extends BaseComponent{
-  constructor(props){
+class AnnouncementList extends BaseComponent {
+  constructor(props) {
     super(props);
     navigator = this.props.navigator;
     this.state = {
@@ -140,7 +141,7 @@ class AnnouncementList extends BaseComponent{
 
   //处理距离
   _distance(data) {
-    return (parseFloat(data)/1000).toFixed(2);
+    return (parseFloat(data) / 1000).toFixed(2);
   }
 
   _toEnd() {
@@ -282,7 +283,7 @@ class AnnouncementList extends BaseComponent{
             ...json.Result,
             myLocation: this.state.myLocation,
             commentList: result.Result,
-            myUserId:this.state.myUserId,
+            myUserId: this.state.myUserId,
             isSelf: this.state.myUserId === rowData.CreaterId,
             callBack: ()=> {
               this._onRefresh()
@@ -328,7 +329,8 @@ class AnnouncementList extends BaseComponent{
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={()=> {
-            {/*this._goUserInfo(rowData.PosterInfo)*/}
+            {/*this._goUserInfo(rowData.PosterInfo)*/
+            }
             console.log('你点击了用户公告历史记录中的头像及昵称')
           }}>
           <View style={styles.cardRow}>
@@ -337,14 +339,12 @@ class AnnouncementList extends BaseComponent{
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
-                <View style={{flex: 1}}>
-                  <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                    <Icon
-                      name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                      size={12}
-                      style={styles.userInfoIcon}/>
-                    <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
-                  </View>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                  <Icon
+                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                    size={12}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
             </View>
@@ -481,19 +481,27 @@ class AnnouncementList extends BaseComponent{
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <TextInput
-              multiline={false}
-              style={{
-                height: 40,
-                flex: 1,
-                backgroundColor: '#fff',
-                borderRadius: 4
-              }}
-              underlineColorAndroid={'transparent'}
-              placeholder={'请输入回复'}
-              maxLength={50}
-              onChangeText={(comment)=>this.setState({comment})}
-              value={this.state.comment}/>
+            <View style={{
+              flexDirection: 'row',
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <TextInput
+                multiline={false}
+                style={{
+                  height: 40,
+                  flex: 1,
+                  backgroundColor: '#fff',
+                  borderRadius: 4,
+                  paddingHorizontal: 10
+                }}
+                underlineColorAndroid={'transparent'}
+                placeholder={'请输入回复'}
+                maxLength={50}
+                onChangeText={(comment)=>this.setState({comment})}
+                value={this.state.comment}/>
+            </View>
             <View>
               <NBButton
                 primary
@@ -524,8 +532,8 @@ class AnnouncementList extends BaseComponent{
 
 }
 
-export default connect((state)=>{
-  return{
+export default connect((state)=> {
+  return {
     ...state
   }
 })(AnnouncementList)
