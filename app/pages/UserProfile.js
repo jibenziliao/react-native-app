@@ -660,6 +660,7 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
+            onFocus={()=>{this._hidePicker()}}
             value={this.state.ethnicity}
             onChangeText={(ethnicity)=>this.setState({ethnicity})}
             maxLength={15}/>
