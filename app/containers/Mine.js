@@ -11,10 +11,11 @@ import {
   InteractionManager,
   Image,
   TouchableOpacity,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Dimensions,
+  ScrollView
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
-import * as Storage from '../utils/Storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import Spinner from '../components/Spinner'
@@ -25,6 +26,8 @@ import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
 import Settings from '../pages/Settings'
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -32,15 +35,16 @@ const styles = StyleSheet.create({
   },
   avatarArea: {
     alignItems: 'center',
-    paddingTop: 40,
+    paddingTop: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,
     borderColor: 'gray'
   },
   userAvatar: {
-    height: 100,
-    width: 100,
-    borderRadius: 100
+    height: width / 3,
+    width: width / 3,
+    borderRadius: width / 6,
+    marginBottom: 20
   },
   avatarText: {
     color: '#fff',
@@ -99,8 +103,12 @@ class Mine extends BaseComponent {
   }
 
   componentDidMount() {
-    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=>{this._getCurrentUserInfo()});
-    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=>{this._updateSignature(data)});
+    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=> {
+      this._getCurrentUserInfo()
+    });
+    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=> {
+      this._updateSignature(data)
+    });
 
   }
 
@@ -135,9 +143,9 @@ class Mine extends BaseComponent {
   }
 
   //刷新签名
-  _updateSignature(data){
+  _updateSignature(data) {
     this.setState({
-      PersonSignal:data.data
+      PersonSignal: data.data
     })
   }
 
@@ -172,8 +180,8 @@ class Mine extends BaseComponent {
   //前往设置页
   _goSettings() {
     navigator.push({
-      component:Settings,
-      name:'Settings'
+      component: Settings,
+      name: 'Settings'
     })
   }
 
@@ -198,64 +206,66 @@ class Mine extends BaseComponent {
     if (this.state.loadUserInfo) {
       return (
         <View style={styles.container}>
-          <View style={styles.avatarArea}>
-            <Image
-              style={styles.userAvatar}
-              source={{uri: URL_DEV + this.state.PhotoUrl}}/>
-            <Text>{this.state.Nickname}</Text>
-            <View style={[styles.userAvatarLabel, this._renderGenderStyle(this.state.Gender)]}>
-              <Icon
-                style={styles.avatarText}
-                name={this.state.Gender ? 'mars-stroke' : 'venus'}
-                size={14}/>
-              <Text style={styles.avatarText}>{this.state.Age}</Text>
-              {this._renderLocation(this.state.Location)}
+          <ScrollView>
+            <View style={styles.avatarArea}>
+              <Image
+                style={styles.userAvatar}
+                source={{uri: URL_DEV + this.state.PhotoUrl}}/>
+              <Text>{this.state.Nickname}</Text>
+              <View style={[styles.userAvatarLabel, this._renderGenderStyle(this.state.Gender)]}>
+                <Icon
+                  style={styles.avatarText}
+                  name={this.state.Gender ? 'mars-stroke' : 'venus'}
+                  size={14}/>
+                <Text style={styles.avatarText}>{this.state.Age}</Text>
+                {this._renderLocation(this.state.Location)}
+              </View>
             </View>
-          </View>
-          <View style={styles.listItem}>
-            <Text
-              style={styles.listItemLeft}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
+            <View style={styles.listItem}>
+              <Text
+                style={styles.listItemLeft}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
+              <TouchableOpacity
+                onPress={()=> {
+                  this._editSignature(this.state.PersonSignal)
+                }}
+                style={styles.listItemIcon}
+                activeOpacity={0.5}>
+                <Icon name={'edit'} size={20}/>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity
               onPress={()=> {
-                this._editSignature(this.state.PersonSignal)
+                this._editMyDetail(this.state)
               }}
-              style={styles.listItemIcon}
-              activeOpacity={0.5}>
-              <Icon name={'edit'} size={20}/>
+              style={styles.listItem}>
+              <View style={styles.listItemLeft}>
+                <Icon
+                  style={styles.itemIcon}
+                  name={'list-alt'}
+                  size={18}/>
+                <Text>{'详细资料'}</Text>
+              </View>
+              <View style={styles.listItemIcon}>
+                <Icon name={'angle-right'} size={20}/>
+              </View>
             </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            onPress={()=> {
-              this._editMyDetail(this.state)
-            }}
-            style={styles.listItem}>
-            <View style={styles.listItemLeft}>
-              <Icon
-                style={styles.itemIcon}
-                name={'list-alt'}
-                size={18}/>
-              <Text>{'详细资料'}</Text>
-            </View>
-            <View style={styles.listItemIcon}>
-              <Icon name={'angle-right'} size={20}/>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={()=> {
-              this._goSettings()
-            }}
-            style={styles.listItem}>
-            <View style={styles.listItemLeft}>
-              <Icon
-                style={styles.itemIcon}
-                name={'gear'}
-                size={18}/>
-              <Text>{'设置'}</Text>
-            </View>
-            <View style={styles.listItemIcon}>
-              <Icon name={'angle-right'} size={20}/>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={()=> {
+                this._goSettings()
+              }}
+              style={styles.listItem}>
+              <View style={styles.listItemLeft}>
+                <Icon
+                  style={styles.itemIcon}
+                  name={'gear'}
+                  size={18}/>
+                <Text>{'设置'}</Text>
+              </View>
+              <View style={styles.listItemIcon}>
+                <Icon name={'angle-right'} size={20}/>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       )
     } else {

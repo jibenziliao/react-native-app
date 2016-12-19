@@ -31,7 +31,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     flexDirection:'row',
-    margin:10
+    margin:10,
+    alignItems:'center'
   },
   itemIcon: {
     width: 60,
@@ -39,7 +40,8 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center'
   },
   itemText:{
-    textAlignVertical:'center'
+    textAlignVertical:'center',
+
   }
 });
 
