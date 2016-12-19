@@ -120,14 +120,14 @@ class ImageViewer extends Component {
         <View style={styles.imageOptions}>
           <Image source={{uri: rowData.uri}} style={styles.image}/>
           <View style={styles.button}>
-            <NBButton
+            {/*<NBButton
               block
               bordered
               onPress={()=> {
                 this.props.setAvatar(rowData)
               }}>
               设为头像
-            </NBButton>
+            </NBButton>*/}
             <NBButton
               block
               bordered

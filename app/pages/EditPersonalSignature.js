@@ -42,6 +42,8 @@ const styles = StyleSheet.create({
   }
 });
 
+let navigator;
+
 class EditPersonalSignature extends BaseComponent {
   constructor(props) {
     super(props);
@@ -64,6 +66,9 @@ class EditPersonalSignature extends BaseComponent {
         Storage.setItem('userInfo', json.Result);
         DeviceEventEmitter.emit('signatureChanged',{data:data,message:'签名更改成功'});
         toastShort('保存成功');
+        this.saveSignatureTimer=setTimeout(()=>{
+          navigator.pop();
+        },1000)
       }, (error)=> {
       }));
     }, (error)=> {

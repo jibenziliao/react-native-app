@@ -94,15 +94,6 @@ class Photos extends BaseComponent {
     }
   }
 
-  //去首页
-  goHome() {
-    const {navigator} =this.props;
-    navigator.push({
-      component: MainContainer,
-      name: 'MainContainer'
-    });
-  }
-
   //下一步
   goNext() {
     const {navigator, dispatch} =this.props;
@@ -114,15 +105,6 @@ class Photos extends BaseComponent {
     } else {
       dispatch(PhotoAction.uploadImage(this.state.imageArr, navigator));
     }
-  }
-
-  //去交友信息页面
-  goFriendFilter() {
-    const {navigator} =this.props;
-    navigator.push({
-      component: FriendsFilter,
-      name: 'FriendsFilter'
-    });
   }
 
   getNavigationBarProps() {
