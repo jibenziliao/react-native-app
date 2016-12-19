@@ -536,6 +536,15 @@ class EditUserProfile extends BaseComponent {
                 {this.renderSinglePicker('MapPrecision', 'MapPrecision', this._createMapData())}
               </View>
               <View style={styles.listItem}>
+                <Text style={styles.inputLabel}>{'民族'}</Text>
+                <TextInput
+                  style={[styles.input, styles.fullInput]}
+                  underlineColorAndroid={'transparent'}
+                  value={this.state.Ethnicity}
+                  onChangeText={(Ethnicity)=>this.setState({Ethnicity})}
+                  maxLength={15}/>
+              </View>
+              <View style={styles.listItem}>
                 <Text style={styles.inputLabel}>{'信仰'}</Text>
                 {this.renderSinglePicker('ReligionName', 'ReligionName', this.state.DictMap.ReligionDict)}
               </View>

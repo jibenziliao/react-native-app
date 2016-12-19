@@ -294,7 +294,7 @@ class UserProfile extends BaseComponent {
     } else if (DatingPurposeSelectCopy.length == 0) {
       toastShort('请选择交友目的');
       return false;
-    }else{
+    } else {
       return true;
     }
   }
@@ -470,7 +470,7 @@ class UserProfile extends BaseComponent {
 
   _createDateData() {
     let date = [];
-    let currentYear = new Date().getFullYear();
+    let currentYear = new Date().getFullYear() - 1;
     for (let i = 1950; i < currentYear + 1; i++) {
       let month = [];
       for (let j = 1; j < 13; j++) {
@@ -702,7 +702,9 @@ class UserProfile extends BaseComponent {
           keyboardShouldPersistTaps={true}>
           <View style={styles.needItems}
                 pointerEvents={'box-none'}
-                onStartShouldSetResponderCapture={()=>{return false}}>
+                onStartShouldSetResponderCapture={()=> {
+                  return false
+                }}>
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'昵称'}</Text>
               <TextInput

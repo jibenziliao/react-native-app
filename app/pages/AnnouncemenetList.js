@@ -335,8 +335,9 @@ class AnnouncementList extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
-              <Image source={{uri: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg'}}
-                     style={styles.avatarImg}/>
+              <Image
+                source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
+                style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
                 <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
