@@ -36,12 +36,7 @@ const styles = StyleSheet.create({
   },
   itemIcon: {
     width: 60,
-    textAlign: 'center',
-    textAlignVertical: 'center'
-  },
-  itemText:{
-    textAlignVertical:'center',
-
+    textAlign: 'center'
   }
 });
 
@@ -95,7 +90,7 @@ class Settings extends BaseComponent {
               style={styles.itemIcon}
               size={20}
             />
-            <Text style={styles.itemText}>{'注销'}</Text>
+            <Text>{'注销'}</Text>
           </TouchableOpacity>
         </View>
       </View>

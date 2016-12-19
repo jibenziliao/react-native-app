@@ -46,14 +46,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     flex: 1,
     marginTop: 10,
-    marginBottom:5,
+    marginBottom: 5,
     marginHorizontal: 10,
-    paddingVertical:10
+    paddingVertical: 10
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   cardLeft: {
     flexDirection: 'row',
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'space-between',
+    alignItems: 'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -100,14 +101,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 5,
     justifyContent: 'flex-start',
-    paddingLeft:10
+    paddingLeft: 10
   },
   moodText: {
     fontSize: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   cardBtn: {
     marginTop: 10,
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   commentCard: {
     padding: 10,
-    marginBottom:5,
+    marginBottom: 5,
     backgroundColor: '#fff',
     borderRadius: 4,
     borderColor: '#fff',
@@ -214,9 +215,9 @@ class AnnouncementDetail extends BaseComponent {
         name: 'Addannouncement',
         params: {
           myLocation: this.state.myLocation,
-          myUserId:this.state.CreaterId,
+          myUserId: this.state.CreaterId,
           callBack: this.state.callBack,
-          Nickname:this.state.PosterInfo.Nickname
+          Nickname: this.state.PosterInfo.Nickname
         }
       })
     }
@@ -451,7 +452,7 @@ class AnnouncementDetail extends BaseComponent {
 
   //处理距离
   _distance(data) {
-    return (parseFloat(data)/1000).toFixed(2);
+    return (parseFloat(data) / 1000).toFixed(2);
   }
 
   //处理到期日期
@@ -482,7 +483,7 @@ class AnnouncementDetail extends BaseComponent {
         return (
           <Image
             key={index}
-            style={{width: imageWidth, height: imageWidth, marginBottom: 10,marginRight:10}}
+            style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
             source={{uri: URL_DEV + '/' + item}}/>
         )
       })
@@ -498,10 +499,10 @@ class AnnouncementDetail extends BaseComponent {
         style={styles.commentCard}>
         <View style={styles.cardLeft}>
           <TouchableOpacity
-          onPress={()=>{
-            this._goUserInfo(rowData.CommentUserInfo)
-          }}>
-            <Image source={{uri: URL_DEV+rowData.CommentUserInfo.PrimaryPhotoFilename}}
+            onPress={()=> {
+              this._goUserInfo(rowData.CommentUserInfo)
+            }}>
+            <Image source={{uri: URL_DEV + rowData.CommentUserInfo.PrimaryPhotoFilename}}
                    style={styles.commentImg}/>
           </TouchableOpacity>
           <View style={styles.commentArea}>
@@ -547,7 +548,7 @@ class AnnouncementDetail extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
-              <Image source={{uri: URL_DEV+this.state.PosterInfo.PrimaryPhotoFilename}}
+              <Image source={{uri: URL_DEV + this.state.PosterInfo.PrimaryPhotoFilename}}
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{this.state.PosterInfo.Nickname}</Text>
@@ -650,15 +651,18 @@ class AnnouncementDetail extends BaseComponent {
   renderBody() {
     return (
       <View style={styles.container}>
-        {this.renderCommentList()}
-        <ActionSheet
-          ref={(o) => this.ActionSheet = o}
-          title="请选择你的操作"
-          options={buttons}
-          cancelButtonIndex={CANCEL_INDEX}
-          destructiveButtonIndex={DESTRUCTIVE_INDEX}
-          onPress={this._actionSheetPress.bind(this)}
-        />
+        <ScrollView
+          keyboardDismissMode={'interactive'}>
+          {this.renderCommentList()}
+          <ActionSheet
+            ref={(o) => this.ActionSheet = o}
+            title="请选择你的操作"
+            options={buttons}
+            cancelButtonIndex={CANCEL_INDEX}
+            destructiveButtonIndex={DESTRUCTIVE_INDEX}
+            onPress={this._actionSheetPress.bind(this)}
+          />
+        </ScrollView>
         <Modal
           style={{
             backgroundColor: '#E2E2E2',
@@ -678,19 +682,27 @@ class AnnouncementDetail extends BaseComponent {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <TextInput
-              multiline={false}
-              style={{
-                height: 40,
-                flex: 1,
-                backgroundColor: '#fff',
-                borderRadius: 4
-              }}
-              underlineColorAndroid={'transparent'}
-              placeholder={`输入评论/回复${this.state.commentUser}:`}
-              maxLength={50}
-              onChangeText={(comment)=>this.setState({comment})}
-              value={this.state.comment}/>
+            <View style={{
+              justifyContent: 'center',
+              flex: 1,
+              alignItems: 'center',
+              flexDirection: 'row'
+            }}>
+              <TextInput
+                multiline={false}
+                style={{
+                  height: 40,
+                  flex: 1,
+                  backgroundColor: '#fff',
+                  borderRadius: 4,
+                  paddingHorizontal: 10
+                }}
+                underlineColorAndroid={'transparent'}
+                placeholder={`输入评论/回复${this.state.commentUser}:`}
+                maxLength={50}
+                onChangeText={(comment)=>this.setState({comment})}
+                value={this.state.comment}/>
+            </View>
             <View>
               <NBButton
                 primary
