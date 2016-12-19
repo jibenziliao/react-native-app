@@ -106,6 +106,7 @@ class Mine extends BaseComponent {
     this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=> {
       this._getCurrentUserInfo()
     });
+    this.userProfileListener=DeviceEventEmitter.addListener('userInfoChanged', ()=>{this._getCurrentUserInfo()});
     this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=> {
       this._updateSignature(data)
     });
@@ -115,6 +116,7 @@ class Mine extends BaseComponent {
   componentWillUnmount() {
     this.subscription.remove();
     this.signatureListener.remove();
+    this.userProfileListener.remove();
   }
 
   _getCurrentUserInfo() {
