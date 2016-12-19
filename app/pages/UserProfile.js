@@ -17,7 +17,8 @@ import {
   PickerIOS,
   ActionSheetIOS,
   Alert,
-  Dimensions
+  Dimensions,
+  Keyboard,
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
@@ -448,6 +449,7 @@ class UserProfile extends BaseComponent {
   }
 
   _showPicker(_createData, text, value) {
+    Keyboard.dismiss();
     RNPicker.init({
       pickerData: _createData,
       selectedValue: [this.state[`${text}`]],
@@ -523,6 +525,7 @@ class UserProfile extends BaseComponent {
   }
 
   _showDatePicker() {
+    Keyboard.dismiss();
     RNPicker.init({
       pickerData: this._createDateData(),
       selectedValue: ['1992年', '1月', '1日'],
@@ -694,9 +697,11 @@ class UserProfile extends BaseComponent {
       <View style={styles.container}>
         <ScrollView
           style={styles.scrollView}
-          keyboardDismissMode={'none'}
+          keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
-          <View style={styles.needItems}>
+          <View style={styles.needItems}
+                pointerEvents={'box-none'}
+                onStartShouldSetResponderCapture={()=>{return false}}>
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'昵称'}</Text>
               <TextInput
