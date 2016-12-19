@@ -18,7 +18,8 @@ import {
   BackAndroid,
   Alert,
   InteractionManager,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Keyboard
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -55,8 +56,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10
   },
-  topSection:{
-    marginTop:10
+  topSection: {
+    marginTop: 10
   },
   itemTitle: {
     paddingVertical: 10
@@ -194,14 +195,13 @@ class EditUserProfile extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
-
+      loading: true
     };
     navigator = this.props.navigator;
   }
 
   componentWillMount() {
-    InteractionManager.runAfterInteractions(()=>{
+    InteractionManager.runAfterInteractions(()=> {
       this._initUserProfile();
     });
   }
@@ -284,13 +284,19 @@ class EditUserProfile extends BaseComponent {
   onRightPressed() {
     const {dispatch}=this.props;
     dispatch(UserProfileActions.editProfile(this.state, DatingPurposeSelectCopy, (json)=> {
-      DeviceEventEmitter.emit('userInfoChanged','编辑用户资料成功');
+      DeviceEventEmitter.emit('userInfoChanged', '编辑用户资料成功');
       toastShort('保存成功!');
-      /*this.saveTimer = setTimeout(()=> {
+      this.saveTimer = setTimeout(()=> {
        navigator.pop();
-       }, 1000)*/
+       }, 1000)
     }, (error)=> {
     }))
+  }
+
+  componentWillUnmount(){
+    if(this.saveTimer){
+      clearTimeout(this.saveTimer)
+    }
   }
 
   renderDatingPurpose() {
@@ -420,7 +426,7 @@ class EditUserProfile extends BaseComponent {
         }
         break;
       case 'ReligionName':
-        this.setState({ReligionName:pickedValue});
+        this.setState({ReligionName: pickedValue});
         break;
       default:
         console.error('设置数据出错!');
@@ -429,6 +435,7 @@ class EditUserProfile extends BaseComponent {
   }
 
   _showPicker(_createData, text, value) {
+    Keyboard.dismiss();
     RNPicker.init({
       pickerData: _createData,
       selectedValue: [this.state[`${text}`]],
@@ -452,8 +459,16 @@ class EditUserProfile extends BaseComponent {
     } else {
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollViewContainer}>
-            <View style={[styles.userInfo,styles.topSection]}>
+          <ScrollView
+            style={styles.scrollViewContainer}
+            keyboardDismissMode={'interactive'}
+            keyboardShouldPersistTaps={true}>
+            <View
+              style={[styles.userInfo, styles.topSection]}
+              pointerEvents={'box-none'}
+              onStartShouldSetResponderCapture={()=> {
+                return false
+              }}>
               <Text style={styles.itemTitle}>{'基本资料'}</Text>
               <View style={[styles.listItem, styles.topItem]}>
                 <Text style={styles.inputLabel}>{'昵称'}</Text>
@@ -505,7 +520,12 @@ class EditUserProfile extends BaseComponent {
                   maxLength={50}/>
               </View>
             </View>
-            <View style={styles.userInfo}>
+            <View
+              style={styles.userInfo}
+              pointerEvents={'box-none'}
+              onStartShouldSetResponderCapture={()=> {
+                return false
+              }}>
               <Text style={styles.itemTitle}>{'其他'}</Text>
               <View style={[styles.listItem, styles.topItem]}>
                 <Text style={styles.inputLabel}>{'学历'}</Text>

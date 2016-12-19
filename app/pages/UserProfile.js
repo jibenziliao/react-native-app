@@ -390,6 +390,7 @@ class UserProfile extends BaseComponent {
 
   //展开更多方法
   expandMore() {
+    Keyboard.dismiss();
     this.setState({
       expandStatus: !this.state.expandStatus,
       expandText: !this.state.expandStatus ? '点击收起' : '点击展开更多(选填)',
@@ -712,7 +713,7 @@ class UserProfile extends BaseComponent {
                 maxLength={15}/>
             </View>
             <View style={styles.inputRow}>
-              <Text style={styles.inputLabel}>{'出生年'}</Text>
+              <Text style={styles.inputLabel}>{'出生日期'}</Text>
               {this.renderBirthYearBtn()}
             </View>
             <View style={styles.inputRow}>
@@ -735,22 +736,6 @@ class UserProfile extends BaseComponent {
             }}>
             下一步
           </NBButton>
-          {/*<NBButton
-           block
-           style={{marginBottom: 30}}
-           onPress={()=> {
-           this.goPhotos()
-           }}>
-           去拍照
-           </NBButton>
-           <NBButton
-           block
-           style={{marginBottom: 30}}
-           onPress={()=> {
-           this.goHome()
-           }}>
-           去首页(Test)
-           </NBButton>*/}
         </ScrollView>
       </View>
     )

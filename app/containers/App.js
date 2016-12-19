@@ -193,6 +193,29 @@ class App extends Component {
       saveLocation();
 
       navigator.geolocation.clearWatch(watchId);
+    },(error)=>{
+      const {dispatch}=this.props;
+      const params = tmpGlobal.currentLocation = {
+        Lat: 0,
+        Lng: 0
+      };
+      async function saveLocation() {
+        await Storage.setItem('currentLocation', params);
+        Storage.getItem('hasRegistered').then(
+          (response)=> {
+            if (response != null) {
+              console.log('用户已注册,开始向后台发送用户位置信息(没有获取到经纬度,使用默认位置)');
+              dispatch(VicinityActions.saveLocation(params, (json)=> {
+              }, (error)=> {
+              }));
+            }
+          }, (error)=> {
+            console.log('读取缓存出错!', error);
+          }
+        );
+      }
+
+      saveLocation();
     });
   }
 

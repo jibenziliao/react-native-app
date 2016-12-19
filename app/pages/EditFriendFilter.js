@@ -95,12 +95,15 @@ const styles = StyleSheet.create({
 const tmpGenderArr = ['不限', '男', '女'];
 const tmpPhotoOnlyArr = ['不限', '是', '否'];
 
+let navigator;
+
 class EditFriendFilter extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
       loading: true
     };
+    navigator = this.props.navigator;
   }
 
   getNavigationBarProps() {
@@ -124,6 +127,9 @@ class EditFriendFilter extends BaseComponent {
     dispatch(FriendFilterActions.editFriendFilter(data, (json)=> {
       DeviceEventEmitter.emit('friendFilterChanged','编辑交友信息成功');
       toastShort('保存成功!');
+      this.saveTimer = setTimeout(()=> {
+        navigator.pop();
+      }, 1000)
     }, (error)=> {
     }));
   }
@@ -132,6 +138,12 @@ class EditFriendFilter extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._initDatingFilter();
     })
+  }
+
+  componentWillUnmount(){
+    if(this.saveTimer){
+      clearTimeout(this.saveTimer)
+    }
   }
 
   _initDatingFilter() {
@@ -422,6 +434,7 @@ class EditFriendFilter extends BaseComponent {
   }
 
 }
+
 export default connect((state)=> {
   return {
     ...state

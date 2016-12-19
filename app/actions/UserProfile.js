@@ -115,8 +115,8 @@ async function getSelectedItem(data) {
     return item.Value == data.ReligionName;
   });
 
-  //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus);
-  return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus});
+  //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus,Religion);
+  return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus,Religion});
 }
 
 export function editProfile(data, datingPurpose, resolve, reject) {
