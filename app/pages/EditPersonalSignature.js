@@ -10,7 +10,10 @@ import {
   Text,
   TextInput,
   DeviceEventEmitter,
-  Keyboard
+  Keyboard,
+  Alert,
+  BackAndroid,
+  Platform
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -49,8 +52,11 @@ class EditPersonalSignature extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.route.params
+      ...this.props.route.params,
+      hasChanged: false
     };
+    navigator = this.props.navigator;
+    this.onBackAndroid = this.onBackAndroid.bind(this);
   }
 
   getNavigationBarProps() {
@@ -62,24 +68,62 @@ class EditPersonalSignature extends BaseComponent {
   //保存签名
   _saveSignature(data) {
     Keyboard.dismiss();
-    const {dispatch, navigator}=this.props;
+    const {dispatch}=this.props;
     dispatch(UserProfileActions.savePersonalSignature({personSignal: data}, (result)=> {
       dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
         Storage.setItem('userInfo', json.Result);
-        DeviceEventEmitter.emit('signatureChanged',{data:data,message:'签名更改成功'});
+        DeviceEventEmitter.emit('signatureChanged', {data: data, message: '签名更改成功'});
         toastShort('保存成功');
-        this.saveSignatureTimer=setTimeout(()=>{
+        this.saveSignatureTimer = setTimeout(()=> {
           navigator.pop();
-        },1000)
+        }, 1000)
       }, (error)=> {
       }));
     }, (error)=> {
     }));
   }
 
+  componentDidMount() {
+    if (Platform.OS === 'android') {
+      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
+  }
+
+  onLeftPressed() {
+    this._backAlert();
+  }
+
+  onBackAndroid() {
+    return ()=>{
+      this._backAlert();
+    }
+  }
+
+  _backAlert() {
+    Keyboard.dismiss();
+    if (this.state.hasChanged) {
+      Alert.alert('提示', '您修改的资料未保存,确定要离开吗?', [
+        {
+          text: '确定', onPress: () => {
+          navigator.pop();
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
+      ]);
+    } else {
+      navigator.pop();
+    }
+  }
+
   componentWillUnmount() {
     if (this.saveSignatureTimer) {
       clearTimeout(this.saveSignatureTimer);
+    }
+    if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
   }
 
@@ -94,7 +138,7 @@ class EditPersonalSignature extends BaseComponent {
           value={this.state.personalSignature}
           underlineColorAndroid={'transparent'}
           onChangeText={(personalSignature)=> {
-            this.setState({personalSignature})
+            this.setState({personalSignature: personalSignature, hasChanged: true})
           }}
         />
         <NBButton

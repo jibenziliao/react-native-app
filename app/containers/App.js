@@ -191,7 +191,7 @@ class App extends Component {
       this.setState({loading: false, getRegistered: true});
       //不管成功还是失败,都要清除监听,避免多次返回错误信息
       navigator.geolocation.clearWatch(watchId);
-    },{enableHighAccuracy: true, timeout: 30000, maximumAge: 5000});
+    }, {enableHighAccuracy: true, timeout: 10000, maximumAge: 0});
   }
 
   _savePosition(lat, lng) {
@@ -324,7 +324,7 @@ class App extends Component {
       lastClickTime = now;
       toastShort('再按一次退出情缘结');
       return true;
-    } else if (routers[routers.length - 1].name == 'EditPhotos') {
+    } else if (routers[routers.length - 1].name == 'EditPhotos' || routers[routers.length - 1].name == 'EditUserProfile' || routers[routers.length - 1].name == 'EditFriendFilter' || routers[routers.length - 1].name == 'EditPersonalSignature') {
       return true;
     } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)

@@ -13,7 +13,9 @@ import {
   Platform,
   TouchableHighlight,
   InteractionManager,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  BackAndroid,
+  Alert
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -99,9 +101,11 @@ class EditFriendFilter extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true
+      loading: true,
+      hasChanged:false
     };
     navigator = this.props.navigator;
+    this.onBackAndroid=this.onBackAndroid.bind(this);
   }
 
   getNavigationBarProps() {
@@ -138,9 +142,48 @@ class EditFriendFilter extends BaseComponent {
     })
   }
 
+  componentDidMount(){
+    if (Platform.OS === 'android') {
+      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
+  }
+
+  onLeftPressed(){
+    this._backAlert();
+  }
+
+  onBackAndroid() {
+    this._backAlert();
+  }
+
+  _backAlert() {
+    //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
+    RNPicker.isPickerShow((status)=> {
+      if (status) RNPicker.hide()
+    });
+    if (this.state.hasChanged) {
+      Alert.alert('提示', '您修改的资料未保存,确定要离开吗?', [
+        {
+          text: '确定', onPress: () => {
+          navigator.pop();
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
+      ]);
+    } else {
+      navigator.pop();
+    }
+  }
+
   componentWillUnmount() {
     if (this.saveTimer) {
       clearTimeout(this.saveTimer)
+    }
+    if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
   }
 
@@ -312,6 +355,7 @@ class EditFriendFilter extends BaseComponent {
   }
 
   _updateState(text, pickedValue) {
+    this.setState({hasChanged:true});
     switch (text) {
       case 'ageRangeText':
         if (pickedValue[0] == '不限' && pickedValue[1] == '不限') {
