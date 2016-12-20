@@ -318,10 +318,7 @@ class Home extends BaseComponent {
             commentList: result.Result,
             pageIndex: 1,
             pageSize: 10,
-            isSelf: true,
-            callBack: ()=> {
-              this._onRefresh()
-            }
+            isSelf: true
           }
         })
       }, (error)=> {
@@ -333,10 +330,7 @@ class Home extends BaseComponent {
         params: {
           myLocation: currentLocation,
           myUserId: currentUser.UserId,
-          Nickname: currentUser.Nickname,
-          callBack: ()=> {
-            this._onRefresh()
-          }
+          Nickname: currentUser.Nickname
         }
       })
     }

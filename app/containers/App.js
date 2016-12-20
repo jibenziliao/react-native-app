@@ -127,71 +127,25 @@ class App extends Component {
 
   getCurrentPosition() {
     console.log('定位开始');
-    watchId = navigator.geolocation.watchPosition((position) => {
-      const lastPosition = {
-        UserId: 0,
-        PhotoUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-        Nickname: 'You are here!',
-        LastLocation: {
-          Lat: position.coords.latitude,
-          Lng: position.coords.longitude
-        },
-        DatingPurpose: ''
-      };
-
-      const initLocation = [{
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      }];
-      //根据坐标计算区域(latPadding=0.15时,zoomLevel是10)
-      const region = calculateRegion(initLocation, {latPadding: 0.15, longPadding: 0.15});
-
-      console.log('成功获取当前区域', region);
-      console.log('成功获取当前位置', lastPosition);
-
-      const {dispatch}=this.props;
-      const params = tmpGlobal.currentLocation = {
-        Lat: lastPosition.LastLocation.Lat,
-        Lng: lastPosition.LastLocation.Lng
-      };
-
-      //定位成功后,关闭加载指示器
-      this.setState({loading: false, getRegistered: true});
-
-      async function saveLocation() {
-        await Storage.setItem('currentLocation', params);
-        Storage.getItem('hasRegistered').then(
-          (response)=> {
-            if (response != null) {
-              console.log('用户已注册,开始向后台发送用户位置信息');
-              dispatch(VicinityActions.saveLocation(params, (json)=> {
-              }, (error)=> {
-              }));
-            }
-          }, (error)=> {
-            console.log('读取缓存出错!', error);
-          }
-        );
-      }
-
-      saveLocation();
-
-      navigator.geolocation.clearWatch(watchId);
-    }, (error)=> {
-      console.log(error);
-      //没有开启位置服务
-      if (error.code === 1) {
-        this._Alert();
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        let initialPosition = JSON.stringify(position);
+        console.log(initialPosition);
+        this._savePosition(position.coords.latitude,position.coords.longitude);
+        //定位成功后,关闭加载指示器
+        this.setState({loading: false, getRegistered: true});
+      },
+      (error) => {
+        console.log(error);
+        //没有开启位置服务
+        if (error.code === 1) {
+          this._Alert();
+        }
         this._savePosition(0, 0);
         this.setState({loading: false, getRegistered: true});
-      }
-      if (error.code === 3) {
-        this._savePosition(0, 0);
-      }
-      this.setState({loading: false, getRegistered: true});
-      //不管成功还是失败,都要清除监听,避免多次返回错误信息
-      navigator.geolocation.clearWatch(watchId);
-    }, {enableHighAccuracy: true, timeout: 10000, maximumAge: 0});
+      },
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
+    );
   }
 
   _savePosition(lat, lng) {
@@ -200,13 +154,12 @@ class App extends Component {
       Lat: lat,
       Lng: lng
     };
-
     async function saveLocation() {
       await Storage.setItem('currentLocation', params);
       Storage.getItem('hasRegistered').then(
         (response)=> {
           if (response != null) {
-            console.log('用户已注册,开始向后台发送用户位置信息(没有获取到经纬度,使用默认位置)');
+            console.log('用户已注册,开始向后台发送用户位置信息');
             dispatch(VicinityActions.saveLocation(params, (json)=> {
             }, (error)=> {
             }));

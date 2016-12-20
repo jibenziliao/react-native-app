@@ -173,9 +173,6 @@ class AnnouncementDetail extends BaseComponent {
 
   componentWillUnmount() {
     clearTimeout(this.deleteTimer);
-  }
-
-  componentDidMount(){
     DeviceEventEmitter.emit('announcementHasRead','公告已阅读');
   }
 
@@ -206,7 +203,7 @@ class AnnouncementDetail extends BaseComponent {
     };
     if (index === 2) {
       dispatch(HomeActions.deleteAnnouncement(data, (json)=> {
-        DeviceEventEmitter.emit('announcementHasDelete','公告被删除');
+        DeviceEventEmitter.emit('announcementHasDelete', '公告被删除');
         toastShort('删除成功');
         this.deleteTimer = setTimeout(()=> {
           navigator.pop();
@@ -329,7 +326,7 @@ class AnnouncementDetail extends BaseComponent {
     };
     dispatch(HomeActions.comment(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (json)=> {
-        DeviceEventEmitter.emit('announcementHasComment','公告被评论');
+        DeviceEventEmitter.emit('announcementHasComment', '公告被评论');
         this.setState({
           CommentCount: this.state.CommentCount,
           comment: '',//评论成功后需要清空评论框内容
@@ -376,7 +373,6 @@ class AnnouncementDetail extends BaseComponent {
           loadingMore: false,
           pageIndex: 1,
           pageSize: 10,
-          callBack: this.state.callBack,
           ...json.Result,
           myLocation: this.state.myLocation,
           myUserId: this.state.myUserId,
@@ -655,18 +651,15 @@ class AnnouncementDetail extends BaseComponent {
   renderBody() {
     return (
       <View style={styles.container}>
-        <ScrollView
-          keyboardDismissMode={'interactive'}>
-          {this.renderCommentList()}
-          <ActionSheet
-            ref={(o) => this.ActionSheet = o}
-            title="请选择你的操作"
-            options={buttons}
-            cancelButtonIndex={CANCEL_INDEX}
-            destructiveButtonIndex={DESTRUCTIVE_INDEX}
-            onPress={this._actionSheetPress.bind(this)}
-          />
-        </ScrollView>
+        {this.renderCommentList()}
+        <ActionSheet
+          ref={(o) => this.ActionSheet = o}
+          title="请选择你的操作"
+          options={buttons}
+          cancelButtonIndex={CANCEL_INDEX}
+          destructiveButtonIndex={DESTRUCTIVE_INDEX}
+          onPress={this._actionSheetPress.bind(this)}
+        />
         <Modal
           style={{
             backgroundColor: '#E2E2E2',

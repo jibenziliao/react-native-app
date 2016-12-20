@@ -497,6 +497,12 @@ class EditUserProfile extends BaseComponent {
     RNPicker.show();
   }
 
+  _hidePicker(){
+    RNPicker.isPickerShow((status)=> {
+      if (status) RNPicker.hide()
+    });
+  }
+
   renderBody() {
     if (this.state.loading) {
       return null
@@ -519,6 +525,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.Nickname}
                   onChangeText={(Nickname)=>this.setState({Nickname: Nickname, hasChanged: true})}
                   maxLength={15}/>
@@ -546,6 +553,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.Location}
                   onChangeText={(Location)=>this.setState({Location: Location, hasChanged: true})}
                   maxLength={50}/>
@@ -559,6 +567,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.Hometown}
                   onChangeText={(Hometown)=>this.setState({Hometown: Hometown, hasChanged: true})}
                   maxLength={50}/>
@@ -584,6 +593,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.Ethnicity}
                   onChangeText={(Ethnicity)=>this.setState({Ethnicity})}
                   maxLength={15}/>
@@ -597,6 +607,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.MobileNo}
                   onChangeText={(MobileNo)=>this.setState({MobileNo})}
                   maxLength={15}/>
@@ -606,6 +617,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.Hobby}
                   onChangeText={(Hobby)=>this.setState({Hobby})}
                   maxLength={15}/>
@@ -615,6 +627,7 @@ class EditUserProfile extends BaseComponent {
                 <TextInput
                   style={[styles.input, styles.fullInput]}
                   underlineColorAndroid={'transparent'}
+                  onFocus={()=>{this._hidePicker()}}
                   value={this.state.SelfEvaluation}
                   onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation})}
                   maxLength={50}/>
