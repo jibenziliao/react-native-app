@@ -32,6 +32,7 @@ import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import tmpGlobal from '../utils/TmpVairables'
+import {toastShort} from '../utils/ToastUtil'
 
 const styles = StyleSheet.create({
   container: {
@@ -586,6 +587,7 @@ class Home extends BaseComponent {
     this.state.postList[index].CommentCount += 1;
 
     dispatch(HomeActions.comment(data, (json)=> {
+      toastShort('评论成功');
       this.setState({
         postList: [
           ...this.state.postList

@@ -63,6 +63,12 @@ const styles = StyleSheet.create({
   cardText: {
     flexWrap: 'nowrap'
   },
+  badgeContainer: {
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection:'row'
+  },
   badge: {
     backgroundColor: 'red',
     borderRadius: 10,
@@ -73,6 +79,10 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: '#fff'
+  },
+  msgContent: {
+    overflow:'hidden',
+    flex:1
   },
   tips: {
     flexDirection: 'row',
@@ -326,11 +336,11 @@ class Message extends BaseComponent {
     console.log(objCopy);
     //剩下的新消息不和已存在的对话合并,单独占一(多)行
     this.state.messageList = this.state.messageList.concat(newMsgList);
-    console.log('合并后的页面消息列表',this.state.messageList);
+    console.log('合并后的页面消息列表', this.state.messageList);
 
     this.setState({
       messageList: this.state.messageList
-    },()=> {
+    }, ()=> {
       //在setState的回调里开始缓存消息
       console.log('Message页面开始缓存消息');
       console.log(this.state.messageList);
@@ -369,10 +379,12 @@ class Message extends BaseComponent {
     }
     if (tmpArr.length > 0) {
       return (
-        <View style={styles.badge}>
-          <Text style={[styles.cardText, styles.badgeText]}>
-            {tmpArr.length}
-          </Text>
+        <View style={styles.badgeContainer}>
+          <View style={styles.badge}>
+            <Text style={[styles.cardText, styles.badgeText]}>
+              {tmpArr.length}
+            </Text>
+          </View>
         </View>
       )
     } else {
@@ -380,15 +392,9 @@ class Message extends BaseComponent {
     }
   }
 
-  //渲染对象用户最新的一条消息(一个rowData.MsgList中包含了对方与自己的聊天信息,这里需显示对方的最新一条聊天)
+  //渲染对象用户最新的一条消息(一个rowData.MsgList中包含了对方与自己的聊天信息,这里需显示的最新一条聊天,不分自己还是对方)
   _renderLastMsgContent(rowData) {
-    let content = [];
-    for (let i = 0; i < rowData.MsgList.length; i++) {
-      if (rowData.MsgList[i].user._id === rowData.SenderId) {
-        content.push(rowData.MsgList[i].text);
-      }
-    }
-    return content[content.length - 1];
+    return rowData.MsgList[rowData.MsgList.length - 1].text;
   }
 
   renderRowData(rowData) {
@@ -412,7 +418,9 @@ class Message extends BaseComponent {
             </Text>
           </View>
           <View style={styles.cardRow}>
-            <Text style={styles.cardText}>
+            <Text
+              style={[styles.cardText, styles.msgContent]}
+              numberOfLines={1}>
               {this._renderLastMsgContent(rowData)}
             </Text>
             {this._renderUnReadCount(rowData.MsgList)}
