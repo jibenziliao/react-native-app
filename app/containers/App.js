@@ -56,7 +56,7 @@ class App extends Component {
     super(props);
     this.renderScene = this.renderScene.bind(this);
     this.onBackAndroid = this.onBackAndroid.bind(this);
-    this._handleConnectivityChange=this._handleConnectivityChange.bind(this);
+    this._handleConnectivityChange = this._handleConnectivityChange.bind(this);
     this.state = {
       pending: false,
       hasRegistered: false,
@@ -117,7 +117,7 @@ class App extends Component {
   };
 
   _Alert() {
-    Alert.alert('提示', '本APP依赖手机的GPS,请打开手机的GPS后,重新打开本APP', [
+    Alert.alert('提示', '本APP依赖手机的GPS,未开启GPS,APP将使用随机位置', [
       {
         text: '确定', onPress: () => {
       }
@@ -127,22 +127,6 @@ class App extends Component {
 
   getCurrentPosition() {
     console.log('定位开始');
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        let initialPosition = JSON.stringify(position);
-        console.log(initialPosition);
-      },
-      (error) => {
-        console.log(JSON.stringify(error));
-        //this._Alert();
-        this.setState({loading: false, getRegistered: true});
-        if ('"No available location provider."' == JSON.stringify(error)) {
-          //toastShort('请打开GPS开关');
-          this._Alert();
-        }
-      },
-      {enableHighAccuracy: true, timeout: 30000, maximumAge: 5000}
-    );
     watchId = navigator.geolocation.watchPosition((position) => {
       const lastPosition = {
         UserId: 0,
@@ -193,30 +177,47 @@ class App extends Component {
       saveLocation();
 
       navigator.geolocation.clearWatch(watchId);
-    },(error)=>{
-      const {dispatch}=this.props;
-      const params = tmpGlobal.currentLocation = {
-        Lat: 0,
-        Lng: 0
-      };
-      async function saveLocation() {
-        await Storage.setItem('currentLocation', params);
-        Storage.getItem('hasRegistered').then(
-          (response)=> {
-            if (response != null) {
-              console.log('用户已注册,开始向后台发送用户位置信息(没有获取到经纬度,使用默认位置)');
-              dispatch(VicinityActions.saveLocation(params, (json)=> {
-              }, (error)=> {
-              }));
-            }
-          }, (error)=> {
-            console.log('读取缓存出错!', error);
-          }
-        );
+    }, (error)=> {
+      console.log(error);
+      //没有开启位置服务
+      if (error.code === 1) {
+        this._Alert();
+        this._savePosition(0, 0);
+        this.setState({loading: false, getRegistered: true});
       }
+      if (error.code === 3) {
+        this._savePosition(0, 0);
+      }
+      this.setState({loading: false, getRegistered: true});
+      //不管成功还是失败,都要清除监听,避免多次返回错误信息
+      navigator.geolocation.clearWatch(watchId);
+    },{enableHighAccuracy: true, timeout: 30000, maximumAge: 5000});
+  }
 
-      saveLocation();
-    });
+  _savePosition(lat, lng) {
+    const {dispatch}=this.props;
+    const params = tmpGlobal.currentLocation = {
+      Lat: lat,
+      Lng: lng
+    };
+
+    async function saveLocation() {
+      await Storage.setItem('currentLocation', params);
+      Storage.getItem('hasRegistered').then(
+        (response)=> {
+          if (response != null) {
+            console.log('用户已注册,开始向后台发送用户位置信息(没有获取到经纬度,使用默认位置)');
+            dispatch(VicinityActions.saveLocation(params, (json)=> {
+            }, (error)=> {
+            }));
+          }
+        }, (error)=> {
+          console.log('读取缓存出错!', error);
+        }
+      );
+    }
+
+    saveLocation();
   }
 
   componentWillUnmount() {
