@@ -214,6 +214,7 @@ class UserProfile extends BaseComponent {
       datingPurposeArr: [],
     };
     navigator = this.props.navigator;
+    this.keyboardWillShow=this.keyboardWillShow.bind(this);
   };
 
   componentWillMount() {
@@ -221,6 +222,11 @@ class UserProfile extends BaseComponent {
       loading: true
     });
     this._initDict();
+    this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+  }
+
+  keyboardWillShow(){
+    this._hidePicker();
   }
 
   _initDict() {
@@ -320,6 +326,16 @@ class UserProfile extends BaseComponent {
       component: Photos,
       name: 'Photos'
     });
+  }
+
+  componentWillUnmount(){
+    if(this.showPickerTimer){
+      clearTimeout(this.showPickerTimer);
+    }
+    if(this.showSinglePickerTimer){
+      clearTimeout(this.showSinglePickerTimer);
+    }
+    this.keyboardWillShowListener.remove();
   }
 
   //去首页
@@ -451,21 +467,25 @@ class UserProfile extends BaseComponent {
 
   _showPicker(_createData, text, value) {
     Keyboard.dismiss();
-    RNPicker.init({
-      pickerData: _createData,
-      selectedValue: [this.state[`${text}`] !=''?this.state[`${text}`]:_createData[0]],
-      onPickerConfirm: pickedValue => {
-        this._updateState(text, value, pickedValue[0]);
-        RNPicker.hide();
-      },
-      onPickerCancel: pickedValue => {
-        RNPicker.hide();
-      },
-      onPickerSelect: pickedValue => {
-        this._updateState(text, value, pickedValue[0]);
-      }
-    });
-    RNPicker.show();
+    //TODO: iOS平台闪退,待测试
+    this.showSinglePickerTimer=setTimeout(()=>{
+      RNPicker.init({
+        pickerData: _createData,
+        selectedValue: [this.state[`${text}`] !=''?this.state[`${text}`]:_createData[0]],
+        onPickerConfirm: pickedValue => {
+          this._updateState(text, value, pickedValue[0]);
+          RNPicker.hide();
+        },
+        onPickerCancel: pickedValue => {
+          RNPicker.hide();
+        },
+        onPickerSelect: pickedValue => {
+          this._updateState(text, value, pickedValue[0]);
+        }
+      });
+      RNPicker.show();
+    },200);
+
   }
 
   _hidePicker(){
@@ -533,27 +553,30 @@ class UserProfile extends BaseComponent {
 
   _showDatePicker() {
     Keyboard.dismiss();
-    RNPicker.init({
-      pickerData: this._createDateData(),
-      selectedValue: ['1992年', '1月', '1日'],
-      onPickerConfirm: pickedValue => {
-        this.setState({
-          birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
-          birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
-        });
-        RNPicker.hide();
-      },
-      onPickerCancel: pickedValue => {
-        RNPicker.hide();
-      },
-      onPickerSelect: pickedValue => {
-        this.setState({
-          birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
-          birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
-        });
-      }
-    });
-    RNPicker.show();
+    //TODO: iOS平台闪退,待测试
+    this.showPickerTimer=setTimeout(()=>{
+      RNPicker.init({
+        pickerData: this._createDateData(),
+        selectedValue: ['1992年', '1月', '1日'],
+        onPickerConfirm: pickedValue => {
+          this.setState({
+            birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
+            birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
+          });
+          RNPicker.hide();
+        },
+        onPickerCancel: pickedValue => {
+          RNPicker.hide();
+        },
+        onPickerSelect: pickedValue => {
+          this.setState({
+            birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
+            birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
+          });
+        }
+      });
+      RNPicker.show();
+    },200);
   }
 
   //出生年

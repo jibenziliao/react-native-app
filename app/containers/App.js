@@ -144,13 +144,13 @@ class App extends Component {
         this._savePosition(0, 0);
         this.setState({loading: false, getRegistered: true});
       },
-      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
+      {enableHighAccuracy: false, timeout: 10000, maximumAge: 5000}
     );
   }
 
   _savePosition(lat, lng) {
     const {dispatch}=this.props;
-    const params = tmpGlobal.currentLocation = {
+    let params = tmpGlobal.currentLocation = {
       Lat: lat,
       Lng: lng
     };
