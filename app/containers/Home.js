@@ -15,7 +15,8 @@ import {
   RefreshControl,
   Image,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  DeviceEventEmitter
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
@@ -167,7 +168,7 @@ class Home extends BaseComponent {
 
   //处理距离
   _distance(data) {
-    return (parseFloat(data)/1000).toFixed(2);
+    return (parseFloat(data) / 1000).toFixed(2);
   }
 
   //获取当前登录的用户信息
@@ -254,8 +255,26 @@ class Home extends BaseComponent {
     }
   }
 
+  componentDidMount() {
+    this.hasReadListener = DeviceEventEmitter.addListener('announcementHasRead', ()=> {
+      this._onRefresh()
+    });
+    this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', ()=> {
+      this._onRefresh()
+    });
+    this.publishListener = DeviceEventEmitter.addListener('announcementHasPublish', ()=> {
+      this._onRefresh()
+    });
+    this.commentListener = DeviceEventEmitter.addListener('announcementHasComment', ()=> {
+      this._onRefresh()
+    });
+  }
+
   componentWillUnmount() {
-    //BackgroundTimer.clearTimeout(this.timer);
+    this.hasReadListener.remove();
+    this.hasDeleteListener.remove();
+    this.publishListener.remove();
+    this.commentListener.remove();
   }
 
   getNavigationBarProps() {
@@ -417,10 +436,7 @@ class Home extends BaseComponent {
             myLocation: currentLocation,
             commentList: result.Result,
             myUserId: currentUser.UserId,
-            isSelf: currentUser.UserId === rowData.CreaterId,
-            callBack: ()=> {
-              this._onRefresh()
-            }
+            isSelf: currentUser.UserId === rowData.CreaterId
           }
         })
       }, (error)=> {
@@ -466,7 +482,7 @@ class Home extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <View style={styles.cardLeft}>
-              <Image source={{uri: URL_DEV+rowData.PosterInfo.PrimaryPhotoFilename}}
+              <Image source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
                      style={styles.avatarImg}/>
               <View style={styles.userInfo}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
@@ -608,26 +624,26 @@ class Home extends BaseComponent {
             justifyContent: 'center'
           }}>
             <View style={{
-              flexDirection:'row',
-              alignItems:'center',
-              justifyContent:'center',
-              flex:1
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1
             }}>
-            <TextInput
-              multiline={false}
-              style={{
-                height: 40,
-                flex: 1,
-                backgroundColor: '#fff',
-                borderRadius: 4,
-                paddingHorizontal:10
-              }}
-              underlineColorAndroid={'transparent'}
-              placeholder={'请输入回复'}
-              maxLength={50}
-              onChangeText={(comment)=>this.setState({comment})}
-              value={this.state.comment}/>
-              </View>
+              <TextInput
+                multiline={false}
+                style={{
+                  height: 40,
+                  flex: 1,
+                  backgroundColor: '#fff',
+                  borderRadius: 4,
+                  paddingHorizontal: 10
+                }}
+                underlineColorAndroid={'transparent'}
+                placeholder={'请输入回复'}
+                maxLength={50}
+                onChangeText={(comment)=>this.setState({comment})}
+                value={this.state.comment}/>
+            </View>
             <View>
               <NBButton
                 primary

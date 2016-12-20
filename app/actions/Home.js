@@ -7,6 +7,7 @@ import * as ActionTypes from './ActionTypes'
 import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 import {toastShort} from '../utils/ToastUtil'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import {DeviceEventEmitter} from 'react-native'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {
@@ -125,10 +126,10 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
         toastShort(json.Message);
         return false;
       } else {
+        DeviceEventEmitter.emit('announcementHasPublish','新公告已发布');
         toastShort('发布成功');
         setTimeout(()=> {
           navigator.popToTop();
-          data.callBack();
         }, 1000);
       }
     }).catch((error)=> {

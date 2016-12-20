@@ -16,10 +16,10 @@ import {
   RefreshControl,
   Dimensions,
   InteractionManager,
-  Alert
+  Alert,
+  DeviceEventEmitter
 } from 'react-native'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import * as HomeActions from '../actions/Home'
 import Modal from 'react-native-modalbox'
@@ -175,6 +175,10 @@ class AnnouncementDetail extends BaseComponent {
     clearTimeout(this.deleteTimer);
   }
 
+  componentDidMount(){
+    DeviceEventEmitter.emit('announcementHasRead','公告已阅读');
+  }
+
   getNavigationBarProps() {
     return {
       title: '公告详情',
@@ -202,10 +206,10 @@ class AnnouncementDetail extends BaseComponent {
     };
     if (index === 2) {
       dispatch(HomeActions.deleteAnnouncement(data, (json)=> {
+        DeviceEventEmitter.emit('announcementHasDelete','公告被删除');
         toastShort('删除成功');
         this.deleteTimer = setTimeout(()=> {
           navigator.pop();
-          this.state.callBack();
         }, 1000);
       }, (error)=> {
       }));
@@ -216,7 +220,6 @@ class AnnouncementDetail extends BaseComponent {
         params: {
           myLocation: this.state.myLocation,
           myUserId: this.state.CreaterId,
-          callBack: this.state.callBack,
           Nickname: this.state.PosterInfo.Nickname
         }
       })
@@ -326,6 +329,7 @@ class AnnouncementDetail extends BaseComponent {
     };
     dispatch(HomeActions.comment(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (json)=> {
+        DeviceEventEmitter.emit('announcementHasComment','公告被评论');
         this.setState({
           CommentCount: this.state.CommentCount,
           comment: '',//评论成功后需要清空评论框内容
@@ -724,6 +728,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
 }
+
 export default connect((state)=> {
   return {
     ...state

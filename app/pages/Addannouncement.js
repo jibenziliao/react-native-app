@@ -120,8 +120,7 @@ class Addannouncement extends BaseComponent {
       PostContent: '',
       imageArr: [],
       ...this.props.route.params,
-      days: '1',
-      callBack:this.props.route.params.callBack,
+      days: '1'
     };
   }
 
