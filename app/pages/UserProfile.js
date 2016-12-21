@@ -18,7 +18,7 @@ import {
   ActionSheetIOS,
   Alert,
   Dimensions,
-  Keyboard,
+  Keyboard
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
@@ -214,7 +214,6 @@ class UserProfile extends BaseComponent {
       datingPurposeArr: [],
     };
     navigator = this.props.navigator;
-    this.keyboardWillShow=this.keyboardWillShow.bind(this);
   };
 
   componentWillMount() {
@@ -222,11 +221,6 @@ class UserProfile extends BaseComponent {
       loading: true
     });
     this._initDict();
-    this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-  }
-
-  keyboardWillShow(){
-    this._hidePicker();
   }
 
   _initDict() {
@@ -328,14 +322,13 @@ class UserProfile extends BaseComponent {
     });
   }
 
-  componentWillUnmount(){
-    if(this.showPickerTimer){
+  componentWillUnmount() {
+    if (this.showPickerTimer) {
       clearTimeout(this.showPickerTimer);
     }
-    if(this.showSinglePickerTimer){
+    if (this.showSinglePickerTimer) {
       clearTimeout(this.showSinglePickerTimer);
     }
-    this.keyboardWillShowListener.remove();
   }
 
   //去首页
@@ -467,11 +460,11 @@ class UserProfile extends BaseComponent {
 
   _showPicker(_createData, text, value) {
     Keyboard.dismiss();
-    //TODO: iOS平台闪退,待测试
-    this.showSinglePickerTimer=setTimeout(()=>{
+    //加1000毫秒延时,避免闪退https://github.com/beefe/react-native-picker
+    this.showSinglePickerTimer = setTimeout(()=> {
       RNPicker.init({
         pickerData: _createData,
-        selectedValue: [this.state[`${text}`] !=''?this.state[`${text}`]:_createData[0]],
+        selectedValue: [this.state[`${text}`] != '' ? this.state[`${text}`] : _createData[0]],
         onPickerConfirm: pickedValue => {
           this._updateState(text, value, pickedValue[0]);
           RNPicker.hide();
@@ -484,11 +477,11 @@ class UserProfile extends BaseComponent {
         }
       });
       RNPicker.show();
-    },200);
+    }, 1000);
 
   }
 
-  _hidePicker(){
+  _hidePicker() {
     RNPicker.isPickerShow((status)=> {
       if (status) RNPicker.hide()
     });
@@ -553,8 +546,7 @@ class UserProfile extends BaseComponent {
 
   _showDatePicker() {
     Keyboard.dismiss();
-    //TODO: iOS平台闪退,待测试
-    this.showPickerTimer=setTimeout(()=>{
+    this.showPickerTimer = setTimeout(()=> {
       RNPicker.init({
         pickerData: this._createDateData(),
         selectedValue: ['1992年', '1月', '1日'],
@@ -576,7 +568,7 @@ class UserProfile extends BaseComponent {
         }
       });
       RNPicker.show();
-    },200);
+    }, 500);
   }
 
   //出生年
@@ -631,7 +623,7 @@ class UserProfile extends BaseComponent {
 
   renderMoreForm() {
     return (
-      <Animated.View>
+      <View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'身高'}</Text>
           {this.renderSinglePicker('heightText', 'height', this._createHeightData())}
@@ -655,7 +647,9 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=>{this._hidePicker()}}
+            onFocus={()=> {
+              this._hidePicker()
+            }}
             value={this.state.location}
             onChangeText={(location)=>this.setState({location})}
             maxLength={50}/>
@@ -669,7 +663,9 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=>{this._hidePicker()}}
+            onFocus={()=> {
+              this._hidePicker()
+            }}
             value={this.state.hometown}
             onChangeText={(hometown)=>this.setState({hometown})}
             maxLength={15}/>
@@ -683,7 +679,9 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=>{this._hidePicker()}}
+            onFocus={()=> {
+              this._hidePicker()
+            }}
             value={this.state.ethnicity}
             onChangeText={(ethnicity)=>this.setState({ethnicity})}
             maxLength={15}/>
@@ -701,7 +699,9 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=>{this._hidePicker()}}
+            onFocus={()=> {
+              this._hidePicker()
+            }}
             //这里的联系方式暂时无效,默认为用户手机号
             //onChangeText={(ethnicity)=>this.setState({ethnicity})}
             maxLength={20}/>
@@ -711,7 +711,9 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=>{this._hidePicker()}}
+            onFocus={()=> {
+              this._hidePicker()
+            }}
             value={this.state.interest}
             onChangeText={(interest)=>this.setState({interest})}
             maxLength={15}/>
@@ -721,12 +723,14 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=>{this._hidePicker()}}
+            onFocus={()=> {
+              this._hidePicker()
+            }}
             value={this.state.selfEvaluation}
             onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
             maxLength={100}/>
         </View>
-      </Animated.View>
+      </View>
     )
   }
 
@@ -747,7 +751,9 @@ class UserProfile extends BaseComponent {
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
-                onFocus={()=>{this._hidePicker()}}
+                onFocus={()=> {
+                  this._hidePicker()
+                }}
                 value={this.state.nickName}
                 onChangeText={(nickName)=>this.setState({nickName})}
                 maxLength={15}/>
