@@ -164,7 +164,7 @@ class Login extends BaseComponent {
     this.setState({
       hasSendCode:false,
     });
-    if (json.Result === false) {
+    if (json.Result.IsFullyRegistered === false) {
       navigator.push({
         component: UserProfile,
         name: 'UserProfile'

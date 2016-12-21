@@ -14,20 +14,10 @@ import {
   Dimensions
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
-import MapView from 'react-native-maps'
 import Spinner from '../components/Spinner'
-import {calculateRegion} from '../utils/MapHelpers'
-import MapCallout from '../components/MapCallout'
-import {toastShort} from '../utils/ToastUtil'
-import * as VicinityActions from '../actions/Vicinity'
 import {connect} from 'react-redux'
-import {URL_DEV} from '../constants/Constant'
-import VicinityList from '../pages/VicinityList'
-import UserInfo from '../pages/UserInfo'
-import * as HomeActions from '../actions/Home'
-import * as Storage from '../utils/Storage'
-import tmpGlobal from '../utils/TmpVairables'
 import Map from '../pages/Map'
+import MatchUsers from '../pages/MatchUsers'
 
 const {height, width} = Dimensions.get('window');
 
@@ -94,6 +84,13 @@ class Vicinity extends BaseComponent {
     };
   }
 
+  _goMatchUsers(){
+    navigator.push({
+      component:MatchUsers,
+      name:'MatchUsers'
+    });
+  }
+
   _goMap(){
     navigator.push({
       component:Map,
@@ -117,7 +114,7 @@ class Vicinity extends BaseComponent {
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
-                  this._goMap()
+                  this._goMatchUsers()
                 }}>
                 <Text style={styles.cardText}>{'匹配'}</Text>
               </TouchableOpacity>

@@ -208,3 +208,9 @@ export function getDatingFilter(data,resolve,reject) {
   }
 }
 
+export function getMatchUsers(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/profile/getmatchlist', data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
