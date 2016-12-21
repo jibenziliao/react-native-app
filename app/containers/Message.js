@@ -224,8 +224,7 @@ class Message extends BaseComponent {
     })
   }
 
-  _initWebSocket(data) {
-    console.log(data);
+  _initWebSocket() {
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
     temGlobal.connection = null;
     temGlobal.proxy = null;
@@ -263,11 +262,11 @@ class Message extends BaseComponent {
       console.log('Now connected, connection ID=' + connection.id);
 
       temGlobal._initWebSocket = ()=> {
-        this._initWebSocket('这是连接成功后,将初始化方法赋值给全局变量')
+        this._initWebSocket()
       };
-
     }).fail(() => {
       console.log('Failed');
+      this._initWebSocket();
     });
 
     temGlobal.connection.connectionSlow(function () {
