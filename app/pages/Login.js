@@ -235,13 +235,13 @@ class Login extends BaseComponent {
   renderValidCodeBtn(phone) {
     this.setState({
       ...phone,
-      validCodeBtnAccessible: '86' == this.state.phoneCountry ? 11 === phone.phone.length : 9 === phone.phone.length
+      validCodeBtnAccessible: '86' == this.state.phoneCountry ? 11 === phone.phone.length : 9 <= phone.phone.length
     });
   }
 
   renderCountry(phoneCountry) {
     this.setState({
-      maxLength: '86' == phoneCountry ? 11 : 9,
+      maxLength: '86' == phoneCountry ? 11 : 10,
       phone: '',
       validCode: '',
       phoneCountry: phoneCountry,
