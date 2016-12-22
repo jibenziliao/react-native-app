@@ -9,17 +9,20 @@ import {
   StyleSheet,
   Text,
   DeviceEventEmitter,
-  TouchableOpacity
+  TouchableOpacity,
+  InteractionManager
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {GiftedChat, Actions, Bubble, Avatar, GiftedAvatar} from 'react-native-gifted-chat'
+import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import tmpGlobal from '../utils/TmpVairables'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
 import CustomMessage from '../components/CustomMessage'
+import * as HomeActions from '../actions/Home'
+import ActionSheet from 'react-native-actionsheet'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -47,6 +50,9 @@ const styles = StyleSheet.create({
   },
 });
 
+const CANCEL_INDEX = 0;
+const DESTRUCTIVE_INDEX = 1;
+
 class MessageDetail extends BaseComponent {
 
   constructor(props) {
@@ -57,6 +63,7 @@ class MessageDetail extends BaseComponent {
       destroyed: true,
       typingText: '',
       isLoadingEarlier: false,
+      AmIFollowedHim:false,
       ...this.props.route.params
     };
 
@@ -68,7 +75,7 @@ class MessageDetail extends BaseComponent {
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
     this.renderSend = this.renderSend.bind(this);
     this.renderMessage = this.renderMessage.bind(this);
-    this.renderTime=this.renderTime.bind(this);
+    this.renderTime = this.renderTime.bind(this);
   }
 
   _initOldMessage() {
@@ -96,12 +103,29 @@ class MessageDetail extends BaseComponent {
     });
   }
 
+  componentWillMount(){
+    InteractionManager.runAfterInteractions(()=> {
+      this._getUserInfo();
+    });
+  }
+
   componentDidMount() {
     this.setState({
       destroyed: false
     }, ()=> {
       this._initOldMessage();
     });
+  }
+
+  _getUserInfo(){
+    const{dispatch}=this.props;
+    let params={
+      UserId: this.state.UserId,
+      ...this.state.myLocation
+    };
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      this.setState({AmIFollowedHim:json.Result.AmIFollowedHim});
+    },(error)=>{}));
   }
 
   _getNewMsg() {
@@ -345,10 +369,10 @@ class MessageDetail extends BaseComponent {
         wrapperStyle={{
           left: {
             backgroundColor: '#f0f0f0',
-            padding:4
+            padding: 4
           },
-          right:{
-            padding:4
+          right: {
+            padding: 4
           }
         }}
       />
@@ -398,40 +422,80 @@ class MessageDetail extends BaseComponent {
     )
   }
 
-  renderTime(){
+  renderTime() {
     return null
   }
 
   getNavigationBarProps() {
     return {
-      title: `${this.state.Nickname}`
+      title: `${this.state.Nickname}`,
+      hideRightButton: false,
+      rightIcon: {
+        name: 'ellipsis-v'
+      },
     };
+  }
+
+  onRightPressed() {
+    this.ActionSheet.show();
+  }
+
+  //点击actionSheet
+  _actionSheetPress(index) {
+    const {dispatch}=this.props;
+    let data = {
+      attentionUserId: this.state.UserId
+    };
+    if (index === 1) {
+      dispatch(HomeActions.attention(data, (json)=> {
+
+      }, (error)=> {
+      }));
+    }
+  }
+
+  _initButtons(data){
+    if(data){
+      return ['取消', '取消关注'];
+    }else{
+      return ['取消', '关注TA'];
+    }
   }
 
   renderBody() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={this.onSend}
-        loadEarlier={this.state.loadEarlier}
-        onLoadEarlier={this.onLoadEarlier}
-        isLoadingEarlier={this.state.isLoadingEarlier }
-        user={{
-          _id: this.state.myUserId, // sent messages should have same user._id
-          name: tmpGlobal.currentUser.Nickname,
-          avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
-        }}
-        locale={'zh-CN'}
-        label={'发送'}
-        placeholder={'输入消息内容'}
-        renderActions={this.renderCustomActions}
-        renderBubble={this.renderBubble}
-        renderCustomView={this.renderCustomView}
-        renderFooter={this.renderFooter}
-        renderSend={this.renderSend}
-        renderMessage={this.renderMessage}
-        renderTime={this.renderTime}
-      />
+      <View style={{flex: 1}}>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={this.onSend}
+          loadEarlier={this.state.loadEarlier}
+          onLoadEarlier={this.onLoadEarlier}
+          isLoadingEarlier={this.state.isLoadingEarlier }
+          user={{
+            _id: this.state.myUserId, // sent messages should have same user._id
+            name: tmpGlobal.currentUser.Nickname,
+            avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
+          }}
+          locale={'zh-CN'}
+          label={'发送'}
+          placeholder={'输入消息内容'}
+          renderActions={this.renderCustomActions}
+          renderBubble={this.renderBubble}
+          renderCustomView={this.renderCustomView}
+          renderFooter={this.renderFooter}
+          renderSend={this.renderSend}
+          renderMessage={this.renderMessage}
+          renderTime={this.renderTime}
+        />
+        <ActionSheet
+          ref={(o) => this.ActionSheet = o}
+          title="请选择你的操作"
+          options={this._initButtons(this.state.AmIFollowedHim)}
+          cancelButtonIndex={CANCEL_INDEX}
+          destructiveButtonIndex={DESTRUCTIVE_INDEX}
+          onPress={this._actionSheetPress.bind(this)}
+        />
+      </View>
     )
   }
 
@@ -441,4 +505,8 @@ MessageDetail.childContextTypes = {
   getLocale: React.PropTypes.string.isRequired
 };
 
-export default MessageDetail
+export default connect((state)=> {
+  return {
+    ...state
+  }
+})(MessageDetail)
