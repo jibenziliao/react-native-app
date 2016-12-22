@@ -198,7 +198,7 @@ class AnnouncementList extends BaseComponent {
         refreshing: false
       })
     }, (error)=> {
-
+      this.setState({refreshing:false});
     }));
   }
 

@@ -380,6 +380,7 @@ class AnnouncementDetail extends BaseComponent {
           isSelf: this.state.isSelf
         });
       }, (error)=> {
+        this.setState({refreshing: false});
       }));
     }, (error)=> {
     }));

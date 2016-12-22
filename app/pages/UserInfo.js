@@ -14,16 +14,12 @@ import {
   TouchableOpacity,
   DeviceEventEmitter
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import * as HomeActions from '../actions/Home'
 import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import AnnouncementList from '../pages/AnnouncemenetList'
-import EditUserInfo from '../pages/EditUserInfo'
-import * as Storage from '../utils/Storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import EditUserProfile from '../pages/EditUserProfile'

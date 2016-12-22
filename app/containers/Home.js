@@ -237,7 +237,7 @@ class Home extends BaseComponent {
         refreshing: false
       })
     }, (error)=> {
-
+      this.setState({refreshing: false});
     }));
   }
 

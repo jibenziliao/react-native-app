@@ -22,7 +22,6 @@ import * as Storage from '../utils/Storage'
 import Login from '../pages/Login'
 import MainContainer from '../containers/MainContainer'
 import * as VicinityActions from '../actions/Vicinity'
-import {calculateRegion} from '../utils/MapHelpers'
 import Spinner from '../components/Spinner'
 import RNPicker from 'react-native-picker'
 import tmpGlobal from '../utils/TmpVairables'
@@ -82,9 +81,10 @@ class App extends Component {
 
   _getNetStatus() {
     //检测网络是否连接
-    NetInfo.fetch().done(
+    NetInfo.isConnected.fetch().done(
       (isConnected) => {
         console.log('###isConnected', isConnected);
+        tmpGlobal.isConnected = isConnected;
         this.setState({isConnected});
       }
     );
@@ -131,7 +131,7 @@ class App extends Component {
       (position) => {
         let initialPosition = JSON.stringify(position);
         console.log(initialPosition);
-        this._savePosition(position.coords.latitude,position.coords.longitude);
+        this._savePosition(position.coords.latitude, position.coords.longitude);
         //定位成功后,关闭加载指示器
         this.setState({loading: false, getRegistered: true});
       },
@@ -154,6 +154,7 @@ class App extends Component {
       Lat: lat,
       Lng: lng
     };
+
     async function saveLocation() {
       await Storage.setItem('currentLocation', params);
       Storage.getItem('hasRegistered').then(

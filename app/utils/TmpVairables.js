@@ -9,7 +9,8 @@ let tmpGlobal = {
   currentLocation:null,
   currentUser:null,
   connection:null,
-  _initWebSocket:null
+  _initWebSocket:null,
+  isConnected:true//全局保存网络状态
 };
 
 export default tmpGlobal
