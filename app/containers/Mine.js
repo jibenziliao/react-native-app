@@ -86,7 +86,9 @@ class Mine extends BaseComponent {
     super(props);
     this.state = {
       pending: false,
-      loadUserInfo: false
+      loadUserInfo: true,
+      myLocation:tmpGlobal.currentLocation,
+      ...tmpGlobal.currentUser
     };
     navigator = this.props.navigator;
   }
@@ -96,10 +98,6 @@ class Mine extends BaseComponent {
       title: '我的',
       hideLeftButton: true
     };
-  }
-
-  componentWillMount() {
-    this._getCurrentUserInfo();
   }
 
   componentDidMount() {

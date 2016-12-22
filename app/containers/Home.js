@@ -26,7 +26,6 @@ import * as HomeActions from '../actions/Home'
 import Spinner from '../components/Spinner'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import Modal from 'react-native-modalbox'
-import * as Storage from '../utils/Storage'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
@@ -127,7 +126,6 @@ let navigator;
 let currentLocation = {};
 let commentId;
 let lastCount;
-let currentUser;
 
 class Home extends BaseComponent {
   constructor(props) {
@@ -145,8 +143,9 @@ class Home extends BaseComponent {
   }
 
   componentWillMount() {
-    this._getCurrentUserProfile();
-    this._getAnnouncementList();
+    InteractionManager.runAfterInteractions(()=> {
+      this._getAnnouncementList();
+    });
   }
 
   _getAnnouncementList() {
@@ -170,21 +169,6 @@ class Home extends BaseComponent {
   //处理距离
   _distance(data) {
     return (parseFloat(data) / 1000).toFixed(2);
-  }
-
-  //获取当前登录的用户信息
-  _getCurrentUserProfile() {
-    const {dispatch}=this.props;
-    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      currentUser = tmpGlobal.currentUser = {
-        ...json.Result,
-        myLocation: currentLocation
-      };
-
-      Storage.setItem('userInfo', currentUser);
-    }, (error)=> {
-
-    }));
   }
 
   _toEnd() {
@@ -329,8 +313,8 @@ class Home extends BaseComponent {
         name: 'Addannouncement',
         params: {
           myLocation: currentLocation,
-          myUserId: currentUser.UserId,
-          Nickname: currentUser.Nickname
+          myUserId: tmpGlobal.currentUser.UserId,
+          Nickname: tmpGlobal.currentUser.Nickname
         }
       })
     }
@@ -351,11 +335,11 @@ class Home extends BaseComponent {
           params: {
             Nickname: data.Nickname,
             UserId: data.UserId,
-            myUserId: currentUser.UserId,
+            myUserId: tmpGlobal.currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
             myLocation: currentLocation,
-            isSelf: currentUser.UserId === data.UserId,
+            isSelf: tmpGlobal.currentUser.UserId === data.UserId,
           }
         });
       }, (error)=> {
@@ -430,8 +414,8 @@ class Home extends BaseComponent {
             ...json.Result,
             myLocation: currentLocation,
             commentList: result.Result,
-            myUserId: currentUser.UserId,
-            isSelf: currentUser.UserId === rowData.CreaterId
+            myUserId: tmpGlobal.currentUser.UserId,
+            isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId
           }
         })
       }, (error)=> {

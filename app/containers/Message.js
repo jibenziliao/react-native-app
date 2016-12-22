@@ -105,8 +105,7 @@ class Message extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      messageList: [],
-      currentUser: null
+      messageList: []
     };
     navigator = this.props.navigator;
   }
@@ -118,12 +117,17 @@ class Message extends BaseComponent {
     };
   }
 
+  componentWillMount(){
+    InteractionManager.runAfterInteractions(()=> {
+      this._initOldMessage();
+    })
+  }
+
   componentDidMount() {
     console.log('Message页面加载完成');
     this.subscription = DeviceEventEmitter.addListener('MessageCached', (data)=> {
       this._cacheMessageListener(data)
     });
-    this._getCurrentUserInfo();
   }
 
   //MessageDetail页面更新缓存后,这个页面需要监听,并被动更新
@@ -174,24 +178,16 @@ class Message extends BaseComponent {
     });
   }
 
-  _getCurrentUserInfo() {
-    const {dispatch}=this.props;
-    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      Storage.getItem(`${json.Result.UserId}_MsgList`).then((res)=> {
-        if (res !== null) {
-          this.setState({
-            messageList: res
-          });
-        }
-        console.log('Message页面从缓存中取出的消息记录', res);
-      });
-      this.setState({
-        currentUser: json.Result,
-      });
-      tmpGlobal.currentUser = json.Result;
-      this._getCookie();
-    }, (error)=> {
-    }));
+  _initOldMessage() {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+      if (res !== null) {
+        this.setState({
+          messageList: res
+        });
+      }
+      console.log('Message页面从缓存中取出的消息记录', res);
+    });
+    this._getCookie();
   }
 
   _getCookie() {
@@ -297,7 +293,7 @@ class Message extends BaseComponent {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
             avatar: URL_DEV + newMsgList[i].SenderAvatar,
-            myUserId: this.state.currentUser.UserId
+            myUserId: tmpGlobal.currentUser.UserId
           }
         };
       }
@@ -343,7 +339,7 @@ class Message extends BaseComponent {
         UserId: rowData.SenderId,
         Nickname: rowData.SenderNickname,
         UserAvatar: rowData.SenderAvatar,
-        myUserId: this.state.currentUser.UserId
+        myUserId: tmpGlobal.currentUser.UserId
       }
     })
   }

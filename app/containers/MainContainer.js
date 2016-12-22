@@ -53,10 +53,18 @@ class MainContainer extends Component {
         renderTabBar={() => {
           return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
         }}>
-        <Home style={styles.subView} navigator={this.props.navigator}/>
-        <Vicinity style={styles.subView} navigator={this.props.navigator}/>
-        <Message style={styles.subView} navigator={this.props.navigator}/>
-        <Mine style={styles.subView} navigator={this.props.navigator}/>
+        <Home
+          style={styles.subView}
+          navigator={this.props.navigator}/>
+        <Vicinity
+          style={styles.subView}
+          navigator={this.props.navigator}/>
+        <Message
+          style={styles.subView}
+          navigator={this.props.navigator}/>
+        <Mine
+          style={styles.subView}
+          navigator={this.props.navigator}/>
       </ScrollableTabView>
     );
   }

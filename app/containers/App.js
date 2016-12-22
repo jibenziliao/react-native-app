@@ -101,6 +101,7 @@ class App extends Component {
     try {
       let value = await Storage.getItem('hasRegistered');
       if (value !== null) {
+        tmpGlobal.currentUser = await Storage.getItem('userInfo');
         this.setState({hasRegistered: value});
         console.log('已完成注册流程');
       } else {

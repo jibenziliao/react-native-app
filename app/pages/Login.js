@@ -35,6 +35,7 @@ import Menu, {
 } from 'react-native-popup-menu'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {setDictArr} from '../utils/Dict'
+import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -152,7 +153,7 @@ class Login extends BaseComponent {
     const {dispatch} = this.props;
     dispatch(LoginActions.validSmsCode(data,
       (json)=> {
-        this.loginSuccess(json)
+        this.loginSuccess(json);
       },
       (error)=> {
         //不需要做特殊处理
@@ -164,19 +165,30 @@ class Login extends BaseComponent {
     this.setState({
       hasSendCode: false,
     });
-    if (json.Result.IsFullyRegistered === false) {
-      navigator.push({
-        component: UserProfile,
-        name: 'UserProfile'
-      });
-    } else {
-      //如果新装APP登录老账号,这里默认用户已注册,以便下次打开APP时,直接进入首页
-      Storage.setItem('hasRegistered', true);
-      navigator.resetTo({
-        component: MainContainer,
-        name: 'MainContainer'
-      });
-    }
+    tmpGlobal.currentUser = json.Result;
+    console.log('登录成功后,保存用户信息到全局变量',tmpGlobal.currentUser);
+
+    let saveUserInfo = async()=> {
+      try {
+        await Storage.setItem('userInfo', json.Result);
+        if (json.Result.IsFullyRegistered === false) {
+          navigator.push({
+            component: UserProfile,
+            name: 'UserProfile'
+          });
+        } else {
+          //如果新装APP登录老账号,这里默认用户已注册,以便下次打开APP时,直接进入首页
+          Storage.setItem('hasRegistered', true);
+          navigator.resetTo({
+            component: MainContainer,
+            name: 'MainContainer'
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    saveUserInfo();
   }
 
   getValidCode(phoneCountry, phone) {
