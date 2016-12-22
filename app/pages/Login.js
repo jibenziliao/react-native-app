@@ -98,7 +98,7 @@ class Login extends BaseComponent {
       maxLength: 11,
       validCodeText: '获取验证码',
       tipsText: '使用手机号一键登录',
-      hasSendCode:false
+      hasSendCode: false
     };
     navigator = this.props.navigator;
     this.login = this.login.bind(this);
@@ -162,7 +162,7 @@ class Login extends BaseComponent {
 
   loginSuccess(json) {
     this.setState({
-      hasSendCode:false,
+      hasSendCode: false,
     });
     if (json.Result.IsFullyRegistered === false) {
       navigator.push({
@@ -171,7 +171,7 @@ class Login extends BaseComponent {
       });
     } else {
       //如果新装APP登录老账号,这里默认用户已注册,以便下次打开APP时,直接进入首页
-      Storage.setItem('hasRegistered',true);
+      Storage.setItem('hasRegistered', true);
       navigator.resetTo({
         component: MainContainer,
         name: 'MainContainer'
@@ -204,12 +204,12 @@ class Login extends BaseComponent {
     }));
   }
 
-  _startCountdown(){
+  _startCountdown() {
     let second = 10;
     let phone = this.state.phone;
     let phoneCountry = this.state.phoneCountry;
     this.setState({
-      hasSendCode:true,
+      hasSendCode: true,
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
       tipsText: `我们已经给你的手机号码+${phoneCountry}-${phone}发送了一条验证短息`
@@ -235,8 +235,18 @@ class Login extends BaseComponent {
   renderValidCodeBtn(phone) {
     this.setState({
       ...phone,
-      validCodeBtnAccessible: '86' == this.state.phoneCountry ? 11 === phone.phone.length : 9 <= phone.phone.length
+      validCodeBtnAccessible: this._validCodeBtnHandler(phone)
     });
+  }
+
+  _validCodeBtnHandler(phone) {
+    if (this.state.phoneCountry === '86') {
+      return 11 <= phone.phone.length;
+    } else if (this.state.phoneCountry === '64') {
+      return 8 <= phone.phone.length
+    } else if (this.state.phoneCountry === '61') {
+      return 9 <= phone.phone.length
+    }
   }
 
   renderCountry(phoneCountry) {
@@ -258,28 +268,20 @@ class Login extends BaseComponent {
   }
 
   renderPicker() {
-    if (Platform.OS === 'ios') {
-      return (
-        <View style={{width: 80, height: 40, backgroundColor: '#DADADA', marginRight: 20, borderRadius: 4}}>
-          {this.renderPickerIOS()}
-        </View>
-      )
+    return (
+      <View style={{width: 120, height: 40, backgroundColor: '#DADADA', marginRight: 20, borderRadius: 4}}>
+        {this.renderPickerIOS()}
+      </View>
+    )
+  }
+
+  _renderCountry() {
+    if (this.state.phoneCountry === '86') {
+      return '(中国)'
+    } else if (this.state.phoneCountry === '64') {
+      return '(澳洲)'
     } else {
-      return (
-        <View
-          style={styles.pickerView}>
-          <Picker
-            style={styles.picker}
-            selectedValue={this.state.phoneCountry}
-            onValueChange={
-              (phoneCountry) => this.renderCountry(phoneCountry)
-            }>
-            <Picker.Item label="+86" value="86"/>
-            <Picker.Item label="+64" value="64"/>
-            <Picker.Item label="+61" value="61"/>
-          </Picker>
-        </View>
-      )
+      return '(新西兰)'
     }
   }
 
@@ -295,17 +297,18 @@ class Login extends BaseComponent {
             justifyContent: 'space-between',
             height: 40,
             alignItems: 'center',
-            paddingHorizontal: 10
+            paddingHorizontal: 10,
+            width: 120
           }}>
-            <Text>{'+'}{this.state.phoneCountry}</Text>
+            <Text>{this._renderCountry() + '+'}{this.state.phoneCountry}</Text>
             <Icon name="angle-down" size={16} style={{marginRight: 10}}/>
           </View>
         </MenuTrigger>
         <MenuOptions
-          optionsContainerStyle={{width: 80}}>
-          <MenuOption value={86} text='+86'/>
-          <MenuOption value={64} text="+64"/>
-          <MenuOption value={61} text="+61"/>
+          optionsContainerStyle={{width: 120}}>
+          <MenuOption value={86} text='(中国)+86'/>
+          <MenuOption value={64} text="(澳洲)+64"/>
+          <MenuOption value={61} text="(新西兰)+61"/>
         </MenuOptions>
       </Menu>
     )
