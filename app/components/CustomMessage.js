@@ -10,10 +10,10 @@ import {
 } from 'react-native'
 
 import moment from 'moment'
-
+import CustomBubble from './CustomBubble'
 import {Avatar,Bubble,Day} from 'react-native-gifted-chat'
 
-export default class Message extends Component {
+export default class CustomMessage extends Component {
 
   isSameDay(currentMessage = {}, diffMessage = {}) {
     let diff = 0;
@@ -54,7 +54,7 @@ export default class Message extends Component {
   }
 
   renderBubble() {
-    const {containerStyle, ...other} = this.props;
+    const {...other} = this.props;
     const bubbleProps = {
       ...other,
       isSameUser: this.isSameUser,
@@ -63,19 +63,19 @@ export default class Message extends Component {
     if (this.props.renderBubble) {
       return this.props.renderBubble(bubbleProps);
     }
-    return <Bubble {...bubbleProps}/>;
+    return <CustomBubble {...bubbleProps}/>;
   }
 
   //聊天双方都显示头像
   renderAvatar() {
+    console.log(this.props);
     //if (this.props.user._id !== this.props.currentMessage.user._id) {
-    const {containerStyle, ...other} = this.props;
+    const {...other} = this.props;
     const avatarProps = {
       ...other,
       isSameUser: this.isSameUser,
       isSameDay: this.isSameDay,
     };
-
     return <Avatar {...avatarProps}/>;
     //}
     //return null;
@@ -118,7 +118,7 @@ const styles = {
   }),
 };
 
-Message.defaultProps = {
+CustomMessage.defaultProps = {
   renderAvatar: null,
   renderBubble: null,
   renderDay: null,
@@ -130,7 +130,7 @@ Message.defaultProps = {
   containerStyle: {},
 };
 
-Message.propTypes = {
+CustomMessage.propTypes = {
   renderAvatar: React.PropTypes.func,
   renderBubble: React.PropTypes.func,
   renderDay: React.PropTypes.func,

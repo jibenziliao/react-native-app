@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat'
+import {GiftedChat, Actions, Bubble, Avatar} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
@@ -23,6 +23,9 @@ import {strToDateTime, dateFormat} from '../utils/DateUtil'
 import CustomMessage from '../components/CustomMessage'
 import * as HomeActions from '../actions/Home'
 import ActionSheet from 'react-native-actionsheet'
+import CustomGiftedAvatar from '../components/CustomGiftAvatar'
+import UserInfo from '../pages/UserInfo'
+import CustomBubble from '../components/CustomBubble'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -52,6 +55,7 @@ const styles = StyleSheet.create({
 
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
+let navigator;
 
 class MessageDetail extends BaseComponent {
 
@@ -63,9 +67,11 @@ class MessageDetail extends BaseComponent {
       destroyed: true,
       typingText: '',
       isLoadingEarlier: false,
-      AmIFollowedHim:false,
-      ...this.props.route.params
+      AmIFollowedHim: false,
+      ...this.props.route.params,
+      targetUser: null
     };
+    navigator = this.props.navigator;
 
     this.onSend = this.onSend.bind(this);
     this.onReceive = this.onReceive.bind(this);
@@ -76,6 +82,8 @@ class MessageDetail extends BaseComponent {
     this.renderSend = this.renderSend.bind(this);
     this.renderMessage = this.renderMessage.bind(this);
     this.renderTime = this.renderTime.bind(this);
+    this._goUserInfo = this._goUserInfo.bind(this);
+    this.renderAvatar = this.renderAvatar.bind(this);
   }
 
   _initOldMessage() {
@@ -103,7 +111,7 @@ class MessageDetail extends BaseComponent {
     });
   }
 
-  componentWillMount(){
+  componentWillMount() {
     InteractionManager.runAfterInteractions(()=> {
       this._getUserInfo();
     });
@@ -117,15 +125,19 @@ class MessageDetail extends BaseComponent {
     });
   }
 
-  _getUserInfo(){
-    const{dispatch}=this.props;
-    let params={
+  _getUserInfo() {
+    const {dispatch}=this.props;
+    let params = {
       UserId: this.state.UserId,
       ...this.state.myLocation
     };
     dispatch(HomeActions.getUserInfo(params, (json)=> {
-      this.setState({AmIFollowedHim:json.Result.AmIFollowedHim});
-    },(error)=>{}));
+      this.setState({
+        AmIFollowedHim: json.Result.AmIFollowedHim,
+        targetUser: json.Result
+      });
+    }, (error)=> {
+    }));
   }
 
   _getNewMsg() {
@@ -364,15 +376,17 @@ class MessageDetail extends BaseComponent {
 
   renderBubble(props) {
     return (
-      <Bubble
+      <CustomBubble
         {...props}
         wrapperStyle={{
           left: {
             backgroundColor: '#f0f0f0',
-            padding: 4
+            paddingHorizontal:6,
+            paddingVertical:6
           },
           right: {
-            padding: 4
+            paddingHorizontal:6,
+            paddingVertical:6
           }
         }}
       />
@@ -426,6 +440,15 @@ class MessageDetail extends BaseComponent {
     return null
   }
 
+  renderAvatar(props) {
+    console.log(props);
+    return (
+      <CustomGiftedAvatar
+        {...props}
+        onPress={this._goUserInfo}/>
+    )
+  }
+
   getNavigationBarProps() {
     return {
       title: `${this.state.Nickname}`,
@@ -454,12 +477,48 @@ class MessageDetail extends BaseComponent {
     }
   }
 
-  _initButtons(data){
-    if(data){
+  _initButtons(data) {
+    if (data) {
       return ['取消', '取消关注'];
-    }else{
+    } else {
       return ['取消', '关注TA'];
     }
+  }
+
+  _goUserInfo(props) {
+    if (this._getPreviousRoute() === 'UserInfo') {
+      navigator.pop();
+    } else {
+      const {dispatch}=this.props;
+      let params = {
+        UserId: props.currentMessage.user._id,
+        ...tmpGlobal.currentLocation
+      };
+      dispatch(HomeActions.getUserInfo(params, (json)=> {
+        dispatch(HomeActions.getUserPhotos({UserId: props.currentMessage.user._id}, (result)=> {
+          navigator.push({
+            component: UserInfo,
+            name: 'UserInfo',
+            params: {
+              Nickname: props.currentMessage.user.name,
+              UserId: props.currentMessage.user._id,
+              myUserId: this.state.myUserId,
+              ...json.Result,
+              userPhotos: result.Result,
+              myLocation: tmpGlobal.currentLocation,
+              isSelf: props.currentMessage.user._id === tmpGlobal.currentUser.UserId
+            }
+          });
+        }, (error)=> {
+        }));
+      }, (error)=> {
+      }));
+    }
+  }
+
+  _getPreviousRoute() {
+    let routes = navigator.getCurrentRoutes();
+    return routes[routes.length - 2].name;
   }
 
   renderBody() {
@@ -470,22 +529,24 @@ class MessageDetail extends BaseComponent {
           onSend={this.onSend}
           loadEarlier={this.state.loadEarlier}
           onLoadEarlier={this.onLoadEarlier}
-          isLoadingEarlier={this.state.isLoadingEarlier }
+          isLoadingEarlier={this.state.isLoadingEarlier}
           user={{
             _id: this.state.myUserId, // sent messages should have same user._id
             name: tmpGlobal.currentUser.Nickname,
-            avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
+            avatar: URL_DEV + tmpGlobal.currentUser.PrimaryPhotoFilename
           }}
           locale={'zh-CN'}
           label={'发送'}
           placeholder={'输入消息内容'}
-          renderActions={this.renderCustomActions}
+          //renderActions={this.renderCustomActions}
           renderBubble={this.renderBubble}
           renderCustomView={this.renderCustomView}
           renderFooter={this.renderFooter}
           renderSend={this.renderSend}
           renderMessage={this.renderMessage}
           renderTime={this.renderTime}
+          onPress={this._goUserInfo}
+          renderAvatar={this.renderAvatar}
         />
         <ActionSheet
           ref={(o) => this.ActionSheet = o}

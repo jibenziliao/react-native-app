@@ -337,10 +337,7 @@ class UserInfo extends BaseComponent {
       component: EditPersonalSignature,
       name: 'EditPersonalSignature',
       params: {
-        personalSignature: this.state.PersonSignal,
-        callBack: (data)=> {
-          this.setState({PersonSignal:data})
-        }
+        personalSignature: this.state.PersonSignal
       },
     });
   }

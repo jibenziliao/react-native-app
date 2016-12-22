@@ -25,6 +25,7 @@ import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
 import Settings from '../pages/Settings'
+import * as Storage from '../utils/Storage'
 
 const {height, width} = Dimensions.get('window');
 
@@ -127,6 +128,7 @@ class Mine extends BaseComponent {
         myLocation: tmpGlobal.currentLocation,
         loadUserInfo: true,
       });
+      Storage.setItem('userInfo',json.Result);
     }, (error)=> {
     }));
   }

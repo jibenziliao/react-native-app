@@ -117,7 +117,7 @@ class Message extends BaseComponent {
     };
   }
 
-  componentWillMount(){
+  componentWillMount() {
     InteractionManager.runAfterInteractions(()=> {
       this._initOldMessage();
     })
@@ -134,7 +134,7 @@ class Message extends BaseComponent {
   _cacheMessageListener(data) {
     console.log('Message页面成功监听到MessageDetail页面缓存成功的信号');
     console.log(data);
-    Storage.getItem(`${this.state.currentUser.UserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null) {
         this.setState({
           messageList: res
@@ -150,7 +150,7 @@ class Message extends BaseComponent {
   //每次收到新的消息,缓存消息列表(前面已经包装过,这里不需要再次处理,直接存缓存就好了)
   _cacheMessageList(data) {
     console.log('Message页面准备写入缓存的数据', data);
-    Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, data);
+    Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, data);
   }
 
   //消息标为已读(更改本地状态)
@@ -165,7 +165,7 @@ class Message extends BaseComponent {
       messageList: this.state.messageList
     }, ()=> {
       //更新缓存中相关消息记录为已读状态
-      Storage.getItem(`${this.state.currentUser.UserId}_MsgList`).then((res)=> {
+      Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
         for (let i = 0; i < res.length; i++) {
           for (let j = 0; j < res[i].MsgList.length; j++) {
             if (res[i].SenderId === SenderId) {
@@ -173,7 +173,7 @@ class Message extends BaseComponent {
             }
           }
         }
-        Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, res);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res);
       });
     });
   }
@@ -238,7 +238,7 @@ class Message extends BaseComponent {
 
     tmpGlobal.connection.start().done(() => {
       tmpGlobal.proxy.invoke('login', cookie);
-      console.log('Now connected, connection ID=' + connection.id);
+      console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
 
       tmpGlobal._initWebSocket = ()=> {
         this._initWebSocket()
@@ -305,6 +305,9 @@ class Message extends BaseComponent {
     for (let i = 0; i < this.state.messageList.length; i++) {
       for (let j = 0; j < data.length; j++) {
         if (this.state.messageList[i].SenderId === data[j].SenderId) {
+          //若用户头像、昵称有更新,则更新缓存中的头像和昵称
+          this.state.messageList[i].SenderNickname = objCopy[j].SenderNickname;
+          this.state.messageList[i].SenderAvatar = objCopy[j].SenderAvatar;
           this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(objCopy[j].MsgList);
           newMsgList.splice(j, 1);
         }
