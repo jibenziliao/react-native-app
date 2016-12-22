@@ -206,6 +206,9 @@ class EditUserProfile extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._initUserProfile();
     });
+    //if (Platform.OS === 'android') {
+    //  BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    //}
   }
 
   componentDidMount() {
@@ -306,9 +309,7 @@ class EditUserProfile extends BaseComponent {
   }
 
   onBackAndroid() {
-    return ()=>{
-      this._backAlert();
-    }
+    this._backAlert();
   }
 
   _backAlert() {
@@ -600,7 +601,7 @@ class EditUserProfile extends BaseComponent {
                   underlineColorAndroid={'transparent'}
                   onFocus={()=>{this._hidePicker()}}
                   value={this.state.Ethnicity}
-                  onChangeText={(Ethnicity)=>this.setState({Ethnicity})}
+                  onChangeText={(Ethnicity)=>this.setState({Ethnicity:Ethnicity,hasChanged: true})}
                   maxLength={15}/>
               </View>
               <View style={styles.listItem}>
@@ -614,7 +615,7 @@ class EditUserProfile extends BaseComponent {
                   underlineColorAndroid={'transparent'}
                   onFocus={()=>{this._hidePicker()}}
                   value={this.state.MobileNo}
-                  onChangeText={(MobileNo)=>this.setState({MobileNo})}
+                  onChangeText={(MobileNo)=>this.setState({MobileNo:MobileNo,hasChanged: true})}
                   maxLength={15}/>
               </View>
               <View style={styles.listItem}>
@@ -624,7 +625,7 @@ class EditUserProfile extends BaseComponent {
                   underlineColorAndroid={'transparent'}
                   onFocus={()=>{this._hidePicker()}}
                   value={this.state.Hobby}
-                  onChangeText={(Hobby)=>this.setState({Hobby})}
+                  onChangeText={(Hobby)=>this.setState({Hobby:Hobby,hasChanged: true})}
                   maxLength={15}/>
               </View>
               <View style={[styles.listItem, styles.bottomItem]}>
@@ -634,7 +635,7 @@ class EditUserProfile extends BaseComponent {
                   underlineColorAndroid={'transparent'}
                   onFocus={()=>{this._hidePicker()}}
                   value={this.state.SelfEvaluation}
-                  onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation})}
+                  onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation:SelfEvaluation,hasChanged: true})}
                   maxLength={50}/>
               </View>
             </View>
