@@ -22,13 +22,15 @@ class Spinner extends Component {
   }
 
   render() {
-    const {animating}=this.props;
+    const {animating,customStyle}=this.props;
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator
-          animating={animating}
-          style={styles.loading}
-          size="large"/>
+        <View style={[styles.loadingCenter,customStyle]}>
+          <ActivityIndicator
+            animating={animating}
+            style={styles.loading}
+            size="large"/>
+        </View>
       </View>
     )
   }
@@ -43,6 +45,11 @@ const styles = StyleSheet.create({
     width: width,
     height: height,
     alignItems:'center',
+    justifyContent:'center'
+  },
+  loadingCenter:{
+    flex:1,
+    alignItems:'center',
     justifyContent:'center',
     ...Platform.select({
       ios:{
@@ -54,13 +61,17 @@ const styles = StyleSheet.create({
     })
   },
   loading: {
-    width: 160,
-    height: 120,
+    width: width*4/9,
+    height: width/3,
     backgroundColor: 'rgba(176, 176, 176, 0.5)',
     borderRadius: 6
   }
 });
 
 export default Spinner;
+
+Spinner.propTypes={
+  customStyle:View.propTypes.style
+};
 
 

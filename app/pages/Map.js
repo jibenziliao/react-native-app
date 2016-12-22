@@ -7,7 +7,9 @@ import React,{Component} from 'react'
 import {
   View,
   StyleSheet,
-  Text
+  Text,
+  StatusBar,
+  Platform
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MapView from 'react-native-maps'
@@ -20,22 +22,13 @@ import {connect} from 'react-redux'
 import {URL_DEV} from '../constants/Constant'
 import UserInfo from '../pages/UserInfo'
 import * as HomeActions from '../actions/Home'
-import * as Storage from '../utils/Storage'
-import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    flex: 1
   },
   map: {
-    // For Android :/
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0
+    flex:1
   }
 });
 
@@ -299,10 +292,10 @@ class Map extends BaseComponent{
     }
   }
 
-  renderSpinner(data) {
-    if (data) {
+  renderSpinner() {
+    if (this.state.pending || this.props.pendingStatus) {
       return (
-        <Spinner animating={data}/>
+        <Spinner animating={this.state.pending || this.props.pendingStatus}/>
       )
     }
   }
@@ -340,11 +333,9 @@ class Map extends BaseComponent{
       <View style={styles.container}>
         {this.renderWarningView(!this.state.GPS)}
         {this.renderMapViews(this.props.saveCoordinateStatus || !this.state.GPS)}
-        {this.renderSpinner(this.state.pending || this.props.pendingStatus)}
       </View>
     )
   }
-
 }
 
 const mapStateToProps = (state) => {

@@ -24,9 +24,9 @@ import signalr from 'react-native-signalr'
 import * as Storage from '../utils/Storage'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
-import temGlobal from '../utils/TmpVairables'
+import tmpGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
-import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import UserInfo from '../pages/UserInfo'
 
 const styles = StyleSheet.create({
   container: {
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     width: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection:'row'
+    flexDirection: 'row'
   },
   badge: {
     backgroundColor: 'red',
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
   msgContent: {
-    overflow:'hidden',
-    flex:1
+    overflow: 'hidden',
+    flex: 1
   },
   tips: {
     flexDirection: 'row',
@@ -143,26 +143,8 @@ class Message extends BaseComponent {
     this.subscription.remove();
   }
 
-  //每次收到新的消息,缓存消息列表
+  //每次收到新的消息,缓存消息列表(前面已经包装过,这里不需要再次处理,直接存缓存就好了)
   _cacheMessageList(data) {
-    /*for (let i = 0; i < data.length; i++) {
-     for (let j = 0; j < data[i].MsgList.length; j++) {
-     data[i].MsgList[j] = {
-     MsgContent: data[i].MsgList[j].MsgContent,
-     MsgId: data[i].MsgList[j].MsgId,
-     HasSend: false,
-     SendTime: data[i].MsgList[j].SendTime,
-     _id: data[i].MsgList[j]._id,
-     text: data[i].MsgList[j].MsgContent,
-     createdAt: data[i].MsgList[j].SendTime,
-     user: {
-     _id: data[i].MsgList[j].user._id,
-     name: data[i].MsgList[j].name,
-     avatar: data[i].MsgList[j].avatar
-     }
-     };
-     }
-     }*/
     console.log('Message页面准备写入缓存的数据', data);
     Storage.setItem(`${this.state.currentUser.UserId}_MsgList`, data);
   }
@@ -218,7 +200,7 @@ class Message extends BaseComponent {
       console.log('Got cookies for url', res);
       //rkt为当前cookie的key
       cookie = res.rkt;
-      if (temGlobal.proxy === null) {
+      if (tmpGlobal.proxy === null) {
         this._initWebSocket('');
       }
     })
@@ -226,8 +208,8 @@ class Message extends BaseComponent {
 
   _initWebSocket() {
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
-    temGlobal.connection = null;
-    temGlobal.proxy = null;
+    tmpGlobal.connection = null;
+    tmpGlobal.proxy = null;
     connection = null;
 
     connection = signalr.hubConnection(URL_WS_DEV);
@@ -235,11 +217,11 @@ class Message extends BaseComponent {
     //console.log(connection);
 
     //将proxy保存在全局变量中,以便其他地方使用
-    temGlobal.proxy = connection.createHubProxy('ChatCore');
+    tmpGlobal.proxy = connection.createHubProxy('ChatCore');
 
-    temGlobal.connection = connection;
+    tmpGlobal.connection = connection;
 
-    temGlobal.proxy.on('messageFromServer', (message) => {
+    tmpGlobal.proxy.on('messageFromServer', (message) => {
       console.log(message);
 
       messagePromise.done(() => {
@@ -249,19 +231,19 @@ class Message extends BaseComponent {
       });
     });
 
-    temGlobal.proxy.on('sayHey', (message) => {
+    tmpGlobal.proxy.on('sayHey', (message) => {
       console.log(message);
     });
 
-    temGlobal.proxy.on('log', (str)=> {
+    tmpGlobal.proxy.on('log', (str)=> {
       //console.log(str);
     });
 
-    temGlobal.connection.start().done(() => {
-      temGlobal.proxy.invoke('login', cookie);
+    tmpGlobal.connection.start().done(() => {
+      tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + connection.id);
 
-      temGlobal._initWebSocket = ()=> {
+      tmpGlobal._initWebSocket = ()=> {
         this._initWebSocket()
       };
     }).fail(() => {
@@ -269,22 +251,22 @@ class Message extends BaseComponent {
       this._initWebSocket();
     });
 
-    temGlobal.connection.connectionSlow(function () {
+    tmpGlobal.connection.connectionSlow(function () {
       console.log('We are currently experiencing difficulties with the connection.')
     });
 
     //断开需要重连
-    temGlobal.connection.error(function (error) {
+    tmpGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
       console.log('开始重新连接');
-      temGlobal._initWebSocket();
+      tmpGlobal._initWebSocket();
     });
 
-    temGlobal.proxy.on('getNewMsg', (obj) => {
+    tmpGlobal.proxy.on('getNewMsg', (obj) => {
       console.log('服务器返回的原始数据', obj);
       let routes = navigator.getCurrentRoutes();
       console.log('路由栈', routes);
-      temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
       console.log('Message页面成功标为已读');
       //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
       if (routes[routes.length - 1].name != 'MessageDetail') {
@@ -365,6 +347,34 @@ class Message extends BaseComponent {
     })
   }
 
+  //点击头像,跳转个人信息详情页
+  _goUserInfo(rowData) {
+    const {dispatch}=this.props;
+    let params = {
+      UserId: rowData.SenderId,
+      ...tmpGlobal.currentLocation
+    };
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      dispatch(HomeActions.getUserPhotos({UserId: rowData.SenderId}, (result)=> {
+        navigator.push({
+          component: UserInfo,
+          name: 'UserInfo',
+          params: {
+            Nickname: rowData.SenderNickname,
+            UserId: rowData.SenderId,
+            myUserId: tmpGlobal.currentUser.UserId,
+            ...json.Result,
+            userPhotos: result.Result,
+            myLocation: tmpGlobal.currentLocation,
+            isSelf: false
+          }
+        });
+      }, (error)=> {
+      }));
+    }, (error)=> {
+    }));
+  }
+  
   _renderMsgTime(str) {
     return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
   }
@@ -398,16 +408,22 @@ class Message extends BaseComponent {
 
   renderRowData(rowData) {
     return (
-      <TouchableOpacity
+      <View
         key={rowData.SenderId}
-        onPress={()=> {
-          this._goChat(rowData)
-        }}
         style={styles.cardItem}>
-        <Image
-          style={styles.avatar}
-          source={{uri: URL_DEV + rowData.SenderAvatar}}/>
-        <View style={styles.cardContent}>
+        <TouchableOpacity
+          onPress={()=> {
+            this._goUserInfo(rowData)
+          }}>
+          <Image
+            style={styles.avatar}
+            source={{uri: URL_DEV + rowData.SenderAvatar}}/>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=> {
+            this._goChat(rowData)
+          }}
+          style={styles.cardContent}>
           <View style={styles.cardRow}>
             <Text style={styles.cardText}>
               {rowData.SenderNickname}
@@ -424,8 +440,8 @@ class Message extends BaseComponent {
             </Text>
             {this._renderUnReadCount(rowData.MsgList)}
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     )
   }
 
