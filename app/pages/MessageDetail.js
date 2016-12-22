@@ -13,12 +13,13 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {GiftedChat, Actions, Bubble} from 'react-native-gifted-chat'
+import {GiftedChat, Actions, Bubble, Avatar, GiftedAvatar} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
-import temGlobal from '../utils/TmpVairables'
+import tmpGlobal from '../utils/TmpVairables'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import CustomMessage from '../components/CustomMessage'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -66,6 +67,8 @@ class MessageDetail extends BaseComponent {
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
     this.renderSend = this.renderSend.bind(this);
+    this.renderMessage = this.renderMessage.bind(this);
+    this.renderTime=this.renderTime.bind(this);
   }
 
   _initOldMessage() {
@@ -78,7 +81,7 @@ class MessageDetail extends BaseComponent {
           this._getNewMsg();
         });
       } else {
-        console.log(res, this.state.myUserId,this.state.UserId);
+        console.log(res, this.state.myUserId, this.state.UserId);
         console.log('没有聊天记录');
         this._getNewMsg();
       }
@@ -102,8 +105,8 @@ class MessageDetail extends BaseComponent {
   }
 
   _getNewMsg() {
-    temGlobal.proxy.on('getNewMsg', (obj) => {
-      temGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+    tmpGlobal.proxy.on('getNewMsg', (obj) => {
+      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
       //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
       if (!this.state.destroyed) {
 
@@ -177,7 +180,7 @@ class MessageDetail extends BaseComponent {
           user: {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
-            avatar:URL_DEV+newMsgList[i].SenderAvatar,
+            avatar: URL_DEV + newMsgList[i].SenderAvatar,
             myUserId: this.state.myUserId
           }
         };
@@ -223,9 +226,9 @@ class MessageDetail extends BaseComponent {
         let index = res.findIndex((item)=> {
           return item.SenderId === this.state.UserId
         });
-        if(index>-1){
+        if (index > -1) {
           res[index].MsgList.push(data);
-        }else{
+        } else {
           res.push(allMsg);
         }
         console.log('发送时更新消息缓存数据', res, data);
@@ -262,8 +265,8 @@ class MessageDetail extends BaseComponent {
       createdAt: messages[0].createdAt,
       user: {
         _id: this.state.myUserId,
-        name: null,//当前用户不需要显示名字
-        avatar: null//当前用户不需要显示头像
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
       },
     };
 
@@ -278,8 +281,8 @@ class MessageDetail extends BaseComponent {
       createdAt: dateFormat(messages[0].createdAt),
       user: {
         _id: this.state.myUserId,
-        name: null,//当前用户不需要显示名字
-        avatar: null//当前用户不需要显示头像
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
       },
     };
     console.log(params);
@@ -291,7 +294,7 @@ class MessageDetail extends BaseComponent {
       };
     });
 
-    temGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
+    tmpGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
   }
 
   onReceive(data) {
@@ -342,6 +345,10 @@ class MessageDetail extends BaseComponent {
         wrapperStyle={{
           left: {
             backgroundColor: '#f0f0f0',
+            padding:4
+          },
+          right:{
+            padding:4
           }
         }}
       />
@@ -385,6 +392,16 @@ class MessageDetail extends BaseComponent {
     return <View/>;
   }
 
+  renderMessage(props) {
+    return (
+      <CustomMessage {...props}/>
+    )
+  }
+
+  renderTime(){
+    return null
+  }
+
   getNavigationBarProps() {
     return {
       title: `${this.state.Nickname}`
@@ -401,6 +418,8 @@ class MessageDetail extends BaseComponent {
         isLoadingEarlier={this.state.isLoadingEarlier }
         user={{
           _id: this.state.myUserId, // sent messages should have same user._id
+          name: tmpGlobal.currentUser.Nickname,
+          avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
         }}
         locale={'zh-CN'}
         label={'发送'}
@@ -410,6 +429,8 @@ class MessageDetail extends BaseComponent {
         renderCustomView={this.renderCustomView}
         renderFooter={this.renderFooter}
         renderSend={this.renderSend}
+        renderMessage={this.renderMessage}
+        renderTime={this.renderTime}
       />
     )
   }

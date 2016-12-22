@@ -188,6 +188,7 @@ class Message extends BaseComponent {
       this.setState({
         currentUser: json.Result,
       });
+      tmpGlobal.currentUser = json.Result;
       this._getCookie();
     }, (error)=> {
     }));
@@ -374,7 +375,7 @@ class Message extends BaseComponent {
     }, (error)=> {
     }));
   }
-  
+
   _renderMsgTime(str) {
     return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
   }
