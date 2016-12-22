@@ -244,14 +244,18 @@ class UserInfo extends BaseComponent {
 
   //渲染用户的相册
   _renderPhotos(arr) {
-    return arr.map((item, index)=> {
-      return (
-        <Image
-          key={index}
-          style={styles.photos}
-          source={{uri: URL_DEV + item.PhotoUrl}}/>
-      )
-    })
+    if(arr.length>0){
+      return arr.map((item, index)=> {
+        return (
+          <Image
+            key={index}
+            style={styles.photos}
+            source={{uri: URL_DEV + item.PhotoUrl}}/>
+        )
+      })
+    }else{
+      return (<Text>{this.state.isSelf?'您':'Ta'}{'还没有相册'}</Text>)
+    }
   }
 
   //渲染用户的个人信息

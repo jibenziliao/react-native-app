@@ -206,9 +206,6 @@ class EditUserProfile extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._initUserProfile();
     });
-    //if (Platform.OS === 'android') {
-    //  BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
-    //}
   }
 
   componentDidMount() {

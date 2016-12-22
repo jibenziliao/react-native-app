@@ -500,7 +500,11 @@ class Home extends BaseComponent {
           onPress={()=> {
             this._goAnnouncementDetail(rowData)
           }}>
-          <Text style={styles.moodText}>{rowData.PostContent}</Text>
+          <Text
+            style={styles.moodText}
+            numberOfLines={3}>
+            {rowData.PostContent}
+          </Text>
           <View style={styles.postImage}>
             {this.renderPostImage(rowData.PicList)}
           </View>

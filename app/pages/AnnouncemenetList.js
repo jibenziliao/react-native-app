@@ -198,7 +198,7 @@ class AnnouncementList extends BaseComponent {
         refreshing: false
       })
     }, (error)=> {
-      this.setState({refreshing:false});
+      this.setState({refreshing: false});
     }));
   }
 
@@ -359,7 +359,11 @@ class AnnouncementList extends BaseComponent {
           onPress={()=> {
             this._goAnnouncementDetail(rowData)
           }}>
-          <Text style={styles.moodText}>{rowData.PostContent}</Text>
+          <Text
+            style={styles.moodText}
+            numberOfLines={3}>
+            {rowData.PostContent}
+          </Text>
           <View style={styles.postImage}>
             {this.renderPostImage(rowData.PicList)}
           </View>
