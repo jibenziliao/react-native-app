@@ -319,8 +319,8 @@ class Login extends BaseComponent {
         <MenuOptions
           optionsContainerStyle={{width: 120}}>
           <MenuOption value={86} text='(中国)+86'/>
-          <MenuOption value={64} text="(澳洲)+64"/>
-          <MenuOption value={61} text="(新西兰)+61"/>
+          <MenuOption value={64} text="(新西兰)+64"/>
+          <MenuOption value={61} text="(澳洲)+61"/>
         </MenuOptions>
       </Menu>
     )

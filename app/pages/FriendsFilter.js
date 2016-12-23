@@ -26,6 +26,7 @@ import Spinner from '../components/Spinner'
 import RNPicker from 'react-native-picker'
 import {connect} from 'react-redux'
 import * as FriendFilterActions from '../actions/FriendFilter'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {width, height}=Dimensions.get('window');
 
@@ -127,7 +128,7 @@ class FriendsFilter extends BaseComponent {
         other: false
       },
       photoOnly: false,
-      photoOnlyText:'不限'
+      photoOnlyText: '不限'
     }
   }
 
@@ -135,6 +136,7 @@ class FriendsFilter extends BaseComponent {
   saveFriendFilter(data) {
     const {dispatch}=this.props;
     dispatch(FriendFilterActions.saveFriendFilter(data, (json)=> {
+      tmpGlobal.currentUser = json.Reulst;
       this.goHome();
     }, (error)=> {
       //console.log(error)
@@ -375,16 +377,16 @@ class FriendsFilter extends BaseComponent {
             </View>
           </View>
           {/*<NBButton
-            block
-            style={{
-              height: 40,
-              marginTop: 30
-            }}
-            onPress={()=> {
-              this.goHome()
-            }}>
-            去首页(Test)
-          </NBButton>*/}
+           block
+           style={{
+           height: 40,
+           marginTop: 30
+           }}
+           onPress={()=> {
+           this.goHome()
+           }}>
+           去首页(Test)
+           </NBButton>*/}
           <NBButton
             block
             style={{marginVertical: 30}}

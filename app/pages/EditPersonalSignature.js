@@ -13,7 +13,8 @@ import {
   Keyboard,
   Alert,
   BackAndroid,
-  Platform
+  Platform,
+  Dimensions
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
@@ -25,19 +26,26 @@ import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
 import * as Storage from '../utils/Storage'
 
+const {width, height}=Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E2E2E2',
     padding: 10
   },
+  scrollView: {
+    flex: 1
+  },
   signatureContent: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    height: 150,
+    height: width / 3,
     backgroundColor: '#FFF',
     textAlign: 'left',
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
+    paddingHorizontal: 10,
+    paddingVertical: 5
   },
   saveBtn: {
     marginTop: 20,
@@ -94,7 +102,7 @@ class EditPersonalSignature extends BaseComponent {
   }
 
   onBackAndroid() {
-    return ()=>{
+    return ()=> {
       this._backAlert();
     }
   }
@@ -130,24 +138,29 @@ class EditPersonalSignature extends BaseComponent {
   renderBody() {
     return (
       <View style={styles.container}>
-        <TextInput
-          placeholder={'请在此编辑你的签名'}
-          multiline={true}
-          maxLength={25}
-          style={styles.signatureContent}
-          value={this.state.personalSignature}
-          underlineColorAndroid={'transparent'}
-          onChangeText={(personalSignature)=> {
-            this.setState({personalSignature: personalSignature, hasChanged: true})
-          }}
-        />
-        <NBButton
-          block
-          style={styles.saveBtn}
-          onPress={()=>this._saveSignature(this.state.personalSignature)}
-          disabled={!this.state.personalSignature}>
-          完成
-        </NBButton>
+        <ScrollView
+          style={styles.scrollView}
+          keyboardDismissMode={'interactive'}
+          keyboardShouldPersistTaps={true}>
+          <TextInput
+            placeholder={'请在此编辑你的签名'}
+            multiline={true}
+            maxLength={25}
+            style={styles.signatureContent}
+            value={this.state.personalSignature}
+            underlineColorAndroid={'transparent'}
+            onChangeText={(personalSignature)=> {
+              this.setState({personalSignature: personalSignature, hasChanged: true})
+            }}
+          />
+          <NBButton
+            block
+            style={styles.saveBtn}
+            onPress={()=>this._saveSignature(this.state.personalSignature)}
+            disabled={!this.state.personalSignature}>
+            完成
+          </NBButton>
+        </ScrollView>
       </View>
     )
   }

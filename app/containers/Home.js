@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   moodView: {
-    marginTop:10
+    marginTop: 10
   },
   moodText: {
     fontSize: 16,

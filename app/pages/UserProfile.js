@@ -32,6 +32,7 @@ import * as Storage from '../utils/Storage'
 import CheckBox from '../components/CheckBox'
 import Spinner from '../components/Spinner'
 import {toastShort} from '../utils/ToastUtil'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {width, height}=Dimensions.get('window');
 
@@ -302,6 +303,7 @@ class UserProfile extends BaseComponent {
   saveUserProfile(data, datingPurpose, bool) {
     const {dispatch} =this.props;
     dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json)=> {
+      tmpGlobal.currentUser = json.Result;
       Storage.setItem('hasRegistered', true);
       if (bool) {
         this.goPhotos();

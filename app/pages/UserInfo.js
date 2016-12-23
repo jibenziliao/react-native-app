@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   bottomBtn: {
     flex: 1,
     height: 40,
-    borderRadius: 0
+    borderRadius:0
   },
   attention: {
     backgroundColor: '#FF9933'
@@ -241,7 +241,7 @@ class UserInfo extends BaseComponent {
     };
     dispatch(HomeActions.attention(params, (json)=> {
       DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
-      this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
+      //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error)=> {
     }));
   }

@@ -107,7 +107,9 @@ class MatchUsers extends BaseComponent {
   }
 
   componentDidMount() {
-    this._getMatchUserList();
+    InteractionManager.runAfterInteractions(()=> {
+      this._getMatchUserList();
+    })
   }
 
   _getMatchUserList() {
