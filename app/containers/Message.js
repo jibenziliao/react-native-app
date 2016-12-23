@@ -117,17 +117,14 @@ class Message extends BaseComponent {
     };
   }
 
-  componentWillMount() {
-    InteractionManager.runAfterInteractions(()=> {
-      this._initOldMessage();
-    })
-  }
-
   componentDidMount() {
     console.log('Message页面加载完成');
     this.subscription = DeviceEventEmitter.addListener('MessageCached', (data)=> {
       this._cacheMessageListener(data)
     });
+    InteractionManager.runAfterInteractions(()=> {
+      this._initOldMessage();
+    })
   }
 
   //MessageDetail页面更新缓存后,这个页面需要监听,并被动更新
@@ -239,10 +236,7 @@ class Message extends BaseComponent {
     tmpGlobal.connection.start().done(() => {
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
-
-      tmpGlobal._initWebSocket = ()=> {
-        this._initWebSocket()
-      };
+      tmpGlobal._initWebSocket = this._initWebSocket;
     }).fail(() => {
       console.log('Failed');
       this._initWebSocket();

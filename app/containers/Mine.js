@@ -65,12 +65,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderColor: 'gray',
     paddingVertical: 0.5,
-    flex:1
+    flex: 1
   },
-  touchableItem:{
-    flex:1,
-    flexDirection:'row',
-    alignItems:'center'
+  touchableItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   listItemIcon: {
     width: 80,
@@ -132,6 +132,7 @@ class Mine extends BaseComponent {
     this.setState({pending: true});
     const {dispatch}=this.props;
     dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      tmpGlobal.currentUser = json.Result;
       this.setState({
         ...json.Result,
         pending: false,
@@ -268,7 +269,7 @@ class Mine extends BaseComponent {
                 onPress={()=> {
                   this._goSettings()
                 }}
-              style={styles.touchableItem}>
+                style={styles.touchableItem}>
                 <View style={styles.listItemLeft}>
                   <Icon
                     style={styles.itemIcon}
