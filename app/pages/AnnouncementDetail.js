@@ -17,7 +17,8 @@ import {
   Dimensions,
   InteractionManager,
   Alert,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Platform
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -156,9 +157,9 @@ class AnnouncementDetail extends BaseComponent {
       refreshing: false,
       loadingMore: false,
       ...this.props.route.params,
-      commentList:[],
-      pageIndex:1,
-      pageSize:10
+      commentList: [],
+      pageIndex: 1,
+      pageSize: 10
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -181,13 +182,19 @@ class AnnouncementDetail extends BaseComponent {
     });
     InteractionManager.runAfterInteractions(()=> {
       this._getAnnouncementDetail();
-    })
+
+    });
 
   }
 
   componentWillUnmount() {
-    clearTimeout(this.deleteTimer);
-    DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
+    if(this.deleteTimer){
+      clearTimeout(this.deleteTimer);
+    }
+    //ios在销毁页面前发出广播,避免返回前一页面后,页面白屏,点击一下才显示的bug。
+    if (Platform.OS === 'ios') {
+      DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
+    }
     this._attentionListener.remove();
   }
 
@@ -420,6 +427,9 @@ class AnnouncementDetail extends BaseComponent {
           commentList: result.Result,
           isSelf: this.state.isSelf
         });
+        if (Platform.OS === 'android') {
+          DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
+        }
       }, (error)=> {
         this.setState({refreshing: false});
       }));
@@ -582,7 +592,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   _renderHeader() {
-    if(!this.state.PosterInfo){
+    if (!this.state.PosterInfo) {
       return null
     }
     return (

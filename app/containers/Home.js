@@ -33,6 +33,8 @@ import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -68,8 +70,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   avatarImg: {
-    width: 50,
-    height: 50,
+    width: width / 9,
+    height: width / 9,
     marginRight: 10,
     borderRadius: 8
   },
@@ -94,8 +96,11 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 14,
+    fontSize: 10,
     color: '#FFF'
+  },
+  timeText: {
+    fontSize: 12
   },
   moodView: {
     marginTop: 10
@@ -141,10 +146,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const {height, width} = Dimensions.get('window');
-
 let navigator;
-let currentLocation = {};
 let commentId;
 let lastCount;
 
@@ -176,7 +178,6 @@ class Home extends BaseComponent {
       pageIndex: this.state.pageIndex,
       ...tmpGlobal.currentLocation
     };
-    currentLocation = tmpGlobal.currentLocation;
     dispatch(HomeActions.getPostList(data, (json)=> {
       lastCount = json.Result.length;
       this.setState({
@@ -212,7 +213,7 @@ class Home extends BaseComponent {
     const data = {
       pageSize: this.state.pageSize,
       pageIndex: this.state.pageIndex,
-      ...currentLocation
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
       lastCount = json.Result.length;
@@ -233,7 +234,7 @@ class Home extends BaseComponent {
     const data = {
       pageSize: this.state.pageSize,
       pageIndex: 1,
-      ...currentLocation
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
       lastCount = json.Result.length;
@@ -298,42 +299,25 @@ class Home extends BaseComponent {
   onRightPressed() {
     const {dispatch}=this.props;
     dispatch(HomeActions.newPost('', (json)=> {
-      this._publicAnnouncement(json, dispatch);
+      this._publicAnnouncement(json);
     }, (error)=> {
     }));
   }
 
   //跳转发布公告(查看公告)页面
-  _publicAnnouncement(json, dispatch) {
-    if (json.Code == 'OK' && json.Result.DoIHaveANotExpiredPost) {
-      let params = {
-        postId: json.Result.PostInfo.Id,
-        pageIndex: 1,
-        pageSize: 10,
-        ...currentLocation
+  _publicAnnouncement(json) {
+    if (json.Result.DoIHaveANotExpiredPost) {
+      let data = {
+        Id: json.Result.PostInfo.Id,
+        CreaterId:json.Result.PostInfo.CreaterId,
       };
-      //这里获取当前用户发布的最新的一条没有过期的动态
-      dispatch(HomeActions.getCommentList(params, (result)=> {
-        navigator.push({
-          component: AnnouncementDetail,
-          name: 'AnnouncementDetail',
-          params: {
-            ...json.Result.PostInfo,
-            myLocation: currentLocation,
-            commentList: result.Result,
-            pageIndex: 1,
-            pageSize: 10,
-            isSelf: true
-          }
-        })
-      }, (error)=> {
-      }))
+      this._goAnnouncementDetail(data);
     } else {
       navigator.push({
         component: Addannouncement,
         name: 'Addannouncement',
         params: {
-          myLocation: currentLocation,
+          myLocation: tmpGlobal.currentLocation,
           myUserId: tmpGlobal.currentUser.UserId,
           Nickname: tmpGlobal.currentUser.Nickname
         }
@@ -346,7 +330,7 @@ class Home extends BaseComponent {
     const {dispatch}=this.props;
     let params = {
       UserId: data.UserId,
-      ...currentLocation
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getUserInfo(params, (json)=> {
       dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
@@ -359,7 +343,7 @@ class Home extends BaseComponent {
             myUserId: tmpGlobal.currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
-            myLocation: currentLocation,
+            myLocation: tmpGlobal.currentLocation,
             isSelf: tmpGlobal.currentUser.UserId === data.UserId,
           }
         });
@@ -416,7 +400,7 @@ class Home extends BaseComponent {
       component: AnnouncementDetail,
       name: 'AnnouncementDetail',
       params: {
-        Id:rowData.Id,
+        Id: rowData.Id,
         isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId
       }
     });
@@ -483,14 +467,14 @@ class Home extends BaseComponent {
                 <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
                   <Icon
                     name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={12}
+                    size={10}
                     style={styles.userInfoIcon}/>
                   <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
             </View>
             <View style={styles.cardRight}>
-              <Text>{rowData.CreateTimeDescription}</Text>
+              <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
             </View>
           </View>
         </TouchableOpacity>

@@ -119,10 +119,8 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
-let currentLocation = {};
 let commentId;
 let lastCount;
-let currentUser;
 
 class AnnouncementList extends BaseComponent {
   constructor(props) {

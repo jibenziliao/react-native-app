@@ -136,7 +136,7 @@ class FriendsFilter extends BaseComponent {
   saveFriendFilter(data) {
     const {dispatch}=this.props;
     dispatch(FriendFilterActions.saveFriendFilter(data, (json)=> {
-      tmpGlobal.currentUser = json.Reulst;
+      tmpGlobal.currentUser = json.Result;
       this.goHome();
     }, (error)=> {
       //console.log(error)

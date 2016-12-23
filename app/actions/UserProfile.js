@@ -64,8 +64,8 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
           BirthDate: data.birthYearText,
           Ethnicity: data.ethnicity,
           Gender: data.gender,
-          Height: parseInt(data.heightText),
-          Weight: parseInt(data.weightText),
+          Height: data.heightText ? parseInt(data.heightText) : null,
+          Weight: data.weightText ? parseInt(data.weightText) : null,
           JobType: result.JobTypeObj && result.JobTypeObj.Key ? result.JobTypeObj.Key : null,
           IncomeLevel: result.IncomeLevel && result.IncomeLevel.Key ? result.IncomeLevel.Key : null,
           EducationLevel: result.EducationLevel && result.EducationLevel.Key ? result.EducationLevel.Key : null,
@@ -116,7 +116,7 @@ async function getSelectedItem(data) {
   });
 
   //console.log(JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus,Religion);
-  return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus,Religion});
+  return ({JobTypeObj, IncomeLevel, EducationLevel, MarriageStatus, Religion});
 }
 
 export function editProfile(data, datingPurpose, resolve, reject) {
