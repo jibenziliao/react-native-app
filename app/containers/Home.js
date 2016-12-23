@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingVertical: 5,
+    //paddingVertical: 5,
     justifyContent: 'flex-start',
     paddingLeft: 10
   },

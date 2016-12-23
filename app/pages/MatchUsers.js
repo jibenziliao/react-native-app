@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   userAvatar: {
-    borderRadius: width / 6,
+    borderRadius: width / 12,
     width: width / 6,
     height: width / 6,
     marginRight: 10

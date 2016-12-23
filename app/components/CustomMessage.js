@@ -68,7 +68,7 @@ export default class CustomMessage extends Component {
 
   //聊天双方都显示头像
   renderAvatar() {
-    console.log(this.props);
+    //console.log(this.props);
     //if (this.props.user._id !== this.props.currentMessage.user._id) {
     const {...other} = this.props;
     const avatarProps = {

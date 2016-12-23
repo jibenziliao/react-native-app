@@ -443,7 +443,7 @@ class MessageDetail extends BaseComponent {
   }
 
   renderAvatar(props) {
-    console.log(props);
+    //console.log(props);
     return (
       <CustomGiftedAvatar
         {...props}

@@ -36,6 +36,8 @@ import Menu, {
 import * as HomeActions from '../actions/Home'
 import AnnouncementList from '../pages/AnnouncemenetList'
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -47,16 +49,18 @@ const styles = StyleSheet.create({
   postContent: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    height: 150,
+    height: width / 3,
     backgroundColor: '#FFF',
     textAlign: 'left',
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
+    paddingHorizontal:10,
+    paddingVertical:5
   },
   scrollViewHorizontal: {
     flex: 1,
     backgroundColor: '#FFF',
     marginTop: 10,
-    paddingVertical:10
+    paddingVertical: 10
   },
   takePhotoBtn: {
     height: 80,
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'gray',
     borderRadius: 4,
-    marginHorizontal:10
+    marginHorizontal: 10
   },
   image: {
     height: 80,
@@ -88,8 +92,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 10,
-    paddingLeft: 10
+    paddingLeft: 10,
+    marginTop: 10
   },
   pickerView: {
     marginRight: 10,
@@ -102,9 +106,9 @@ const styles = StyleSheet.create({
     height: 40
   },
   tips: {
-    margin: 10,
     padding: 10,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    marginTop: 10
   },
   link: {
     textDecorationLine: 'underline',
@@ -140,6 +144,7 @@ class Addannouncement extends BaseComponent {
   onRightPressed() {
     Keyboard.dismiss();
     const {dispatch, navigator}=this.props;
+    this.state.PostContent=this.state.PostContent.trim();
     dispatch(HomeActions.postAnnouncement(this.state, navigator));
   }
 
@@ -209,7 +214,7 @@ class Addannouncement extends BaseComponent {
   }
 
   //前往我的历史公告列表
-  _goAnnouncementList(){
+  _goAnnouncementList() {
     const {dispatch, navigator}=this.props;
     let data = {
       targetUserId: this.state.myUserId,
@@ -314,7 +319,9 @@ class Addannouncement extends BaseComponent {
   renderBody() {
     return (
       <MenuContext style={styles.container}>
-        <View style={styles.announcementArea}>
+        <ScrollView
+          style={styles.announcementArea}
+          keyboardDismissMode={'interactive'}>
           <TextInput
             placeholder={'此时此地,想和大家说点什么?'}
             multiline={true}
@@ -323,7 +330,7 @@ class Addannouncement extends BaseComponent {
             value={this.state.PostContent}
             underlineColorAndroid={'transparent'}
             onChangeText={(PostContent)=> {
-              this.setState({PostContent})
+              this.setState({PostContent:PostContent})
             }}
           />
           <View style={{flexDirection: 'row'}}>
@@ -342,19 +349,19 @@ class Addannouncement extends BaseComponent {
               {this._renderImg(this.state.imageArr)}
             </ScrollView>
           </View>
-        </View>
-        <View style={styles.days}>
-          <Text>{'在广场上持续:'}</Text>
-          {this._renderPicker()}
-        </View>
-        <View style={styles.tips}>
-          <Text>{'注:持续时间过期后,将不在广场上显示'}</Text>
-          <Text
-            onPress={()=> {
-              this._goAnnouncementList()
-            }}
-            style={styles.link}>{'查看求关注历程'}</Text>
-        </View>
+          <View style={styles.days}>
+            <Text>{'在广场上持续:'}</Text>
+            {this._renderPicker()}
+          </View>
+          <View style={styles.tips}>
+            <Text>{'注:持续时间过期后,将不在广场上显示'}</Text>
+            <Text
+              onPress={()=> {
+                this._goAnnouncementList()
+              }}
+              style={styles.link}>{'查看求关注历程'}</Text>
+          </View>
+        </ScrollView>
       </MenuContext>
     )
   }
@@ -368,6 +375,7 @@ class Addannouncement extends BaseComponent {
   }
 
 }
+
 export default connect((state)=> {
   return {
     pendingStatus: state.Photo.pending
