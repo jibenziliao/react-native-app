@@ -26,8 +26,6 @@ pod 'React', path: '../node_modules/react-native', :subspecs => [
 'RCTWebSocket'
 ]
 pod 'GoogleMaps'
-pod 'IQKeyboardManager'
-
 
   target 'qingyuanjieTests' do
     inherit! :search_paths

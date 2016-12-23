@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
   },
   avatarArea: {
     alignItems: 'center',
-    paddingTop: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 0.5,
     borderColor: 'gray'
   },
   userAvatar: {
@@ -56,17 +56,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 10
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: 'gray'
+    borderBottomWidth: 0.5,
+    borderColor: 'gray',
+    paddingVertical: 0.5,
+    flex:1
+  },
+  touchableItem:{
+    flex:1,
+    flexDirection:'row',
+    alignItems:'center'
   },
   listItemIcon: {
     width: 80,
-    height: 60,
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -88,7 +96,7 @@ class Mine extends BaseComponent {
     this.state = {
       pending: false,
       loadUserInfo: true,
-      myLocation:tmpGlobal.currentLocation,
+      myLocation: tmpGlobal.currentLocation,
       ...tmpGlobal.currentUser
     };
     navigator = this.props.navigator;
@@ -105,7 +113,9 @@ class Mine extends BaseComponent {
     this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=> {
       this._getCurrentUserInfo()
     });
-    this.userProfileListener=DeviceEventEmitter.addListener('userInfoChanged', ()=>{this._getCurrentUserInfo()});
+    this.userProfileListener = DeviceEventEmitter.addListener('userInfoChanged', ()=> {
+      this._getCurrentUserInfo()
+    });
     this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=> {
       this._updateSignature(data)
     });
@@ -128,7 +138,7 @@ class Mine extends BaseComponent {
         myLocation: tmpGlobal.currentLocation,
         loadUserInfo: true,
       });
-      Storage.setItem('userInfo',json.Result);
+      Storage.setItem('userInfo', json.Result);
     }, (error)=> {
     }));
   }
@@ -235,38 +245,42 @@ class Mine extends BaseComponent {
                 <Icon name={'edit'} size={20}/>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              onPress={()=> {
-                this._editMyDetail(this.state)
-              }}
-              style={styles.listItem}>
-              <View style={styles.listItemLeft}>
-                <Icon
-                  style={styles.itemIcon}
-                  name={'list-alt'}
-                  size={18}/>
-                <Text>{'详细资料'}</Text>
-              </View>
-              <View style={styles.listItemIcon}>
-                <Icon name={'angle-right'} size={20}/>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={()=> {
-                this._goSettings()
-              }}
-              style={styles.listItem}>
-              <View style={styles.listItemLeft}>
-                <Icon
-                  style={styles.itemIcon}
-                  name={'gear'}
-                  size={18}/>
-                <Text>{'设置'}</Text>
-              </View>
-              <View style={styles.listItemIcon}>
-                <Icon name={'angle-right'} size={20}/>
-              </View>
-            </TouchableOpacity>
+            <View style={styles.listItem}>
+              <TouchableOpacity
+                onPress={()=> {
+                  this._editMyDetail(this.state)
+                }}
+                style={styles.touchableItem}>
+                <View style={styles.listItemLeft}>
+                  <Icon
+                    style={styles.itemIcon}
+                    name={'list-alt'}
+                    size={18}/>
+                  <Text>{'详细资料'}</Text>
+                </View>
+                <View style={styles.listItemIcon}>
+                  <Icon name={'angle-right'} size={20}/>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.listItem}>
+              <TouchableOpacity
+                onPress={()=> {
+                  this._goSettings()
+                }}
+              style={styles.touchableItem}>
+                <View style={styles.listItemLeft}>
+                  <Icon
+                    style={styles.itemIcon}
+                    name={'gear'}
+                    size={18}/>
+                  <Text>{'设置'}</Text>
+                </View>
+                <View style={styles.listItemIcon}>
+                  <Icon name={'angle-right'} size={20}/>
+                </View>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
         </View>
       )

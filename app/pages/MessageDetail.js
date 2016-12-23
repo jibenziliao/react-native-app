@@ -10,7 +10,8 @@ import {
   Text,
   DeviceEventEmitter,
   TouchableOpacity,
-  InteractionManager
+  InteractionManager,
+  Keyboard
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -290,6 +291,7 @@ class MessageDetail extends BaseComponent {
 
   //发消息的同时,将消息缓存在本地
   onSend(messages) {
+    Keyboard.dismiss();
     console.log(messages);
     let singleMsg = {
       MsgContent: messages[0].text,
@@ -533,7 +535,7 @@ class MessageDetail extends BaseComponent {
           user={{
             _id: this.state.myUserId, // sent messages should have same user._id
             name: tmpGlobal.currentUser.Nickname,
-            avatar: URL_DEV + tmpGlobal.currentUser.PrimaryPhotoFilename
+            avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
           }}
           locale={'zh-CN'}
           label={'发送'}
