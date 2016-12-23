@@ -16,7 +16,7 @@ import * as Storage from '../utils/Storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Login from '../pages/Login'
 import {toastShort} from '../utils/ToastUtil'
-import temGlobal from '../utils/TmpVairables'
+import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -30,9 +30,9 @@ const styles = StyleSheet.create({
     height: 50,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    flexDirection:'row',
-    margin:10,
-    alignItems:'center'
+    flexDirection: 'row',
+    margin: 10,
+    alignItems: 'center'
   },
   itemIcon: {
     width: 60,
@@ -56,23 +56,24 @@ class Settings extends BaseComponent {
 
   _logOut() {
     //注销后,重置signalr连接
-    temGlobal.connection=null;
-    temGlobal.proxy=null;
+    tmpGlobal.connection = null;
+    tmpGlobal.proxy = null;
+    tmpGlobal.currentUser = null;
     Storage.removeItem('hasRegistered');
     Storage.removeItem('userInfo');
     Storage.removeItem('hasInit');
     toastShort('注销成功');
-    this.timer=setTimeout(()=>{
+    this.logoutTimer = setTimeout(()=> {
       navigator.resetTo({
-        component:Login,
-        name:'Login'
+        component: Login,
+        name: 'Login'
       })
-    },1000);
+    }, 1000);
   }
 
-  componentWillUnmount(){
-    if(this.timer){
-      clearTimeout(this.timer);
+  componentWillUnmount() {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
     }
   }
 

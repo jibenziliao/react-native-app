@@ -171,9 +171,16 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
+  componentDidMount(){
+    this._attentionListener=DeviceEventEmitter.addListener('hasAttention',()=>{
+      this._onRefresh()
+    });
+  }
+
   componentWillUnmount() {
     clearTimeout(this.deleteTimer);
     DeviceEventEmitter.emit('announcementHasRead','公告已阅读');
+    this._attentionListener.remove();
   }
 
   getNavigationBarProps() {
@@ -230,7 +237,8 @@ class AnnouncementDetail extends BaseComponent {
       attentionUserId: this.state.PosterInfo.UserId
     };
     dispatch(HomeActions.attention(data, (json)=> {
-      this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
+      DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
+      //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error)=> {
     }))
   }

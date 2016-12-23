@@ -124,6 +124,9 @@ class MessageDetail extends BaseComponent {
     }, ()=> {
       this._initOldMessage();
     });
+    this._attentionListener=DeviceEventEmitter.addListener('hasAttention',()=>{
+      this._getUserInfo()
+    });
   }
 
   _getUserInfo() {
@@ -283,6 +286,7 @@ class MessageDetail extends BaseComponent {
   //页面销毁之前,切换销毁开关,离开此页面后,不再接收消息
   componentWillUnmount() {
     this.state.destroyed = true;
+    this._attentionListener.remove();
   }
 
   onLoadEarlier() {
@@ -383,12 +387,12 @@ class MessageDetail extends BaseComponent {
         wrapperStyle={{
           left: {
             backgroundColor: '#f0f0f0',
-            paddingHorizontal:6,
-            paddingVertical:6
+            paddingHorizontal: 6,
+            paddingVertical: 6
           },
           right: {
-            paddingHorizontal:6,
-            paddingVertical:6
+            paddingHorizontal: 6,
+            paddingVertical: 6
           }
         }}
       />
@@ -423,8 +427,7 @@ class MessageDetail extends BaseComponent {
           style={[styles.container, this.props.containerStyle]}
           onPress={() => {
             props.onSend({text: props.text.trim()}, true);
-          }}
-        >
+          }}>
           <Text style={[styles.text, props.textStyle]}>{props.label}</Text>
         </TouchableOpacity>
       );
@@ -465,7 +468,7 @@ class MessageDetail extends BaseComponent {
     this.ActionSheet.show();
   }
 
-  //点击actionSheet
+  //关注/取消关注
   _actionSheetPress(index) {
     const {dispatch}=this.props;
     let data = {
@@ -473,7 +476,7 @@ class MessageDetail extends BaseComponent {
     };
     if (index === 1) {
       dispatch(HomeActions.attention(data, (json)=> {
-
+        DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
       }, (error)=> {
       }));
     }
@@ -488,7 +491,7 @@ class MessageDetail extends BaseComponent {
   }
 
   _goUserInfo(props) {
-    if (this._getPreviousRoute() === 'UserInfo') {
+    if (this._getPreviousRoute() === 'UserInfo' && props.currentMessage.user._id !== this.state.myUserId) {
       navigator.pop();
     } else {
       const {dispatch}=this.props;

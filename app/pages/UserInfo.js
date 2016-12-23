@@ -155,7 +155,9 @@ class UserInfo extends BaseComponent {
     this.userProfileListener=DeviceEventEmitter.addListener('userInfoChanged', ()=>{this._getUserInfo()});
     this.friendFilterListener=DeviceEventEmitter.addListener('friendFilterChanged', ()=>{this._getUserInfo()});
     this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=>{this._updateSignature(data)});
-
+    this._attentionListener=DeviceEventEmitter.addListener('hasAttention',()=>{
+      this._getUserInfo()
+    });
   }
 
   componentWillUnmount() {
@@ -163,6 +165,7 @@ class UserInfo extends BaseComponent {
     this.userProfileListener.remove();
     this.friendFilterListener.remove();
     this.signatureListener.remove();
+    this._attentionListener.remove();
   }
 
   _getUserInfo(){
@@ -237,6 +240,7 @@ class UserInfo extends BaseComponent {
       attentionUserId: id
     };
     dispatch(HomeActions.attention(params, (json)=> {
+      DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
       this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error)=> {
     }));
