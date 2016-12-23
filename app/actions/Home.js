@@ -8,6 +8,7 @@ import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 import {toastShort} from '../utils/ToastUtil'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import {DeviceEventEmitter} from 'react-native'
+import tmpGlobal from '../utils/TmpVairables'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {
@@ -113,8 +114,7 @@ function fetchOptions(data) {
 function pushNewPost(dispatch, data, imgArr, navigator) {
   let params = {
     PostContent: data.PostContent,
-    Lat: data.myLocation.Lat,
-    Lng: data.myLocation.Lng,
+    ...tmpGlobal.currentLocation,
     PicList: imgArr
   };
   dispatch({type: ActionTypes.FETCH_BEGIN, params});

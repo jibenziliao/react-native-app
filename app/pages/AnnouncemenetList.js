@@ -30,6 +30,7 @@ import AnnouncementDetail from '../pages/AnnouncementDetail'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import * as HomeActions from '../actions/Home'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {height, width} = Dimensions.get('window');
 
@@ -260,40 +261,14 @@ class AnnouncementList extends BaseComponent {
 
   //前往公告详情(先判断是否是本人发布的动态,然后获取公告详情和评论列表)
   _goAnnouncementDetail(rowData) {
-    const {dispatch}=this.props;
-    const data = {
-      postId: rowData.Id,
-      ...this.state.myLocation
-    };
-    let params = {
-      postId: rowData.Id,
-      pageIndex: 1,
-      pageSize: 10,
-      Lat: rowData.Lat,
-      Lng: rowData.Lng
-    };
-    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
-      dispatch(HomeActions.getCommentList(params, (result)=> {
-        navigator.push({
-          component: AnnouncementDetail,
-          name: 'AnnouncementDetail',
-          params: {
-            pageIndex: 1,
-            pageSize: 10,
-            ...json.Result,
-            myLocation: this.state.myLocation,
-            commentList: result.Result,
-            myUserId: this.state.myUserId,
-            isSelf: this.state.myUserId === rowData.CreaterId,
-            callBack: ()=> {
-              this._onRefresh()
-            }
-          }
-        })
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: AnnouncementDetail,
+      name: 'AnnouncementDetail',
+      params: {
+        Id: rowData.Id,
+        isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId,
+      }
+    });
   }
 
   //渲染公告中的图片

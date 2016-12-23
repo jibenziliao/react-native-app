@@ -31,6 +31,7 @@ import {toastShort} from '../utils/ToastUtil'
 import Addannouncement from '../pages/Addannouncement'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import ActionSheet from 'react-native-actionsheet'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {height, width} = Dimensions.get('window');
 
@@ -154,7 +155,10 @@ class AnnouncementDetail extends BaseComponent {
       forCommentId: null,
       refreshing: false,
       loadingMore: false,
-      ...this.props.route.params
+      ...this.props.route.params,
+      commentList:[],
+      pageIndex:1,
+      pageSize:10
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -171,15 +175,19 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  componentDidMount(){
-    this._attentionListener=DeviceEventEmitter.addListener('hasAttention',()=>{
+  componentDidMount() {
+    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
       this._onRefresh()
     });
+    InteractionManager.runAfterInteractions(()=> {
+      this._getAnnouncementDetail();
+    })
+
   }
 
   componentWillUnmount() {
     clearTimeout(this.deleteTimer);
-    DeviceEventEmitter.emit('announcementHasRead','公告已阅读');
+    DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
     this._attentionListener.remove();
   }
 
@@ -220,12 +228,7 @@ class AnnouncementDetail extends BaseComponent {
     } else if (index === 1) {
       navigator.push({
         component: Addannouncement,
-        name: 'Addannouncement',
-        params: {
-          myLocation: this.state.myLocation,
-          myUserId: this.state.CreaterId,
-          Nickname: this.state.PosterInfo.Nickname
-        }
+        name: 'Addannouncement'
       })
     }
   }
@@ -237,7 +240,7 @@ class AnnouncementDetail extends BaseComponent {
       attentionUserId: this.state.PosterInfo.UserId
     };
     dispatch(HomeActions.attention(data, (json)=> {
-      DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
+      DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
       //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error)=> {
     }))
@@ -248,7 +251,7 @@ class AnnouncementDetail extends BaseComponent {
     const {dispatch}=this.props;
     let params = {
       UserId: data.UserId,
-      ...this.state.myLocation
+      ...tmpGlobal.currentLocation,
     };
     dispatch(HomeActions.getUserInfo(params, (json)=> {
       dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
@@ -258,10 +261,10 @@ class AnnouncementDetail extends BaseComponent {
           params: {
             Nickname: data.Nickname,
             UserId: data.UserId,
-            myUserId: this.state.myUserId,
+            myUserId: tmpGlobal.currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
-            myLocation: this.state.myLocation,
+            myLocation: tmpGlobal.currentLocation,
             isSelf: this.state.isSelf
           }
         });
@@ -330,7 +333,7 @@ class AnnouncementDetail extends BaseComponent {
       postId: this.state.Id,
       pageIndex: 1,
       pageSize: 10,
-      ...this.state.myLocation
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.comment(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (json)=> {
@@ -362,14 +365,13 @@ class AnnouncementDetail extends BaseComponent {
     this.setState({refreshing: true, pageIndex: 1});
     const data = {
       postId: this.state.Id,
-      ...this.state.myLocation
+      ...tmpGlobal.currentLocation
     };
     let params = {
       postId: this.state.Id,
       pageIndex: 1,
       pageSize: 10,
-      Lat: this.state.Lat,
-      Lng: this.state.Lng
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (result)=> {
@@ -382,8 +384,7 @@ class AnnouncementDetail extends BaseComponent {
           pageIndex: 1,
           pageSize: 10,
           ...json.Result,
-          myLocation: this.state.myLocation,
-          myUserId: this.state.myUserId,
+          myUserId: tmpGlobal.currentUser.UserId,
           commentList: result.Result,
           isSelf: this.state.isSelf
         });
@@ -391,6 +392,39 @@ class AnnouncementDetail extends BaseComponent {
         this.setState({refreshing: false});
       }));
     }, (error)=> {
+      this.setState({refreshing: false});
+    }));
+  }
+
+  _getAnnouncementDetail() {
+    const {dispatch}=this.props;
+    let data = {
+      postId: this.state.Id,
+      ...tmpGlobal.currentLocation
+    };
+    let params = {
+      postId: this.state.Id,
+      pageIndex: 1,
+      pageSize: 10,
+      ...tmpGlobal.currentLocation
+    };
+    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
+      dispatch(HomeActions.getCommentList(params, (result)=> {
+        this.setState({
+          forCommentId: null,
+          refreshing: false,
+          loadingMore: false,
+          pageIndex: 1,
+          pageSize: 10,
+          ...json.Result,
+          commentList: result.Result,
+          isSelf: this.state.isSelf
+        });
+      }, (error)=> {
+        this.setState({refreshing: false});
+      }));
+    }, (error)=> {
+      this.setState({refreshing: false});
     }));
   }
 
@@ -403,7 +437,7 @@ class AnnouncementDetail extends BaseComponent {
       postId: this.state.Id,
       pageIndex: this.state.pageIndex,
       pageSize: 10,
-      ...this.state.myLocation
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getCommentList(params, (json)=> {
       lastCount = json.Result.length;
@@ -548,6 +582,9 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   _renderHeader() {
+    if(!this.state.PosterInfo){
+      return null
+    }
     return (
       <View style={styles.card}>
         <TouchableOpacity

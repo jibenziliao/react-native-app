@@ -412,37 +412,14 @@ class Home extends BaseComponent {
 
   //前往公告详情(先判断是否是本人发布的动态,然后获取公告详情和评论列表)
   _goAnnouncementDetail(rowData) {
-    const {dispatch}=this.props;
-    const data = {
-      postId: rowData.Id,
-      ...currentLocation
-    };
-    let params = {
-      postId: rowData.Id,
-      pageIndex: 1,
-      pageSize: 10,
-      Lat: rowData.Lat,
-      Lng: rowData.Lng
-    };
-    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
-      dispatch(HomeActions.getCommentList(params, (result)=> {
-        navigator.push({
-          component: AnnouncementDetail,
-          name: 'AnnouncementDetail',
-          params: {
-            pageIndex: 1,
-            pageSize: 10,
-            ...json.Result,
-            myLocation: currentLocation,
-            commentList: result.Result,
-            myUserId: tmpGlobal.currentUser.UserId,
-            isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId
-          }
-        })
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: AnnouncementDetail,
+      name: 'AnnouncementDetail',
+      params: {
+        Id:rowData.Id,
+        isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId
+      }
+    });
   }
 
   _renderMoreImgLabel(arr, index) {

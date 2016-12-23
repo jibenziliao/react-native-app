@@ -35,6 +35,7 @@ import Menu, {
 } from 'react-native-popup-menu'
 import * as HomeActions from '../actions/Home'
 import AnnouncementList from '../pages/AnnouncemenetList'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {height, width} = Dimensions.get('window');
 
@@ -123,13 +124,8 @@ class Addannouncement extends BaseComponent {
     this.state = {
       PostContent: '',
       imageArr: [],
-      ...this.props.route.params,
       days: '1'
     };
-  }
-
-  componentDidMount() {
-
   }
 
   getNavigationBarProps() {
@@ -217,10 +213,10 @@ class Addannouncement extends BaseComponent {
   _goAnnouncementList() {
     const {dispatch, navigator}=this.props;
     let data = {
-      targetUserId: this.state.myUserId,
+      targetUserId: tmpGlobal.currentUser.UserId,
       pageIndex: 1,
       pageSize: 10,
-      ...this.state.myLocation,
+      ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
     dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
@@ -229,10 +225,10 @@ class Addannouncement extends BaseComponent {
         name: 'AnnouncementList',
         params: {
           postList: json.Result,
-          targetUserId: this.state.myUserId,
-          Nickname: this.state.Nickname,
-          myLocation: this.state.myLocation,
-          myUserId: this.state.myUserId
+          targetUserId: tmpGlobal.currentUser.UserId,
+          Nickname: tmpGlobal.currentUser.Nickname,
+          myLocation: tmpGlobal.currentLocation,
+          myUserId: tmpGlobal.currentUser.UserId,
         }
       });
     }, (error)=> {
