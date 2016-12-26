@@ -11,20 +11,13 @@ import {
   TextInput,
   ScrollView,
   TouchableHighlight,
-  Animated,
   Picker,
   Image,
   Platform,
   PickerIOS,
-  ActionSheetIOS,
-  Dimensions
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
-import MainContainer from '../containers/MainContainer'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import Modal from 'react-native-modalbox'
 import {Button as NBButton} from 'native-base'
-import {StyleConfig, CommonStyles} from '../style'
 import ImagePicker from 'react-native-image-picker'
 import ImageViewer from '../components/ImageViewer'
 import Spinner from '../components/Spinner'
@@ -38,8 +31,6 @@ import FriendsFilter from './FriendsFilter'
 import {connect} from 'react-redux'
 import * as PhotoAction from '../actions/Photo'
 import * as Storage from '../utils/Storage'
-
-const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
