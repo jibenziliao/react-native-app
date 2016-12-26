@@ -14,8 +14,8 @@ import {
   PickerIOS,
   Platform,
   TouchableHighlight,
-  Animated,
-  Keyboard
+  Keyboard,
+  findNodeHandle
 } from 'react-native'
 import * as Storage from '../utils/Storage'
 import BaseComponent from '../base/BaseComponent'
@@ -87,6 +87,12 @@ const styles = StyleSheet.create({
 
 let navigator;
 
+let refTarget = 'validCode';
+
+let ancestorTarget;
+
+let moveY;
+
 class Login extends BaseComponent {
   constructor(props) {
     super(props);
@@ -106,6 +112,7 @@ class Login extends BaseComponent {
   }
 
   componentWillMount() {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
     let systemType = DeviceInfo.getSystemName();
     if (systemType && systemType == 'iPhone OS') {
       systemType = 'iOS';
@@ -166,7 +173,7 @@ class Login extends BaseComponent {
       hasSendCode: false,
     });
     tmpGlobal.currentUser = json.Result;
-    console.log('登录成功后,保存用户信息到全局变量',tmpGlobal.currentUser);
+    console.log('登录成功后,保存用户信息到全局变量', tmpGlobal.currentUser);
 
     let saveUserInfo = async()=> {
       try {
@@ -242,6 +249,29 @@ class Login extends BaseComponent {
 
   componentWillUnmount() {
     BackgroundTimer.clearInterval(this.timer);
+    this.keyboardDidShowListener.remove();
+  }
+
+  //当键盘弹起来
+  _keyboardDidShow(e) {
+    this._inputMeasure(e);
+  }
+
+  _inputMeasure(e) {
+    moveY = 0;
+    if (Platform.OS === 'ios') {
+      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
+        //console.log(x, y, width, height);
+        //height为input框高度,64为iOS导航栏高度
+        moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
+        //console.log(moveY, e, y);
+        if (moveY > 0) {
+          this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
+        }
+      }, (error)=> {
+        console.log(error);
+      });
+    }
   }
 
   renderValidCodeBtn(phone) {
@@ -332,52 +362,72 @@ class Login extends BaseComponent {
 
   renderBody() {
     return (
-      <MenuContext style={{flex: 1}}>
-        <ScrollView style={styles.loginPage}
-                    keyboardDismissMode={'interactive'}
-                    keyboardShouldPersistTaps={true}>
-          {this.renderTips()}
-          <View style={styles.inputItem}>
-            {this.renderPicker()}
-            <TextInput
-              style={styles.input}
-              keyboardType={'numeric'}
-              underlineColorAndroid={'transparent'}
-              placeholder={'请输入手机号'}
-              maxLength={this.state.maxLength}
-              onChangeText={(phone) => this.renderValidCodeBtn({phone})}
-              value={this.state.phone}
-              returnKeyType={'done'}
-            />
-          </View>
-          <View style={styles.inputItem}>
-            <TextInput
-              multiline={false}
-              keyboardType={'numeric'}
-              style={styles.input}
-              underlineColorAndroid={'transparent'}
-              placeholder={'请输入验证码'}
-              maxLength={6}
-              returnKeyType={'done'}
-              onChangeText={(validCode)=>this.setState({validCode})}
-              value={this.state.validCode}/>
+      <MenuContext
+        ref={'root'}
+        style={{flex: 1}}>
+        <ScrollView
+          ref={'scroll'}
+          style={styles.loginPage}
+          keyboardDismissMode={'interactive'}
+          keyboardShouldPersistTaps={true}>
+          <View
+            style={{flex: 1}}
+            onStartShouldSetResponderCapture={(e) => {
+              ancestorTarget = e.nativeEvent.target;
+              if (ancestorTarget !== findNodeHandle(this.refs[refTarget])) {
+                this.refs[refTarget].blur();
+              }
+            }}>
+            {this.renderTips()}
+            <View style={styles.inputItem}>
+              {this.renderPicker()}
+              <TextInput
+                style={styles.input}
+                keyboardType={'numeric'}
+                underlineColorAndroid={'transparent'}
+                placeholder={'请输入手机号'}
+                maxLength={this.state.maxLength}
+                onChangeText={(phone) => this.renderValidCodeBtn({phone})}
+                value={this.state.phone}
+                returnKeyType={'done'}
+              />
+            </View>
+            <View style={styles.inputItem}>
+              <TextInput
+                multiline={false}
+                keyboardType={'numeric'}
+                style={styles.input}
+                underlineColorAndroid={'transparent'}
+                placeholder={'请输入验证码'}
+                maxLength={6}
+                ref={'validCode'}
+                onFocus={()=> {
+                  refTarget = 'validCode'
+                }}
+                onBlur={()=> {
+                  this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                }}
+                returnKeyType={'done'}
+                onChangeText={(validCode)=>this.setState({validCode})}
+                value={this.state.validCode}/>
+              <NBButton
+                block
+                style={{height: 40, marginLeft: 20, width: 120}}
+                onPress={()=> {
+                  this.getValidCode(this.state.phoneCountry, this.state.phone)
+                }}
+                disabled={!this.state.validCodeBtnAccessible}>
+                {this.state.validCodeText}
+              </NBButton>
+            </View>
             <NBButton
               block
-              style={{height: 40, marginLeft: 20, width: 120}}
-              onPress={()=> {
-                this.getValidCode(this.state.phoneCountry, this.state.phone)
-              }}
-              disabled={!this.state.validCodeBtnAccessible}>
-              {this.state.validCodeText}
+              style={{marginTop: 20, height: 40, alignItems: 'center'}}
+              onPress={()=>this.login(this.state.validCode)}
+              disabled={this._renderLoginBtnStatus()}>
+              登录
             </NBButton>
           </View>
-          <NBButton
-            block
-            style={{marginTop: 20, height: 40, alignItems: 'center'}}
-            onPress={()=>this.login(this.state.validCode)}
-            disabled={this._renderLoginBtnStatus()}>
-            登录
-          </NBButton>
         </ScrollView>
       </MenuContext>
     )

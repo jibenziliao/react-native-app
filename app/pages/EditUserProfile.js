@@ -724,9 +724,6 @@ class EditUserProfile extends BaseComponent {
                 <Text style={[styles.itemTitle, styles.datingPurposeTitle]}>{'交友目的'}</Text>
                 {this.renderDatingPurpose()}
               </View>
-              <View style={{height: 200}}>
-                <Text>{'123'}</Text>
-              </View>
             </View>
           </ScrollView>
         </View>

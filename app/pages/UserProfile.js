@@ -18,7 +18,8 @@ import {
   ActionSheetIOS,
   Alert,
   Dimensions,
-  Keyboard
+  Keyboard,
+  findNodeHandle
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
@@ -163,6 +164,12 @@ const styles = StyleSheet.create({
 
 let navigator;
 
+let refTarget = 'Nickname';
+
+let ancestorTarget;
+
+let moveY;
+
 let DictMap = {
   EducationLevelDict: [],
   IncomeLevelDict: [],
@@ -222,6 +229,7 @@ class UserProfile extends BaseComponent {
       loading: true
     });
     this._initDict();
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
   }
 
   _initDict() {
@@ -331,6 +339,7 @@ class UserProfile extends BaseComponent {
     if (this.showSinglePickerTimer) {
       clearTimeout(this.showSinglePickerTimer);
     }
+    this.keyboardDidShowListener.remove();
   }
 
   //去首页
@@ -361,6 +370,28 @@ class UserProfile extends BaseComponent {
         {arr.map((gender, index)=>this.renderGenderItem(gender, index))}
       </View>
     )
+  }
+
+  //当键盘弹起来
+  _keyboardDidShow(e) {
+    this._inputMeasure(e);
+  }
+
+  _inputMeasure(e) {
+    moveY = 0;
+    if (Platform.OS === 'ios') {
+      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
+        //console.log(x, y, width, height);
+        //height为input框高度,64为iOS导航栏高度
+        moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
+        //console.log(moveY, e, y);
+        if (moveY > 0) {
+          this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
+        }
+      }, (error)=> {
+        console.log(error);
+      });
+    }
   }
 
   //性别
@@ -483,7 +514,8 @@ class UserProfile extends BaseComponent {
 
   }
 
-  _hidePicker() {
+  _hidePicker(str) {
+    refTarget=str;
     RNPicker.isPickerShow((status)=> {
       if (status) RNPicker.hide()
     });
@@ -650,8 +682,12 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker()
+              this._hidePicker('Location')
             }}
+            onBlur={()=> {
+              this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+            }}
+            ref={'Location'}
             value={this.state.location}
             onChangeText={(location)=>this.setState({location})}
             maxLength={50}/>
@@ -666,8 +702,12 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker()
+              this._hidePicker('Hometown')
             }}
+            onBlur={()=> {
+              this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+            }}
+            ref={'Hometown'}
             value={this.state.hometown}
             onChangeText={(hometown)=>this.setState({hometown})}
             maxLength={15}/>
@@ -682,8 +722,12 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker()
+              this._hidePicker('Ethnicity')
             }}
+            onBlur={()=> {
+              this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+            }}
+            ref={'Ethnicity'}
             value={this.state.ethnicity}
             onChangeText={(ethnicity)=>this.setState({ethnicity})}
             maxLength={15}/>
@@ -702,8 +746,12 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker()
+              this._hidePicker('MobileNo')
             }}
+            onBlur={()=> {
+              this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+            }}
+            ref={'MobileNo'}
             //这里的联系方式暂时无效,默认为用户手机号
             //onChangeText={(ethnicity)=>this.setState({ethnicity})}
             maxLength={20}/>
@@ -714,8 +762,12 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker()
+              this._hidePicker('Hobby')
             }}
+            onBlur={()=> {
+              this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+            }}
+            ref={'Hobby'}
             value={this.state.interest}
             onChangeText={(interest)=>this.setState({interest})}
             maxLength={15}/>
@@ -726,8 +778,12 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker()
+              this._hidePicker('SelfEvaluation')
             }}
+            onBlur={()=> {
+              this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+            }}
+            ref={'SelfEvaluation'}
             value={this.state.selfEvaluation}
             onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
             maxLength={100}/>
@@ -738,24 +794,35 @@ class UserProfile extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View
+        ref={'root'}
+        style={styles.container}>
         <ScrollView
+          ref={'scroll'}
           style={styles.scrollView}
           keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
-          <View style={styles.needItems}
-                pointerEvents={'box-none'}
-                onStartShouldSetResponderCapture={()=> {
-                  return false
-                }}>
+          <View
+            style={styles.needItems}
+            pointerEvents={'box-none'}
+            onStartShouldSetResponderCapture={(e) => {
+              ancestorTarget = e.nativeEvent.target;
+              if (this.state.expandStatus && ancestorTarget !== findNodeHandle(this.refs[refTarget])) {
+                this.refs[refTarget].blur();
+              }
+            }}>
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'昵称'}</Text>
               <TextInput
                 style={[styles.input, styles.fullInput]}
                 underlineColorAndroid={'transparent'}
                 onFocus={()=> {
-                  this._hidePicker()
+                  this._hidePicker('Nickname')
                 }}
+                onBlur={()=> {
+                  this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                }}
+                ref={'Nickname'}
                 value={this.state.nickName}
                 onChangeText={(nickName)=>this.setState({nickName})}
                 maxLength={15}/>
