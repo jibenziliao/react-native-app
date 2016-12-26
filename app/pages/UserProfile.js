@@ -694,7 +694,9 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Location')
             }}
             onBlur={()=> {
-              this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              if(Platform.OS==='ios'){
+                this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              }
             }}
             ref={'Location'}
             value={this.state.location}
@@ -714,7 +716,9 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Hometown')
             }}
             onBlur={()=> {
-              this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              if(Platform.OS==='ios'){
+                this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              }
             }}
             ref={'Hometown'}
             value={this.state.hometown}
@@ -734,7 +738,9 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Ethnicity')
             }}
             onBlur={()=> {
-              this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              if(Platform.OS==='ios'){
+                this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              }
             }}
             ref={'Ethnicity'}
             value={this.state.ethnicity}
@@ -758,7 +764,9 @@ class UserProfile extends BaseComponent {
               this._hidePicker('MobileNo')
             }}
             onBlur={()=> {
-              this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              if(Platform.OS==='ios'){
+                this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              }
             }}
             ref={'MobileNo'}
             //这里的联系方式暂时无效,默认为用户手机号
@@ -774,7 +782,9 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Hobby')
             }}
             onBlur={()=> {
-              this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              if(Platform.OS==='ios'){
+                this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              }
             }}
             ref={'Hobby'}
             value={this.state.interest}
@@ -790,7 +800,9 @@ class UserProfile extends BaseComponent {
               this._hidePicker('SelfEvaluation')
             }}
             onBlur={()=> {
-              this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              if(Platform.OS==='ios'){
+                this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+              }
             }}
             ref={'SelfEvaluation'}
             value={this.state.selfEvaluation}
@@ -829,7 +841,9 @@ class UserProfile extends BaseComponent {
                   this._hidePicker('Nickname')
                 }}
                 onBlur={()=> {
-                  this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+                  if(Platform.OS==='ios'){
+                    this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
+                  }
                 }}
                 ref={'Nickname'}
                 value={this.state.nickName}
