@@ -16,7 +16,10 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Platform,
+  Keyboard,
+  Animated
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
@@ -25,7 +28,6 @@ import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
 import Spinner from '../components/Spinner'
 import LoadMoreFooter from '../components/LoadMoreFooter'
-import Modal from 'react-native-modalbox'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
@@ -161,7 +163,9 @@ class Home extends BaseComponent {
       pageIndex: 1,
       postList: [],
       comment: '',
-      commentModalOpen: false
+      commentModalOpen: false,
+      viewMarginBottom: new Animated.Value(0),
+      showCommentInput: false
     };
   }
 
@@ -169,6 +173,7 @@ class Home extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._getAnnouncementList();
     });
+    this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
   }
 
   _getAnnouncementList() {
@@ -282,6 +287,18 @@ class Home extends BaseComponent {
     this.hasDeleteListener.remove();
     this.publishListener.remove();
     this.commentListener.remove();
+    this.keyboardWillShowListener.remove();
+  }
+
+  //当键盘弹即将起来
+  _keyboardWillShow(e) {
+    Animated.timing(
+      this.state.viewMarginBottom,
+      {
+        toValue: e.startCoordinates.height - (Platform.OS === 'ios' ? 45.5 : 50),
+        duration: 100,
+      }
+    ).start();
   }
 
   getNavigationBarProps() {
@@ -297,6 +314,7 @@ class Home extends BaseComponent {
 
   //获取用户是否存在未过期的动态
   onRightPressed() {
+    this._closeCommentInput();
     const {dispatch}=this.props;
     dispatch(HomeActions.newPost('', (json)=> {
       this._publicAnnouncement(json);
@@ -309,7 +327,7 @@ class Home extends BaseComponent {
     if (json.Result.DoIHaveANotExpiredPost) {
       let data = {
         Id: json.Result.PostInfo.Id,
-        CreaterId:json.Result.PostInfo.CreaterId,
+        CreaterId: json.Result.PostInfo.CreaterId,
       };
       this._goAnnouncementDetail(data);
     } else {
@@ -327,6 +345,7 @@ class Home extends BaseComponent {
 
   //点击头像和名字,跳转个人信息详情页
   _goUserInfo(data) {
+    this._closeCommentInput();
     const {dispatch}=this.props;
     let params = {
       UserId: data.UserId,
@@ -355,6 +374,7 @@ class Home extends BaseComponent {
 
   //点赞/取消赞(不论是否已赞,点赞取消赞,isLike都传true,isLike可能的值null,true,false)
   _doLike(id, isLike) {
+    this._closeCommentInput();
     const {dispatch}=this.props;
     let index = this.state.postList.findIndex((item)=> {
       return item.Id === id;
@@ -384,7 +404,16 @@ class Home extends BaseComponent {
   _showCommentInput(id) {
     //保存当前要评论的广告id
     commentId = id;
-    this.refs.commentInputBox.open();
+    this.setState({
+      showCommentInput: true
+    });
+  }
+
+  _closeCommentInput() {
+    this.setState({
+      showCommentInput: false,
+      comment: ''
+    });
   }
 
   _renderGenderStyle(gender) {
@@ -396,6 +425,7 @@ class Home extends BaseComponent {
 
   //前往公告详情(先判断是否是本人发布的动态,然后获取公告详情和评论列表)
   _goAnnouncementDetail(rowData) {
+    this._closeCommentInput();
     navigator.push({
       component: AnnouncementDetail,
       name: 'AnnouncementDetail',
@@ -530,6 +560,9 @@ class Home extends BaseComponent {
               onRefresh={this._onRefresh.bind(this)}
             />
           }
+          onScroll={()=> {
+            this.setState({showCommentInput: false, comment: ''})
+          }}
           style={styles.listView}
           dataSource={ds.cloneWithRows(postList)}
           renderRow={
@@ -539,6 +572,8 @@ class Home extends BaseComponent {
           renderFooter={
             this._renderFooter.bind(this)
           }
+          keyboardDismissMode={'interactive'}
+          keyboardShouldPersistTaps={true}
           enableEmptySections={true}
           onEndReachedThreshold={10}
           initialListSize={3}
@@ -547,13 +582,10 @@ class Home extends BaseComponent {
     } else {
       return null
     }
-
   }
 
   //发送评论
   _sendComment() {
-    //关闭评论输入框
-    this.refs.commentInputBox.close();
     //发送评论,并给当前广告评论数加一
     const {dispatch}=this.props;
     let data = {
@@ -561,6 +593,9 @@ class Home extends BaseComponent {
       forCommentId: null,
       comment: this.state.comment
     };
+
+    //关闭评论输入框,并情况评论框内容
+    this._closeCommentInput();
 
     let index = this.state.postList.findIndex((item)=> {
       return item.Id === commentId;
@@ -576,73 +611,87 @@ class Home extends BaseComponent {
       });
     }, (error)=> {
     }));
-    //清空评论输入框内容
-    this.setState({comment: ''});
+  }
+
+  _resetScrollTo() {
+    Animated.timing(
+      this.state.viewMarginBottom,
+      {
+        toValue: 0,
+        duration: 100,
+      }
+    ).start();
+  }
+
+  _renderCommentInputBar() {
+    if (this.state.showCommentInput) {
+      return (
+        <Animated.View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#E2E2E2',
+            height: 60,
+            marginBottom: this.state.viewMarginBottom
+          }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1
+          }}>
+            <TextInput
+              ref={'comment'}
+              multiline={false}
+              style={{
+                height: 40,
+                flex: 1,
+                backgroundColor: '#fff',
+                borderRadius: 4,
+                paddingHorizontal: 10
+              }}
+              underlineColorAndroid={'transparent'}
+              placeholder={'请输入回复'}
+              maxLength={50}
+              onBlur={()=> {
+                this._resetScrollTo()
+              }}
+              onChangeText={(comment)=>this.setState({comment})}
+              value={this.state.comment}/>
+          </View>
+          <View>
+            <NBButton
+              primary
+              style={{
+                width: 100,
+                height: 40,
+                marginLeft: 10
+              }}
+              onPress={()=> {
+                this._sendComment()
+              }}>
+              发送
+            </NBButton>
+          </View>
+        </Animated.View>
+      )
+    } else {
+      return null
+    }
   }
 
   renderBody() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return (
-      <View style={styles.container}>
+      <View
+        ref={'root'}
+        style={[styles.container]}>
         <View style={styles.content}>
           {this.renderListView(ds, this.state.postList)}
         </View>
-        <Modal
-          style={{
-            backgroundColor: '#E2E2E2',
-            height: 60,
-            justifyContent: 'center'
-          }}
-          backdropOpacity={0.5}
-          backdropColor={'transparent'}
-          swipeToClose={false}
-          position={"bottom"}
-          backdropPressToClose={true}
-          ref={"commentInputBox"}>
-          <View style={{
-            flexDirection: 'row',
-            paddingHorizontal: 10,
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flex: 1
-            }}>
-              <TextInput
-                multiline={false}
-                style={{
-                  height: 40,
-                  flex: 1,
-                  backgroundColor: '#fff',
-                  borderRadius: 4,
-                  paddingHorizontal: 10
-                }}
-                underlineColorAndroid={'transparent'}
-                placeholder={'请输入回复'}
-                maxLength={50}
-                onChangeText={(comment)=>this.setState({comment})}
-                value={this.state.comment}/>
-            </View>
-            <View>
-              <NBButton
-                primary
-                style={{
-                  width: 100,
-                  height: 40,
-                  marginLeft: 10
-                }}
-                onPress={()=> {
-                  this._sendComment()
-                }}>
-                发送
-              </NBButton>
-            </View>
-          </View>
-        </Modal>
+        {this._renderCommentInputBar()}
       </View>
     )
   }

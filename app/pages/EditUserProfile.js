@@ -30,7 +30,6 @@ import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import * as UserProfileActions from '../actions/UserProfile'
 import {toastShort} from '../utils/ToastUtil'
-import tmpGlobal from '../utils/TmpVairables'
 
 const {width, height}=Dimensions.get('window');
 
