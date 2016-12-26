@@ -85,7 +85,7 @@ export default class CustomMessageText extends Component {
 
 const textStyle = {
   fontSize: 16,
-  lineHeight: 20,
+  lineHeight: 24,
   marginTop: 5,
   marginBottom: 5,
   marginLeft: 10,
