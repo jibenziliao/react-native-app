@@ -192,6 +192,8 @@ let ancestorTarget;
 
 let moveY;
 
+let originalY;
+
 let DatingPurposeSelectCopy = [];
 
 class EditUserProfile extends BaseComponent {
@@ -343,15 +345,22 @@ class EditUserProfile extends BaseComponent {
 
   _inputMeasure(e) {
     moveY = 0;
+    originalY = 0;
     if (Platform.OS === 'ios') {
       this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
         //console.log(x, y, width, height);
         //height为input框高度,64为iOS导航栏高度
         moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
         //console.log(moveY, e, y);
-        if (moveY > 0) {
-          this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
-        }
+
+        this.refs[refTarget].measure((ox, oy, width, height, px, py)=> {
+          console.log(ox, oy, width, height, px, py);
+          originalY = y + 64 - py;
+          //console.log(originalY);
+          if (originalY < moveY) {
+            this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
+          }
+        });
       }, (error)=> {
         console.log(error);
       });
@@ -571,7 +580,7 @@ class EditUserProfile extends BaseComponent {
                       this._hidePicker('Nickname')
                     }}
                     onBlur={()=> {
-                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                      this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                     }}
                     ref={'Nickname'}
                     value={this.state.Nickname}
@@ -605,7 +614,7 @@ class EditUserProfile extends BaseComponent {
                       this._hidePicker('Location')
                     }}
                     onBlur={()=> {
-                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                      this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                     }}
                     ref={'Location'}
                     value={this.state.Location}
@@ -657,7 +666,7 @@ class EditUserProfile extends BaseComponent {
                       this._hidePicker('Ethnicity')
                     }}
                     onBlur={()=> {
-                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                      this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                     }}
                     ref={'Ethnicity'}
                     value={this.state.Ethnicity}
@@ -677,7 +686,7 @@ class EditUserProfile extends BaseComponent {
                       this._hidePicker('MobileNo')
                     }}
                     onBlur={()=> {
-                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                      this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                     }}
                     ref={'MobileNo'}
                     value={this.state.MobileNo}
@@ -693,7 +702,7 @@ class EditUserProfile extends BaseComponent {
                       this._hidePicker('Hobby')
                     }}
                     onBlur={()=> {
-                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                      this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                     }}
                     ref={'Hobby'}
                     value={this.state.Hobby}
@@ -709,7 +718,7 @@ class EditUserProfile extends BaseComponent {
                       this._hidePicker('SelfEvaluation')
                     }}
                     onBlur={()=> {
-                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                      this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                     }}
                     ref={'SelfEvaluation'}
                     value={this.state.SelfEvaluation}
