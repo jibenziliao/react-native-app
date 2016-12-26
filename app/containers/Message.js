@@ -233,7 +233,8 @@ class Message extends BaseComponent {
       //console.log(str);
     });
 
-    tmpGlobal.connection.start().done(() => {
+    //{transport: 'webSockets'}
+    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
       tmpGlobal._initWebSocket = this._initWebSocket;

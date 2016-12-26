@@ -19,14 +19,12 @@ import {
   Alert,
   InteractionManager,
   DeviceEventEmitter,
-  Keyboard
+  Keyboard,
+  findNodeHandle
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import RNPicker from 'react-native-picker'
-import Icon from 'react-native-vector-icons/FontAwesome'
 import CheckBox from '../components/CheckBox'
 import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
@@ -149,6 +147,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'nowrap'
   },
+  datingPurpose: {
+    marginBottom: 200
+  },
   datingPurposeTitle: {
     borderBottomWidth: 1,
     borderBottomColor: '#d4cfcf'
@@ -189,6 +190,12 @@ let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'Ma
 
 let navigator;
 
+let refTarget = 'Nickname';
+
+let ancestorTarget;
+
+let moveY;
+
 let DatingPurposeSelectCopy = [];
 
 class EditUserProfile extends BaseComponent {
@@ -206,6 +213,7 @@ class EditUserProfile extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._initUserProfile();
     });
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
   }
 
   componentDidMount() {
@@ -332,16 +340,39 @@ class EditUserProfile extends BaseComponent {
     }
   }
 
+  //当键盘弹起来
+  _keyboardDidShow(e) {
+    this._inputMeasure(e);
+  }
+
+  _inputMeasure(e) {
+    moveY = 0;
+    if (Platform.OS === 'ios') {
+      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
+        //console.log(x, y, width, height);
+        //height为input框高度,64为iOS导航栏高度
+        moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
+        //console.log(moveY, e, y);
+        if (moveY > 0) {
+          this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
+        }
+      }, (error)=> {
+        console.log(error);
+      });
+    }
+  }
+
   componentWillUnmount() {
     if (this.saveTimer) {
       clearTimeout(this.saveTimer)
     }
-    if(this.showSinglePickerTimer){
+    if (this.showSinglePickerTimer) {
       clearTimeout(this.showSinglePickerTimer)
     }
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
+    this.keyboardDidShowListener.remove();
   }
 
   renderDatingPurpose() {
@@ -497,10 +528,11 @@ class EditUserProfile extends BaseComponent {
         }
       });
       RNPicker.show();
-    },1000);
+    }, 1000);
   }
 
-  _hidePicker(){
+  _hidePicker(str) {
+    refTarget = str;
     RNPicker.isPickerShow((status)=> {
       if (status) RNPicker.hide()
     });
@@ -511,134 +543,191 @@ class EditUserProfile extends BaseComponent {
       return null
     } else {
       return (
-        <View style={styles.container}>
+        <View
+          ref={'root'}
+          style={styles.container}>
           <ScrollView
+            ref={'scroll'}
             style={styles.scrollViewContainer}
             keyboardDismissMode={'interactive'}
             keyboardShouldPersistTaps={true}>
             <View
-              style={[styles.userInfo, styles.topSection]}
-              pointerEvents={'box-none'}
-              onStartShouldSetResponderCapture={()=> {
-                return false
+              style={{flex: 1}}
+              onStartShouldSetResponderCapture={(e) => {
+                ancestorTarget = e.nativeEvent.target;
+                if (ancestorTarget !== findNodeHandle(this.refs[refTarget])) {
+                  this.refs[refTarget].blur();
+                }
               }}>
-              <Text style={styles.itemTitle}>{'基本资料'}</Text>
-              <View style={[styles.listItem, styles.topItem]}>
-                <Text style={styles.inputLabel}>{'昵称'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.Nickname}
-                  onChangeText={(Nickname)=>this.setState({Nickname: Nickname, hasChanged: true})}
-                  maxLength={15}/>
+              <View
+                style={[styles.userInfo, styles.topSection]}
+                pointerEvents={'box-none'}
+                onStartShouldSetResponderCapture={()=> {
+                  return false
+                }}>
+                <Text style={styles.itemTitle}>{'基本资料'}</Text>
+                <View style={[styles.listItem, styles.topItem]}>
+                  <Text style={styles.inputLabel}>{'昵称'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('Nickname')
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'Nickname'}
+                    value={this.state.Nickname}
+                    onChangeText={(Nickname)=>this.setState({Nickname: Nickname, hasChanged: true})}
+                    maxLength={15}/>
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'身高'}</Text>
+                  {this.renderSinglePicker('Height', 'Height', this._createHeightData())}
+                  <Text style={styles.rightLabel}>{'cm'}</Text>
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'体重'}</Text>
+                  {this.renderSinglePicker('Weight', 'Weight', this._createWeightData())}
+                  <Text style={styles.rightLabel}>{'kg'}</Text>
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'职业'}</Text>
+                  {this.renderSinglePicker('JobTypeName', 'JobTypeName', this.state.DictMap.JobTypeDict)}
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'收入'}</Text>
+                  {this.renderSinglePicker('IncomeLevelName', 'IncomeLevelName', this.state.DictMap.IncomeLevelDict)}
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'所在地'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('Location')
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'Location'}
+                    value={this.state.Location}
+                    onChangeText={(Location)=>this.setState({Location: Location, hasChanged: true})}
+                    maxLength={50}/>
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'情感状态'}</Text>
+                  {this.renderSinglePicker('MarriageStatusName', 'MarriageStatusName', this.state.DictMap.MarriageStatusDict)}
+                </View>
+                <View style={[styles.listItem, styles.bottomItem]}>
+                  <Text style={styles.inputLabel}>{'家乡'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('Hometown');
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'Hometown'}
+                    value={this.state.Hometown}
+                    onChangeText={(Hometown)=>this.setState({Hometown: Hometown, hasChanged: true})}
+                    maxLength={50}/>
+                </View>
               </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'身高'}</Text>
-                {this.renderSinglePicker('Height', 'Height', this._createHeightData())}
-                <Text style={styles.rightLabel}>{'cm'}</Text>
+              <View
+                style={styles.userInfo}
+                pointerEvents={'box-none'}
+                onStartShouldSetResponderCapture={()=> {
+                  return false
+                }}>
+                <Text style={styles.itemTitle}>{'其他'}</Text>
+                <View style={[styles.listItem, styles.topItem]}>
+                  <Text style={styles.inputLabel}>{'学历'}</Text>
+                  {this.renderSinglePicker('EducationLevelName', 'EducationLevelName', this.state.DictMap.EducationLevelDict)}
+                </View>
+                <View style={[styles.listItem]}>
+                  <Text style={styles.inputLabel}>{'地图精度'}</Text>
+                  {this.renderSinglePicker('MapPrecision', 'MapPrecision', this._createMapData())}
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'民族'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('Ethnicity')
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'Ethnicity'}
+                    value={this.state.Ethnicity}
+                    onChangeText={(Ethnicity)=>this.setState({Ethnicity: Ethnicity, hasChanged: true})}
+                    maxLength={15}/>
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'信仰'}</Text>
+                  {this.renderSinglePicker('ReligionName', 'ReligionName', this.state.DictMap.ReligionDict)}
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'联系方式'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('MobileNo')
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'MobileNo'}
+                    value={this.state.MobileNo}
+                    onChangeText={(MobileNo)=>this.setState({MobileNo: MobileNo, hasChanged: true})}
+                    maxLength={15}/>
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'兴趣爱好'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('Hobby')
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'Hobby'}
+                    value={this.state.Hobby}
+                    onChangeText={(Hobby)=>this.setState({Hobby: Hobby, hasChanged: true})}
+                    maxLength={15}/>
+                </View>
+                <View style={[styles.listItem, styles.bottomItem]}>
+                  <Text style={styles.inputLabel}>{'自我评价'}</Text>
+                  <TextInput
+                    style={[styles.input, styles.fullInput]}
+                    underlineColorAndroid={'transparent'}
+                    onFocus={()=> {
+                      this._hidePicker('SelfEvaluation')
+                    }}
+                    onBlur={()=> {
+                      this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
+                    }}
+                    ref={'SelfEvaluation'}
+                    value={this.state.SelfEvaluation}
+                    onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation: SelfEvaluation, hasChanged: true})}
+                    maxLength={50}/>
+                </View>
               </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'体重'}</Text>
-                {this.renderSinglePicker('Weight', 'Weight', this._createWeightData())}
-                <Text style={styles.rightLabel}>{'kg'}</Text>
+              <View style={[styles.userInfo, styles.datingPurpose]}>
+                <Text style={[styles.itemTitle, styles.datingPurposeTitle]}>{'交友目的'}</Text>
+                {this.renderDatingPurpose()}
               </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'职业'}</Text>
-                {this.renderSinglePicker('JobTypeName', 'JobTypeName', this.state.DictMap.JobTypeDict)}
+              <View style={{height: 200}}>
+                <Text>{'123'}</Text>
               </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'收入'}</Text>
-                {this.renderSinglePicker('IncomeLevelName', 'IncomeLevelName', this.state.DictMap.IncomeLevelDict)}
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'所在地'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.Location}
-                  onChangeText={(Location)=>this.setState({Location: Location, hasChanged: true})}
-                  maxLength={50}/>
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'情感状态'}</Text>
-                {this.renderSinglePicker('MarriageStatusName', 'MarriageStatusName', this.state.DictMap.MarriageStatusDict)}
-              </View>
-              <View style={[styles.listItem, styles.bottomItem]}>
-                <Text style={styles.inputLabel}>{'家乡'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.Hometown}
-                  onChangeText={(Hometown)=>this.setState({Hometown: Hometown, hasChanged: true})}
-                  maxLength={50}/>
-              </View>
-            </View>
-            <View
-              style={styles.userInfo}
-              pointerEvents={'box-none'}
-              onStartShouldSetResponderCapture={()=> {
-                return false
-              }}>
-              <Text style={styles.itemTitle}>{'其他'}</Text>
-              <View style={[styles.listItem, styles.topItem]}>
-                <Text style={styles.inputLabel}>{'学历'}</Text>
-                {this.renderSinglePicker('EducationLevelName', 'EducationLevelName', this.state.DictMap.EducationLevelDict)}
-              </View>
-              <View style={[styles.listItem]}>
-                <Text style={styles.inputLabel}>{'地图精度'}</Text>
-                {this.renderSinglePicker('MapPrecision', 'MapPrecision', this._createMapData())}
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'民族'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.Ethnicity}
-                  onChangeText={(Ethnicity)=>this.setState({Ethnicity:Ethnicity,hasChanged: true})}
-                  maxLength={15}/>
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'信仰'}</Text>
-                {this.renderSinglePicker('ReligionName', 'ReligionName', this.state.DictMap.ReligionDict)}
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'联系方式'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.MobileNo}
-                  onChangeText={(MobileNo)=>this.setState({MobileNo:MobileNo,hasChanged: true})}
-                  maxLength={15}/>
-              </View>
-              <View style={styles.listItem}>
-                <Text style={styles.inputLabel}>{'兴趣爱好'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.Hobby}
-                  onChangeText={(Hobby)=>this.setState({Hobby:Hobby,hasChanged: true})}
-                  maxLength={15}/>
-              </View>
-              <View style={[styles.listItem, styles.bottomItem]}>
-                <Text style={styles.inputLabel}>{'自我评价'}</Text>
-                <TextInput
-                  style={[styles.input, styles.fullInput]}
-                  underlineColorAndroid={'transparent'}
-                  onFocus={()=>{this._hidePicker()}}
-                  value={this.state.SelfEvaluation}
-                  onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation:SelfEvaluation,hasChanged: true})}
-                  maxLength={50}/>
-              </View>
-            </View>
-            <View style={styles.userInfo}>
-              <Text style={[styles.itemTitle, styles.datingPurposeTitle]}>{'交友目的'}</Text>
-              {this.renderDatingPurpose()}
             </View>
           </ScrollView>
         </View>
