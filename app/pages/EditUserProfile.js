@@ -146,9 +146,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'nowrap'
   },
-  datingPurpose: {
-    marginBottom: 200
-  },
   datingPurposeTitle: {
     borderBottomWidth: 1,
     borderBottomColor: '#d4cfcf'
@@ -720,7 +717,7 @@ class EditUserProfile extends BaseComponent {
                     maxLength={50}/>
                 </View>
               </View>
-              <View style={[styles.userInfo, styles.datingPurpose]}>
+              <View style={styles.userInfo}>
                 <Text style={[styles.itemTitle, styles.datingPurposeTitle]}>{'交友目的'}</Text>
                 {this.renderDatingPurpose()}
               </View>

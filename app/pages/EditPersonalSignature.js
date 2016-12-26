@@ -14,11 +14,10 @@ import {
   Alert,
   BackAndroid,
   Platform,
-  Dimensions
+  Dimensions,
+  ScrollView
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
 import * as UserProfileActions from '../actions/UserProfile'

@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
   listItemLeft: {
     flex: 1,
     paddingLeft: 10,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems:'center'
   },
   itemIcon: {
     marginRight: 10
