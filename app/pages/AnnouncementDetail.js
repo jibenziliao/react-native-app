@@ -18,12 +18,13 @@ import {
   InteractionManager,
   Alert,
   DeviceEventEmitter,
-  Platform
+  Platform,
+  Keyboard,
+  Animated
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import * as HomeActions from '../actions/Home'
-import Modal from 'react-native-modalbox'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
 import LoadMoreFooter from '../components/LoadMoreFooter'
@@ -159,7 +160,9 @@ class AnnouncementDetail extends BaseComponent {
       ...this.props.route.params,
       commentList: [],
       pageIndex: 1,
-      pageSize: 10
+      pageSize: 10,
+      viewMarginBottom: new Animated.Value(0),
+      showCommentInput: false
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -176,13 +179,16 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
+  componentWillMount(){
+    this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
+  }
+
   componentDidMount() {
     this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
       this._onRefresh()
     });
     InteractionManager.runAfterInteractions(()=> {
       this._getAnnouncementDetail();
-
     });
 
   }
@@ -196,6 +202,18 @@ class AnnouncementDetail extends BaseComponent {
       DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
     }
     this._attentionListener.remove();
+    this.keyboardWillShowListener.remove();
+  }
+
+  //当键盘弹即将起来
+  _keyboardWillShow(e) {
+    Animated.timing(
+      this.state.viewMarginBottom,
+      {
+        toValue: e.startCoordinates.height,
+        duration: 100,
+      }
+    ).start();
   }
 
   getNavigationBarProps() {
@@ -208,6 +226,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   onRightPressed() {
+    this._closeCommentInput();
     if (this.state.isSelf) {
       //弹出下拉菜单
       this.ActionSheet.show();
@@ -255,6 +274,7 @@ class AnnouncementDetail extends BaseComponent {
 
   //点击头像和名字,跳转个人信息详情页
   _goUserInfo(data) {
+    this._closeCommentInput();
     const {dispatch}=this.props;
     let params = {
       UserId: data.UserId,
@@ -296,11 +316,21 @@ class AnnouncementDetail extends BaseComponent {
       });
     }
     //保存当前要评论的广告id
-    this.refs.commentInputBox.open();
+    this.setState({
+      showCommentInput: true
+    });
+  }
+
+  _closeCommentInput() {
+    this.setState({
+      showCommentInput: false,
+      comment: ''
+    });
   }
 
   //点赞和取消赞isLike都传true
   _doLike(id, isLike) {
+    this._closeCommentInput();
     const {dispatch}=this.props;
     if (isLike === null) {
       this.state.LikeCount += 1;
@@ -325,8 +355,6 @@ class AnnouncementDetail extends BaseComponent {
 
   //发送评论
   _sendComment() {
-    //关闭评论输入框
-    this.refs.commentInputBox.close();
     //发送评论,并给当前广告评论数加一
     const {dispatch}=this.props;
     let data = {
@@ -334,6 +362,10 @@ class AnnouncementDetail extends BaseComponent {
       forCommentId: this.state.forCommentId,
       comment: this.state.comment
     };
+
+    //关闭评论输入框,并情况评论框内容
+    this._closeCommentInput();
+
     this.state.CommentCount += 1;
 
     let params = {
@@ -347,7 +379,6 @@ class AnnouncementDetail extends BaseComponent {
         DeviceEventEmitter.emit('announcementHasComment', '公告被评论');
         this.setState({
           CommentCount: this.state.CommentCount,
-          comment: '',//评论成功后需要清空评论框内容
           commentList: json.Result//评论成功后,需要重新渲染页面,以显示最新的评论
         });
       }, (error)=> {
@@ -685,6 +716,9 @@ class AnnouncementDetail extends BaseComponent {
             onRefresh={this._onRefresh.bind(this)}
           />
         }
+        onScroll={()=> {
+          this.setState({showCommentInput: false, comment: ''})
+        }}
         style={styles.listView}
         dataSource={ds.cloneWithRows(this.state.commentList)}
         renderRow={
@@ -704,9 +738,80 @@ class AnnouncementDetail extends BaseComponent {
     )
   }
 
+  _resetScrollTo() {
+    Animated.timing(
+      this.state.viewMarginBottom,
+      {
+        toValue: 0,
+        duration: 100,
+      }
+    ).start();
+  }
+
+  _renderCommentInputBar() {
+    if (this.state.showCommentInput) {
+      return (
+        <Animated.View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#E2E2E2',
+            height: 60,
+            marginBottom: this.state.viewMarginBottom
+          }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1
+          }}>
+            <TextInput
+              ref={'comment'}
+              multiline={false}
+              style={{
+                height: 40,
+                flex: 1,
+                backgroundColor: '#fff',
+                borderRadius: 4,
+                paddingHorizontal: 10
+              }}
+              underlineColorAndroid={'transparent'}
+              placeholder={'请输入回复'}
+              maxLength={50}
+              onBlur={()=> {
+                this._resetScrollTo()
+              }}
+              onChangeText={(comment)=>this.setState({comment})}
+              value={this.state.comment}/>
+          </View>
+          <View>
+            <NBButton
+              primary
+              style={{
+                width: 100,
+                height: 40,
+                marginLeft: 10
+              }}
+              onPress={()=> {
+                this._sendComment()
+              }}>
+              发送
+            </NBButton>
+          </View>
+        </Animated.View>
+      )
+    } else {
+      return null
+    }
+  }
+
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View
+        ref={'root'}
+        style={styles.container}>
         {this.renderCommentList()}
         <ActionSheet
           ref={(o) => this.ActionSheet = o}
@@ -716,62 +821,7 @@ class AnnouncementDetail extends BaseComponent {
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
           onPress={this._actionSheetPress.bind(this)}
         />
-        <Modal
-          style={{
-            backgroundColor: '#E2E2E2',
-            height: 60,
-            justifyContent: 'center'
-          }}
-          backdropOpacity={0.5}
-          backdropColor={'transparent'}
-          swipeToClose={false}
-          position={"bottom"}
-          backdropPressToClose={true}
-          ref={"commentInputBox"}>
-          <View style={{
-            flexDirection: 'row',
-            paddingHorizontal: 10,
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <View style={{
-              justifyContent: 'center',
-              flex: 1,
-              alignItems: 'center',
-              flexDirection: 'row'
-            }}>
-              <TextInput
-                multiline={false}
-                style={{
-                  height: 40,
-                  flex: 1,
-                  backgroundColor: '#fff',
-                  borderRadius: 4,
-                  paddingHorizontal: 10
-                }}
-                underlineColorAndroid={'transparent'}
-                placeholder={`输入评论/回复${this.state.commentUser}:`}
-                maxLength={50}
-                onChangeText={(comment)=>this.setState({comment})}
-                value={this.state.comment}/>
-            </View>
-            <View>
-              <NBButton
-                primary
-                style={{
-                  width: 100,
-                  height: 40,
-                  marginLeft: 10
-                }}
-                onPress={()=> {
-                  this._sendComment()
-                }}>
-                发送
-              </NBButton>
-            </View>
-          </View>
-        </Modal>
+        {this._renderCommentInputBar()}
       </View>
     )
   }

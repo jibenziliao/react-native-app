@@ -131,7 +131,6 @@ class AnnouncementList extends BaseComponent {
       pageSize: 10,
       pageIndex: 1,
       comment: '',
-      commentModalOpen: false,
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
       ...this.props.route.params

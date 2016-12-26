@@ -163,7 +163,6 @@ class Home extends BaseComponent {
       pageIndex: 1,
       postList: [],
       comment: '',
-      commentModalOpen: false,
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false
     };
