@@ -66,14 +66,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   avatarImg: {
-    width: 50,
-    height: 50,
+    width: width / 9,
+    height: width / 9,
     marginRight: 10,
     borderRadius: 8
   },
   userInfo: {
     justifyContent: 'space-between',
-    alignItems: 'flex-start'
+    flex:1
+  },
+  userInfoLabelContainer:{
+    flexDirection:'row',
+    justifyContent:'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -92,8 +96,17 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 14,
+    fontSize: 10,
     color: '#FFF'
+  },
+  nameTextContainer:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems:'center'
+  },
+  timeText: {
+    fontSize: 12,
+    justifyContent: 'center'
   },
   moodView: {
     marginVertical: 20
@@ -112,6 +125,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'flex-start',
     paddingHorizontal: 10
+  },
+  goreBtn:{
+    color:'#5067FF'
   },
   cardBtn: {
     marginTop: 10,
@@ -179,7 +195,7 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
   }
 
@@ -194,7 +210,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   componentWillUnmount() {
-    if(this.deleteTimer){
+    if (this.deleteTimer) {
       clearTimeout(this.deleteTimer);
     }
     //ios在销毁页面前发出广播,避免返回前一页面后,页面白屏,点击一下才显示的bug。
@@ -526,7 +542,7 @@ class AnnouncementDetail extends BaseComponent {
           onPress={()=> {
             this._goreAlert()
           }}>
-          <Text>{'顶一下'}</Text>
+          <Text style={styles.goreBtn}>{'顶一下'}</Text>
         </TouchableOpacity>
       )
     } else {
@@ -556,10 +572,8 @@ class AnnouncementDetail extends BaseComponent {
       let imageWidth = 0;
       if (arr.length % 3 === 0) {
         imageWidth = (width - 60) / 3;
-      } else if (arr.length % 2 === 0) {
+      } else if (arr.length === 2) {
         imageWidth = (width - 50) / 2;
-      } else if (arr.length === 1) {
-        imageWidth = width - 40;
       } else {
         imageWidth = (width - 60) / 3;
       }
@@ -602,7 +616,6 @@ class AnnouncementDetail extends BaseComponent {
                   <Text style={styles.userInfoText}>{rowData.CommentUserInfo.Age}{'岁'}</Text>
                 </View>
               </View>
-              <Text>{this._createTime(rowData.CreateTime)}</Text>
             </View>
             <View>
               <TouchableOpacity
@@ -613,8 +626,9 @@ class AnnouncementDetail extends BaseComponent {
                 <Text>{rowData.ForCommentUserNickname !== null ? `回复${rowData.ForCommentUserNickname}: ` : ''}{rowData.CommentContent}</Text>
               </TouchableOpacity>
             </View>
-            <View>
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
               <Text>{this._distance(rowData.CommentUserInfo.Distance)}{'km'}</Text>
+              <Text>{this._createTime(rowData.CreateTime)}</Text>
             </View>
           </View>
         </View>
@@ -634,22 +648,22 @@ class AnnouncementDetail extends BaseComponent {
             this._goUserInfo(this.state.PosterInfo);
           }}>
           <View style={styles.cardRow}>
-            <View style={styles.cardLeft}>
-              <Image source={{uri: URL_DEV + this.state.PosterInfo.PrimaryPhotoFilename}}
-                     style={styles.avatarImg}/>
-              <View style={styles.userInfo}>
+            <Image source={{uri: URL_DEV + this.state.PosterInfo.PrimaryPhotoFilename}}
+                   style={styles.avatarImg}/>
+            <View style={styles.userInfo}>
+              <View style={styles.nameTextContainer}>
                 <Text>{this.state.PosterInfo.Nickname}</Text>
+                <Text style={styles.timeText}>{this.state.CreateTimeDescription}</Text>
+              </View>
+              <View style={styles.userInfoLabelContainer}>
                 <View style={[styles.userInfoLabel, this._renderGenderStyle(this.state.PosterInfo.Gender)]}>
                   <Icon
                     name={this.state.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={12}
+                    size={10}
                     style={styles.userInfoIcon}/>
                   <Text style={styles.userInfoText}>{this.state.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
-            </View>
-            <View style={styles.cardRight}>
-              <Text>{this.state.CreateTimeDescription}</Text>
             </View>
           </View>
         </TouchableOpacity>

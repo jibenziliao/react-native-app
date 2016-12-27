@@ -195,16 +195,16 @@ class Message extends BaseComponent {
       //rkt为当前cookie的key
       cookie = res.rkt;
       if (tmpGlobal.proxy === null) {
-        this._initWebSocket('');
+        this._initWebSocket();
       }
     })
   }
 
   _initWebSocket() {
+    let self=this;
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;
-    connection = null;
 
     connection = signalr.hubConnection(URL_WS_DEV);
     connection.logging = false;
@@ -233,14 +233,14 @@ class Message extends BaseComponent {
       //console.log(str);
     });
 
-    //{transport: 'webSockets'}
-    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
+    //{transport: ['webSockets', 'longPolling']}
+    tmpGlobal.connection.start().done(() => {
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
-      tmpGlobal._initWebSocket = this._initWebSocket.bind(this);
+      tmpGlobal._initWebSocket = this._initWebSocket;
     }).fail(() => {
       console.log('Failed');
-      this._initWebSocket();
+      self._initWebSocket();
     });
 
     tmpGlobal.connection.connectionSlow(function () {
@@ -252,6 +252,7 @@ class Message extends BaseComponent {
       console.log('SignalR error: ' + error);
       console.log('开始重新连接');
       tmpGlobal._initWebSocket();
+      //self._initWebSocket();
     });
 
     tmpGlobal.proxy.on('getNewMsg', (obj) => {

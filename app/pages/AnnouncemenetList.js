@@ -67,14 +67,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   avatarImg: {
-    width: width/9,
-    height: width/9,
+    width: width / 9,
+    height: width / 9,
     marginRight: 10,
     borderRadius: 8
   },
   userInfo: {
     justifyContent: 'space-between',
-    alignItems: 'flex-start'
+    flex: 1
+  },
+  nameTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  timeText: {
+    fontSize: 12,
+    justifyContent: 'center'
+  },
+  userInfoLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -94,7 +107,7 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   moodView: {
-    marginTop:10
+    marginTop: 10
   },
   moodText: {
     fontSize: 16,
@@ -102,7 +115,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'flex-start',
     paddingHorizontal: 10,
-    marginBottom:10
+    marginBottom: 10
   },
   postImage: {
     flexDirection: 'row',
@@ -162,7 +175,7 @@ class AnnouncementList extends BaseComponent {
     this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.keyboardWillShowListener.remove();
   }
 
@@ -374,12 +387,16 @@ class AnnouncementList extends BaseComponent {
             console.log('你点击了用户公告历史记录中的头像及昵称')
           }}>
           <View style={styles.cardRow}>
-            <View style={styles.cardLeft}>
-              <Image
-                source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-                style={styles.avatarImg}/>
-              <View style={styles.userInfo}>
+            <Image
+              source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
+              style={styles.avatarImg}/>
+            <View style={styles.userInfo}>
+              <View style={styles.nameTextContainer}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
+                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
+
+              </View>
+              <View style={styles.userInfoLabelContainer}>
                 <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
                   <Icon
                     name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
@@ -388,9 +405,6 @@ class AnnouncementList extends BaseComponent {
                   <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
-            </View>
-            <View style={styles.cardRight}>
-              <Text>{rowData.CreateTimeDescription}</Text>
             </View>
           </View>
         </TouchableOpacity>

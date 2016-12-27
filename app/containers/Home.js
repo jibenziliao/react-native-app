@@ -64,13 +64,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 10
   },
-  cardLeft: {
-    flexDirection: 'row',
-    flex: 1
-  },
-  cardRight: {
-    flexDirection: 'row'
-  },
   avatarImg: {
     width: width / 9,
     height: width / 9,
@@ -79,7 +72,11 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'space-between',
-    alignItems: 'flex-start'
+    flex:1
+  },
+  userInfoLabelContainer:{
+    flexDirection:'row',
+    justifyContent:'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -98,8 +95,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#FFF'
   },
+  nameTextContainer:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems:'center'
+  },
   timeText: {
-    fontSize: 12
+    fontSize: 12,
+    justifyContent: 'center'
   },
   moodView: {
     marginTop: 10
@@ -485,12 +488,16 @@ class Home extends BaseComponent {
             this._goUserInfo(rowData.PosterInfo)
           }}>
           <View style={styles.cardRow}>
-            <View style={styles.cardLeft}>
-              <Image source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-                     style={styles.avatarImg}/>
-              <View style={styles.userInfo}>
+            <Image
+              source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
+              style={styles.avatarImg}/>
+            <View style={styles.userInfo}>
+              <View style={styles.nameTextContainer}>
                 <Text>{rowData.PosterInfo.Nickname}</Text>
-                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
+              </View>
+              <View style={styles.userInfoLabelContainer}>
+                <View style={[styles.userInfoLabel,this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
                   <Icon
                     name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
                     size={10}
@@ -498,9 +505,6 @@ class Home extends BaseComponent {
                   <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                 </View>
               </View>
-            </View>
-            <View style={styles.cardRight}>
-              <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
             </View>
           </View>
         </TouchableOpacity>
