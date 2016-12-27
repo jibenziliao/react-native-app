@@ -101,9 +101,7 @@ class EditPersonalSignature extends BaseComponent {
   }
 
   onBackAndroid() {
-    return ()=> {
-      this._backAlert();
-    }
+    this._backAlert();
   }
 
   _backAlert() {
