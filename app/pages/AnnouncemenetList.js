@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   avatarImg: {
-    width: 50,
-    height: 50,
+    width: width/9,
+    height: width/9,
     marginRight: 10,
     borderRadius: 8
   },
@@ -90,30 +90,50 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 14,
+    fontSize: 10,
     color: '#FFF'
   },
   moodView: {
-    marginVertical: 20
+    marginTop:10
   },
   moodText: {
     fontSize: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    marginBottom:10
   },
   postImage: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingVertical: 5,
+    //paddingVertical: 5,
     justifyContent: 'flex-start',
     paddingLeft: 10
   },
   cardBtn: {
     marginTop: 10,
     marginRight: 20
+  },
+  moreImgLabel: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 2
+  },
+  moreImgIcon: {},
+  moreImgText: {
+    fontSize: 10,
+    marginLeft: 4
+  },
+  singleImgContainer: {
+    marginBottom: 10,
+    marginRight: 10
   }
 });
 
@@ -299,25 +319,42 @@ class AnnouncementList extends BaseComponent {
     });
   }
 
+  _renderMoreImgLabel(arr, index) {
+    if (arr.length > 3 && index === 2) {
+      return (
+        <View style={styles.moreImgLabel}>
+          <Icon name={'picture-o'} size={10} style={styles.moreImgIcon}/>
+          <Text style={styles.moreImgText}>{arr.length}</Text>
+        </View>
+      )
+    } else {
+      return null
+    }
+  }
+
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
       let imageWidth = 0;
       if (arr.length % 3 === 0) {
         imageWidth = (width - 60) / 3;
-      } else if (arr.length % 2 === 0) {
+      } else if (arr.length === 2) {
         imageWidth = (width - 50) / 2;
-      } else if (arr.length === 1) {
-        imageWidth = width - 40;
       } else {
         imageWidth = (width - 60) / 3;
       }
-      return arr.map((item, index)=> {
+      let arrCopy = JSON.parse(JSON.stringify(arr));
+      if (arr.length > 3) {
+        arrCopy.splice(3, arr.length - 3);
+      }
+      return arrCopy.map((item, index)=> {
         return (
-          <Image
-            key={index}
-            style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
-            source={{uri: URL_DEV + '/' + item}}/>
+          <View key={index} style={styles.singleImgContainer}>
+            <Image
+              style={{width: imageWidth, height: imageWidth}}
+              source={{uri: URL_DEV + '/' + item}}/>
+            {this._renderMoreImgLabel(arr, index)}
+          </View>
         )
       })
     } else {
@@ -346,7 +383,7 @@ class AnnouncementList extends BaseComponent {
                 <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
                   <Icon
                     name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={12}
+                    size={10}
                     style={styles.userInfoIcon}/>
                   <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
                 </View>

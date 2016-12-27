@@ -81,9 +81,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start'
   },
-  genderLabel: {
-    paddingHorizontal: 4
-  },
   userInfoLabel: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -454,7 +451,7 @@ class Home extends BaseComponent {
       let imageWidth = 0;
       if (arr.length % 3 === 0) {
         imageWidth = (width - 60) / 3;
-      } else if (arr.length % 2 === 0) {
+      } else if (arr.length === 2) {
         imageWidth = (width - 50) / 2;
       } else {
         imageWidth = (width - 60) / 3;
