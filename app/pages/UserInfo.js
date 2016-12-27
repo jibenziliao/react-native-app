@@ -21,12 +21,15 @@ import * as HomeActions from '../actions/Home'
 import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IonIcon from 'react-native-vector-icons/Ionicons'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import EditUserProfile from '../pages/EditUserProfile'
 import EditFriendFilter from '../pages/EditFriendFilter'
 import EditPhotos from '../pages/EditPhotos'
 import MessageDetail from '../pages/MessageDetail'
 import tmpGlobal from '../utils/TmpVairables'
+import ModalBox from 'react-native-modalbox'
+import PhotoScaleViewer from '../components/PhotoScaleViewer'
 
 const {width, height}=Dimensions.get('window');
 
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
   bottomBtn: {
     flex: 1,
     height: 40,
-    borderRadius:0
+    borderRadius: 0
   },
   attention: {
     backgroundColor: '#FF9933'
@@ -119,28 +122,18 @@ const styles = StyleSheet.create({
   }
 });
 
-let DictMap = {
-  EducationLevelDict: [],
-  IncomeLevelDict: [],
-  JobTypeDict: [],
-  MarriageStatusDict: [],
-  DatingPurposeDict: [],
-  PhotoPermissionDict: [],
-  ReligionDict: []
-};
-
-//保存字典索引
-let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'MarriageStatusDict', 'DatingPurposeDict', 'PhotoPermissionDict', 'ReligionDict'];
-
 let navigator;
 
 class UserInfo extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.route.params
+      ...this.props.route.params,
+      showIndex: 0,
+      imgList: []
     };
-    navigator=this.props.navigator;
+    navigator = this.props.navigator;
     console.log(this.props.route.params);
   }
 
@@ -150,12 +143,20 @@ class UserInfo extends BaseComponent {
     };
   }
 
-  componentDidMount(){
-    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=>{this._getUserInfo()});
-    this.userProfileListener=DeviceEventEmitter.addListener('userInfoChanged', ()=>{this._getUserInfo()});
-    this.friendFilterListener=DeviceEventEmitter.addListener('friendFilterChanged', ()=>{this._getUserInfo()});
-    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=>{this._updateSignature(data)});
-    this._attentionListener=DeviceEventEmitter.addListener('hasAttention',()=>{
+  componentDidMount() {
+    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=> {
+      this._getUserInfo()
+    });
+    this.userProfileListener = DeviceEventEmitter.addListener('userInfoChanged', ()=> {
+      this._getUserInfo()
+    });
+    this.friendFilterListener = DeviceEventEmitter.addListener('friendFilterChanged', ()=> {
+      this._getUserInfo()
+    });
+    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=> {
+      this._updateSignature(data)
+    });
+    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
       this._getUserInfo()
     });
   }
@@ -168,8 +169,8 @@ class UserInfo extends BaseComponent {
     this._attentionListener.remove();
   }
 
-  _getUserInfo(){
-    const{dispatch}=this.props;
+  _getUserInfo() {
+    const {dispatch}=this.props;
     let params = {
       UserId: this.state.UserId,
       ...tmpGlobal.currentLocation
@@ -178,7 +179,7 @@ class UserInfo extends BaseComponent {
       dispatch(HomeActions.getUserPhotos({UserId: this.state.UserId}, (result)=> {
         this.setState({
           ...json.Result,
-          userPhotos:result.Result,
+          userPhotos: result.Result,
         });
       }, (error)=> {
       }))
@@ -187,9 +188,9 @@ class UserInfo extends BaseComponent {
   }
 
   //刷新签名
-  _updateSignature(data){
+  _updateSignature(data) {
     this.setState({
-      PersonSignal:data.data
+      PersonSignal: data.data
     })
   }
 
@@ -220,7 +221,7 @@ class UserInfo extends BaseComponent {
   }
 
   //与TA聊天
-  _chatWithUser(){
+  _chatWithUser() {
     navigator.push({
       component: MessageDetail,
       name: 'MessageDetail',
@@ -240,7 +241,7 @@ class UserInfo extends BaseComponent {
       attentionUserId: id
     };
     dispatch(HomeActions.attention(params, (json)=> {
-      DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
+      DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
       //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error)=> {
     }));
@@ -248,7 +249,7 @@ class UserInfo extends BaseComponent {
 
   //渲染用户的相册
   _renderPhotos(arr) {
-    if(arr.length>0){
+    if (arr.length > 0) {
       return arr.map((item, index)=> {
         return (
           <Image
@@ -257,8 +258,8 @@ class UserInfo extends BaseComponent {
             source={{uri: URL_DEV + item.PhotoUrl}}/>
         )
       })
-    }else{
-      return (<Text>{this.state.isSelf?'您':'Ta'}{'还没有相册'}</Text>)
+    } else {
+      return (<Text>{this.state.isSelf ? '您' : 'Ta'}{'还没有相册'}</Text>)
     }
   }
 
@@ -331,7 +332,7 @@ class UserInfo extends BaseComponent {
       name: 'EditPhotos',
       params: {
         UserId: this.state.UserId,
-        PrimaryPhotoFilename:this.state.PrimaryPhotoFilename
+        PrimaryPhotoFilename: this.state.PrimaryPhotoFilename
       },
     });
   }
@@ -360,6 +361,22 @@ class UserInfo extends BaseComponent {
     })
   }
 
+  _openImgModal(arr) {
+    let tmpArr = [];
+    for (let i = 0; i < arr.length; i++) {
+      tmpArr.push(URL_DEV + arr[i].PhotoUrl);
+    }
+    this.setState({
+      imgList: tmpArr
+    }, ()=> {
+      this.refs.modalFullScreen.open();
+    });
+  }
+
+  _closeImgModal() {
+    this.refs.modalFullScreen.close();
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -375,7 +392,12 @@ class UserInfo extends BaseComponent {
               horizontal={true}
               showsHorizontalScrollIndicator={true}
               style={styles.photoContainer}>
-              {this._renderPhotos(this.state.userPhotos)}
+              <TouchableOpacity
+                onPress={()=> {
+                  this._openImgModal(this.state.userPhotos)
+                }}>
+                {this._renderPhotos(this.state.userPhotos)}
+              </TouchableOpacity>
             </ScrollView>
           </View>
           <View style={styles.section}>
@@ -432,6 +454,49 @@ class UserInfo extends BaseComponent {
       </View>
     )
   }
+
+  renderModal() {
+    return (
+      <ModalBox
+        style={{
+          position: 'absolute',
+          width: width,
+          height: height,
+          backgroundColor: 'rgba(40,40,40,0.8)',
+        }}
+        backButtonClose={true}
+        position={"center"}
+        ref={"modalFullScreen"}
+        swipeToClose={true}
+        onClosingState={this.onClosingState}>
+        <PhotoScaleViewer
+          index={this.state.showIndex}
+          pressHandle={()=> {
+            console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
+          }}
+          imgList={this.state.imgList}/>
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            left: 20,
+            top: 10
+          }}
+          onPress={()=> {
+            this._closeImgModal()
+          }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
+              fontWeight: '100'
+            }}/>
+          </View>
+        </TouchableOpacity>
+      </ModalBox>
+    )
+  }
+
 }
 
 export default connect((state)=> {

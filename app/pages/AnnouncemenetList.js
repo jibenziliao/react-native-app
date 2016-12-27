@@ -170,7 +170,9 @@ class AnnouncementList extends BaseComponent {
       comment: '',
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
-      ...this.props.route.params
+      ...this.props.route.params,
+      showIndex: 0,
+      imgList: []
     };
     console.log(this.props.route.params);
   }
