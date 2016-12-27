@@ -57,11 +57,16 @@ class BaseComponent extends Component {
 
   }
 
+  renderModal(){
+
+  }
+
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
         {this.renderNavigationBar()}
         {this.renderBody()}
+        {this.renderModal()}
         {this.renderSpinner()}
       </View>
     );
