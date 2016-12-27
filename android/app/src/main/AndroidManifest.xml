@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.qingyuanjie"
-          android:versionCode="39"
-          android:versionName="1.7.4">
+          android:versionCode="40"
+          android:versionName="1.7.5">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>

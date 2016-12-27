@@ -63,6 +63,10 @@ const styles = StyleSheet.create({
   cardText: {
     flexWrap: 'nowrap'
   },
+  nameText:{
+    overflow:'hidden',
+    flex:1
+  },
   badgeContainer: {
     width: 60,
     alignItems: 'center',
@@ -421,7 +425,9 @@ class Message extends BaseComponent {
           }}
           style={styles.cardContent}>
           <View style={styles.cardRow}>
-            <Text style={styles.cardText}>
+            <Text
+              numberOfLines={1}
+              style={[styles.cardText,styles.nameText]}>
               {rowData.SenderNickname}
             </Text>
             <Text>
