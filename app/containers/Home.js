@@ -37,7 +37,7 @@ import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
-import Modal from 'react-native-modalbox'
+import ModalBox from 'react-native-modalbox'
 
 const {height, width} = Dimensions.get('window');
 
@@ -724,7 +724,7 @@ class Home extends BaseComponent {
 
   renderModal() {
     return (
-      <Modal
+      <ModalBox
         style={{
           position: 'absolute',
           width: width,
@@ -767,7 +767,7 @@ class Home extends BaseComponent {
             }}/>
           </View>
         </TouchableOpacity>
-      </Modal>
+      </ModalBox>
     )
   }
 

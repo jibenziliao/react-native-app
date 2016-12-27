@@ -22,6 +22,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IonIcon from 'react-native-vector-icons/Ionicons'
 import {Button as NBButton} from 'native-base'
 import BaseComponent from '../base/BaseComponent'
 import Spinner from '../components/Spinner'
@@ -30,6 +31,8 @@ import AnnouncementDetail from '../pages/AnnouncementDetail'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
+import PhotoScaleViewer from '../components/PhotoScaleViewer'
+import ModalBox from 'react-native-modalbox'
 
 const {height, width} = Dimensions.get('window');
 
@@ -155,6 +158,7 @@ let commentId;
 let lastCount;
 
 class AnnouncementList extends BaseComponent {
+
   constructor(props) {
     super(props);
     navigator = this.props.navigator;
@@ -418,6 +422,9 @@ class AnnouncementList extends BaseComponent {
             numberOfLines={3}>
             {rowData.PostContent}
           </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        onPress={()=>{this._openImgModal(rowData.PicList)}}>
           <View style={styles.postImage}>
             {this.renderPostImage(rowData.PicList)}
           </View>
@@ -448,6 +455,22 @@ class AnnouncementList extends BaseComponent {
         </View>
       </View>
     )
+  }
+
+  _openImgModal(arr) {
+    let tmpArr = [];
+    for (let i = 0; i < arr.length; i++) {
+      tmpArr.push(URL_DEV + '/' + arr[i]);
+    }
+    this.setState({
+      imgList: tmpArr
+    }, ()=> {
+      this.refs.modalFullScreen.open();
+    });
+  }
+
+  _closeImgModal() {
+    this.refs.modalFullScreen.close();
   }
 
   renderListView(ds, postList) {
@@ -598,6 +621,48 @@ class AnnouncementList extends BaseComponent {
         </View>
         {this._renderCommentInputBar()}
       </View>
+    )
+  }
+
+  renderModal() {
+    return (
+      <ModalBox
+        style={{
+          position: 'absolute',
+          width: width,
+          height:height,
+          backgroundColor: 'rgba(40,40,40,0.8)',
+        }}
+        backButtonClose={true}
+        position={"center"}
+        ref={"modalFullScreen"}
+        swipeToClose={true}
+        onClosingState={this.onClosingState}>
+        <PhotoScaleViewer
+          index={this.state.showIndex}
+          pressHandle={()=> {
+            console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
+          }}
+          imgList={this.state.imgList}/>
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            left: 20,
+            top: 10
+          }}
+          onPress={()=> {
+            this._closeImgModal()
+          }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
+              fontWeight: '100'
+            }}/>
+          </View>
+        </TouchableOpacity>
+      </ModalBox>
     )
   }
 

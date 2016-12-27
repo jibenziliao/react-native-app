@@ -26,6 +26,7 @@ import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import * as HomeActions from '../actions/Home'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IonIcon from 'react-native-vector-icons/Ionicons'
 import {Button as NBButton} from 'native-base'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import UserInfo from '../pages/UserInfo'
@@ -34,6 +35,8 @@ import Addannouncement from '../pages/Addannouncement'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import ActionSheet from 'react-native-actionsheet'
 import tmpGlobal from '../utils/TmpVairables'
+import ModalBox from 'react-native-modalbox'
+import PhotoScaleViewer from '../components/PhotoScaleViewer'
 
 const {height, width} = Dimensions.get('window');
 
@@ -73,11 +76,11 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'space-between',
-    flex:1
+    flex: 1
   },
-  userInfoLabelContainer:{
-    flexDirection:'row',
-    justifyContent:'flex-start'
+  userInfoLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -99,10 +102,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#FFF'
   },
-  nameTextContainer:{
+  nameTextContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center'
+    alignItems: 'center'
   },
   timeText: {
     fontSize: 12,
@@ -126,8 +129,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: 10
   },
-  goreBtn:{
-    color:'#5067FF'
+  goreBtn: {
+    color: '#5067FF'
   },
   cardBtn: {
     marginTop: 10,
@@ -164,6 +167,7 @@ const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
 
 class AnnouncementDetail extends BaseComponent {
+
   constructor(props) {
     super(props);
     console.log(this.props.route.params);
@@ -178,7 +182,9 @@ class AnnouncementDetail extends BaseComponent {
       pageIndex: 1,
       pageSize: 10,
       viewMarginBottom: new Animated.Value(0),
-      showCommentInput: false
+      showCommentInput: false,
+      showIndex: 0,
+      imgList: []
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -669,9 +675,13 @@ class AnnouncementDetail extends BaseComponent {
         </TouchableOpacity>
         <View style={styles.moodView}>
           <Text style={styles.moodText}>{this.state.PostContent}</Text>
-          <View style={styles.postImage}>
+          <TouchableOpacity
+            style={styles.postImage}
+            onPress={()=> {
+              this._openImgModal(this.state.PicList)
+            }}>
             {this.renderPostImage(this.state.PicList)}
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.cardRow}>
           <Text>{this._distance(this.state.Distance)}{'km'}{'·'}</Text>
@@ -703,6 +713,22 @@ class AnnouncementDetail extends BaseComponent {
         </View>
       </View>
     )
+  }
+
+  _openImgModal(arr) {
+    let tmpArr = [];
+    for (let i = 0; i < arr.length; i++) {
+      tmpArr.push(URL_DEV + '/' + arr[i]);
+    }
+    this.setState({
+      imgList: tmpArr
+    }, ()=> {
+      this.refs.modalFullScreen.open();
+    });
+  }
+
+  _closeImgModal() {
+    this.refs.modalFullScreen.close();
   }
 
   _renderFooter() {
@@ -837,6 +863,48 @@ class AnnouncementDetail extends BaseComponent {
         />
         {this._renderCommentInputBar()}
       </View>
+    )
+  }
+
+  renderModal() {
+    return (
+      <ModalBox
+        style={{
+          position: 'absolute',
+          width: width,
+          height:height,
+          backgroundColor: 'rgba(40,40,40,0.8)',
+        }}
+        backButtonClose={true}
+        position={"center"}
+        ref={"modalFullScreen"}
+        swipeToClose={true}
+        onClosingState={this.onClosingState}>
+        <PhotoScaleViewer
+          index={this.state.showIndex}
+          pressHandle={()=> {
+            console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
+          }}
+          imgList={this.state.imgList}/>
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            left: 20,
+            top: 10
+          }}
+          onPress={()=> {
+            this._closeImgModal()
+          }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
+              fontWeight: '100'
+            }}/>
+          </View>
+        </TouchableOpacity>
+      </ModalBox>
     )
   }
 
