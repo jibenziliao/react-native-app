@@ -146,6 +146,12 @@ class Message extends BaseComponent {
 
   componentWillUnmount() {
     this.subscription.remove();
+    if(this.connectWebsocketTimer){
+      clearTimeout(this.connectWebsocketTimer);
+    }
+    if(this.reConnectTimer){
+      clearTimeout(this.reConnectTimer);
+    }
   }
 
   //每次收到新的消息,缓存消息列表(前面已经包装过,这里不需要再次处理,直接存缓存就好了)
@@ -238,13 +244,16 @@ class Message extends BaseComponent {
     });
 
     //{transport: ['webSockets', 'longPolling']}
-    tmpGlobal.connection.start().done(() => {
+
+    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
       tmpGlobal._initWebSocket = this._initWebSocket;
     }).fail(() => {
       console.log('Failed');
-      self._initWebSocket();
+      this.connectWebsocketTimer=setTimeout(()=>{
+        self._initWebSocket();
+      },15000);
     });
 
     tmpGlobal.connection.connectionSlow(function () {
@@ -255,8 +264,10 @@ class Message extends BaseComponent {
     tmpGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
       console.log('开始重新连接');
-      tmpGlobal._initWebSocket();
-      //self._initWebSocket();
+      this.reConnectTimer=setTimeout(()=>{
+        tmpGlobal._initWebSocket();
+        //self._initWebSocket();
+      },15000);
     });
 
     tmpGlobal.proxy.on('getNewMsg', (obj) => {

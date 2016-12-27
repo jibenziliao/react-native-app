@@ -19,11 +19,13 @@ import {
   DeviceEventEmitter,
   Platform,
   Keyboard,
-  Animated
+  Animated,
+  TouchableHighlight
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IonIcon from 'react-native-vector-icons/Ionicons'
 import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
 import Spinner from '../components/Spinner'
@@ -34,6 +36,8 @@ import UserInfo from '../pages/UserInfo'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
+import PhotoScaleViewer from '../components/PhotoScaleViewer'
+import Modal from 'react-native-modalbox'
 
 const {height, width} = Dimensions.get('window');
 
@@ -72,11 +76,11 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'space-between',
-    flex:1
+    flex: 1
   },
-  userInfoLabelContainer:{
-    flexDirection:'row',
-    justifyContent:'flex-start'
+  userInfoLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
   },
   userInfoLabel: {
     flexDirection: 'row',
@@ -95,10 +99,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#FFF'
   },
-  nameTextContainer:{
+  nameTextContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center'
+    alignItems: 'center'
   },
   timeText: {
     fontSize: 12,
@@ -164,7 +168,9 @@ class Home extends BaseComponent {
       postList: [],
       comment: '',
       viewMarginBottom: new Animated.Value(0),
-      showCommentInput: false
+      showCommentInput: false,
+      showIndex: 0,
+      imgList: []
     };
   }
 
@@ -497,7 +503,7 @@ class Home extends BaseComponent {
                 <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
               </View>
               <View style={styles.userInfoLabelContainer}>
-                <View style={[styles.userInfoLabel,this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
                   <Icon
                     name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
                     size={10}
@@ -518,9 +524,13 @@ class Home extends BaseComponent {
             numberOfLines={3}>
             {rowData.PostContent}
           </Text>
-          <View style={styles.postImage}>
-            {this.renderPostImage(rowData.PicList)}
-          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.postImage}
+          onPress={()=> {
+            this._openImgModal(rowData.PicList)
+          }}>
+          {this.renderPostImage(rowData.PicList)}
         </TouchableOpacity>
         <View style={styles.cardRow}>
           <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
@@ -548,6 +558,22 @@ class Home extends BaseComponent {
         </View>
       </View>
     )
+  }
+
+  _openImgModal(arr) {
+    let tmpArr = [];
+    for (let i = 0; i < arr.length; i++) {
+      tmpArr.push(URL_DEV + '/' + arr[i]);
+    }
+    this.setState({
+      imgList: tmpArr
+    }, ()=> {
+      this.refs.modalFullScreen.open();
+    });
+  }
+
+  _closeImgModal() {
+    this.refs.modalFullScreen.close();
   }
 
   renderListView(ds, postList) {
@@ -693,6 +719,55 @@ class Home extends BaseComponent {
         </View>
         {this._renderCommentInputBar()}
       </View>
+    )
+  }
+
+  renderModal() {
+    return (
+      <Modal
+        style={{
+          position: 'absolute',
+          width: width,
+          ...Platform.select({
+            ios: {
+              height: height - 50
+            },
+            android: {
+              height: height - 50
+            }
+          }),
+          backgroundColor: 'rgba(40,40,40,0.8)',
+        }}
+        backButtonClose={true}
+        position={"center"}
+        ref={"modalFullScreen"}
+        swipeToClose={true}
+        onClosingState={this.onClosingState}>
+        <PhotoScaleViewer
+          index={this.state.showIndex}
+          pressHandle={()=> {
+            console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
+          }}
+          imgList={this.state.imgList}/>
+        <TouchableOpacity
+          style={{
+            position:'absolute',
+            left:20,
+            top:10
+          }}
+          onPress={()=> {
+            this._closeImgModal()
+          }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
+              fontWeight:'100'
+            }}/>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     )
   }
 
