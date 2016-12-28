@@ -551,7 +551,7 @@ class Home extends BaseComponent {
           }}>
           <Text
             style={styles.moodText}
-            numberOfLines={3}>
+            numberOfLines={2}>
             {rowData.PostContent}
           </Text>
         </TouchableOpacity>

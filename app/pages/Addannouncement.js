@@ -311,7 +311,7 @@ class Addannouncement extends BaseComponent {
           <TextInput
             placeholder={'此时此地,想和大家说点什么?'}
             multiline={true}
-            maxLength={300}
+            maxLength={500}
             style={styles.postContent}
             value={this.state.PostContent}
             underlineColorAndroid={'transparent'}
