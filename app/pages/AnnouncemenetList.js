@@ -641,14 +641,7 @@ class AnnouncementList extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          ...Platform.select({
-            ios: {
-              height: height - 46
-            },
-            android: {
-              height: height - 50
-            }
-          }),
+          height:height,
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}
@@ -668,7 +661,7 @@ class AnnouncementList extends BaseComponent {
             left: 20,
             ...Platform.select({
               ios:{
-                top:20
+                top:15
               },
               android:{
                 top:10

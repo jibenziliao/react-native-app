@@ -12,7 +12,8 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Platform
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -390,9 +391,9 @@ class UserInfo extends BaseComponent {
             </View>
             <ScrollView
               horizontal={true}
-              showsHorizontalScrollIndicator={true}
-              style={styles.photoContainer}>
+              showsHorizontalScrollIndicator={true}>
               <TouchableOpacity
+                style={styles.photoContainer}
                 onPress={()=> {
                   this._openImgModal(this.state.userPhotos)
                 }}>
@@ -479,7 +480,14 @@ class UserInfo extends BaseComponent {
           style={{
             position: 'absolute',
             left: 20,
-            top: 10
+            ...Platform.select({
+              ios:{
+                top:15
+              },
+              android:{
+                top:10
+              }
+            }),
           }}
           onPress={()=> {
             this._closeImgModal()
