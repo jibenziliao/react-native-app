@@ -132,7 +132,9 @@ class UserInfo extends BaseComponent {
     this.state = {
       ...this.props.route.params,
       showIndex: 0,
-      imgList: []
+      imgList: [],
+      imgLoading:true,
+      avatarLoading:true
     };
     navigator = this.props.navigator;
     console.log(this.props.route.params);
@@ -241,8 +243,23 @@ class UserInfo extends BaseComponent {
         return (
           <Image
             key={index}
+            onLoad={()=> {
+              this.setState({imgLoading: false})
+            }}
+            onError={()=> {
+              this.setState({imgLoading: false})
+            }}
+            onLoadStart={()=> {
+              this.setState({imgLoading: true})
+            }}
             style={styles.photos}
-            source={{uri: URL_DEV + item.PhotoUrl}}/>
+            source={{uri: URL_DEV + item.PhotoUrl}}>
+            {this.state.imgLoading ?
+              <Image
+                key={index}
+                source={require('./img/imgLoading.gif')}
+                style={styles.photos}/> : null}
+            </Image>
         )
       })
     } else {
@@ -403,8 +420,22 @@ class UserInfo extends BaseComponent {
             </View>
             <View style={[styles.sectionContent, styles.announcementCard]}>
               <Image
+                onLoad={()=> {
+                  this.setState({avatarLoading: false})
+                }}
+                onError={()=> {
+                  this.setState({avatarLoading: false})
+                }}
+                onLoadStart={()=> {
+                  this.setState({avatarLoading: true})
+                }}
                 style={styles.userAvatar}
-                source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}/>
+                source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}>
+                {this.state.avatarLoading ?
+                  <Image
+                    source={require('./img/imgLoading.gif')}
+                    style={styles.userAvatar}/> : null}
+                </Image>
               <TouchableOpacity
                 onPress={()=> {
                   this._goHistoryAnnouncementList()
