@@ -105,29 +105,29 @@ const tmpGenderArr = ['不限', '男', '女'];
 const tmpPhotoOnlyArr = ['不限', '是', '否'];
 
 class FriendsFilter extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
       ageRangeText: '不限',
-      minAge: 18,
-      maxAge: 80,
+      minAge: null,
+      maxAge: null,
       heightRangeText: '不限',
-      minHeight: 175,
-      maxHeight: 195,
+      minHeight: null,
+      maxHeight: null,
+      weightRangeText:'不限',
+      minWeight:null,
+      maxWeight:null,
       genderText: '不限',
       gender: null,
-      genderFilter: 0,
       educationText: '不限',
-      minEducation: 0,
-      maxEducation: 3,
-      education: 2,
       datingPurpose: {
         friendShip: false,
         relationShip: false,
         love: false,
         other: false
       },
-      photoOnly: false,
+      photoOnly: null,
       photoOnlyText: '不限'
     }
   }
@@ -203,6 +203,26 @@ class FriendsFilter extends BaseComponent {
     return data;
   }
 
+  _createWeightRangeData() {
+    let data = [];
+    data.push({'不限': ['不限']});
+    for (let i = 20; i < 200; i++) {
+      let maxWeight = [];
+      for (let j = 21; j < 201; j++) {
+        if (i < j) {
+          if (maxWeight.indexOf('不限') < 0) {
+            maxWeight.push('不限');
+          }
+          maxWeight.push(j + '');
+        }
+      }
+      let _maxWeight = {};
+      _maxWeight[i + ''] = maxWeight;
+      data.push(_maxWeight);
+    }
+    return data;
+  }
+
   _renderDoublePicker(text, title, minValue, maxValue, _createData) {
     return (
       <TouchableHighlight
@@ -273,20 +293,41 @@ class FriendsFilter extends BaseComponent {
         if (pickedValue[0] == '不限') {
           this.setState({
             heightRangeText: '不限',
-            minHeight: 100,
-            maxHeight: 200
+            minHeight: null,
+            maxHeight: null
           });
         } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
           this.setState({
             heightRangeText: `${pickedValue[0]}cm以上`,
             minHeight: parseInt(pickedValue[0]),
-            maxHeight: 80
+            maxHeight: null
           });
         } else {
           this.setState({
             heightRangeText: `${pickedValue[0]}-${pickedValue[1]}cm`,
             minHeight: parseInt(pickedValue[0]),
             maxHeight: parseInt(pickedValue[1])
+          });
+        }
+        break;
+      case 'weightRangeText':
+        if (pickedValue[0] == '不限') {
+          this.setState({
+            weightRangeText: '不限',
+            minWeight: null,
+            maxWeight: null
+          });
+        } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
+          this.setState({
+            weightRangeText: `${pickedValue[0]}kg以上`,
+            minWeight: parseInt(pickedValue[0]),
+            maxWeight: null
+          });
+        } else {
+          this.setState({
+            weightRangeText: `${pickedValue[0]}-${pickedValue[1]}kg`,
+            minWeight: parseInt(pickedValue[0]),
+            maxWeight: parseInt(pickedValue[1])
           });
         }
         break;
@@ -368,6 +409,10 @@ class FriendsFilter extends BaseComponent {
               {this._renderDoublePicker('heightRangeText', '请选择身高范围', this.state.minHeight + '', this.state.maxHeight + '', this._createHeightRangeData())}
             </View>
             <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'体重'}</Text>
+              {this._renderDoublePicker('weightRangeText', '请选择体重范围', this.state.minWeight + '', this.state.maxWeight + '', this._createWeightRangeData())}
+            </View>
+            <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'性别'}</Text>
               {this._renderSinglePicker('genderText', '请选择性别', 'gender', tmpGenderArr)}
             </View>
@@ -376,17 +421,6 @@ class FriendsFilter extends BaseComponent {
               {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.gender, tmpPhotoOnlyArr)}
             </View>
           </View>
-          {/*<NBButton
-           block
-           style={{
-           height: 40,
-           marginTop: 30
-           }}
-           onPress={()=> {
-           this.goHome()
-           }}>
-           去首页(Test)
-           </NBButton>*/}
           <NBButton
             block
             style={{marginVertical: 30}}

@@ -12,6 +12,8 @@ export function saveFriendFilter(data,resolve,reject) {
     AgeMax:data.maxAge,
     HeightMin:data.minHeight,
     HeightMax:data.maxHeight,
+    WeightMin:data.minWeight,
+    WeightMax:data.maxWeight,
     Gender:data.gender,
     PhotoOnly:data.photoOnly
   };

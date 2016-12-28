@@ -388,14 +388,14 @@ class EditFriendFilter extends BaseComponent {
         if (pickedValue[0] == '不限') {
           this.setState({
             heightRangeText: '不限',
-            HeightMin: 100,
-            HeightMax: 200
+            HeightMin: null,
+            HeightMax: null
           });
         } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
           this.setState({
             heightRangeText: `${pickedValue[0]}cm以上`,
             HeightMin: parseInt(pickedValue[0]),
-            HeightMax: 80
+            HeightMax: null
           });
         } else {
           this.setState({
@@ -409,14 +409,14 @@ class EditFriendFilter extends BaseComponent {
         if (pickedValue[0] == '不限') {
           this.setState({
             weightRangeText: '不限',
-            WeightMin: 20,
-            WeightMax: 200
+            WeightMin: null,
+            WeightMax: null
           })
         } else if (pickedValue[0] != '不限' && pickedValue[1] == '不限') {
           this.setState({
             weightRangeText: `${pickedValue[0]}kg以上`,
             WeightMin: parseInt(pickedValue[0]),
-            WeightMax: 200
+            WeightMax: null
           });
         } else {
           this.setState({

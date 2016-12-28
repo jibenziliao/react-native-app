@@ -178,8 +178,11 @@ class Home extends BaseComponent {
       avatarLoading: true,
       imgLoading: true,
       showIndex: 0,
-      imgList: []
+      imgList: [],
+      commentInputHeight: 0
     };
+
+    this._handleInputHeight = this._handleInputHeight.bind(this);
   }
 
   componentWillMount() {
@@ -425,7 +428,8 @@ class Home extends BaseComponent {
   _closeCommentInput() {
     this.setState({
       showCommentInput: false,
-      comment: ''
+      comment: '',
+      commentInputHeight: 0
     });
   }
 
@@ -613,7 +617,7 @@ class Home extends BaseComponent {
             />
           }
           onScroll={()=> {
-            this.setState({showCommentInput: false, comment: ''})
+            this._closeCommentInput()
           }}
           style={styles.listView}
           dataSource={ds.cloneWithRows(postList)}
@@ -675,17 +679,23 @@ class Home extends BaseComponent {
     ).start();
   }
 
+  _handleInputHeight(event) {
+    this.setState({
+      comment: event.nativeEvent.text,
+      commentInputHeight: event.nativeEvent.contentSize.height
+    })
+  }
+
   _renderCommentInputBar() {
     if (this.state.showCommentInput) {
       return (
         <Animated.View
           style={{
             flexDirection: 'row',
-            paddingHorizontal: 10,
+            padding: 10,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#E2E2E2',
-            height: 60,
             marginBottom: this.state.viewMarginBottom
           }}>
           <View style={{
@@ -696,21 +706,24 @@ class Home extends BaseComponent {
           }}>
             <TextInput
               ref={'comment'}
-              multiline={false}
-              style={{
-                height: 40,
+              multiline={true}
+              style={[{
                 flex: 1,
                 backgroundColor: '#fff',
                 borderRadius: 4,
-                paddingHorizontal: 10
-              }}
+                paddingHorizontal: 10,
+                flexWrap: 'wrap',
+                height: 40
+              }, {
+                height: Math.max(40, this.state.commentInputHeight)
+              }]}
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
               maxLength={50}
               onBlur={()=> {
                 this._resetScrollTo()
               }}
-              onChangeText={(comment)=>this.setState({comment})}
+              onChange={this._handleInputHeight}
               value={this.state.comment}/>
           </View>
           <View>
@@ -718,7 +731,6 @@ class Home extends BaseComponent {
               primary
               style={{
                 width: 100,
-                height: 40,
                 marginLeft: 10
               }}
               onPress={()=> {
