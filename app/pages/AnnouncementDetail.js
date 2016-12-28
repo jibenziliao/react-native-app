@@ -594,14 +594,8 @@ class AnnouncementDetail extends BaseComponent {
         return (
           <Image
             key={index}
-            onLoad={()=> {
+            onLoadEnd={()=> {
               this.setState({imgLoading: false})
-            }}
-            onError={()=> {
-              this.setState({imgLoading: false})
-            }}
-            onLoadStart={()=> {
-              this.setState({imgLoading: true})
             }}
             style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
             source={{uri: URL_DEV + '/' + item}}>
@@ -628,14 +622,8 @@ class AnnouncementDetail extends BaseComponent {
               this._goUserInfo(rowData.CommentUserInfo)
             }}>
             <Image
-              onLoad={()=> {
+              onLoadEnd={()=> {
                 this.setState({avatarLoading: false})
-              }}
-              onError={()=> {
-                this.setState({avatarLoading: false})
-              }}
-              onLoadStart={()=> {
-                this.setState({avatarLoading: true})
               }}
               source={{uri: URL_DEV + rowData.CommentUserInfo.PrimaryPhotoFilename}}
               style={styles.commentImg}>
