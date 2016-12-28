@@ -197,28 +197,14 @@ class UserInfo extends BaseComponent {
 
   //前往指定用户的历史公告
   _goHistoryAnnouncementList() {
-    const {dispatch, navigator}=this.props;
-    let data = {
-      targetUserId: this.state.UserId,
-      pageIndex: 1,
-      pageSize: 10,
-      ...this.state.myLocation,
-      postOrderTyp: 3
-    };
-    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
-      navigator.push({
-        component: AnnouncementList,
-        name: 'AnnouncementList',
-        params: {
-          postList: json.Result,
-          targetUserId: this.state.UserId,
-          Nickname: this.state.Nickname,
-          myLocation: this.state.myLocation,
-          myUserId: this.state.myUserId
-        }
-      });
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: AnnouncementList,
+      name: 'AnnouncementList',
+      params: {
+        targetUserId: this.state.UserId,
+        Nickname: this.state.Nickname
+      }
+    });
   }
 
   //与TA聊天

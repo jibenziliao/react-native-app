@@ -188,6 +188,8 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
+      imgLoading: true,
+      avatarLoading: true,
       showIndex: 0,
       imgList: []
     };
@@ -592,8 +594,22 @@ class AnnouncementDetail extends BaseComponent {
         return (
           <Image
             key={index}
+            onLoad={()=> {
+              this.setState({imgLoading: false})
+            }}
+            onError={()=> {
+              this.setState({imgLoading: false})
+            }}
+            onLoadStart={()=> {
+              this.setState({imgLoading: true})
+            }}
             style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
-            source={{uri: URL_DEV + '/' + item}}/>
+            source={{uri: URL_DEV + '/' + item}}>
+            {this.state.imgLoading ?
+              <Image
+                source={require('./img/imgLoading.gif')}
+                style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}/> : null}
+          </Image>
         )
       })
     } else {
@@ -611,8 +627,23 @@ class AnnouncementDetail extends BaseComponent {
             onPress={()=> {
               this._goUserInfo(rowData.CommentUserInfo)
             }}>
-            <Image source={{uri: URL_DEV + rowData.CommentUserInfo.PrimaryPhotoFilename}}
-                   style={styles.commentImg}/>
+            <Image
+              onLoad={()=> {
+                this.setState({avatarLoading: false})
+              }}
+              onError={()=> {
+                this.setState({avatarLoading: false})
+              }}
+              onLoadStart={()=> {
+                this.setState({avatarLoading: true})
+              }}
+              source={{uri: URL_DEV + rowData.CommentUserInfo.PrimaryPhotoFilename}}
+              style={styles.commentImg}>
+              {this.state.avatarLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={styles.commentImg}/> : null}
+            </Image>
           </TouchableOpacity>
           <View style={styles.commentArea}>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -661,8 +692,9 @@ class AnnouncementDetail extends BaseComponent {
             this._goUserInfo(this.state.PosterInfo);
           }}>
           <View style={styles.cardRow}>
-            <Image source={{uri: URL_DEV + this.state.PosterInfo.PrimaryPhotoFilename}}
-                   style={styles.avatarImg}/>
+            <Image
+              source={{uri: URL_DEV + this.state.PosterInfo.PrimaryPhotoFilename}}
+              style={styles.avatarImg}/>
             <View style={styles.userInfo}>
               <View style={styles.nameTextContainer}>
                 <Text
@@ -881,7 +913,7 @@ class AnnouncementDetail extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          height:height,
+          height: height,
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}

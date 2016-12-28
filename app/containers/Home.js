@@ -104,10 +104,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  nameText:{
-    overflow:'hidden',
-    flex:1,
-    flexWrap:'nowrap'
+  nameText: {
+    overflow: 'hidden',
+    flex: 1,
+    flexWrap: 'nowrap'
   },
   timeText: {
     fontSize: 12,
@@ -162,6 +162,7 @@ let commentId;
 let lastCount;
 
 class Home extends BaseComponent {
+
   constructor(props) {
     super(props);
     navigator = this.props.navigator;
@@ -174,6 +175,8 @@ class Home extends BaseComponent {
       comment: '',
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
+      avatarLoading: true,
+      imgLoading: true,
       showIndex: 0,
       imgList: []
     };
@@ -478,8 +481,22 @@ class Home extends BaseComponent {
         return (
           <View key={index} style={styles.singleImgContainer}>
             <Image
+              onLoad={()=> {
+                this.setState({imgLoading: false})
+              }}
+              onError={()=> {
+                this.setState({imgLoading: false})
+              }}
+              onLoadStart={()=> {
+                this.setState({imgLoading: true})
+              }}
               style={{width: imageWidth, height: imageWidth}}
-              source={{uri: URL_DEV + '/' + item}}/>
+              source={{uri: URL_DEV + '/' + item}}>
+              {this.state.imgLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={{width: imageWidth, height: imageWidth}}/> : null}
+            </Image>
             {this._renderMoreImgLabel(arr, index)}
           </View>
         )
@@ -500,8 +517,22 @@ class Home extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <Image
+              onLoad={()=> {
+                this.setState({avatarLoading: false})
+              }}
+              onError={()=> {
+                this.setState({avatarLoading: false})
+              }}
+              onLoadStart={()=> {
+                this.setState({avatarLoading: true})
+              }}
               source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-              style={styles.avatarImg}/>
+              style={styles.avatarImg}>
+              {this.state.avatarLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={styles.avatarImg}/> : null}
+            </Image>
             <View style={styles.userInfo}>
               <View style={styles.nameTextContainer}>
                 <Text
@@ -758,14 +789,14 @@ class Home extends BaseComponent {
           imgList={this.state.imgList}/>
         <TouchableOpacity
           style={{
-            position:'absolute',
-            left:20,
+            position: 'absolute',
+            left: 20,
             ...Platform.select({
-              ios:{
-                top:15
+              ios: {
+                top: 15
               },
-              android:{
-                top:10
+              android: {
+                top: 10
               }
             }),
           }}
@@ -777,7 +808,7 @@ class Home extends BaseComponent {
             alignItems: 'center',
           }}>
             <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
-              fontWeight:'100'
+              fontWeight: '100'
             }}/>
           </View>
         </TouchableOpacity>

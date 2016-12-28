@@ -118,7 +118,10 @@ const styles = StyleSheet.create({
   }
 });
 
+let navigator;
+
 class Addannouncement extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -126,6 +129,7 @@ class Addannouncement extends BaseComponent {
       imageArr: [],
       days: '1'
     };
+    navigator=this.props.navigator;
   }
 
   getNavigationBarProps() {
@@ -211,28 +215,14 @@ class Addannouncement extends BaseComponent {
 
   //前往我的历史公告列表
   _goAnnouncementList() {
-    const {dispatch, navigator}=this.props;
-    let data = {
-      targetUserId: tmpGlobal.currentUser.UserId,
-      pageIndex: 1,
-      pageSize: 10,
-      ...tmpGlobal.currentLocation,
-      postOrderTyp: 3
-    };
-    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
-      navigator.push({
-        component: AnnouncementList,
-        name: 'AnnouncementList',
-        params: {
-          postList: json.Result,
-          targetUserId: tmpGlobal.currentUser.UserId,
-          Nickname: tmpGlobal.currentUser.Nickname,
-          myLocation: tmpGlobal.currentLocation,
-          myUserId: tmpGlobal.currentUser.UserId,
-        }
-      });
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: AnnouncementList,
+      name: 'AnnouncementList',
+      params: {
+        targetUserId: tmpGlobal.currentUser.UserId,
+        Nickname: tmpGlobal.currentUser.Nickname
+      }
+    });
   }
 
   //渲染拍好的照片

@@ -142,6 +142,8 @@ dependencies {
     compile project(':react-native-device-info')
     compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])
+    // 如果你需要支持GIF动图
+    compile 'com.facebook.fresco:animated-gif:0.11.0'
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }

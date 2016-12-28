@@ -176,6 +176,9 @@ class AnnouncementList extends BaseComponent {
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
       ...this.props.route.params,
+      postList:[],
+      imgLoading: true,
+      avatarLoading: true,
       showIndex: 0,
       imgList: []
     };
@@ -184,6 +187,12 @@ class AnnouncementList extends BaseComponent {
 
   componentWillMount() {
     this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
+  }
+
+  componentDidMount(){
+    InteractionManager.runAfterInteractions(()=> {
+      this._getAllAnnouncementList();
+    })
   }
 
   componentWillUnmount() {
@@ -199,6 +208,26 @@ class AnnouncementList extends BaseComponent {
         duration: 100,
       }
     ).start();
+  }
+
+  _getAllAnnouncementList(){
+    const {dispatch}=this.props;
+    let data = {
+      targetUserId: this.state.targetUserId,
+      pageIndex: 1,
+      pageSize: this.state.pageSize,
+      ...tmpGlobal.currentLocation,
+      postOrderTyp: 3
+    };
+    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
+      lastCount = json.Result.length;
+      this.setState({
+        postList: json.Result,
+        refreshing: false
+      })
+    }, (error)=> {
+
+    }));
   }
 
   //处理距离
@@ -227,7 +256,7 @@ class AnnouncementList extends BaseComponent {
       targetUserId: this.state.targetUserId,
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize,
-      ...this.state.myLocation,
+      ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
     dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
@@ -250,7 +279,7 @@ class AnnouncementList extends BaseComponent {
       targetUserId: this.state.targetUserId,
       pageIndex: 1,
       pageSize: this.state.pageSize,
-      ...this.state.myLocation,
+      ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
     dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
@@ -375,8 +404,22 @@ class AnnouncementList extends BaseComponent {
         return (
           <View key={index} style={styles.singleImgContainer}>
             <Image
+              onLoad={()=> {
+                this.setState({imgLoading: false})
+              }}
+              onError={()=> {
+                this.setState({imgLoading: false})
+              }}
+              onLoadStart={()=> {
+                this.setState({imgLoading: true})
+              }}
               style={{width: imageWidth, height: imageWidth}}
-              source={{uri: URL_DEV + '/' + item}}/>
+              source={{uri: URL_DEV + '/' + item}}>
+              {this.state.imgLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={{width: imageWidth, height: imageWidth}}/> : null}
+            </Image>
             {this._renderMoreImgLabel(arr, index)}
           </View>
         )
@@ -399,8 +442,22 @@ class AnnouncementList extends BaseComponent {
           }}>
           <View style={styles.cardRow}>
             <Image
+              onLoad={()=> {
+                this.setState({avatarLoading: false})
+              }}
+              onError={()=> {
+                this.setState({avatarLoading: false})
+              }}
+              onLoadStart={()=> {
+                this.setState({avatarLoading: true})
+              }}
               source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-              style={styles.avatarImg}/>
+              style={styles.avatarImg}>
+              {this.state.avatarLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={styles.avatarImg}/> : null}
+            </Image>
             <View style={styles.userInfo}>
               <View style={styles.nameTextContainer}>
                 <Text
@@ -641,7 +698,7 @@ class AnnouncementList extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          height:height,
+          height: height,
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}
@@ -660,11 +717,11 @@ class AnnouncementList extends BaseComponent {
             position: 'absolute',
             left: 20,
             ...Platform.select({
-              ios:{
-                top:15
+              ios: {
+                top: 15
               },
-              android:{
-                top:10
+              android: {
+                top: 10
               }
             }),
           }}

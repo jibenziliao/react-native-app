@@ -91,10 +91,10 @@ class PhotoScaleViewer extends Component {
               onPress={e => this.props.pressHandle()}>
               <PhotoView
                 source={{uri: item}}
-                resizeMode='contain'
+                resizeMode='cover'
                 minimumZoomScale={0.5}
                 maximumZoomScale={3}
-                androidScaleType='center'
+                androidScaleType='fitCenter'
                 style={styles.photo}/>
             </TouchableWithoutFeedback>
           </View>)
