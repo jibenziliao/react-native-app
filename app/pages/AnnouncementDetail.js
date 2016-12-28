@@ -881,7 +881,14 @@ class AnnouncementDetail extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          height: height,
+          ...Platform.select({
+            ios: {
+              height: height - 46
+            },
+            android: {
+              height: height - 50
+            }
+          }),
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}
