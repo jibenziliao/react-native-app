@@ -540,7 +540,7 @@ class MessageDetail extends BaseComponent {
             name: tmpGlobal.currentUser.Nickname,
             avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
           }}
-          locale={'zh-CN'}
+          locale={'zh-cn'}
           label={'发送'}
           placeholder={'输入消息内容'}
           //renderActions={this.renderCustomActions}

@@ -11,6 +11,7 @@ import {
 
 import moment from 'moment'
 import CustomBubble from './CustomBubble'
+import CustomDay from './CustomDay'
 import {Avatar,Bubble,Day} from 'react-native-gifted-chat'
 
 export default class CustomMessage extends Component {
@@ -48,7 +49,7 @@ export default class CustomMessage extends Component {
       if (this.props.renderDay) {
         return this.props.renderDay(dayProps);
       }
-      return <Day {...dayProps}/>;
+      return <CustomDay {...dayProps}/>;
     }
     return null;
   }
