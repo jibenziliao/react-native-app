@@ -12,7 +12,8 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Platform
 } from 'react-native'
 import PhotoView from 'react-native-photo-view'
 import Swiper from 'react-native-swiper'
@@ -45,7 +46,14 @@ const renderPagination = (index, total, context) => {
       position: 'absolute',
       justifyContent: 'center',
       alignItems: 'center',
-      top: 15,
+      ...Platform.select({
+        ios:{
+          top:25,
+        },
+        android:{
+          top: 15,
+        }
+      }),
       left: 0,
       right: 0
     }}>

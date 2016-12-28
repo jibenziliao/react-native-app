@@ -84,6 +84,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  nameText: {
+    overflow: 'hidden',
+    flex: 1,
+    flexWrap: 'nowrap'
+  },
   timeText: {
     fontSize: 12,
     justifyContent: 'center'
@@ -398,7 +403,9 @@ class AnnouncementList extends BaseComponent {
               style={styles.avatarImg}/>
             <View style={styles.userInfo}>
               <View style={styles.nameTextContainer}>
-                <Text>{rowData.PosterInfo.Nickname}</Text>
+                <Text
+                  numberOfLines={1}
+                  style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
                 <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
 
               </View>
@@ -426,7 +433,9 @@ class AnnouncementList extends BaseComponent {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-        onPress={()=>{this._openImgModal(rowData.PicList)}}>
+          onPress={()=> {
+            this._openImgModal(rowData.PicList)
+          }}>
           <View style={styles.postImage}>
             {this.renderPostImage(rowData.PicList)}
           </View>
@@ -632,7 +641,7 @@ class AnnouncementList extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          height:height,
+          height: height,
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}
@@ -650,7 +659,14 @@ class AnnouncementList extends BaseComponent {
           style={{
             position: 'absolute',
             left: 20,
-            top: 10
+            ...Platform.select({
+              ios:{
+                top:20
+              },
+              android:{
+                top:10
+              }
+            }),
           }}
           onPress={()=> {
             this._closeImgModal()

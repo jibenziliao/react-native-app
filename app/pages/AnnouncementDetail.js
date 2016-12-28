@@ -107,6 +107,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  nameText: {
+    overflow: 'hidden',
+    flex: 1,
+    flexWrap: 'nowrap'
+  },
   timeText: {
     fontSize: 12,
     justifyContent: 'center'
@@ -612,7 +617,9 @@ class AnnouncementDetail extends BaseComponent {
           <View style={styles.commentArea}>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text>{rowData.CommentUserInfo.Nickname}</Text>
+                <Text
+                  numberOfLines={1}
+                  style={styles.nameText}>{rowData.CommentUserInfo.Nickname}</Text>
                 <View
                   style={[styles.userInfoLabel, styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
                   <Icon
@@ -658,7 +665,9 @@ class AnnouncementDetail extends BaseComponent {
                    style={styles.avatarImg}/>
             <View style={styles.userInfo}>
               <View style={styles.nameTextContainer}>
-                <Text>{this.state.PosterInfo.Nickname}</Text>
+                <Text
+                  numberOfLines={1}
+                  style={styles.nameText}>{this.state.PosterInfo.Nickname}</Text>
                 <Text style={styles.timeText}>{this.state.CreateTimeDescription}</Text>
               </View>
               <View style={styles.userInfoLabelContainer}>
@@ -872,7 +881,7 @@ class AnnouncementDetail extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          height:height,
+          height: height,
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}
@@ -890,7 +899,14 @@ class AnnouncementDetail extends BaseComponent {
           style={{
             position: 'absolute',
             left: 20,
-            top: 10
+            ...Platform.select({
+              ios: {
+                top: 20
+              },
+              android: {
+                top: 10
+              }
+            })
           }}
           onPress={()=> {
             this._closeImgModal()
