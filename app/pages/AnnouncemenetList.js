@@ -176,12 +176,12 @@ class AnnouncementList extends BaseComponent {
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
       ...this.props.route.params,
-      postList:[],
+      postList: [],
       imgLoading: true,
       avatarLoading: true,
       showIndex: 0,
       imgList: [],
-      commentInputHeight:0
+      commentInputHeight: 0
     };
     console.log(this.props.route.params);
   }
@@ -190,7 +190,7 @@ class AnnouncementList extends BaseComponent {
     this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
   }
 
-  componentDidMount(){
+  componentDidMount() {
     InteractionManager.runAfterInteractions(()=> {
       this._getAllAnnouncementList();
     })
@@ -211,7 +211,7 @@ class AnnouncementList extends BaseComponent {
     ).start();
   }
 
-  _getAllAnnouncementList(){
+  _getAllAnnouncementList() {
     const {dispatch}=this.props;
     let data = {
       targetUserId: this.state.targetUserId,
@@ -350,7 +350,7 @@ class AnnouncementList extends BaseComponent {
     this.setState({
       showCommentInput: false,
       comment: '',
-      commentInputHeight:0
+      commentInputHeight: 0
     });
   }
 
@@ -609,10 +609,11 @@ class AnnouncementList extends BaseComponent {
     ).start();
   }
 
-  _handleInputHeight(event){
+  //多行评论输入框增加最大高度限制
+  _handleInputHeight(event) {
     this.setState({
-      comment:event.nativeEvent.text,
-      commentInputHeight:event.nativeEvent.contentSize.height
+      comment: event.nativeEvent.text,
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, 80)
     })
   }
 
@@ -643,8 +644,8 @@ class AnnouncementList extends BaseComponent {
                 backgroundColor: '#fff',
                 borderRadius: 4,
                 paddingHorizontal: 10
-              },{
-                height:Math.max(40,this.state.commentInputHeight)
+              }, {
+                height: Math.max(40, this.state.commentInputHeight)
               }]}
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
@@ -652,7 +653,9 @@ class AnnouncementList extends BaseComponent {
               onBlur={()=> {
                 this._resetScrollTo()
               }}
-              onChange={(event)=>{this._handleInputHeight(event)}}
+              onChange={(event)=> {
+                this._handleInputHeight(event)
+              }}
               onChangeText={(comment)=>this.setState({comment})}
               value={this.state.comment}/>
           </View>

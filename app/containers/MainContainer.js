@@ -5,7 +5,11 @@
  */
 import React, {Component} from 'react'
 import {
-  StyleSheet
+  StyleSheet,
+  View,
+  ScrollView,
+  Dimensions,
+  Platform
 } from 'react-native'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import Home from './Home'
@@ -13,6 +17,8 @@ import Vicinity from './Vicinity'
 import Message from './Message'
 import Mine from './Mine'
 import TabBar from '../components/TabBar'
+
+const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   /**
@@ -23,9 +29,16 @@ const styles = StyleSheet.create({
   subView: {
     overflow: 'hidden'
   },
-  scrollTabView: {
-    bottom: 0,
-  }
+  container:{
+    ...Platform.select({
+      ios:{
+        height:height//iOS将状态栏视为视图一部分
+      },
+      android:{
+        height:height-20//20为安卓状态栏高度
+      }
+    })
+  },
 });
 
 //tabBar的icon图标和文字标题
@@ -43,29 +56,30 @@ class MainContainer extends Component {
 
   render() {
     return (
-      <ScrollableTabView
-        style={styles.scrollTabView}
-        tabBarPosition="bottom"
-        locked={true}
-        scrollWithoutAnimation={false}
-        prerenderingSiblingsNumber={4}
-        initialPage={0}
-        renderTabBar={() => {
-          return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
-        }}>
-        <Home
-          style={styles.subView}
-          navigator={this.props.navigator}/>
-        <Vicinity
-          style={styles.subView}
-          navigator={this.props.navigator}/>
-        <Message
-          style={styles.subView}
-          navigator={this.props.navigator}/>
-        <Mine
-          style={styles.subView}
-          navigator={this.props.navigator}/>
-      </ScrollableTabView>
+      <View style={styles.container}>
+        <ScrollableTabView
+          tabBarPosition="bottom"
+          locked={true}
+          scrollWithoutAnimation={false}
+          prerenderingSiblingsNumber={4}
+          initialPage={0}
+          renderTabBar={() => {
+            return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
+          }}>
+          <Home
+            style={styles.subView}
+            navigator={this.props.navigator}/>
+          <Vicinity
+            style={styles.subView}
+            navigator={this.props.navigator}/>
+          <Message
+            style={styles.subView}
+            navigator={this.props.navigator}/>
+          <Mine
+            style={styles.subView}
+            navigator={this.props.navigator}/>
+        </ScrollableTabView>
+      </View>
     );
   }
 }

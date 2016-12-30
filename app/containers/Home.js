@@ -189,7 +189,8 @@ class Home extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._getAnnouncementList();
     });
-    this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow.bind(this));
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide.bind(this));
   }
 
   _getAnnouncementList() {
@@ -303,18 +304,25 @@ class Home extends BaseComponent {
     this.hasDeleteListener.remove();
     this.publishListener.remove();
     this.commentListener.remove();
-    this.keyboardWillShowListener.remove();
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
-  //当键盘弹即将起来
-  _keyboardWillShow(e) {
+  //因为在MainContainer中在ScrollableTabView外层包裹了一个View,所以这里的keyboardWillShow、keyboardWillHide失效,只能用keyboardDidShow及keyboardDidHide监听键盘事件
+  //https://github.com/skv-headless/react-native-scrollable-tab-view/issues/500
+  //ScrollableTabView并不强制要求作为根节点使用。(如果作为根节点使用,在安卓设备上,弹出键盘时,底部tabBar会跟随上滑)
+  _keyboardDidShow(e) {
     Animated.timing(
       this.state.viewMarginBottom,
       {
-        toValue: e.startCoordinates.height - (Platform.OS === 'ios' ? 45.5 : 50),
-        duration: 100,
+        toValue: e.endCoordinates.height - (Platform.OS === 'ios' ? 45.5 : 50),
+        duration: 10,
       }
     ).start();
+  }
+
+  _keyboardDidHide(){
+    this._resetScrollTo();
   }
 
   getNavigationBarProps() {
@@ -674,15 +682,16 @@ class Home extends BaseComponent {
       this.state.viewMarginBottom,
       {
         toValue: 0,
-        duration: 100,
+        duration: 10,
       }
     ).start();
   }
 
+  //多行评论输入框增加最大高度限制
   _handleInputHeight(event) {
     this.setState({
       comment: event.nativeEvent.text,
-      commentInputHeight: event.nativeEvent.contentSize.height
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height,80)
     })
   }
 
@@ -720,9 +729,6 @@ class Home extends BaseComponent {
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
               maxLength={50}
-              onBlur={()=> {
-                this._resetScrollTo()
-              }}
               onChange={this._handleInputHeight}
               value={this.state.comment}/>
           </View>

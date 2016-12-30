@@ -192,7 +192,7 @@ class AnnouncementDetail extends BaseComponent {
       avatarLoading: true,
       showIndex: 0,
       imgList: [],
-      commentInputHeight:0
+      commentInputHeight: 0
     };
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
@@ -355,7 +355,7 @@ class AnnouncementDetail extends BaseComponent {
     this.setState({
       showCommentInput: false,
       comment: '',
-      commentInputHeight:0
+      commentInputHeight: 0
     });
   }
 
@@ -819,10 +819,11 @@ class AnnouncementDetail extends BaseComponent {
     ).start();
   }
 
-  _handleInputHeight(event){
+  //多行评论输入框增加最大高度限制
+  _handleInputHeight(event) {
     this.setState({
-      comment:event.nativeEvent.text,
-      commentInputHeight:event.nativeEvent.contentSize.height
+      comment: event.nativeEvent.text,
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, 80)
     })
   }
 
@@ -853,8 +854,8 @@ class AnnouncementDetail extends BaseComponent {
                 backgroundColor: '#fff',
                 borderRadius: 4,
                 paddingHorizontal: 10
-              },{
-                height:Math.max(40,this.state.commentInputHeight)
+              }, {
+                height: Math.max(40, this.state.commentInputHeight)
               }]}
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
@@ -862,7 +863,9 @@ class AnnouncementDetail extends BaseComponent {
               onBlur={()=> {
                 this._resetScrollTo()
               }}
-              onChange={(event)=>{this._handleInputHeight(event)}}
+              onChange={(event)=> {
+                this._handleInputHeight(event)
+              }}
               value={this.state.comment}/>
           </View>
           <View>
