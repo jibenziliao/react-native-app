@@ -9,7 +9,8 @@ import {
   View,
   ScrollView,
   Dimensions,
-  Platform
+  Platform,
+  StatusBar
 } from 'react-native'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import Home from './Home'
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
         height:height//iOS将状态栏视为视图一部分
       },
       android:{
-        height:height-20//20为安卓状态栏高度
+        height:height-StatusBar.currentHeight//StatusBar.currentHeight为安卓状态栏高度
       }
     })
   },
