@@ -243,6 +243,8 @@ class FriendsFilter extends BaseComponent {
 
   _showPicker(_createData, text, title, minValue, maxValue) {
     RNPicker.init({
+      pickerConfirmBtnText: '确定',
+      pickerCancelBtnText: '取消',
       pickerTitleText: title,
       pickerData: _createData,
       selectedValue: [`${minValue}`, `${maxValue}`],

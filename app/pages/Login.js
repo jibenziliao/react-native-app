@@ -313,7 +313,7 @@ class Login extends BaseComponent {
 
   componentWillUnmount() {
     if (this.showToastTimer) {
-      clearTimeout(this.this.showToastTimer);
+      clearTimeout(this.showToastTimer);
     }
     if (this.timer) {
       BackgroundTimer.clearInterval(this.timer);
