@@ -36,6 +36,7 @@ import Menu, {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {setDictArr} from '../utils/Dict'
 import tmpGlobal from '../utils/TmpVairables'
+import {toastShort} from '../utils/ToastUtil'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -155,6 +156,40 @@ class Login extends BaseComponent {
     });
   }
 
+  _validPhoneNumber(phoneCountry, phone) {
+    if (phoneCountry === '61') {
+      if (phone.indexOf('0') === 0) {
+        let tmpPhone = phone.substring(1);
+        if (tmpPhone.indexOf('4') !== 0) {
+          toastShort('澳洲地区手机号为+61-4开头,请检查您的手机号');
+          return false;
+        }
+      } else if (phone.indexOf('4') !== 0) {
+        toastShort('澳洲地区手机号为+61-4开头,请检查您的手机号');
+        return false;
+      }
+      return true;
+    } else if (phoneCountry === '64') {
+      if (phone.indexOf('0') === 0) {
+        let tmpPhone = phone.substring(1);
+        if (tmpPhone.indexOf('2') !== 0) {
+          toastShort('新西兰手机号为+61-2开头,请检查您的手机号');
+          return false;
+        }
+      } else if (phone.indexOf('2') !== 0) {
+        toastShort('新西兰手机号为+61-2开头,请检查您的手机号');
+        return false;
+      }
+      return true;
+    } else {
+      if (phone.indexOf('1') !== 0) {
+        toastShort('中国手机号为+86-1开头,请检查您的手机号');
+        return false;
+      }
+      return true;
+    }
+  }
+
   login(data) {
     Keyboard.dismiss();
     const {dispatch} = this.props;
@@ -200,17 +235,40 @@ class Login extends BaseComponent {
 
   getValidCode(phoneCountry, phone) {
     Keyboard.dismiss();
-    const data = {
-      Country: phoneCountry,
-      Mobile: phone
-    };
-    const {dispatch} = this.props;
-    dispatch(LoginActions.getSmsCode(data, (json)=> {
-      this.initDict();
-      this._startCountdown();
-    }, (error)=> {
-      //不做特殊处理
-    }));
+    this.showToastTimer = setTimeout(()=> {
+      if (this._validPhoneNumber(phoneCountry, phone)) {
+        const data = {
+          Country: phoneCountry,
+          Mobile: this._handleSubmitPhone(phoneCountry, phone)
+        };
+        const {dispatch} = this.props;
+        dispatch(LoginActions.getSmsCode(data, (json)=> {
+          this.initDict();
+          this._startCountdown();
+        }, (error)=> {
+          //不做特殊处理
+        }));
+      }
+    }, 300);
+  }
+
+  //如果是02或者04开头,则替换成2或者4开头,再提交后台。
+  _handleSubmitPhone(phoneCountry, phone) {
+    if (phoneCountry === '61') {
+      if (phone.indexOf('0') === 0) {
+        return phone.substring(1);
+      } else if (phone.indexOf('4') === 0) {
+        return phone;
+      }
+    } else if (phoneCountry === '64') {
+      if (phone.indexOf('0') === 0) {
+        return phone.substring(1);
+      } else if (phone.indexOf('2') === 0) {
+        return phone;
+      }
+    } else {
+      return phone;
+    }
   }
 
   //初始化字典
@@ -231,7 +289,7 @@ class Login extends BaseComponent {
       hasSendCode: true,
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
-      tipsText: `我们已经给你的手机号码+${phoneCountry}-${phone}发送了一条验证短息`
+      tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry,phone)}发送了一条验证短信`
     });
     this.timer = BackgroundTimer.setInterval(()=> {
       this.setState({validCodeText: `剩余${second - 1}秒`});
@@ -248,7 +306,12 @@ class Login extends BaseComponent {
   }
 
   componentWillUnmount() {
-    BackgroundTimer.clearInterval(this.timer);
+    if (this.showToastTimer) {
+      clearTimeout(this.this.showToastTimer);
+    }
+    if (this.timer) {
+      BackgroundTimer.clearInterval(this.timer);
+    }
     this.keyboardDidShowListener.remove();
   }
 
@@ -285,8 +348,26 @@ class Login extends BaseComponent {
     if (this.state.phoneCountry === '86') {
       return 11 <= phone.phone.length;
     } else if (this.state.phoneCountry === '64') {
+      if (phone.phone.indexOf('0') === 0) {
+        this.setState({
+          maxLength: 10
+        });
+        return 9 <= phone.phone.length
+      }
+      this.setState({
+        maxLength: 9
+      });
       return 8 <= phone.phone.length
     } else if (this.state.phoneCountry === '61') {
+      if (phone.phone.indexOf('0') === 0) {
+        this.setState({
+          maxLength: 10
+        });
+        return 10 <= phone.phone.length
+      }
+      this.setState({
+        maxLength: 9
+      });
       return 9 <= phone.phone.length
     }
   }
@@ -320,7 +401,7 @@ class Login extends BaseComponent {
   _renderCountry() {
     if (this.state.phoneCountry === '86') {
       return '(中国)'
-    } else if (this.state.phoneCountry === '64') {
+    } else if (this.state.phoneCountry === '61') {
       return '(澳洲)'
     } else {
       return '(新西兰)'
