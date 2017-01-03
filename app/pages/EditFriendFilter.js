@@ -300,6 +300,8 @@ class EditFriendFilter extends BaseComponent {
   //双选择项范围弹窗
   _showDoublePicker(_createData, text, title, minValue, maxValue) {
     RNPicker.init({
+      pickerConfirmBtnText: '确定',
+      pickerCancelBtnText: '取消',
       pickerTitleText: title,
       pickerData: _createData,
       selectedValue: [`${minValue}`, `${maxValue}`],
