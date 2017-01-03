@@ -185,6 +185,7 @@ let DictMap = {
 let DatingPurposeSelectCopy = [];
 
 class UserProfile extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -335,9 +336,6 @@ class UserProfile extends BaseComponent {
   }
 
   componentWillUnmount() {
-    if (this.showPickerTimer) {
-      clearTimeout(this.showPickerTimer);
-    }
     if (this.showSinglePickerTimer) {
       clearTimeout(this.showSinglePickerTimer);
     }
@@ -501,30 +499,28 @@ class UserProfile extends BaseComponent {
   }
 
   _showPicker(_createData, text, value) {
-    Keyboard.dismiss();
-    //加1000毫秒延时,避免闪退https://github.com/beefe/react-native-picker
-    this.showSinglePickerTimer = setTimeout(()=> {
-      RNPicker.init({
-        pickerData: _createData,
-        selectedValue: [this.state[`${text}`] != '' ? this.state[`${text}`] : _createData[0]],
-        onPickerConfirm: pickedValue => {
-          this._updateState(text, value, pickedValue[0]);
-          RNPicker.hide();
-        },
-        onPickerCancel: pickedValue => {
-          RNPicker.hide();
-        },
-        onPickerSelect: pickedValue => {
-          this._updateState(text, value, pickedValue[0]);
-        }
-      });
-      RNPicker.show();
-    }, 1000);
-
+    RNPicker.init({
+      pickerConfirmBtnText: '确定',
+      pickerCancelBtnText: '取消',
+      pickerTitleText: '请选择',
+      pickerData: _createData,
+      selectedValue: [this.state[`${text}`] != '' ? this.state[`${text}`] : _createData[0]],
+      onPickerConfirm: pickedValue => {
+        this._updateState(text, value, pickedValue[0]);
+        RNPicker.hide();
+      },
+      onPickerCancel: pickedValue => {
+        RNPicker.hide();
+      },
+      onPickerSelect: pickedValue => {
+        this._updateState(text, value, pickedValue[0]);
+      }
+    });
+    RNPicker.show();
   }
 
   _hidePicker(str) {
-    refTarget=str;
+    refTarget = str;
     RNPicker.isPickerShow((status)=> {
       if (status) RNPicker.hide()
     });
@@ -588,30 +584,30 @@ class UserProfile extends BaseComponent {
   }
 
   _showDatePicker() {
-    Keyboard.dismiss();
-    this.showPickerTimer = setTimeout(()=> {
-      RNPicker.init({
-        pickerData: this._createDateData(),
-        selectedValue: ['1992年', '1月', '1日'],
-        onPickerConfirm: pickedValue => {
-          this.setState({
-            birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
-            birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
-          });
-          RNPicker.hide();
-        },
-        onPickerCancel: pickedValue => {
-          RNPicker.hide();
-        },
-        onPickerSelect: pickedValue => {
-          this.setState({
-            birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
-            birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
-          });
-        }
-      });
-      RNPicker.show();
-    }, 500);
+    RNPicker.init({
+      pickerConfirmBtnText: '确定',
+      pickerCancelBtnText: '取消',
+      pickerTitleText: '请选择',
+      pickerData: this._createDateData(),
+      selectedValue: ['1992年', '1月', '1日'],
+      onPickerConfirm: pickedValue => {
+        this.setState({
+          birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
+          birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
+        });
+        RNPicker.hide();
+      },
+      onPickerCancel: pickedValue => {
+        RNPicker.hide();
+      },
+      onPickerSelect: pickedValue => {
+        this.setState({
+          birthYearText: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', ''),
+          birthYear: pickedValue[0].substr(0, 4) + '-' + pickedValue[1].replace('月', '') + '-' + pickedValue[2].replace('日', '')
+        });
+      }
+    });
+    RNPicker.show();
   }
 
   //出生年
@@ -694,7 +690,7 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Location')
             }}
             onBlur={()=> {
-              if(Platform.OS==='ios'){
+              if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
@@ -716,7 +712,7 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Hometown')
             }}
             onBlur={()=> {
-              if(Platform.OS==='ios'){
+              if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
@@ -738,7 +734,7 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Ethnicity')
             }}
             onBlur={()=> {
-              if(Platform.OS==='ios'){
+              if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
@@ -764,7 +760,7 @@ class UserProfile extends BaseComponent {
               this._hidePicker('MobileNo')
             }}
             onBlur={()=> {
-              if(Platform.OS==='ios'){
+              if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
@@ -782,7 +778,7 @@ class UserProfile extends BaseComponent {
               this._hidePicker('Hobby')
             }}
             onBlur={()=> {
-              if(Platform.OS==='ios'){
+              if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
@@ -800,7 +796,7 @@ class UserProfile extends BaseComponent {
               this._hidePicker('SelfEvaluation')
             }}
             onBlur={()=> {
-              if(Platform.OS==='ios'){
+              if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
@@ -841,7 +837,7 @@ class UserProfile extends BaseComponent {
                   this._hidePicker('Nickname')
                 }}
                 onBlur={()=> {
-                  if(Platform.OS==='ios'){
+                  if (Platform.OS === 'ios') {
                     this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                   }
                 }}

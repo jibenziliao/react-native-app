@@ -338,6 +338,8 @@ class EditFriendFilter extends BaseComponent {
   _showSinglePicker(_createData, text, title, value) {
     RNPicker.init({
       pickerTitleText: title,
+      pickerConfirmBtnText: '确定',
+      pickerCancelBtnText: '取消',
       pickerData: _createData,
       selectedValue: [this.state[`${text}`]],
       onPickerConfirm: pickedValue => {

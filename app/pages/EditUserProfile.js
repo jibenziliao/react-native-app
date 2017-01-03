@@ -371,9 +371,6 @@ class EditUserProfile extends BaseComponent {
     if (this.saveTimer) {
       clearTimeout(this.saveTimer)
     }
-    if (this.showSinglePickerTimer) {
-      clearTimeout(this.showSinglePickerTimer)
-    }
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
@@ -516,24 +513,25 @@ class EditUserProfile extends BaseComponent {
   }
 
   _showPicker(_createData, text, value) {
-    Keyboard.dismiss();
-    this.showSinglePickerTimer = setTimeout(()=> {
-      RNPicker.init({
-        pickerData: _createData,
-        selectedValue: [this.state[`${text}`]],
-        onPickerConfirm: pickedValue => {
-          this._updateState(text, value, pickedValue[0]);
-          RNPicker.hide();
-        },
-        onPickerCancel: pickedValue => {
-          RNPicker.hide();
-        },
-        onPickerSelect: pickedValue => {
-          this._updateState(text, value, pickedValue[0]);
-        }
-      });
-      RNPicker.show();
-    }, 1000);
+    RNPicker.init({
+      pickerConfirmBtnText: '确定',
+      pickerCancelBtnText: '取消',
+      pickerTitleText: '请选择',
+      pickerData: _createData,
+      selectedValue: [this.state[`${text}`]],
+      onPickerConfirm: pickedValue => {
+        console.log(pickedValue[0]);
+        this._updateState(text, value, pickedValue[0]);
+        RNPicker.hide();
+      },
+      onPickerCancel: pickedValue => {
+        RNPicker.hide();
+      },
+      onPickerSelect: pickedValue => {
+        this._updateState(text, value, pickedValue[0]);
+      }
+    });
+    RNPicker.show();
   }
 
   _hidePicker(str) {
