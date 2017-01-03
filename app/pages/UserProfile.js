@@ -584,6 +584,7 @@ class UserProfile extends BaseComponent {
   }
 
   _showDatePicker() {
+    Keyboard.dismiss();
     RNPicker.init({
       pickerConfirmBtnText: '确定',
       pickerCancelBtnText: '取消',
