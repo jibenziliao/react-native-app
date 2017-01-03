@@ -94,11 +94,15 @@ let ancestorTarget;
 
 let moveY;
 
+let second = 10;
+
 class Login extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
       phone: '',
+      counting:false,
       validCode: '',
       phoneCountry: '86',
       pending: false,
@@ -286,10 +290,11 @@ class Login extends BaseComponent {
     let phone = this.state.phone;
     let phoneCountry = this.state.phoneCountry;
     this.setState({
+      counting:true,
       hasSendCode: true,
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
-      tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry,phone)}发送了一条验证短信`
+      tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry, phone)}发送了一条验证短信`
     });
     this.timer = BackgroundTimer.setInterval(()=> {
       this.setState({validCodeText: `剩余${second - 1}秒`});
@@ -297,6 +302,7 @@ class Login extends BaseComponent {
       if (second === 0) {
         BackgroundTimer.clearInterval(this.timer);
         this.setState({
+          counting:false,
           validCodeBtnAccessible: true,
           validCodeText: '获取验证码',
           tipsText: '使用手机号一键登录',
@@ -345,9 +351,9 @@ class Login extends BaseComponent {
   }
 
   _validCodeBtnHandler(phone) {
-    if (this.state.phoneCountry === '86') {
+    if (this.state.phoneCountry === '86' && !this.state.counting) {
       return 11 <= phone.phone.length;
-    } else if (this.state.phoneCountry === '64') {
+    } else if (this.state.phoneCountry === '64' && !this.state.counting) {
       if (phone.phone.indexOf('0') === 0) {
         this.setState({
           maxLength: 10
@@ -358,7 +364,7 @@ class Login extends BaseComponent {
         maxLength: 9
       });
       return 8 <= phone.phone.length
-    } else if (this.state.phoneCountry === '61') {
+    } else if (this.state.phoneCountry === '61' && !this.state.counting) {
       if (phone.phone.indexOf('0') === 0) {
         this.setState({
           maxLength: 10
@@ -369,6 +375,8 @@ class Login extends BaseComponent {
         maxLength: 9
       });
       return 9 <= phone.phone.length
+    } else {
+      return false;
     }
   }
 
