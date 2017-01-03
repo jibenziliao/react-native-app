@@ -63,9 +63,9 @@ const styles = StyleSheet.create({
   cardText: {
     flexWrap: 'nowrap'
   },
-  nameText:{
-    overflow:'hidden',
-    flex:1
+  nameText: {
+    overflow: 'hidden',
+    flex: 1
   },
   badgeContainer: {
     width: 60,
@@ -146,10 +146,10 @@ class Message extends BaseComponent {
 
   componentWillUnmount() {
     this.subscription.remove();
-    if(this.connectWebsocketTimer){
+    if (this.connectWebsocketTimer) {
       clearTimeout(this.connectWebsocketTimer);
     }
-    if(this.reConnectTimer){
+    if (this.reConnectTimer) {
       clearTimeout(this.reConnectTimer);
     }
   }
@@ -199,11 +199,13 @@ class Message extends BaseComponent {
 
   _getCookie() {
     //先重置cookie
+    tmpGlobal.cookie = null;
     cookie = null;
     CookieManager.get(URL_DEV, (err, res) => {
       console.log('Got cookies for url', res);
       //rkt为当前cookie的key
       cookie = res.rkt;
+      tmpGlobal.cookie = res.rkt;
       if (tmpGlobal.proxy === null) {
         this._initWebSocket();
       }
@@ -211,7 +213,7 @@ class Message extends BaseComponent {
   }
 
   _initWebSocket() {
-    let self=this;
+    let self = this;
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;
@@ -251,9 +253,9 @@ class Message extends BaseComponent {
       tmpGlobal._initWebSocket = this._initWebSocket;
     }).fail(() => {
       console.log('Failed');
-      this.connectWebsocketTimer=setTimeout(()=>{
+      this.connectWebsocketTimer = setTimeout(()=> {
         self._initWebSocket();
-      },15000);
+      }, 15000);
     });
 
     tmpGlobal.connection.connectionSlow(function () {
@@ -264,10 +266,10 @@ class Message extends BaseComponent {
     tmpGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
       console.log('开始重新连接');
-      this.reConnectTimer=setTimeout(()=>{
+      this.reConnectTimer = setTimeout(()=> {
         tmpGlobal._initWebSocket();
         //self._initWebSocket();
-      },15000);
+      }, 15000);
     });
 
     tmpGlobal.proxy.on('getNewMsg', (obj) => {
@@ -438,7 +440,7 @@ class Message extends BaseComponent {
           <View style={styles.cardRow}>
             <Text
               numberOfLines={1}
-              style={[styles.cardText,styles.nameText]}>
+              style={[styles.cardText, styles.nameText]}>
               {rowData.SenderNickname}
             </Text>
             <Text>

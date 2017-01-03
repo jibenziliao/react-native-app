@@ -55,10 +55,13 @@ class Settings extends BaseComponent {
   }
 
   _logOut() {
+    //websocket注销当前用户
+    tmpGlobal.proxy.invoke('logout', tmpGlobal.cookie);
     //注销后,重置signalr连接
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;
     tmpGlobal.currentUser = null;
+    tmpGlobal.cookie = null;
     Storage.removeItem('hasRegistered');
     Storage.removeItem('userInfo');
     Storage.removeItem('hasInit');
