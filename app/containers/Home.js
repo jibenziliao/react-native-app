@@ -167,7 +167,7 @@ class Home extends BaseComponent {
     super(props);
     navigator = this.props.navigator;
     this.state = {
-      isOpen:this.props.isOpen,
+      isOpen: this.props.isOpen,
       refreshing: false,
       loadingMore: false,
       pageSize: 10,
@@ -322,7 +322,7 @@ class Home extends BaseComponent {
     ).start();
   }
 
-  _keyboardDidHide(){
+  _keyboardDidHide() {
     this._resetScrollTo();
   }
 
@@ -333,14 +333,14 @@ class Home extends BaseComponent {
       rightIcon: {
         name: 'plus'
       },
-      leftIcon:{
-        name:'bars',
-        size:28
+      leftIcon: {
+        name: 'bars',
+        size: 26
       }
     };
   }
 
-  onLeftPressed(){
+  onLeftPressed() {
     this.props.menuChange(true);
   }
 
@@ -699,7 +699,7 @@ class Home extends BaseComponent {
   _handleInputHeight(event) {
     this.setState({
       comment: event.nativeEvent.text,
-      commentInputHeight: Math.min(event.nativeEvent.contentSize.height,80)
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, 80)
     })
   }
 

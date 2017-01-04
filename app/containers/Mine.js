@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     flexDirection: 'row',
-    alignItems:'center'
+    alignItems: 'center'
   },
   itemIcon: {
     marginRight: 10
@@ -95,6 +95,7 @@ class Mine extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: this.props.isOpen,
       pending: false,
       loadUserInfo: true,
       myLocation: tmpGlobal.currentLocation,
@@ -106,8 +107,15 @@ class Mine extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '我的',
-      hideLeftButton: true
+      leftIcon: {
+        name: 'bars',
+        size: 26
+      }
     };
+  }
+
+  onLeftPressed() {
+    this.props.menuChange(true);
   }
 
   componentDidMount() {

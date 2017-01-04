@@ -23,22 +23,22 @@ const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#E2E2E2'
   },
-  viewContainer:{
-    flex:1
+  viewContainer: {
+    flex: 1
   },
   cardRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingHorizontal: 10,
-    flex:1,
-    marginTop:20
+    flex: 1,
+    marginTop: 20
   },
-  bottomRow:{
-    marginBottom:20
+  bottomRow: {
+    marginBottom: 20
   },
   card: {
     backgroundColor: 'pink',
@@ -46,20 +46,22 @@ const styles = StyleSheet.create({
     height: width / 4,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius:4
+    borderRadius: 4
   },
-  cardText:{
-    fontSize:24,
-    color:'#fff'
+  cardText: {
+    fontSize: 24,
+    color: '#fff'
   }
 });
 
 let navigator;
 
 class Vicinity extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: this.props.isOpen,
       pending: false,
     };
     navigator = this.props.navigator;
@@ -80,28 +82,35 @@ class Vicinity extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '交友',
-      hideLeftButton: true
+      leftIcon: {
+        name: 'bars',
+        size: 26
+      }
     };
   }
 
-  _goMatchUsers(){
+  onLeftPressed() {
+    this.props.menuChange(true);
+  }
+
+  _goMatchUsers() {
     navigator.push({
-      component:MatchUsers,
-      name:'MatchUsers'
+      component: MatchUsers,
+      name: 'MatchUsers'
     });
   }
 
-  _goMap(){
+  _goMap() {
     navigator.push({
-      component:Map,
-      name:'Map'
+      component: Map,
+      name: 'Map'
     });
   }
 
-  _goShake(){
+  _goShake() {
     navigator.push({
-      component:Map,
-      name:'Map'
+      component: Map,
+      name: 'Map'
     })
   }
 
@@ -126,7 +135,7 @@ class Vicinity extends BaseComponent {
                 <Text style={styles.cardText}>{'附近'}</Text>
               </TouchableOpacity>
             </View>
-            <View style={[styles.cardRow,styles.bottomRow]}>
+            <View style={[styles.cardRow, styles.bottomRow]}>
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {

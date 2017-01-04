@@ -21,7 +21,6 @@ import TabBar from '../components/TabBar'
 import SideMenu from 'react-native-side-menu'
 import Menu from '../components/Menu'
 import tmpGlobal from '../utils/TmpVairables'
-import {URL_DEV, TIME_OUT} from '../constants/Constant'
 
 const {height, width} = Dimensions.get('window');
 
@@ -64,15 +63,17 @@ class MainContainer extends Component {
 
   render() {
     const menu = <Menu
-      avatarUri={URL_DEV + tmpGlobal.currentUser.PhotoUrl}
+      userInfo={tmpGlobal.currentUser}
       onItemSelected={(data)=> {
         console.log(data)
       }}
+      openMenuOffset={width * 2 / 3}
       navigator={this.props.navigator}/>;
     return (
       <View style={styles.container}>
         <SideMenu
           menu={menu}
+          openMenuOffset={width * 2 / 3}
           isOpen={this.state.isOpen}
           onChange={(isOpen)=> {
             this.setState({isOpen})
@@ -95,12 +96,24 @@ class MainContainer extends Component {
               style={styles.subView}
               navigator={this.props.navigator}/>
             <Vicinity
+              isOpen={this.state.isOpen}
+              menuChange={(isOpen)=> {
+                this.setState({isOpen: isOpen})
+              }}
               style={styles.subView}
               navigator={this.props.navigator}/>
             <Message
+              isOpen={this.state.isOpen}
+              menuChange={(isOpen)=> {
+                this.setState({isOpen: isOpen})
+              }}
               style={styles.subView}
               navigator={this.props.navigator}/>
             <Mine
+              isOpen={this.state.isOpen}
+              menuChange={(isOpen)=> {
+                this.setState({isOpen: isOpen})
+              }}
               style={styles.subView}
               navigator={this.props.navigator}/>
           </ScrollableTabView>

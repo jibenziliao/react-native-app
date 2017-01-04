@@ -27,6 +27,7 @@ import CookieManager from 'react-native-cookies'
 import tmpGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
 import UserInfo from '../pages/UserInfo'
+import {toastLong} from '../utils/ToastUtil'
 
 const styles = StyleSheet.create({
   container: {
@@ -101,6 +102,8 @@ let navigator;
 let connection;
 let proxy;
 let cookie;
+let connectionState = false;
+let connectCount = 0;
 
 const {height, width} = Dimensions.get('window');
 
@@ -109,6 +112,7 @@ class Message extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: this.props.isOpen,
       messageList: []
     };
     navigator = this.props.navigator;
@@ -117,8 +121,15 @@ class Message extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '消息',
-      hideLeftButton: true
+      leftIcon: {
+        name: 'bars',
+        size: 26
+      }
     };
+  }
+
+  onLeftPressed() {
+    this.props.menuChange(true);
   }
 
   componentDidMount() {
@@ -270,6 +281,7 @@ class Message extends BaseComponent {
 
   _initWebSocket() {
     let self = this;
+
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;
@@ -303,16 +315,18 @@ class Message extends BaseComponent {
 
     //{transport: ['webSockets', 'longPolling']}
 
-    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
+    tmpGlobal.connection.start({transport: ['webSockets']}).done(() => {
       console.log('连接成功');
+      connectionState = true;
       console.log(connection);
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
       tmpGlobal._initWebSocket = this._initWebSocket;
     }).fail(() => {
       console.log('Failed');
+      connectionState = false;
       this.connectWebsocketTimer = setTimeout(()=> {
-        self._initWebSocket();
+        //self._initWebSocket();
       }, 100);
     });
 
@@ -323,14 +337,23 @@ class Message extends BaseComponent {
     //断开需要重连
     tmpGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
-      console.log('webSockets连接断开后,手动停止,然后重新初始化');
-      tmpGlobal.connection.stop();
       console.log('开始重新连接');
       console.log(tmpGlobal.connection);
+      //在连接成功的情况下断开,connectionState为true,tmpGlobal._initWebSocket还没有被赋值,为null
       this.reConnectTimer = setTimeout(()=> {
-        tmpGlobal._initWebSocket();
-        //self._initWebSocket();
-      }, 100);
+        connectCount += 1;//断开重连,连接次数+1,超过5次后,提示用户网络不稳定,让用户手动重连
+        if (connectCount > 5) {
+          toastLong('聊天模块初始化失败');
+        } else {
+          if (connectionState) {
+            console.log('webSockets连接断开后,手动停止,然后重新初始化');
+            tmpGlobal.connection.stop();
+            tmpGlobal._initWebSocket();
+          } else {
+            this._initWebSocket();
+          }
+        }
+      }, 1000);
     });
 
     tmpGlobal.proxy.on('getNewMsg', (obj) => {

@@ -12,6 +12,7 @@ import {
   Image,
   Text,
 } from 'react-native'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
 
 const window = Dimensions.get('window');
 const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
@@ -21,23 +22,25 @@ const styles = StyleSheet.create({
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: 'gray',
-    padding: 20,
+    backgroundColor: '#E2E2E2',
+    padding:20,
+    paddingRight:40//menu的宽度加宽了20,避免切换时出现白色缝隙
   },
   avatarContainer: {
     marginBottom: 20,
     marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    flex: 1,
   },
   name: {
-    position: 'absolute',
-    left: 70,
-    top: 20,
+    marginHorizontal: 10,
+    flexWrap: 'wrap',
+    flex: 1
   },
   item: {
     fontSize: 14,
@@ -47,11 +50,14 @@ const styles = StyleSheet.create({
 });
 
 class Menu extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
-      uri:this.props.avatarUri
+    console.log(this.props);
+    this.state = {
+      uri: this.props.userInfo.PhotoUrl,
+      name: this.props.userInfo.Nickname
     };
+
   }
 
   static propTypes = {
@@ -60,12 +66,12 @@ class Menu extends Component {
 
   render() {
     return (
-      <ScrollView scrollsToTop={false} style={styles.menu}>
-        <View style={styles.avatarContainer}>
+      <ScrollView scrollsToTop={false} style={[styles.menu, {width: this.props.openMenuOffset + 20}]}>
+        <View style={[styles.avatarContainer]}>
           <Image
             style={styles.avatar}
-            source={{uri:this.state.uri}}/>
-          <Text style={styles.name}>Your name</Text>
+            source={{uri: URL_DEV + this.state.uri}}/>
+          <Text style={styles.name}>{this.state.name}</Text>
         </View>
 
         <Text
