@@ -212,83 +212,6 @@ class Message extends BaseComponent {
     })
   }
 
-  _initWebSocket() {
-    let self = this;
-    //注销重新登录,会重新初始化此页面,connect,proxy需要重置
-    tmpGlobal.connection = null;
-    tmpGlobal.proxy = null;
-
-    connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = true;
-    //console.log(connection);
-
-    //将proxy保存在全局变量中,以便其他地方使用
-    tmpGlobal.proxy = connection.createHubProxy('ChatCore');
-
-    tmpGlobal.connection = connection;
-
-    tmpGlobal.proxy.on('messageFromServer', (message) => {
-      console.log(message);
-
-      messagePromise.done(() => {
-        console.log('Invocation of NewContosoChatMessage succeeded');
-      }).fail(function (error) {
-        console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
-      });
-    });
-
-    tmpGlobal.proxy.on('sayHey', (message) => {
-      console.log(message);
-    });
-
-    tmpGlobal.proxy.on('log', (str)=> {
-      //console.log(str);
-    });
-
-    //{transport: ['webSockets', 'longPolling']}
-
-    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
-      console.log('连接成功');
-      tmpGlobal.proxy.invoke('login', cookie);
-      console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
-      tmpGlobal._initWebSocket = this._initWebSocket;
-    }).fail(() => {
-      console.log('Failed');
-      this.connectWebsocketTimer = setTimeout(()=> {
-        self._initWebSocket();
-      }, 100);
-    });
-
-    tmpGlobal.connection.connectionSlow(function () {
-      console.log('We are currently experiencing difficulties with the connection.')
-    });
-
-    //断开需要重连
-    tmpGlobal.connection.error(function (error) {
-      console.log('SignalR error: ' + error);
-      console.log('开始重新连接');
-      this.reConnectTimer = setTimeout(()=> {
-        tmpGlobal._initWebSocket();
-        //self._initWebSocket();
-      }, 100);
-    });
-
-    tmpGlobal.proxy.on('getNewMsg', (obj) => {
-      console.log('服务器返回的原始数据', obj);
-      let routes = navigator.getCurrentRoutes();
-      console.log('路由栈', routes);
-      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
-      console.log('Message页面成功标为已读');
-      //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
-      if (routes[routes.length - 1].name != 'MessageDetail') {
-        console.log('Message页面收到了新消息');
-        //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
-        //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
-        this._margeMessage(JSON.parse(JSON.stringify(obj.MsgPackage)));
-      }
-    });
-  }
-
   //合并后台推送过来的消息(存缓存时,需要将时间以字符串时间形式存储,不能直接存Date类型,JSON.stringify将Date会转换成字符串)
   _margeMessage(data) {
     console.log('需要合并的数据', data);
@@ -342,6 +265,87 @@ class Message extends BaseComponent {
       //深拷贝
       let params = JSON.parse(JSON.stringify(this.state.messageList));
       this._cacheMessageList(params);
+    });
+  }
+
+  _initWebSocket() {
+    let self = this;
+    //注销重新登录,会重新初始化此页面,connect,proxy需要重置
+    tmpGlobal.connection = null;
+    tmpGlobal.proxy = null;
+
+    connection = signalr.hubConnection(URL_WS_DEV);
+    connection.logging = true;
+    //console.log(connection);
+
+    //将proxy保存在全局变量中,以便其他地方使用
+    tmpGlobal.proxy = connection.createHubProxy('ChatCore');
+
+    tmpGlobal.connection = connection;
+
+    tmpGlobal.proxy.on('messageFromServer', (message) => {
+      console.log(message);
+
+      messagePromise.done(() => {
+        console.log('Invocation of NewContosoChatMessage succeeded');
+      }).fail(function (error) {
+        console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
+      });
+    });
+
+    tmpGlobal.proxy.on('sayHey', (message) => {
+      console.log(message);
+    });
+
+    tmpGlobal.proxy.on('log', (str)=> {
+      //console.log(str);
+    });
+
+    //{transport: ['webSockets', 'longPolling']}
+
+    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
+      console.log('连接成功');
+      console.log(connection);
+      tmpGlobal.proxy.invoke('login', cookie);
+      console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
+      tmpGlobal._initWebSocket = this._initWebSocket;
+    }).fail(() => {
+      console.log('Failed');
+      this.connectWebsocketTimer = setTimeout(()=> {
+        self._initWebSocket();
+      }, 100);
+    });
+
+    tmpGlobal.connection.connectionSlow(function () {
+      console.log('We are currently experiencing difficulties with the connection.')
+    });
+
+    //断开需要重连
+    tmpGlobal.connection.error(function (error) {
+      console.log('SignalR error: ' + error);
+      console.log('webSockets连接断开后,手动停止,然后重新初始化');
+      tmpGlobal.connection.stop();
+      console.log('开始重新连接');
+      console.log(tmpGlobal.connection);
+      this.reConnectTimer = setTimeout(()=> {
+        tmpGlobal._initWebSocket();
+        //self._initWebSocket();
+      }, 100);
+    });
+
+    tmpGlobal.proxy.on('getNewMsg', (obj) => {
+      console.log('服务器返回的原始数据', obj);
+      let routes = navigator.getCurrentRoutes();
+      console.log('路由栈', routes);
+      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+      console.log('Message页面成功标为已读');
+      //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
+      if (routes[routes.length - 1].name != 'MessageDetail') {
+        console.log('Message页面收到了新消息');
+        //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
+        //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
+        this._margeMessage(JSON.parse(JSON.stringify(obj.MsgPackage)));
+      }
     });
   }
 
