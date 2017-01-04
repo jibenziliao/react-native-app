@@ -219,7 +219,7 @@ class Message extends BaseComponent {
     tmpGlobal.proxy = null;
 
     connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = false;
+    connection.logging = true;
     //console.log(connection);
 
     //将proxy保存在全局变量中,以便其他地方使用
@@ -248,6 +248,7 @@ class Message extends BaseComponent {
     //{transport: ['webSockets', 'longPolling']}
 
     tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
+      console.log('连接成功');
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
       tmpGlobal._initWebSocket = this._initWebSocket;
@@ -255,7 +256,7 @@ class Message extends BaseComponent {
       console.log('Failed');
       this.connectWebsocketTimer = setTimeout(()=> {
         self._initWebSocket();
-      }, 15000);
+      }, 100);
     });
 
     tmpGlobal.connection.connectionSlow(function () {
@@ -269,7 +270,7 @@ class Message extends BaseComponent {
       this.reConnectTimer = setTimeout(()=> {
         tmpGlobal._initWebSocket();
         //self._initWebSocket();
-      }, 15000);
+      }, 100);
     });
 
     tmpGlobal.proxy.on('getNewMsg', (obj) => {
