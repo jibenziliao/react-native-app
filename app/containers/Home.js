@@ -167,6 +167,7 @@ class Home extends BaseComponent {
     super(props);
     navigator = this.props.navigator;
     this.state = {
+      isOpen:this.props.isOpen,
       refreshing: false,
       loadingMore: false,
       pageSize: 10,
@@ -328,12 +329,19 @@ class Home extends BaseComponent {
   getNavigationBarProps() {
     return {
       title: '广场',
-      hideLeftButton: true,
       hideRightButton: false,
       rightIcon: {
         name: 'plus'
       },
+      leftIcon:{
+        name:'bars',
+        size:28
+      }
     };
+  }
+
+  onLeftPressed(){
+    this.props.menuChange(true);
   }
 
   //获取用户是否存在未过期的动态

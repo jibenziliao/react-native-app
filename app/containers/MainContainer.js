@@ -18,6 +18,10 @@ import Vicinity from './Vicinity'
 import Message from './Message'
 import Mine from './Mine'
 import TabBar from '../components/TabBar'
+import SideMenu from 'react-native-side-menu'
+import Menu from '../components/Menu'
+import tmpGlobal from '../utils/TmpVairables'
+import {URL_DEV, TIME_OUT} from '../constants/Constant'
 
 const {height, width} = Dimensions.get('window');
 
@@ -30,13 +34,13 @@ const styles = StyleSheet.create({
   subView: {
     overflow: 'hidden'
   },
-  container:{
+  container: {
     ...Platform.select({
-      ios:{
-        height:height//iOS将状态栏视为视图一部分
+      ios: {
+        height: height//iOS将状态栏视为视图一部分
       },
-      android:{
-        height:height-StatusBar.currentHeight//StatusBar.currentHeight为安卓状态栏高度
+      android: {
+        height: height - StatusBar.currentHeight//StatusBar.currentHeight为安卓状态栏高度
       }
     })
   },
@@ -53,33 +57,54 @@ const TAB_BAR_RESOURCES = [
 class MainContainer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isOpen: false
+    };
   }
 
   render() {
+    const menu = <Menu
+      avatarUri={URL_DEV + tmpGlobal.currentUser.PhotoUrl}
+      onItemSelected={(data)=> {
+        console.log(data)
+      }}
+      navigator={this.props.navigator}/>;
     return (
       <View style={styles.container}>
-        <ScrollableTabView
-          tabBarPosition="bottom"
-          locked={true}
-          scrollWithoutAnimation={false}
-          prerenderingSiblingsNumber={4}
-          initialPage={0}
-          renderTabBar={() => {
-            return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
-          }}>
-          <Home
-            style={styles.subView}
-            navigator={this.props.navigator}/>
-          <Vicinity
-            style={styles.subView}
-            navigator={this.props.navigator}/>
-          <Message
-            style={styles.subView}
-            navigator={this.props.navigator}/>
-          <Mine
-            style={styles.subView}
-            navigator={this.props.navigator}/>
-        </ScrollableTabView>
+        <SideMenu
+          menu={menu}
+          isOpen={this.state.isOpen}
+          onChange={(isOpen)=> {
+            this.setState({isOpen})
+          }}
+          navigator={this.props.navigator}>
+          <ScrollableTabView
+            tabBarPosition="bottom"
+            locked={true}
+            scrollWithoutAnimation={false}
+            prerenderingSiblingsNumber={4}
+            initialPage={0}
+            renderTabBar={() => {
+              return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
+            }}>
+            <Home
+              isOpen={this.state.isOpen}
+              menuChange={(isOpen)=> {
+                this.setState({isOpen: isOpen})
+              }}
+              style={styles.subView}
+              navigator={this.props.navigator}/>
+            <Vicinity
+              style={styles.subView}
+              navigator={this.props.navigator}/>
+            <Message
+              style={styles.subView}
+              navigator={this.props.navigator}/>
+            <Mine
+              style={styles.subView}
+              navigator={this.props.navigator}/>
+          </ScrollableTabView>
+        </SideMenu>
       </View>
     );
   }

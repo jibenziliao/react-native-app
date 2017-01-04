@@ -275,7 +275,7 @@ class Message extends BaseComponent {
     tmpGlobal.proxy = null;
 
     connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = true;
+    connection.logging = false;
     //console.log(connection);
 
     //将proxy保存在全局变量中,以便其他地方使用
