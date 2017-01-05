@@ -214,3 +214,9 @@ export function getMatchUsers(data,resolve,reject) {
   }
 }
 
+export function getMatchUsersQuiet(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/profile/getmatchlist', data, dispatch, {type: ActionTypes.FETCH_BEGIN_QUIET,data}, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+  }
+}
+

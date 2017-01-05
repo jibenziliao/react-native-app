@@ -1,12 +1,32 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import React, {Component} from 'react'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  InteractionManager,
+  TouchableOpacity
+} from 'react-native'
 import BaseComponent from '../base/BaseComponent'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import SwipeCards from 'react-native-swipe-cards'
+import {connect} from 'react-redux'
+import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
+import * as HomeActions from '../actions/Home'
+import tmpGlobal from '../utils/TmpVairables'
 
-import SwipeCards from 'react-native-swipe-cards';
+const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  card: {
+  cardContainer: {
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    flex: 1,
+    paddingTop: 20
+  },
+  card: {
+    alignItems: 'flex-start',
     borderRadius: 5,
     overflow: 'hidden',
     borderColor: 'grey',
@@ -14,15 +34,41 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     elevation: 1,
   },
-  thumbnail: {
-    flex: 1,
-    width: 300,
-    height: 300,
+  userInfo: {
+    paddingHorizontal: 10,
   },
-  text: {
-    fontSize: 20,
-    paddingTop: 10,
-    paddingBottom: 10
+  thumbnail: {
+    width: width * 5 / 6,
+    height: width * 5 / 6,
+  },
+  nameText: {
+    fontSize: 14,
+    paddingVertical: 10
+  },
+  userInfoLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+  userInfoLabel: {
+    borderRadius: 4,
+    backgroundColor: 'pink',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+    marginBottom: 10,
+    marginRight: 10
+  },
+  locationLabel: {
+    backgroundColor: '#1496ea'
+  },
+  userInfoText: {
+    fontSize: 14,
+    color: '#fff',
+    marginLeft: 4
+  },
+  userLocation: {
+    marginLeft: 0
   },
   noMoreCards: {
     flex: 1,
@@ -31,12 +77,47 @@ const styles = StyleSheet.create({
   }
 });
 
+let lastCount;
+
 let Card = React.createClass({
+
+  _renderLocation(data) {
+    console.log(this.props);
+    if (data !== null) {
+      return (
+        <View style={[styles.userInfoLabel, styles.locationLabel]}>
+          <Text style={[styles.userInfoText, styles.userLocation]}>{data}</Text>
+        </View>
+      )
+    } else {
+      return null;
+    }
+  },
+
+  _renderGenderStyle(gender) {
+    return {
+      backgroundColor: gender ? '#1496ea' : 'pink',
+      borderColor: gender ? '#1496ea' : 'pink',
+    }
+  },
+
   render() {
     return (
       <View style={styles.card}>
-        <Image style={styles.thumbnail} source={{uri: this.props.image}}/>
-        <Text style={styles.text}>This is card {this.props.name}</Text>
+        <Image style={styles.thumbnail} source={{uri: URL_DEV + this.props.PrimaryPhotoFilename}}/>
+        <View style={styles.userInfo}>
+          <Text style={styles.nameText}>{this.props.Nickname}</Text>
+          <View style={styles.userInfoLabelContainer}>
+            <View style={[styles.userInfoLabel, this._renderGenderStyle(this.props.Gender)]}>
+              <Icon
+                name={this.props.Gender ? 'mars-stroke' : 'venus'}
+                color={'#fff'}
+                size={12}/>
+              <Text style={styles.userInfoText}>{this.props.Age}{'岁'}</Text>
+            </View>
+            {this._renderLocation(this.props.Location)}
+          </View>
+        </View>
       </View>
     )
   }
@@ -45,39 +126,27 @@ let Card = React.createClass({
 let NoMoreCards = React.createClass({
   render() {
     return (
-      <View style={styles.noMoreCards}>
-        <Text>No more cards</Text>
-      </View>
+      <TouchableOpacity
+        style={styles.noMoreCards}
+        onPress={()=> {
+          this.props.refresh()
+        }}>
+        <Text>没有更多卡片了,点击刷新</Text>
+      </TouchableOpacity>
     )
   }
 });
-
-const Cards = [
-  {name: '1', image: 'https://media.giphy.com/media/GfXFVHUzjlbOg/giphy.gif'},
-  {name: '2', image: 'https://media.giphy.com/media/irTuv1L1T34TC/giphy.gif'},
-  {name: '3', image: 'https://media.giphy.com/media/LkLL0HJerdXMI/giphy.gif'},
-  {name: '4', image: 'https://media.giphy.com/media/fFBmUMzFL5zRS/giphy.gif'},
-  {name: '5', image: 'https://media.giphy.com/media/oDLDbBgf0dkis/giphy.gif'},
-  {name: '6', image: 'https://media.giphy.com/media/7r4g8V2UkBUcw/giphy.gif'},
-  {name: '7', image: 'https://media.giphy.com/media/K6Q7ZCdLy8pCE/giphy.gif'},
-  {name: '8', image: 'https://media.giphy.com/media/hEwST9KM0UGti/giphy.gif'},
-  {name: '9', image: 'https://media.giphy.com/media/3oEduJbDtIuA2VrtS0/giphy.gif'},
-];
-
-const Cards2 = [
-  {name: '10', image: 'https://media.giphy.com/media/12b3E4U9aSndxC/giphy.gif'},
-  {name: '11', image: 'https://media4.giphy.com/media/6csVEPEmHWhWg/200.gif'},
-  {name: '12', image: 'https://media4.giphy.com/media/AA69fOAMCPa4o/200.gif'},
-  {name: '13', image: 'https://media.giphy.com/media/OVHFny0I7njuU/giphy.gif'},
-];
 
 class Tinder extends BaseComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      cards: Cards,
-      outOfCards: false
+      cards: [],
+      outOfCards: false,
+      pageIndex: 1,
+      pageSize: 5,
+      refresh: false
     };
     this.handleYup = this.handleYup.bind(this);
     this.handleNope = this.handleNope.bind(this);
@@ -90,6 +159,50 @@ class Tinder extends BaseComponent {
     };
   }
 
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(()=> {
+      this._getMatchUserList();
+    })
+  }
+
+  _getMatchUserList() {
+    const {dispatch}=this.props;
+    let data = {
+      lat: tmpGlobal.currentLocation.Lat,
+      lng: tmpGlobal.currentLocation.Lng,
+      pageIndex: this.state.pageIndex,
+      pageSize: this.state.pageSize
+    };
+    dispatch(HomeActions.getMatchUsers(data, (json)=> {
+      lastCount = json.Result.length;
+      this.setState({
+        cards: json.Result
+      });
+    }, (error)=> {
+    }));
+  }
+
+  _refresh() {
+    const {dispatch}=this.props;
+    this.setState({
+      pageIndex: 1
+    });
+    let data = {
+      lat: tmpGlobal.currentLocation.Lat,
+      lng: tmpGlobal.currentLocation.Lng,
+      pageIndex: 1,
+      pageSize: this.state.pageSize
+    };
+    dispatch(HomeActions.getMatchUsers(data, (json)=> {
+      lastCount = json.Result.length;
+      this.setState({
+        cards: json.Result,
+        refresh: true
+      });
+    }, (error)=> {
+    }));
+  }
+
   handleYup(card) {
     console.log("yup")
   }
@@ -99,41 +212,82 @@ class Tinder extends BaseComponent {
   }
 
   cardRemoved(index) {
+    //在请求发送之前重置是否刷新的状态(因为SwipCards.js中的componentWillReceiveProps方法会在此阶段触发,故不能在请求拿到数据后重置)
+    this.setState({refresh: false});
+    console.log(this.props);
     console.log(`The index is ${index}`);
-
     let CARD_REFRESH_LIMIT = 3;
-
     if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
       console.log(`There are only ${this.state.cards.length - index - 1} cards left.`);
+      if (lastCount === this.state.pageSize && this.state.cards.length >= this.state.pageSize) {
+        const {dispatch} = this.props;
+        this.state.pageIndex += 1;
+        const data = {
+          pageSize: this.state.pageSize,
+          pageIndex: this.state.pageIndex,
+          lat: tmpGlobal.currentLocation.Lat,
+          lng: tmpGlobal.currentLocation.Lng
+        };
+        dispatch(HomeActions.getMatchUsersQuiet(data, (json)=> {
+          lastCount = json.Result.length;
+          this.setState({
+            cards: this.state.cards.concat(json.Result)
+          });
+          console.log(`Adding ${json.Result.length} more cards`);
+        }, (error)=> {
 
-      if (!this.state.outOfCards) {
-        console.log(`Adding ${Cards2.length} more cards`)
-
-        this.setState({
-          cards: this.state.cards.concat(Cards2),
-          outOfCards: true
-        })
+        }));
       }
-
     }
+  }
 
+  renderYupView() {
+    return (
+      <View style={{alignItems: 'center', justifyContent: 'center'}}>
+        <Icon name={'home'} color={'pink'} size={20}/>
+        <Text>{'喜欢'}</Text>
+      </View>
+    )
+  }
+
+  renderNoView() {
+    return (
+      <View style={{alignItems: 'center', justifyContent: 'center'}}>
+        <Icon name={'home'} color={'pink'} size={20}/>
+        <Text>{'不喜欢'}</Text>
+      </View>
+    )
   }
 
   renderBody() {
-    return (
-      <SwipeCards
-        cards={this.state.cards}
-        loop={false}
-        renderCard={(cardData) => <Card {...cardData} />}
-        renderNoMoreCards={() => <NoMoreCards />}
-        showYup={true}
-        showNope={true}
-        handleYup={this.handleYup}
-        handleNope={this.handleNope}
-        cardRemoved={this.cardRemoved}
-      />
-    )
+    if (this.state.cards.length === 0) {
+      return null
+    } else {
+      return (
+        <SwipeCards
+          refresh={this.state.refresh}
+          cards={this.state.cards}
+          loop={false}
+          renderCard={(cardData) => <Card key={cardData.UserId} {...cardData} />}
+          renderNoMoreCards={() => <NoMoreCards refresh={()=> {
+            this._refresh()
+          }}/>}
+          containerStyle={styles.cardContainer}
+          showYup={true}
+          showNope={true}
+          yupView={this.renderYupView()}
+          noView={this.renderNoView()}
+          handleYup={this.handleYup}
+          handleNope={this.handleNope}
+          cardRemoved={this.cardRemoved}
+        />
+      )
+    }
   }
 }
 
-export default Tinder;
+export default connect((state)=> {
+  return {
+    ...state
+  }
+})(Tinder);

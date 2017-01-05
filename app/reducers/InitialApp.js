@@ -40,6 +40,21 @@ export default function initialApp(state = initialState, action) {
         res: action,
         pending: false
       };
+    case ActionTypes.FETCH_BEGIN_QUIET:
+      return {
+        ...state
+      };
+    case ActionTypes.FETCH_END_QUIET:
+      return {
+        ...state,
+        res: action
+      };
+    case ActionTypes.FETCH_FAILED_QUIET:
+      return {
+        ...state,
+        res: action,
+        pending: false
+      };
     case ActionTypes.GET_ITEM_BEGIN:
       return {
         ...state,
