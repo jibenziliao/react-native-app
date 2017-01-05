@@ -280,14 +280,17 @@ class Message extends BaseComponent {
   }
 
   _initWebSocket() {
+    console.log('开始初始化webSocket连接');
     let self = this;
 
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;
 
+    tmpGlobal._initWebSocket = null;
+
     connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = false;
+    connection.logging = true;
     //console.log(connection);
 
     //将proxy保存在全局变量中,以便其他地方使用
@@ -315,13 +318,13 @@ class Message extends BaseComponent {
 
     //{transport: ['webSockets', 'longPolling']}
 
-    tmpGlobal.connection.start({transport: ['webSockets']}).done(() => {
+    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
       console.log('连接成功');
       connectionState = true;
       console.log(connection);
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
-      tmpGlobal._initWebSocket = this._initWebSocket;
+      tmpGlobal._initWebSocket = self._initWebSocket;
     }).fail(() => {
       console.log('Failed');
       connectionState = false;
@@ -334,7 +337,7 @@ class Message extends BaseComponent {
       console.log('We are currently experiencing difficulties with the connection.')
     });
 
-    //断开需要重连
+    //连接出错需要重连(连接不成功或已成功又断开)
     tmpGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
       console.log('开始重新连接');
@@ -345,12 +348,14 @@ class Message extends BaseComponent {
         if (connectCount > 5) {
           toastLong('聊天模块初始化失败');
         } else {
+          //连接断开后,重置connection的token,确保每次重连都带不一样的token
+          tmpGlobal.connection.token = null;
+          tmpGlobal.connection.stop();
           if (connectionState) {
             console.log('webSockets连接断开后,手动停止,然后重新初始化');
-            tmpGlobal.connection.stop();
             tmpGlobal._initWebSocket();
           } else {
-            this._initWebSocket();
+            self._initWebSocket();
           }
         }
       }, 1000);

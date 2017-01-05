@@ -73,19 +73,32 @@ const styles = StyleSheet.create({
   },
   userInfoIcon: {
     marginRight: 4,
-    color: '#FFF'
+    color: '#FFF',
+    fontSize: 10
   },
   userInfoText: {
     fontSize: 14,
     color: '#FFF'
   },
+  userInfo: {
+    flex: 1
+  },
   itemRow: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    flex: 1
+  },
+  nameText: {
+    flexWrap: 'nowrap',
+    overflow: 'hidden',
+    flex: 1
   },
   userSignature: {
     marginTop: 10,
     flex: 1
+  },
+  signatureContent:{
+    flex:1
   }
 });
 
@@ -254,17 +267,21 @@ class MatchUsers extends BaseComponent {
             source={{uri: URL_DEV + rowData.PrimaryPhotoFilename}}/>
           <View style={styles.userInfo}>
             <View style={styles.itemRow}>
-              <Text>{rowData.Nickname}</Text>
+              <Text
+                numberOfLines={1}
+                style={styles.nameText}>{rowData.Nickname}</Text>
               <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.Gender)]}>
                 <Icon
                   name={rowData.Gender ? 'mars-stroke' : 'venus'}
-                  size={12}
+                  size={10}
                   style={styles.userInfoIcon}/>
                 <Text style={styles.userInfoIcon}>{rowData.Age}</Text>
               </View>
             </View>
             <View style={[styles.itemRow, styles.userSignature]}>
-              <Text>{rowData.PersonSignal ? rowData.PersonSignal : '这家伙很懒,什么也没留下'}</Text>
+              <Text
+                numberOfLines={2}
+                style={styles.signatureContent}>{rowData.PersonSignal ? rowData.PersonSignal : '这家伙很懒,什么也没留下'}</Text>
             </View>
           </View>
         </TouchableOpacity>
