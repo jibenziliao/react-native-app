@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: '#E2E2E2',
+    backgroundColor: '#03A9F4',
     padding:20,
     paddingRight:40//menu的宽度加宽了20,避免切换时出现白色缝隙
   },

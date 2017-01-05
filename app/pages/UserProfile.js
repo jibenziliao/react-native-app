@@ -34,6 +34,7 @@ import CheckBox from '../components/CheckBox'
 import Spinner from '../components/Spinner'
 import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
+import FriendsFilter from './FriendsFilter'
 
 const {width, height}=Dimensions.get('window');
 
@@ -91,7 +92,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     textAlignVertical: 'center',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    fontSize: 13.5
   },
   fullInput: {
     flex: 1
@@ -128,7 +130,9 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   emotionStatusIOSText: {
-    textAlignVertical: 'center'
+    textAlignVertical: 'center',
+    color: '#000',
+    fontSize: 13.5
   },
   modalCenter: {
     justifyContent: 'center',
@@ -317,7 +321,9 @@ class UserProfile extends BaseComponent {
       tmpGlobal.currentUser = json.Result;
       Storage.setItem('hasRegistered', true);
       if (bool) {
-        this.goPhotos();
+        //注册时,跳过拍照
+        //this.goPhotos();
+        this.goFriendFilter();
       } else {
         this.goHome();
       }
@@ -335,10 +341,14 @@ class UserProfile extends BaseComponent {
     });
   }
 
+  goFriendFilter(){
+    navigator.push({
+      component: FriendsFilter,
+      name: 'FriendsFilter'
+    });
+  }
+
   componentWillUnmount() {
-    if (this.showSinglePickerTimer) {
-      clearTimeout(this.showSinglePickerTimer);
-    }
     this.keyboardDidShowListener.remove();
   }
 

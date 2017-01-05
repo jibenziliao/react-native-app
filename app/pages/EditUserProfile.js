@@ -90,7 +90,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     textAlignVertical: 'center',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    fontSize: 13.5,
+    color: '#000'
   },
   inputLabel: {
     width: 100
@@ -114,7 +116,9 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   emotionStatusIOSText: {
-    textAlignVertical: 'center'
+    textAlignVertical: 'center',
+    color:'#000',
+    fontSize:13.5
   },
   pickerItem: {
     flex: 1,
