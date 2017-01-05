@@ -6,7 +6,8 @@ import {
   Image,
   Dimensions,
   InteractionManager,
-  TouchableOpacity
+  TouchableOpacity,
+  DeviceEventEmitter
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -15,6 +16,8 @@ import {connect} from 'react-redux'
 import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
 import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
+import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import * as Storage from '../utils/Storage'
 
 const {width, height}=Dimensions.get('window');
 
@@ -24,6 +27,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     paddingTop: 20
+  },
+  tipsArea: {
+    justifyContent: 'center',
+    paddingVertical: 10
+  },
+  tipsText: {
+    fontSize: 14,
+    flexWrap: 'wrap',
+    textAlign: 'center'
   },
   card: {
     alignItems: 'flex-start',
@@ -146,7 +158,8 @@ class Tinder extends BaseComponent {
       outOfCards: false,
       pageIndex: 1,
       pageSize: 5,
-      refresh: false
+      refresh: false,
+      greetCount: 10
     };
     this.handleYup = this.handleYup.bind(this);
     this.handleNope = this.handleNope.bind(this);
@@ -203,10 +216,71 @@ class Tinder extends BaseComponent {
     }));
   }
 
-  handleYup(card) {
-    console.log("yup")
+  _greet(card) {
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params = {
+      MsgContent: 'Hi,你好!',
+      MsgId: Math.round(Math.random() * 1000000),
+      SendTime: dateFormat(new Date()),
+      HasSend: true,
+      _id: Math.round(Math.random() * 1000000),
+      text: 'Hi,你好!',
+      createdAt: dateFormat(new Date()),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
+      },
+    };
+    console.log(params);
+    this._sendSaveRecord(params, card);
+    tmpGlobal.proxy.invoke('userSendMsgToUser', card.UserId, 'Hi,你好!');
   }
 
+  //发送时缓存(同时需要发布订阅,供Message页面监听)
+  _sendSaveRecord(data, card) {
+    //跟当前用户没有聊天记录
+    let allMsg = {
+      SenderAvatar: card.PrimaryPhotoFilename,
+      SenderId: card.UserId,
+      SenderNickname: card.Nickname,
+      MsgList: [data]
+    };
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+      if (res !== null && res.length > 0) {
+        let index = res.findIndex((item)=> {
+          return item.SenderId === card.UserId
+        });
+        if (index > -1) {
+          res[index].MsgList.push(data);
+        } else {
+          res.push(allMsg);
+        }
+        console.log('发送时更新消息缓存数据', res, data);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
+      } else {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(()=> {
+          DeviceEventEmitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
+        });
+      }
+    });
+  }
+
+  //打招呼
+  handleYup(card) {
+    console.log("yup");
+    this.setState({
+      greetCount: this.state.greetCount - 1 > 0 ? this.state.greetCount - 1 : 0
+    }, ()=> {
+      if (this.state.greetCount > 0) {
+        this._greet(card);
+      }
+    })
+  }
+
+  //跳过
   handleNope(card) {
     console.log("nope")
   }
@@ -259,28 +333,44 @@ class Tinder extends BaseComponent {
     )
   }
 
+  renderTips() {
+    if (this.state.greetCount > 0) {
+      return (
+        <Text style={styles.tipsText}>{`你今日还有${this.state.greetCount}次打招呼的机会`}</Text>
+      );
+    } else {
+      return (<Text style={styles.tipsText}>{'今日打招呼机会已用完,右滑跳过此张卡片'}</Text>);
+    }
+  }
+
   renderBody() {
     if (this.state.cards.length === 0) {
       return null
     } else {
       return (
-        <SwipeCards
-          refresh={this.state.refresh}
-          cards={this.state.cards}
-          loop={false}
-          renderCard={(cardData) => <Card key={cardData.UserId} {...cardData} />}
-          renderNoMoreCards={() => <NoMoreCards refresh={()=> {
-            this._refresh()
-          }}/>}
-          containerStyle={styles.cardContainer}
-          showYup={true}
-          showNope={true}
-          yupView={this.renderYupView()}
-          noView={this.renderNoView()}
-          handleYup={this.handleYup}
-          handleNope={this.handleNope}
-          cardRemoved={this.cardRemoved}
-        />
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <View style={styles.tipsArea}>
+            <Text style={styles.tipsText}>{'左滑跳过,右滑与TA打招呼'}</Text>
+            {this.renderTips()}
+          </View>
+          <SwipeCards
+            refresh={this.state.refresh}
+            cards={this.state.cards}
+            loop={false}
+            renderCard={(cardData) => <Card {...cardData} />}
+            renderNoMoreCards={() => <NoMoreCards refresh={()=> {
+              this._refresh()
+            }}/>}
+            containerStyle={styles.cardContainer}
+            showYup={true}
+            showNope={true}
+            yupView={this.renderYupView()}
+            noView={this.renderNoView()}
+            handleYup={this.handleYup}
+            handleNope={this.handleNope}
+            cardRemoved={this.cardRemoved}
+          />
+        </View>
       )
     }
   }
