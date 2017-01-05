@@ -18,6 +18,7 @@ import Spinner from '../components/Spinner'
 import {connect} from 'react-redux'
 import Map from '../pages/Map'
 import MatchUsers from '../pages/MatchUsers'
+import Tinder from '../pages/Tinder'
 
 const {height, width} = Dimensions.get('window');
 
@@ -109,8 +110,8 @@ class Vicinity extends BaseComponent {
 
   _goShake() {
     navigator.push({
-      component: Map,
-      name: 'Map'
+      component: Tinder,
+      name: 'Tinder'
     })
   }
 
@@ -139,7 +140,7 @@ class Vicinity extends BaseComponent {
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
-                  this._goMap()
+                  this._goShake()
                 }}>
                 <Text style={styles.cardText}>{'摇一摇'}</Text>
               </TouchableOpacity>
