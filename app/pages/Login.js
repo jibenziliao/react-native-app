@@ -102,7 +102,7 @@ class Login extends BaseComponent {
     super(props);
     this.state = {
       phone: '',
-      counting:false,
+      counting: false,
       validCode: '',
       phoneCountry: '86',
       pending: false,
@@ -239,6 +239,9 @@ class Login extends BaseComponent {
 
   getValidCode(phoneCountry, phone) {
     Keyboard.dismiss();
+    this.setState({
+      validCode:''
+    });
     this.showToastTimer = setTimeout(()=> {
       if (this._validPhoneNumber(phoneCountry, phone)) {
         const data = {
@@ -290,7 +293,7 @@ class Login extends BaseComponent {
     let phone = this.state.phone;
     let phoneCountry = this.state.phoneCountry;
     this.setState({
-      counting:true,
+      counting: true,
       hasSendCode: true,
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
@@ -302,7 +305,7 @@ class Login extends BaseComponent {
       if (second === 0) {
         BackgroundTimer.clearInterval(this.timer);
         this.setState({
-          counting:false,
+          counting: false,
           validCodeBtnAccessible: true,
           validCodeText: '获取验证码',
           tipsText: '使用手机号一键登录',

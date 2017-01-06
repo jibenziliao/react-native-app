@@ -11,7 +11,8 @@ import {
   DeviceEventEmitter,
   TouchableOpacity,
   InteractionManager,
-  Keyboard
+  Keyboard,
+  Alert
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -293,6 +294,18 @@ class MessageDetail extends BaseComponent {
     console.log('点击了加载历史记录');
   }
 
+  //发送消息之前,检查webSocket是否成功初始化
+  _checkBeforeSend(message){
+    if(tmpGlobal.webSocketInitState){
+      this.onSend(message);
+    }else{
+      Alert.alert('提示', '您的网路异常,点击重试', [
+        {text: '确定', onPress: () => {tmpGlobal._initWebSocket()}},
+        {text: '取消', onPress: () => {}}
+      ]);
+    }
+  }
+
   //发消息的同时,将消息缓存在本地
   onSend(messages) {
     Keyboard.dismiss();
@@ -531,7 +544,7 @@ class MessageDetail extends BaseComponent {
       <View style={{flex: 1}}>
         <GiftedChat
           messages={this.state.messages}
-          onSend={this.onSend}
+          onSend={(message)=>{this._checkBeforeSend(message)}}
           loadEarlier={this.state.loadEarlier}
           onLoadEarlier={this.onLoadEarlier}
           isLoadingEarlier={this.state.isLoadingEarlier}

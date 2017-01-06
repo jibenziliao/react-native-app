@@ -219,6 +219,7 @@ class EditPhotos extends BaseComponent {
         this._initPhotos();
       }, (obj,arr,json)=> {
         //console.log(obj);
+        DeviceEventEmitter.emit('photoChanged','相册有改动');
         this._deletePhotoOffline(obj);
       }));
     }else{

@@ -11,7 +11,8 @@ let tmpGlobal = {
   connection:null,
   _initWebSocket:null,
   isConnected:true, //全局保存网络状态
-  cookie:null
+  cookie:null,
+  webSocketInitState:null//webSocket连接初始化状态true成功,false失败
 };
 
 export default tmpGlobal

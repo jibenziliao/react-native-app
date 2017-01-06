@@ -86,6 +86,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  likeBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: width/4
   }
 });
 
@@ -274,7 +279,7 @@ class Tinder extends BaseComponent {
     this.setState({
       greetCount: this.state.greetCount - 1 > 0 ? this.state.greetCount - 1 : 0
     }, ()=> {
-      if (this.state.greetCount > 0) {
+      if (this.state.greetCount > 0 && tmpGlobal.webSocketInitState) {
         this._greet(card);
       }
     })
@@ -317,8 +322,8 @@ class Tinder extends BaseComponent {
 
   renderYupView() {
     return (
-      <View style={{alignItems: 'center', justifyContent: 'center'}}>
-        <Icon name={'home'} color={'pink'} size={20}/>
+      <View style={styles.likeBtn}>
+        <Icon name={'gratipay'} color={'red'} size={80}/>
         <Text>{'喜欢'}</Text>
       </View>
     )
@@ -326,8 +331,8 @@ class Tinder extends BaseComponent {
 
   renderNoView() {
     return (
-      <View style={{alignItems: 'center', justifyContent: 'center'}}>
-        <Icon name={'home'} color={'pink'} size={20}/>
+      <View style={styles.likeBtn}>
+        <Icon name={'times-circle'} color={'#000'} size={80}/>
         <Text>{'不喜欢'}</Text>
       </View>
     )

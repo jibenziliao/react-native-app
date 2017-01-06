@@ -116,6 +116,7 @@ class Message extends BaseComponent {
       messageList: []
     };
     navigator = this.props.navigator;
+    tmpGlobal._initWebSocket = this._initWebSocket.bind(this);
   }
 
   getNavigationBarProps() {
@@ -296,20 +297,6 @@ class Message extends BaseComponent {
 
     tmpGlobal.connection = connection;
 
-    tmpGlobal.proxy.on('messageFromServer', (message) => {
-      console.log(message);
-
-      messagePromise.done(() => {
-        console.log('Invocation of NewContosoChatMessage succeeded');
-      }).fail(function (error) {
-        console.log('Invocation of NewContosoChatMessage failed. Error: ' + error);
-      });
-    });
-
-    tmpGlobal.proxy.on('sayHey', (message) => {
-      console.log(message);
-    });
-
     tmpGlobal.proxy.on('log', (str)=> {
       //console.log(str);
     });
@@ -322,7 +309,8 @@ class Message extends BaseComponent {
       console.log(connection);
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
-      tmpGlobal._initWebSocket = this._initWebSocket;
+      //tmpGlobal._initWebSocket = this._initWebSocket;
+      tmpGlobal.webSocketInitState = true;
       console.log(tmpGlobal);
     }).fail(() => {
       console.log('Failed');
@@ -346,6 +334,7 @@ class Message extends BaseComponent {
         connectCount += 1;//断开重连,连接次数+1,超过5次后,提示用户网络不稳定,让用户手动重连
         if (connectCount > 5) {
           toastLong('聊天模块初始化失败');
+          tmpGlobal.webSocketInitState = false;
         } else {
           //连接断开后,重置connection的token,确保每次重连都带不一样的token
           tmpGlobal.connection.token = null;
@@ -358,7 +347,7 @@ class Message extends BaseComponent {
             self._initWebSocket();
           }
         }
-      }, 1000);
+      }, 100);
     });
 
     tmpGlobal.proxy.on('getNewMsg', (obj) => {
