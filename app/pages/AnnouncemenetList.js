@@ -283,7 +283,7 @@ class AnnouncementList extends BaseComponent {
       ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
-    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
+    dispatch(HomeActions.getAllAnnouncementQuiet(data, (json)=> {
       lastCount = json.Result.length;
       this.setState({
         postList: json.Result,

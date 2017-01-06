@@ -442,8 +442,8 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
-      dispatch(HomeActions.getCommentList(params, (result)=> {
+    dispatch(HomeActions.getAnnouncementDetailQuiet(data, (json)=> {
+      dispatch(HomeActions.getCommentListQuiet(params, (result)=> {
         this.setState({
           comment: '',
           commentUser: '',

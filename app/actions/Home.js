@@ -19,6 +19,15 @@ export function getPostList(data, resolve, reject) {
   }
 }
 
+export function getPostListQuiet(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+  }
+}
+
 export function like(data, resolve, reject) {
   return (dispatch)=> {
     putFetch(`/post/like/${data.postId}/${data.isLike}`, data, dispatch, {
@@ -52,12 +61,30 @@ export function getAnnouncementDetail(data, resolve, reject) {
   }
 }
 
+export function getAnnouncementDetailQuiet(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch('/post/viewpost/', `${data.postId}/${data.Lat}/${data.Lng}`, dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+  }
+}
+
 export function getCommentList(data, resolve, reject) {
   return (dispatch)=> {
     getFetch('/post/getpostcommentlist/', `${data.postId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
       data
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getCommentListQuiet(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch('/post/getpostcommentlist/', `${data.postId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
 
@@ -193,6 +220,12 @@ export function postAnnouncement(data, navigator) {
 export function getAllAnnouncement(data,resolve,reject) {
   return (dispatch)=> {
     getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getAllAnnouncementQuiet(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN_QUIET,data}, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
 

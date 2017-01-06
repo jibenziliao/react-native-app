@@ -103,7 +103,6 @@ let connection;
 let proxy;
 let cookie;
 let connectionState = false;
-let connectCount = 0;
 
 const {height, width} = Dimensions.get('window');
 
@@ -331,10 +330,11 @@ class Message extends BaseComponent {
       console.log(tmpGlobal.connection);
       //在连接成功的情况下断开,connectionState为true,tmpGlobal._initWebSocket还没有被赋值,为null
       this.reConnectTimer = setTimeout(()=> {
-        connectCount += 1;//断开重连,连接次数+1,超过5次后,提示用户网络不稳定,让用户手动重连
-        if (connectCount > 5) {
+        tmpGlobal.webSocketConnectCount += 1;//断开重连,连接次数+1,超过5次后,提示用户网络不稳定,让用户手动重连
+        if (tmpGlobal.webSocketConnectCount > 5) {
           toastLong('聊天模块初始化失败');
           tmpGlobal.webSocketInitState = false;
+          tmpGlobal.webSocketConnectCount = 0;
         } else {
           //连接断开后,重置connection的token,确保每次重连都带不一样的token
           tmpGlobal.connection.token = null;

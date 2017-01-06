@@ -259,7 +259,7 @@ class Home extends BaseComponent {
       pageIndex: 1,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.getPostList(data, (json)=> {
+    dispatch(HomeActions.getPostListQuiet(data, (json)=> {
       lastCount = json.Result.length;
       this.setState({
         postList: json.Result,
