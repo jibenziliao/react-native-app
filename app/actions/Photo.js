@@ -90,7 +90,8 @@ export function uploadPhoto(arr,resolveFn,rejectFn) {
           //dispatch(uploadEnd(arr,json));
           if ('OK' !== json.Code) {
             toastShort(json.Message);
-            //dispatch(uploadFailed(arr,json));
+            dispatch({type:ActionTypes.UPLOAD_PHOTO_FAILED,obj,arr,json});
+            rejectFn(obj,arr,json);
             return false;
           } else {
             uploadReq += 1;
@@ -102,7 +103,7 @@ export function uploadPhoto(arr,resolveFn,rejectFn) {
           }
         })
         .catch((error)=> {
-          //dispatch(uploadFailed(arr,error));
+          dispatch({type:ActionTypes.UPLOAD_PHOTO_FAILED,obj,arr,error});
           toastShort('网络发生错误,请重试');
           rejectFn(error)
         });
