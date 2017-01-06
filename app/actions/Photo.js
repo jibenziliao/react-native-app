@@ -105,7 +105,7 @@ export function uploadPhoto(arr,resolveFn,rejectFn) {
         .catch((error)=> {
           dispatch({type:ActionTypes.UPLOAD_PHOTO_FAILED,obj,arr,error});
           toastShort('网络发生错误,请重试');
-          rejectFn(error)
+          rejectFn(obj,arr,error)
         });
     }
   }

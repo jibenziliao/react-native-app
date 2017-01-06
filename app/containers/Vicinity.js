@@ -124,16 +124,16 @@ class Vicinity extends BaseComponent {
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
-                  this._goMatchUsers()
+                  this._goMap()
                 }}>
-                <Text style={styles.cardText}>{'匹配'}</Text>
+                <Text style={styles.cardText}>{'寻TA'}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
-                  this._goMap()
+                  this._goMatchUsers()
                 }}>
-                <Text style={styles.cardText}>{'附近'}</Text>
+                <Text style={styles.cardText}>{'匹配'}</Text>
               </TouchableOpacity>
             </View>
             <View style={[styles.cardRow, styles.bottomRow]}>
@@ -142,7 +142,7 @@ class Vicinity extends BaseComponent {
                 onPress={()=> {
                   this._goShake()
                 }}>
-                <Text style={styles.cardText}>{'摇一摇'}</Text>
+                <Text style={styles.cardText}>{'眼缘'}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.card}
