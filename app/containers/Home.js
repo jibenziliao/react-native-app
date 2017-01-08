@@ -38,6 +38,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
+import SubTabView from '../components/SubTabView'
 
 const {height, width} = Dimensions.get('window');
 
@@ -203,6 +204,7 @@ class Home extends BaseComponent {
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
       lastCount = json.Result.length;
+      console.log(json.Result);
       this.setState({
         postList: json.Result
       });
@@ -221,7 +223,6 @@ class Home extends BaseComponent {
     if (lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
       return false;
     }
-
     InteractionManager.runAfterInteractions(() => {
       console.log("触发加载更多 toEnd() --> ");
       this._loadMoreData();
@@ -261,6 +262,7 @@ class Home extends BaseComponent {
     };
     dispatch(HomeActions.getPostListQuiet(data, (json)=> {
       lastCount = json.Result.length;
+      console.log(json.Result);
       this.setState({
         postList: json.Result,
         refreshing: false
@@ -349,13 +351,13 @@ class Home extends BaseComponent {
     this._closeCommentInput();
     const {dispatch}=this.props;
     dispatch(HomeActions.newPost('', (json)=> {
-      this._publicAnnouncement(json);
+      this._publishAnnouncement(json);
     }, (error)=> {
     }));
   }
 
   //跳转发布公告(查看公告)页面
-  _publicAnnouncement(json) {
+  _publishAnnouncement(json) {
     if (json.Result.DoIHaveANotExpiredPost) {
       let data = {
         Id: json.Result.PostInfo.Id,
@@ -766,9 +768,20 @@ class Home extends BaseComponent {
       <View
         ref={'root'}
         style={[styles.container]}>
-        <View style={styles.content}>
-          {this.renderListView(ds, this.state.postList)}
-        </View>
+        <SubTabView
+          renderPostImage={this.renderPostImage.bind(this)}
+          _goUserInfo={this._goUserInfo.bind(this)}
+          _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
+          data={this.state.postList}
+          refreshing={this.state.refreshing}
+          pageSize={this.state.pageSize}
+          _renderFooter={this._renderFooter.bind(this)}
+          _toEnd={this._toEnd.bind(this)}
+          _closeCommentInput={this._closeCommentInput.bind(this)}
+          _onRefresh={this._onRefresh.bind(this)}/>
+        {/*<View style={styles.content}>*/}
+          {/*{this.renderListView(ds, this.state.postList)}*/}
+        {/*</View>*/}
         {this._renderCommentInputBar()}
       </View>
     )
