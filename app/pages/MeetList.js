@@ -194,6 +194,14 @@ class MeetList extends Component {
     this.props.renderPostImage(arr);
   }
 
+  _showCommentInput(id){
+    this.props._showCommentInput(id);
+  }
+
+  _doLike(id,isLike){
+    this.props._doLike(id,isLike);
+  }
+
   renderRowData(rowData) {
     return (
       <View key={rowData.PosterInfo.UserId}

@@ -282,7 +282,7 @@ class Map extends BaseComponent{
           followsUserLocation={false}
           showsMyLocationButton={true}
           toolbarEnabled={false}
-          loadingEnabled={true}
+          loadingEnabled={false}
           showsScale={true}
           pitchEnabled={true}
         >

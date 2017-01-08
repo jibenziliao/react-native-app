@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 //tabBar的icon图标和文字标题
 const TAB_BAR_RESOURCES = [
   {name: 'ios-home-outline', size: 28, title: '广场'},
-  {name: 'ios-compass-outline', size: 28, title: '交友'},
+  {name: 'ios-people-outline', size: 28, title: '交友'},
   {name: 'ios-chatbubbles-outline', size: 28, title: '消息'},
   {name: 'ios-contact-outline', size: 28, title: '我的'}
 ];

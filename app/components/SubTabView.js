@@ -4,12 +4,18 @@
  * @description
  */
 import React, {Component} from 'react'
-import {View, StyleSheet} from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Dimensions
+} from 'react-native'
 import {
   TabViewAnimated,
-  TabBarTop
+  TabBar
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
+
+const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -20,13 +26,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  indicator: {
+    height: 2,
+    width: width / 2,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    bottom: 0,
+  },
+  tabBar: {
+    backgroundColor: '#5067FF'
+  },
 });
 
 export default class SubTabView extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
+    this.state = {
       index: 0,
       routes: [
         {key: '1', title: '聚会'},
@@ -34,11 +50,9 @@ export default class SubTabView extends Component {
       ],
       ...this.props
     };
-
-    console.log(this.props);
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       ...this.state,
       ...nextProps
@@ -50,7 +64,11 @@ export default class SubTabView extends Component {
   };
 
   _renderHeader = (props) => {
-    return <TabBarTop {...props} />;
+    return <TabBar
+      scrollEnabled={true}
+      tabWidth={width / 2}
+      tabStyle={styles.tabBar}
+      {...props} />;
   };
 
   _renderScene = ({route}) => {

@@ -777,6 +777,8 @@ class Home extends BaseComponent {
           pageSize={this.state.pageSize}
           _renderFooter={this._renderFooter.bind(this)}
           _toEnd={this._toEnd.bind(this)}
+          _doLike={this._doLike.bind(this)}
+          _showCommentInput={this._showCommentInput.bind(this)}
           _closeCommentInput={this._closeCommentInput.bind(this)}
           _onRefresh={this._onRefresh.bind(this)}/>
         {/*<View style={styles.content}>*/}
