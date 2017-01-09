@@ -21,8 +21,6 @@ import {
   Animated,
   TouchableHighlight
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
-import {connect} from 'react-redux'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -30,17 +28,7 @@ const {height, width} = Dimensions.get('window');
 
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#E2E2E2'
-    },
     listView: {
-      flex: 1
-    },
-    contentTitle: {
-      margin: 10
-    },
-    content: {
       flex: 1
     },
     card: {
@@ -124,25 +112,6 @@ const styles = StyleSheet.create({
       marginTop: 10,
       marginRight: 20
     },
-    moreImgLabel: {
-      position: 'absolute',
-      top: 4,
-      right: 4,
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-      justifyContent: 'flex-end',
-      paddingHorizontal: 2
-    },
-    moreImgIcon: {},
-    moreImgText: {
-      fontSize: 10,
-      marginLeft: 4
-    },
-    singleImgContainer: {
-      marginBottom: 10,
-      marginRight: 10
-    }
   });
 
 class MeetList extends Component {
@@ -151,7 +120,6 @@ class MeetList extends Component {
     this.state={
       refreshing:this.props.refreshing
     };
-    console.log(this.props);
   }
 
   //处理距离

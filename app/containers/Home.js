@@ -784,9 +784,6 @@ class Home extends BaseComponent {
           _showCommentInput={this._showCommentInput.bind(this)}
           _closeCommentInput={this._closeCommentInput.bind(this)}
           _onRefresh={this._onRefresh.bind(this)}/>
-        {/*<View style={styles.content}>*/}
-        {/*{this.renderListView(ds, this.state.postList)}*/}
-        {/*</View>*/}
         {this._renderCommentInputBar()}
       </View>
     )
