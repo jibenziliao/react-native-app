@@ -200,7 +200,8 @@ class Home extends BaseComponent {
     let data = {
       pageSize: this.state.pageSize,
       pageIndex: this.state.pageIndex,
-      ...tmpGlobal.currentLocation
+      ...tmpGlobal.currentLocation,
+      postType: this.state.tabIndex + 1
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
       lastCount = json.Result.length;

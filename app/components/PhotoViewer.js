@@ -92,7 +92,7 @@ class PhotoViewer extends Component {
     return result;
   }
 
-  _setAvatar(item){
+  _setAvatar(item) {
     if (!this.state.uploaded) {
       Alert.alert('提示', '您有照片未上传,点击确定上传照片!', [
         {
@@ -107,17 +107,18 @@ class PhotoViewer extends Component {
       ]);
     } else {
       this.props.setPrimaryPhoto(item);
-      this.setState({
-
-      });
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.imageArr[nextProps.imageArr.length - 1].OnLine) {
+    if (nextProps.imageArr.length > 0 && nextProps.imageArr[nextProps.imageArr.length - 1].OnLine) {
       this.setState({
         uploaded: true,
-        imageArr:nextProps.imageArr
+        imageArr: nextProps.imageArr
+      });
+    } else if (nextProps.imageArr.length === 0) {
+      this.setState({
+        imageArr: []
       });
     }
   }
@@ -267,7 +268,7 @@ class PhotoViewer extends Component {
           <Icon name={'picture-o'} size={30}/>
           <Text>{'添加照片'}</Text>
         </TouchableOpacity>
-        {this.state.imageArr.map((item, index)=> {
+        {this.state.imageArr.length > 0 && this.state.imageArr.map((item, index)=> {
           return (
             <View
               key={index}

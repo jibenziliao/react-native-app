@@ -12,7 +12,7 @@ import tmpGlobal from '../utils/TmpVairables'
 
 export function getPostList(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {
+    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}?postType=${data.postType}`, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
       data
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
@@ -21,7 +21,7 @@ export function getPostList(data, resolve, reject) {
 
 export function getPostListQuiet(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}`, dispatch, {
+    getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}?postType=${data.postType}`, dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
       data
     }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);

@@ -68,9 +68,9 @@ class EditPhotos extends BaseComponent {
       ...this.props.route.params,
       loading: true,
       uploaded: true,
-      changed:false
+      changed: false
     };
-    navigator=this.props.navigator;
+    navigator = this.props.navigator;
     this.onBackAndroid = this.onBackAndroid.bind(this);
   }
 
@@ -83,7 +83,7 @@ class EditPhotos extends BaseComponent {
     }
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
@@ -114,19 +114,16 @@ class EditPhotos extends BaseComponent {
   _initPhotos() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getUserPhotos({UserId: this.props.route.params.UserId}, (json)=> {
+      console.log(json);
+
       this._initDict((DictMap, result)=> {
-        console.log({
-          DictMap: DictMap,
-          ...result,
-          userPhotos: json.Result
-        });
+        console.log(result);
         this.setState({
           DictMap: DictMap,
-          ...result,
-          userPhotos: json.Result,
+          userPhotos: result,
           loading: false
         });
-      });
+      }, json.Result);
     }, (error)=> {
     }));
   }
@@ -180,7 +177,7 @@ class EditPhotos extends BaseComponent {
     this.state.userPhotos.push(data);
     this.setState({
       uploaded: false,
-      changed:true,
+      changed: true,
       ...this.state.userPhotos
     })
   }
@@ -188,7 +185,7 @@ class EditPhotos extends BaseComponent {
   _deletePhotoOnline(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.deletePhoto(data, (json)=> {
-      DeviceEventEmitter.emit('photoChanged','相册有改动');
+      DeviceEventEmitter.emit('photoChanged', '相册有改动');
       this._initPhotos();
     }, (error)=> {
     }));
@@ -212,17 +209,17 @@ class EditPhotos extends BaseComponent {
         tmpArr.push(this.state.userPhotos[i]);
       }
     }
-    if(tmpArr.length>0){
+    if (tmpArr.length > 0) {
       dispatch(PhotoActions.uploadPhoto(tmpArr, ()=> {
-        DeviceEventEmitter.emit('photoChanged','相册有改动');
-        this.setState({changed:false});
+        DeviceEventEmitter.emit('photoChanged', '相册有改动');
+        this.setState({changed: false});
         this._initPhotos();
-      }, (obj,arr,json)=> {
+      }, (obj, arr, json)=> {
         //console.log(obj);
-        DeviceEventEmitter.emit('photoChanged','相册有改动');
+        DeviceEventEmitter.emit('photoChanged', '相册有改动');
         this._deletePhotoOffline(obj);
       }));
-    }else{
+    } else {
       //不做任何操作
     }
   }
@@ -230,7 +227,7 @@ class EditPhotos extends BaseComponent {
   _setPrimaryPhoto(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.setPrimaryPhoto(data, (json)=> {
-      DeviceEventEmitter.emit('photoChanged','相册有改动');
+      DeviceEventEmitter.emit('photoChanged', '相册有改动');
       this._initPhotos();
     }, (error)=> {
     }));
@@ -266,7 +263,7 @@ class EditPhotos extends BaseComponent {
   _changePermission(data) {
     const {dispatch}=this.props;
     dispatch(PhotoActions.setPhotoPermission(data, (json)=> {
-      DeviceEventEmitter.emit('photoChanged','相册有改动');
+      DeviceEventEmitter.emit('photoChanged', '相册有改动');
       this._initPhotos()
     }, (error)=> {
     }));
