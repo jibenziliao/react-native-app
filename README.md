@@ -12,11 +12,16 @@ npm install
 react-native link
 ```
 
+### 说明
+
+1. react-native版本是0.38.0,不要轻易升级react-native版本。0.39.0、0.39.1、0.39.2在iOS平台跟cocoapods不太兼容,编译各种报错。本人对原生不是很熟悉,所以退而求其次,使用react-native@0.38.0
+
+
 ### Android
 
 #### 注意事项
-* 如下图所示,如果你的Google Play Service版本比较新,你需要更改第三方插件(react-native-maps)
-中的一些参数
+1. 如下图所示,如果你的SDK Tools中的Google Play Service版本比较新,你需要更改第三方插件( [react-native-maps](https://github.com/airbnb/react-native-maps) )中的一些参数:
+
 ![Alt text](./img/Google_Play_Services.png)
 
 在node_modules/react-native-maps/Android目录下,修改build.gradle文件中的dependences为如下内容:
@@ -36,7 +41,12 @@ dependencies {
 ```bash
 react-native run-android
 ```
+
 ### iOS
+
+#### 注意事项
+
+1. iOS真机调试无法开启dev菜单,可能跟Libraries有关,在模拟器上可以使用开发者菜单进行调试。(对原生不太熟悉,暂时没有解决)
 
 ```bash
 react-native run-ios
