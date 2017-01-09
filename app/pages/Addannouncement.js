@@ -357,7 +357,7 @@ class Addannouncement extends BaseComponent {
 
   //渲染聚会人数/费用等信息
   renderOptions() {
-    if (this.state.postType === 2) {
+    if (this.state.postType === 1) {
       return (
         <View>
           <View style={styles.days}>
