@@ -168,7 +168,7 @@ class Home extends BaseComponent {
     super(props);
     navigator = this.props.navigator;
     this.state = {
-      isOpen: this.props.isOpen,
+      tabIndex: 0,
       refreshing: false,
       loadingMore: false,
       pageSize: 10,
@@ -769,6 +769,9 @@ class Home extends BaseComponent {
         ref={'root'}
         style={[styles.container]}>
         <SubTabView
+          tabIndex={(index)=> {
+            this.setState({tabIndex: index})
+          }}
           renderPostImage={this.renderPostImage.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}
           _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
@@ -782,7 +785,7 @@ class Home extends BaseComponent {
           _closeCommentInput={this._closeCommentInput.bind(this)}
           _onRefresh={this._onRefresh.bind(this)}/>
         {/*<View style={styles.content}>*/}
-          {/*{this.renderListView(ds, this.state.postList)}*/}
+        {/*{this.renderListView(ds, this.state.postList)}*/}
         {/*</View>*/}
         {this._renderCommentInputBar()}
       </View>

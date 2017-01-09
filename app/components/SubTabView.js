@@ -61,6 +61,7 @@ export default class SubTabView extends Component {
 
   _handleChangeTab = (index) => {
     this.setState({index});
+    this.props.tabIndex(index);
   };
 
   _renderHeader = (props) => {
