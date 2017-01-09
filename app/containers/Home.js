@@ -428,7 +428,7 @@ class Home extends BaseComponent {
         navigator.push({
           component: Addannouncement,
           name: 'Addannouncement',
-          params:{
+          params: {
             title: int === 1 ? '发布新聚会' : '发布新约会',
             postType: int
           }
@@ -456,7 +456,7 @@ class Home extends BaseComponent {
     Alert.alert('提示', '可发布的未过期的动态数量已达上限', [
       {
         text: `查看历史${int === 1 ? '聚会' : '约会'}`, onPress: () => {
-          this._goAnnouncementList();
+        this._goAnnouncementList();
       }
       },
       {
@@ -502,12 +502,26 @@ class Home extends BaseComponent {
     let index = this.state.postList.findIndex((item)=> {
       return item.Id === id;
     });
-    if (isLike === null) {
-      this.state.postList[index].LikeCount += 1;
-      this.state.postList[index].AmILikeIt = true;
+
+    let appointmentIndex = this.state.appointmentList.findIndex((item)=> {
+      return item.Id === id;
+    });
+    if (this.state.tabIndex === 0) {
+      if (isLike === null) {
+        this.state.postList[index].LikeCount += 1;
+        this.state.postList[index].AmILikeIt = true;
+      } else {
+        this.state.postList[index].LikeCount -= 1;
+        this.state.postList[index].AmILikeIt = null;
+      }
     } else {
-      this.state.postList[index].LikeCount -= 1;
-      this.state.postList[index].AmILikeIt = null;
+      if (isLike === null) {
+        this.state.appointmentList[appointmentIndex].LikeCount += 1;
+        this.state.appointmentList[appointmentIndex].AmILikeIt = true;
+      } else {
+        this.state.appointmentList[appointmentIndex].LikeCount -= 1;
+        this.state.appointmentList[appointmentIndex].AmILikeIt = null;
+      }
     }
 
     const data = {
@@ -515,11 +529,20 @@ class Home extends BaseComponent {
       isLike: true
     };
     dispatch(HomeActions.like(data, (json)=> {
-      this.setState({
-        postList: [
-          ...this.state.postList
-        ]
-      });
+      if (this.state.tabIndex === 0) {
+        this.setState({
+          postList: [
+            ...this.state.postList
+          ]
+        });
+      } else {
+        this.setState({
+          appointmentList: [
+            ...this.state.appointmentList
+          ]
+        });
+      }
+
     }, (error)=> {
     }));
   }

@@ -284,7 +284,11 @@ class AnnouncementDetail extends BaseComponent {
     } else if (index === 1) {
       navigator.push({
         component: Addannouncement,
-        name: 'Addannouncement'
+        name: 'Addannouncement',
+        params: {
+          title: this.state.PostType === 1 ? '发布新聚会' : '发布新约会',
+          postType: this.state.PostType
+        }
       })
     }
   }

@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     height: 40
   },
   picker: {
-    width: 100,
+    width: 160,
     height: 40
   },
   tips: {
@@ -122,6 +122,20 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
+const dict = {
+  days: [
+    {Key: 1, Value: '1天'},
+    {Key: 2, Value: '2天'},
+    {Key: 3, Value: '3天'}],
+  numberOfPeople: [
+    {Key: 'TwoOrThree', Value: '2-3人'},
+    {Key: 'FourOrFive', Value: '4-5人'},
+    {Key: 'MoreThanFive', Value: '5人以上'}],
+  cost: [
+    {Key: 'MyTreat', Value: '我请客'},
+    {Key: 'AA', Value: 'AA'},
+    {Key: 'GentlemenPayLadyFree', Value: '男AA女免费'}]
+};
 
 class Addannouncement extends BaseComponent {
 
@@ -131,6 +145,8 @@ class Addannouncement extends BaseComponent {
       PostContent: '',
       imageArr: [],
       days: '1',
+      PartyPeopleNumber: 'TwoOrThree',
+      PartyPayType: 'MyTreat',
       ...this.props.route.params
     };
 
@@ -252,11 +268,11 @@ class Addannouncement extends BaseComponent {
     });
   }
 
-  _renderPicker() {
+  _renderPicker(arr, str, callBack) {
     if (Platform.OS == 'ios') {
       return (
         <View style={{width: 80, height: 40, marginRight: 20, borderRadius: 4}}>
-          {this._renderPickerIOS()}
+          {this._renderPickerIOS(arr, str, callBack)}
         </View>
       )
     } else {
@@ -265,25 +281,38 @@ class Addannouncement extends BaseComponent {
           style={styles.pickerView}>
           <Picker
             style={styles.picker}
-            selectedValue={this.state.days}
-            onValueChange={
-              (days) => {
-                this.setState({days});
-              }}>
-            <Picker.Item label="1天" value="1"/>
-            <Picker.Item label="2天" value="2"/>
-            <Picker.Item label="3天" value="3"/>
+            selectedValue={str}
+            onValueChange={(str)=> {
+              callBack(str)
+            }}>
+            {this.renderPickerItem(arr)}
           </Picker>
         </View>
       )
     }
   }
 
-  _renderPickerIOS() {
+  renderPickerItem(arr) {
+    return arr.map((item, index)=> {
+      return <Picker.Item
+        key={index}
+        label={item.Value}
+        value={item.Key}/>
+    })
+  }
+
+  renderPickerIOSLabel(arr, str) {
+    let index = arr.findIndex((item)=> {
+      return item.Key === str;
+    });
+    return arr[index].Value;
+  }
+
+  _renderPickerIOS(arr, str, callBack) {
     return (
       <Menu
-        onSelect={(days) => {
-          this.setState({days});
+        onSelect={(str)=> {
+          callBack(str)
         }}>
         <MenuTrigger>
           <View style={{
@@ -293,32 +322,51 @@ class Addannouncement extends BaseComponent {
             alignItems: 'center',
             paddingHorizontal: 10
           }}>
-            <Text>{this.state.days}{'天'}</Text>
+            <Text>{this.renderPickerIOSLabel(arr, str)}</Text>
             <Icon name="angle-down" size={16} style={{marginRight: 10}}/>
           </View>
         </MenuTrigger>
         <MenuOptions
           optionsContainerStyle={{width: 80}}>
-          <MenuOption value={'1'} text='1天'/>
-          <MenuOption value={'2'} text="2天"/>
-          <MenuOption value={'3'} text="3天"/>
+          {this.renderMenuOption(arr)}
         </MenuOptions>
       </Menu>
     )
   }
 
+  renderMenuOption(arr) {
+    return arr.map((item, index)=> {
+      return <MenuOption
+        key={index}
+        value={item.Key}
+        text={item.Value}/>
+    })
+  }
+
+  _daysHandle(days) {
+    this.setState({days: days});
+  }
+
+  _costHandle(PartyPayType) {
+    this.setState({PartyPayType: PartyPayType});
+  }
+
+  _numberHandle(number) {
+    this.setState({PartyPeopleNumber: number});
+  }
+
   //渲染聚会人数/费用等信息
   renderOptions() {
-    if (this.state.postType === 1) {
+    if (this.state.postType === 2) {
       return (
         <View>
           <View style={styles.days}>
             <Text style={styles.selectLabel}>{'聚会人数:'}</Text>
-            {this._renderPicker()}
+            {this._renderPicker(dict.numberOfPeople, this.state.PartyPeopleNumber, this._numberHandle.bind(this))}
           </View>
           <View style={styles.days}>
             <Text style={styles.selectLabel}>{'费用:'}</Text>
-            {this._renderPicker()}
+            {this._renderPicker(dict.cost, this.state.PartyPayType, this._costHandle.bind(this))}
           </View>
         </View>
       )
@@ -363,7 +411,7 @@ class Addannouncement extends BaseComponent {
           {this.renderOptions()}
           <View style={styles.days}>
             <Text style={styles.selectLabel}>{'在广场上持续:'}</Text>
-            {this._renderPicker()}
+            {this._renderPicker(dict.days, this.state.days, this._daysHandle.bind(this))}
           </View>
           <View style={styles.tips}>
             <Text>{'注:持续时间过期后,将不在广场上显示'}</Text>

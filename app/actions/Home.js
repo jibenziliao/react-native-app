@@ -142,7 +142,10 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
   let params = {
     PostContent: data.PostContent,
     ...tmpGlobal.currentLocation,
-    PicList: imgArr
+    PicList: imgArr,
+    PartyPayType:data.PartyPayType,
+    PartyPeopleNumber:data.PartyPeopleNumber,
+    PostType:data.postType
   };
   dispatch({type: ActionTypes.FETCH_BEGIN, params});
   fetch(URL_DEV + '/post/newpost/' + data.days, fetchOptions(params))
