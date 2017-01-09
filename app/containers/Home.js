@@ -39,6 +39,7 @@ import {toastShort} from '../utils/ToastUtil'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
 import SubTabView from '../components/SubTabView'
+import ActionSheet from 'react-native-actionsheet'
 
 const {height, width} = Dimensions.get('window');
 
@@ -160,7 +161,11 @@ const styles = StyleSheet.create({
 
 let navigator;
 let commentId;
-let lastCount;
+let lastCount, lastAppoinmentCount;
+
+const buttons = ['取消', '发聚会', '发约会'];
+const CANCEL_INDEX = 0;
+const DESTRUCTIVE_INDEX = 1;
 
 class Home extends BaseComponent {
 
@@ -170,18 +175,30 @@ class Home extends BaseComponent {
     this.state = {
       tabIndex: 0,
       refreshing: false,
+      appointmentRefreshing: false,
       loadingMore: false,
+      appointmentLoadingMore: false,
       pageSize: 10,
       pageIndex: 1,
-      postList: [],
+      appointmentPageSize: 10,
+      appointmentPageIndex: 1,
+      postList: [],//聚会列表
+      appointmentList: [],//约会列表
       comment: '',
+      appointmentComment: '',
       viewMarginBottom: new Animated.Value(0),
+      appointmentViewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
       avatarLoading: true,
+      appointmentAvatarLoading: true,
       imgLoading: true,
+      appointmentImgLoading: true,
       showIndex: 0,
+      appointmentShowIndex: 0,
       imgList: [],
-      commentInputHeight: 0
+      appointmentImgList: [],
+      commentInputHeight: 0,
+      appointmentCommentInputHeight: 0,
     };
 
     this._handleInputHeight = this._handleInputHeight.bind(this);
@@ -201,14 +218,29 @@ class Home extends BaseComponent {
       pageSize: this.state.pageSize,
       pageIndex: this.state.pageIndex,
       ...tmpGlobal.currentLocation,
-      postType: this.state.tabIndex + 1
+      postType: 1
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
       lastCount = json.Result.length;
-      console.log(json.Result);
       this.setState({
         postList: json.Result
       });
+
+      let params = {
+        pageSize: this.state.appointmentPageSize,
+        pageIndex: this.state.appointmentPageIndex,
+        ...tmpGlobal.currentLocation,
+        postType: 2
+      };
+      //获取约会列表
+      dispatch(HomeActions.getPostList(params, (json2)=> {
+        lastAppoinmentCount = json2.Result.length;
+        this.setState({
+          appointmentList: json2.Result
+        });
+      }, (error2)=> {
+
+      }));
     }, (error)=> {
 
     }));
@@ -250,21 +282,48 @@ class Home extends BaseComponent {
 
   _onRefresh() {
     const {dispatch}=this.props;
-    this.setState({refreshing: true, pageIndex: 1});
+    if (this.state.tabIndex === 0) {
+      this.setState({
+        refreshing: true,
+        pageIndex: 1
+      });
+    } else {
+      this.setState({
+        appointmentRefreshing: true,
+        appointmentPageIndex: 1
+      });
+    }
+
     const data = {
-      pageSize: this.state.pageSize,
+      pageSize: this.state.tabIndex === 0 ? this.state.pageSize : this.state.appointmentPageSize,
       pageIndex: 1,
-      ...tmpGlobal.currentLocation
+      ...tmpGlobal.currentLocation,
+      postType: this.state.tabIndex + 1
     };
     dispatch(HomeActions.getPostListQuiet(data, (json)=> {
-      lastCount = json.Result.length;
-      console.log(json.Result);
-      this.setState({
-        postList: json.Result,
-        refreshing: false
-      })
+      if (this.state.tabIndex === 0) {
+        lastCount = json.Result.length;
+        this.setState({
+          postList: json.Result,
+          refreshing: false
+        });
+      } else {
+        lastCount = json.Result.length;
+        this.setState({
+          appointmentList: json.Result,
+          appointmentRefreshing: false
+        });
+      }
     }, (error)=> {
-      this.setState({refreshing: false});
+      if (this.state.tabIndex === 0) {
+        this.setState({
+          refreshing: false
+        });
+      } else {
+        this.setState({
+          appointmentRefreshing: false
+        });
+      }
     }));
   }
 
@@ -345,32 +404,37 @@ class Home extends BaseComponent {
   //获取用户是否存在未过期的动态
   onRightPressed() {
     this._closeCommentInput();
-    const {dispatch}=this.props;
-    dispatch(HomeActions.newPost('', (json)=> {
-      this._publishAnnouncement(json);
-    }, (error)=> {
-    }));
+    this.ActionSheet.show();
+    //const {dispatch}=this.props;
+    //dispatch(HomeActions.newPost('', (json)=> {
+    //  this._publishAnnouncement(json);
+    //}, (error)=> {
+    //}));
   }
 
-  //跳转发布公告(查看公告)页面
-  _publishAnnouncement(json) {
-    if (json.Result.DoIHaveANotExpiredPost) {
-      let data = {
-        Id: json.Result.PostInfo.Id,
-        CreaterId: json.Result.PostInfo.CreaterId,
-      };
-      this._goAnnouncementDetail(data);
-    } else {
-      navigator.push({
-        component: Addannouncement,
-        name: 'Addannouncement',
-        params: {
-          myLocation: tmpGlobal.currentLocation,
-          myUserId: tmpGlobal.currentUser.UserId,
-          Nickname: tmpGlobal.currentUser.Nickname
-        }
-      })
+  //点击actionSheet
+  _actionSheetPress(index) {
+    if (index === 2) {
+      this._canPost(2);
+    } else if (index === 1) {
+      this._canPost(1);
     }
+  }
+
+  //检查是否有未过期的聚会/约会
+  _canPost(int) {
+    const {dispatch}=this.props;
+    let data = {
+      postType: int
+    };
+    dispatch(HomeActions.newPost(data, (json)=> {
+      if(json.Result.CanPost){
+        console.log('能发公告',int);
+      }else{
+        console.log('不能发公告',int);
+      }
+    }, (error)=> {
+    }));
   }
 
   //点击头像和名字,跳转个人信息详情页
@@ -644,7 +708,9 @@ class Home extends BaseComponent {
           _goUserInfo={this._goUserInfo.bind(this)}
           _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
           data={this.state.postList}
+          appointmentData={this.state.appointmentList}
           refreshing={this.state.refreshing}
+          appointmentRefreshing={this.state.appointmentRefreshing}
           pageSize={this.state.pageSize}
           _renderFooter={this._renderFooter.bind(this)}
           _toEnd={this._toEnd.bind(this)}
@@ -652,6 +718,14 @@ class Home extends BaseComponent {
           _showCommentInput={this._showCommentInput.bind(this)}
           _closeCommentInput={this._closeCommentInput.bind(this)}
           _onRefresh={this._onRefresh.bind(this)}/>
+        <ActionSheet
+          ref={(o) => this.ActionSheet = o}
+          title="请选择你的操作"
+          options={buttons}
+          cancelButtonIndex={CANCEL_INDEX}
+          destructiveButtonIndex={DESTRUCTIVE_INDEX}
+          onPress={this._actionSheetPress.bind(this)}
+        />
         {this._renderCommentInputBar()}
       </View>
     )

@@ -14,6 +14,7 @@ import {
   TabBar
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
+import AppointmentList from '../pages/AppointmentList'
 
 const {height, width} = Dimensions.get('window');
 
@@ -77,7 +78,7 @@ export default class SubTabView extends Component {
       case '1':
         return <MeetList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
       case '2':
-        return <View style={[styles.page, {backgroundColor: '#673ab7'}]}/>;
+        return <AppointmentList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
       default:
         return null;
     }
