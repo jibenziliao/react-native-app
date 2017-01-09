@@ -213,11 +213,6 @@ class Home extends BaseComponent {
     }));
   }
 
-  //处理距离
-  _distance(data) {
-    return (parseFloat(data) / 1000).toFixed(2);
-  }
-
   _toEnd() {
     //如果最后一次请求的数据数量少于每页需要渲染的数量,表明没有更多数据了(在没有更多数据的情况下,暂时不能继续上拉加载更多数据。在实际场景中,这里是可以一直上拉加载更多数据的,便于有即时新数据拉取)
     if (lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
@@ -451,13 +446,6 @@ class Home extends BaseComponent {
     });
   }
 
-  _renderGenderStyle(gender) {
-    return {
-      backgroundColor: gender ? '#1496ea' : 'pink',
-      borderColor: gender ? '#1496ea' : 'pink',
-    }
-  }
-
   //前往公告详情(先判断是否是本人发布的动态,然后获取公告详情和评论列表)
   _goAnnouncementDetail(rowData) {
     this._closeCommentInput();
@@ -522,92 +510,6 @@ class Home extends BaseComponent {
     }
   }
 
-  renderRowData(rowData) {
-    return (
-      <View key={rowData.PosterInfo.UserId}
-            style={styles.card}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={()=> {
-            this._goUserInfo(rowData.PosterInfo)
-          }}>
-          <View style={styles.cardRow}>
-            <Image
-              onLoadEnd={()=> {
-                this.setState({avatarLoading: false})
-              }}
-              source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-              style={styles.avatarImg}>
-              {this.state.avatarLoading ?
-                <Image
-                  source={require('./img/imgLoading.gif')}
-                  style={styles.avatarImg}/> : null}
-            </Image>
-            <View style={styles.userInfo}>
-              <View style={styles.nameTextContainer}>
-                <Text
-                  numberOfLines={1}
-                  style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
-                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
-              </View>
-              <View style={styles.userInfoLabelContainer}>
-                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                  <Icon
-                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={10}
-                    style={styles.userInfoIcon}/>
-                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.moodView}
-          onPress={()=> {
-            this._goAnnouncementDetail(rowData)
-          }}>
-          <Text
-            style={styles.moodText}
-            numberOfLines={2}>
-            {rowData.PostContent}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.postImage}
-          onPress={()=> {
-            this._openImgModal(rowData.PicList)
-          }}>
-          {this.renderPostImage(rowData.PicList)}
-        </TouchableOpacity>
-        <View style={styles.cardRow}>
-          <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
-          <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
-          <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
-          <Text>{rowData.ViewCount}{'阅读'}</Text>
-        </View>
-        <View style={styles.cardRow}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.cardBtn}
-            onPress={()=> {
-              this._doLike(rowData.Id, rowData.AmILikeIt)
-            }}>
-            <Icon name={rowData.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.cardBtn}
-            onPress={()=> {
-              this._showCommentInput(rowData.Id)
-            }}>
-            <Icon name="comments-o" size={20}/>
-          </TouchableOpacity>
-        </View>
-      </View>
-    )
-  }
-
   _openImgModal(arr) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
@@ -622,40 +524,6 @@ class Home extends BaseComponent {
 
   _closeImgModal() {
     this.refs.modalFullScreen.close();
-  }
-
-  renderListView(ds, postList) {
-    if (postList) {
-      return (
-        <ListView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
-          onScroll={()=> {
-            this._closeCommentInput()
-          }}
-          style={styles.listView}
-          dataSource={ds.cloneWithRows(postList)}
-          renderRow={
-            this.renderRowData.bind(this)
-          }
-          onEndReached={this._toEnd.bind(this)}
-          renderFooter={
-            this._renderFooter.bind(this)
-          }
-          keyboardDismissMode={'interactive'}
-          keyboardShouldPersistTaps={true}
-          enableEmptySections={true}
-          onEndReachedThreshold={10}
-          initialListSize={3}
-          pageSize={this.state.pageSize}/>
-      )
-    } else {
-      return null
-    }
   }
 
   //发送评论
@@ -763,7 +631,6 @@ class Home extends BaseComponent {
   }
 
   renderBody() {
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return (
       <View
         ref={'root'}
