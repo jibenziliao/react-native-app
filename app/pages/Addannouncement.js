@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     textAlign: 'left',
     textAlignVertical: 'top',
-    paddingHorizontal:10,
-    paddingVertical:5
+    paddingHorizontal: 10,
+    paddingVertical: 5
   },
   scrollViewHorizontal: {
     flex: 1,
@@ -88,6 +88,9 @@ const styles = StyleSheet.create({
     width: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  selectLabel: {
+    width: width / 3
   },
   days: {
     backgroundColor: '#fff',
@@ -127,14 +130,16 @@ class Addannouncement extends BaseComponent {
     this.state = {
       PostContent: '',
       imageArr: [],
-      days: '1'
+      days: '1',
+      ...this.props.route.params
     };
-    navigator=this.props.navigator;
+
+    navigator = this.props.navigator;
   }
 
   getNavigationBarProps() {
     return {
-      title: '发布新公告',
+      title: this.state.title,
       hideRightButton: false,
       rightTitle: '完成'
     };
@@ -144,7 +149,7 @@ class Addannouncement extends BaseComponent {
   onRightPressed() {
     Keyboard.dismiss();
     const {dispatch, navigator}=this.props;
-    this.state.PostContent=this.state.PostContent.trim();
+    this.state.PostContent = this.state.PostContent.trim();
     dispatch(HomeActions.postAnnouncement(this.state, navigator));
   }
 
@@ -302,6 +307,26 @@ class Addannouncement extends BaseComponent {
     )
   }
 
+  //渲染聚会人数/费用等信息
+  renderOptions() {
+    if (this.state.postType === 1) {
+      return (
+        <View>
+          <View style={styles.days}>
+            <Text style={styles.selectLabel}>{'聚会人数:'}</Text>
+            {this._renderPicker()}
+          </View>
+          <View style={styles.days}>
+            <Text style={styles.selectLabel}>{'费用:'}</Text>
+            {this._renderPicker()}
+          </View>
+        </View>
+      )
+    } else {
+      return null;
+    }
+  }
+
   renderBody() {
     return (
       <MenuContext style={styles.container}>
@@ -316,7 +341,7 @@ class Addannouncement extends BaseComponent {
             value={this.state.PostContent}
             underlineColorAndroid={'transparent'}
             onChangeText={(PostContent)=> {
-              this.setState({PostContent:PostContent})
+              this.setState({PostContent: PostContent})
             }}
           />
           <View style={{flexDirection: 'row'}}>
@@ -335,8 +360,9 @@ class Addannouncement extends BaseComponent {
               {this._renderImg(this.state.imageArr)}
             </ScrollView>
           </View>
+          {this.renderOptions()}
           <View style={styles.days}>
-            <Text>{'在广场上持续:'}</Text>
+            <Text style={styles.selectLabel}>{'在广场上持续:'}</Text>
             {this._renderPicker()}
           </View>
           <View style={styles.tips}>

@@ -20,7 +20,8 @@ import {
   Platform,
   Keyboard,
   Animated,
-  TouchableHighlight
+  TouchableHighlight,
+  Alert
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
@@ -40,6 +41,7 @@ import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
 import SubTabView from '../components/SubTabView'
 import ActionSheet from 'react-native-actionsheet'
+import AnnouncementList from '../pages/AnnouncemenetList'
 
 const {height, width} = Dimensions.get('window');
 
@@ -165,7 +167,7 @@ let lastCount, lastAppoinmentCount;
 
 const buttons = ['取消', '发聚会', '发约会'];
 const CANCEL_INDEX = 0;
-const DESTRUCTIVE_INDEX = 1;
+const DESTRUCTIVE_INDEX = 0;
 
 class Home extends BaseComponent {
 
@@ -401,15 +403,9 @@ class Home extends BaseComponent {
     this.props.menuChange(true);
   }
 
-  //获取用户是否存在未过期的动态
   onRightPressed() {
     this._closeCommentInput();
     this.ActionSheet.show();
-    //const {dispatch}=this.props;
-    //dispatch(HomeActions.newPost('', (json)=> {
-    //  this._publishAnnouncement(json);
-    //}, (error)=> {
-    //}));
   }
 
   //点击actionSheet
@@ -423,18 +419,51 @@ class Home extends BaseComponent {
 
   //检查是否有未过期的聚会/约会
   _canPost(int) {
-    const {dispatch}=this.props;
+    const {dispatch, navigator}=this.props;
     let data = {
       postType: int
     };
     dispatch(HomeActions.newPost(data, (json)=> {
-      if(json.Result.CanPost){
-        console.log('能发公告',int);
-      }else{
-        console.log('不能发公告',int);
+      if (json.Result.CanPost) {
+        navigator.push({
+          component: Addannouncement,
+          name: 'Addannouncement',
+          params:{
+            title: int === 1 ? '发布新聚会' : '发布新约会',
+            postType: int
+          }
+        });
+      } else {
+        this._newPostAlert(int);
       }
     }, (error)=> {
     }));
+  }
+
+  //前往我的历史公告列表(包含聚会和约会)
+  _goAnnouncementList() {
+    navigator.push({
+      component: AnnouncementList,
+      name: 'AnnouncementList',
+      params: {
+        targetUserId: tmpGlobal.currentUser.UserId,
+        Nickname: tmpGlobal.currentUser.Nickname
+      }
+    });
+  }
+
+  _newPostAlert(int) {
+    Alert.alert('提示', '可发布的未过期的动态数量已达上限', [
+      {
+        text: `查看历史${int === 1 ? '聚会' : '约会'}`, onPress: () => {
+          this._goAnnouncementList();
+      }
+      },
+      {
+        text: '关闭', onPress: () => {
+      }
+      }
+    ]);
   }
 
   //点击头像和名字,跳转个人信息详情页

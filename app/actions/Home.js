@@ -15,7 +15,7 @@ export function getPostList(data, resolve, reject) {
     getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}?postType=${data.postType}`, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
       data
-    }, {type: ActionTypes.FETCH_END,data}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    }, {type: ActionTypes.FETCH_END, data}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
@@ -24,7 +24,7 @@ export function getPostListQuiet(data, resolve, reject) {
     getFetch('/post/getpostlist/', `${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}?postType=${data.postType}`, dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
       data
-    }, {type: ActionTypes.FETCH_END_QUIET,data}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+    }, {type: ActionTypes.FETCH_END_QUIET, data}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
 
@@ -97,7 +97,7 @@ export function getUserInfo(data, resolve, reject) {
   }
 }
 
-export function getUserPhotos(data,resolve,reject) {
+export function getUserPhotos(data, resolve, reject) {
   return (dispatch)=> {
     getFetch('/users/', `${data.UserId}/photos`, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
@@ -123,7 +123,7 @@ export function getCurrentUserProfile(data, resolve, reject) {
 
 export function newPost(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch(`/post/doihaveanotexpiredpost?postType=${data.postType}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch(`/post/doihaveanotexpiredpost?postType=${data.postType}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN, data}, {type: ActionTypes.FETCH_END, data}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
@@ -153,7 +153,7 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
         toastShort(json.Message);
         return false;
       } else {
-        DeviceEventEmitter.emit('announcementHasPublish','新公告已发布');
+        DeviceEventEmitter.emit('announcementHasPublish', '新公告已发布');
         toastShort('发布成功');
         setTimeout(()=> {
           navigator.popToTop();
@@ -217,39 +217,54 @@ export function postAnnouncement(data, navigator) {
   }
 }
 
-export function getAllAnnouncement(data,resolve,reject) {
+export function getAllAnnouncement(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
-export function getAllAnnouncementQuiet(data,resolve,reject) {
+export function getAllAnnouncementQuiet(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN_QUIET,data}, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+    getFetch(`/post/getuserpostlist/${data.targetUserId}/${data.pageIndex}/${data.pageSize}/${data.Lat}/${data.Lng}/?postOrderTyp=${data.postOrderTyp}`, '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
 
-export function attention(data,resolve,reject) {
+export function attention(data, resolve, reject) {
   return (dispatch)=> {
-    postFetch(`/follower/follower/${data.attentionUserId}`, data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    postFetch(`/follower/follower/${data.attentionUserId}`, data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
-export function getDatingFilter(data,resolve,reject) {
+export function getDatingFilter(data, resolve, reject) {
   return (dispatch)=> {
     getFetch('/profile/filter', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
-export function getMatchUsers(data,resolve,reject) {
+export function getMatchUsers(data, resolve, reject) {
   return (dispatch)=> {
-    postFetch('/profile/getmatchlist', data, dispatch, {type: ActionTypes.FETCH_BEGIN,data}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    postFetch('/profile/getmatchlist', data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
-export function getMatchUsersQuiet(data,resolve,reject) {
+export function getMatchUsersQuiet(data, resolve, reject) {
   return (dispatch)=> {
-    postFetch('/profile/getmatchlist', data, dispatch, {type: ActionTypes.FETCH_BEGIN_QUIET,data}, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+    postFetch('/profile/getmatchlist', data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
 

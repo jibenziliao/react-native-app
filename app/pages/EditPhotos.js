@@ -114,10 +114,7 @@ class EditPhotos extends BaseComponent {
   _initPhotos() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getUserPhotos({UserId: this.props.route.params.UserId}, (json)=> {
-      console.log(json);
-
       this._initDict((DictMap, result)=> {
-        console.log(result);
         this.setState({
           DictMap: DictMap,
           userPhotos: result,
