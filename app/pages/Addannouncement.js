@@ -128,13 +128,13 @@ const dict = {
     {Key: 2, Value: '2天'},
     {Key: 3, Value: '3天'}],
   numberOfPeople: [
-    {Key: 'TwoOrThree', Value: '2-3人'},
-    {Key: 'FourOrFive', Value: '4-5人'},
-    {Key: 'MoreThanFive', Value: '5人以上'}],
+    {Key: 1, Value: '2-3人'},
+    {Key: 2, Value: '4-5人'},
+    {Key: 3, Value: '5人以上'}],
   cost: [
-    {Key: 'MyTreat', Value: '我请客'},
-    {Key: 'AA', Value: 'AA'},
-    {Key: 'GentlemenPayLadyFree', Value: '男AA女免费'}]
+    {Key: 1, Value: '我请客'},
+    {Key: 2, Value: 'AA'},
+    {Key: 3, Value: '男AA女免费'}]
 };
 
 class Addannouncement extends BaseComponent {

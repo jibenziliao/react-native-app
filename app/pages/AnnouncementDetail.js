@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingVertical: 5,
     justifyContent: 'flex-start',
     paddingLeft: 10
   },
@@ -161,6 +160,16 @@ const styles = StyleSheet.create({
   },
   commentContent: {
     marginVertical: 10
+  },
+  partyOptionsContainer: {
+    paddingHorizontal: 10
+  },
+  partyOptionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  partyLabel: {
+    width: width / 3
   }
 });
 
@@ -170,6 +179,20 @@ let navigator;
 const buttons = ['取消', '发布新公告', '删除'];
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
+const DICT = {
+  days: [
+    {Key: 1, Value: '1天'},
+    {Key: 2, Value: '2天'},
+    {Key: 3, Value: '3天'}],
+  numberOfPeople: [
+    {Key: 1, Value: '2-3人'},
+    {Key: 2, Value: '4-5人'},
+    {Key: 3, Value: '5人以上'}],
+  cost: [
+    {Key: 1, Value: '我请客'},
+    {Key: 2, Value: 'AA'},
+    {Key: 3, Value: '男AA女免费'}]
+};
 
 class AnnouncementDetail extends BaseComponent {
 
@@ -585,6 +608,26 @@ class AnnouncementDetail extends BaseComponent {
     return data.split('T')[0] + ' ' + tmpTime.split('.')[0];
   }
 
+  //渲染聚会人数
+  renderNumberOfPeople(data) {
+    let index = DICT.numberOfPeople.findIndex((item)=> {
+      return item.Key === data;
+    });
+    return (
+      <Text>{DICT.numberOfPeople[index].Value}</Text>
+    );
+  }
+
+  //渲染聚会费用
+  renderCostText(data) {
+    let index = DICT.cost.findIndex((item)=> {
+      return item.Key === data;
+    });
+    return (
+      <Text>{DICT.cost[index].Value}</Text>
+    );
+  }
+
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
@@ -674,6 +717,26 @@ class AnnouncementDetail extends BaseComponent {
     )
   }
 
+  //渲染聚会选项(约会没有这个)
+  renderPartyOptions(data) {
+    if (data === 1) {
+      return (
+        <View style={styles.partyOptionsContainer}>
+          <View style={styles.partyOptionsRow}>
+            <Text style={styles.partyLabel}>{'聚会人数:'}</Text>
+            {this.renderNumberOfPeople(this.state.PartyPeopleNumber)}
+          </View>
+          <View style={styles.partyOptionsRow}>
+            <Text style={styles.partyLabel}>{'聚会费用:'}</Text>
+            {this.renderCostText(this.state.PartyPayType)}
+          </View>
+        </View>
+      )
+    } else {
+      return null;
+    }
+  }
+
   _renderHeader() {
     if (!this.state.PosterInfo) {
       return null
@@ -717,6 +780,7 @@ class AnnouncementDetail extends BaseComponent {
             }}>
             {this.renderPostImage(this.state.PicList)}
           </TouchableOpacity>
+          {this.renderPartyOptions(this.state.PostType)}
         </View>
         <View style={styles.cardRow}>
           <Text>{this._distance(this.state.Distance)}{'km'}{'·'}</Text>

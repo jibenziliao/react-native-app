@@ -111,13 +111,34 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginRight: 20
   },
+  moreImgLabel: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 2
+  },
+  moreImgIcon: {},
+  moreImgText: {
+    fontSize: 10,
+    marginLeft: 4
+  },
+  singleImgContainer: {
+    marginBottom: 10,
+    marginRight: 10
+  },
 });
 
 class AppointmentList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      refreshing: this.props.appointmentRefreshing
+      refreshing: this.props.refreshing,
+      imgLoading: true,
+      avatarLoading: true
     };
   }
 
@@ -165,8 +186,54 @@ class AppointmentList extends Component {
     this.props._goUserInfo(data);
   }
 
+  _renderMoreImgLabel(arr, index) {
+    if (arr.length > 3 && index === 2) {
+      return (
+        <View style={styles.moreImgLabel}>
+          <Icon name={'picture-o'} size={10} style={styles.moreImgIcon}/>
+          <Text style={styles.moreImgText}>{arr.length}</Text>
+        </View>
+      )
+    } else {
+      return null
+    }
+  }
+
   renderPostImage(arr) {
-    this.props.renderPostImage(arr);
+    if (arr.length !== 0) {
+      let imageWidth = 0;
+      if (arr.length % 3 === 0) {
+        imageWidth = (width - 60) / 3;
+      } else if (arr.length === 2) {
+        imageWidth = (width - 50) / 2;
+      } else {
+        imageWidth = (width - 60) / 3;
+      }
+      let arrCopy = JSON.parse(JSON.stringify(arr));
+      if (arr.length > 3) {
+        arrCopy.splice(3, arr.length - 3);
+      }
+      return arrCopy.map((item, index)=> {
+        return (
+          <View key={index} style={styles.singleImgContainer}>
+            <Image
+              onLoadEnd={()=> {
+                this.setState({imgLoading: false})
+              }}
+              style={{width: imageWidth, height: imageWidth}}
+              source={{uri: URL_DEV + '/' + item}}>
+              {this.state.imgLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={{width: imageWidth, height: imageWidth}}/> : null}
+            </Image>
+            {this._renderMoreImgLabel(arr, index)}
+          </View>
+        )
+      })
+    } else {
+      return null;
+    }
   }
 
   _showCommentInput(id) {
@@ -175,6 +242,10 @@ class AppointmentList extends Component {
 
   _doLike(id, isLike) {
     this.props._doLike(id, isLike);
+  }
+
+  _openImgModal(arr){
+    this.props._openImgModal(arr);
   }
 
   renderRowData(rowData) {

@@ -26,99 +26,121 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 const {height, width} = Dimensions.get('window');
 
-
 const styles = StyleSheet.create({
-    listView: {
-      flex: 1
-    },
-    card: {
-      backgroundColor: '#FFF',
-      flex: 1,
-      marginTop: 10,
-      marginHorizontal: 10,
-      paddingVertical: 10,
-      borderRadius: 4
-    },
-    cardRow: {
-      flexDirection: 'row',
-      flex: 1,
-      paddingHorizontal: 10
-    },
-    avatarImg: {
-      width: width / 9,
-      height: width / 9,
-      marginRight: 10,
-      borderRadius: 8
-    },
-    userInfo: {
-      justifyContent: 'space-between',
-      flex: 1
-    },
-    userInfoLabelContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-start'
-    },
-    userInfoLabel: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderRadius: 10,
-      backgroundColor: 'pink',
-      borderWidth: 1,
-      borderColor: 'pink',
-      paddingHorizontal: 6
-    },
-    userInfoIcon: {
-      marginRight: 4,
-      color: '#FFF'
-    },
-    userInfoText: {
-      fontSize: 10,
-      color: '#FFF'
-    },
-    nameTextContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    nameText: {
-      overflow: 'hidden',
-      flex: 1,
-      flexWrap: 'nowrap'
-    },
-    timeText: {
-      fontSize: 12,
-      justifyContent: 'center'
-    },
-    moodView: {
-      marginTop: 10
-    },
-    moodText: {
-      fontSize: 16,
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'flex-start',
-      paddingHorizontal: 10,
-      marginBottom: 10
-    },
-    postImage: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'flex-start',
-      //paddingVertical: 5,
-      justifyContent: 'flex-start',
-      paddingLeft: 10
-    },
-    cardBtn: {
-      marginTop: 10,
-      marginRight: 20
-    },
-  });
+  listView: {
+    flex: 1
+  },
+  card: {
+    backgroundColor: '#FFF',
+    flex: 1,
+    marginTop: 10,
+    marginHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 4
+  },
+  cardRow: {
+    flexDirection: 'row',
+    flex: 1,
+    paddingHorizontal: 10
+  },
+  avatarImg: {
+    width: width / 9,
+    height: width / 9,
+    marginRight: 10,
+    borderRadius: 8
+  },
+  userInfo: {
+    justifyContent: 'space-between',
+    flex: 1
+  },
+  userInfoLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+  userInfoLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: 'pink',
+    borderWidth: 1,
+    borderColor: 'pink',
+    paddingHorizontal: 6
+  },
+  userInfoIcon: {
+    marginRight: 4,
+    color: '#FFF'
+  },
+  userInfoText: {
+    fontSize: 10,
+    color: '#FFF'
+  },
+  nameTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  nameText: {
+    overflow: 'hidden',
+    flex: 1,
+    flexWrap: 'nowrap'
+  },
+  timeText: {
+    fontSize: 12,
+    justifyContent: 'center'
+  },
+  moodView: {
+    marginTop: 10
+  },
+  moodText: {
+    fontSize: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    paddingHorizontal: 10,
+    marginBottom: 10
+  },
+  postImage: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    //paddingVertical: 5,
+    justifyContent: 'flex-start',
+    paddingLeft: 10
+  },
+  cardBtn: {
+    marginTop: 10,
+    marginRight: 20
+  },
+  moreImgLabel: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 2
+  },
+  moreImgIcon: {},
+  moreImgText: {
+    fontSize: 10,
+    marginLeft: 4
+  },
+  singleImgContainer: {
+    marginBottom: 10,
+    marginRight: 10
+  },
+
+});
 
 class MeetList extends Component {
+
   constructor(props) {
     super(props);
-    this.state={
-      refreshing:this.props.refreshing
+    this.state = {
+      refreshing: this.props.refreshing,
+      imgLoading: true,
+      avatarLoading: true
     };
   }
 
@@ -134,40 +156,90 @@ class MeetList extends Component {
     }
   }
 
-  _onRefresh(){
+  _onRefresh() {
     this.props._onRefresh();
   }
 
-  _closeCommentInput(){
+  _closeCommentInput() {
     this.props._closeCommentInput();
   }
 
-  _toEnd(){
+  _toEnd() {
     this.props._toEnd();
   }
 
-  _renderFooter(){
+  _renderFooter() {
     this.props._renderFooter();
   }
 
-  _goAnnouncementDetail(rowData){
+  _goAnnouncementDetail(rowData) {
     this.props._goAnnouncementDetail(rowData);
   }
 
-  _goUserInfo(data){
+  _goUserInfo(data) {
     this.props._goUserInfo(data);
   }
 
-  renderPostImage(arr){
-    this.props.renderPostImage(arr);
+  _renderMoreImgLabel(arr, index) {
+    if (arr.length > 3 && index === 2) {
+      return (
+        <View style={styles.moreImgLabel}>
+          <Icon name={'picture-o'} size={10} style={styles.moreImgIcon}/>
+          <Text style={styles.moreImgText}>{arr.length}</Text>
+        </View>
+      )
+    } else {
+      return null
+    }
   }
 
-  _showCommentInput(id){
+  renderPostImage(arr) {
+    if (arr.length !== 0) {
+      let imageWidth = 0;
+      if (arr.length % 3 === 0) {
+        imageWidth = (width - 60) / 3;
+      } else if (arr.length === 2) {
+        imageWidth = (width - 50) / 2;
+      } else {
+        imageWidth = (width - 60) / 3;
+      }
+      let arrCopy = JSON.parse(JSON.stringify(arr));
+      if (arr.length > 3) {
+        arrCopy.splice(3, arr.length - 3);
+      }
+      return arrCopy.map((item, index)=> {
+        return (
+          <View key={index} style={styles.singleImgContainer}>
+            <Image
+              onLoadEnd={()=> {
+                this.setState({imgLoading: false})
+              }}
+              style={{width: imageWidth, height: imageWidth}}
+              source={{uri: URL_DEV + '/' + item}}>
+              {this.state.imgLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={{width: imageWidth, height: imageWidth}}/> : null}
+            </Image>
+            {this._renderMoreImgLabel(arr, index)}
+          </View>
+        )
+      })
+    } else {
+      return null;
+    }
+  }
+
+  _showCommentInput(id) {
     this.props._showCommentInput(id);
   }
 
-  _doLike(id,isLike){
-    this.props._doLike(id,isLike);
+  _doLike(id, isLike) {
+    this.props._doLike(id, isLike);
+  }
+
+  _openImgModal(arr) {
+    this.props._openImgModal(arr);
   }
 
   renderRowData(rowData) {

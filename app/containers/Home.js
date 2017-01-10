@@ -761,15 +761,15 @@ class Home extends BaseComponent {
           _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
           data={this.state.postList}
           appointmentData={this.state.appointmentList}
-          refreshing={this.state.refreshing}
-          appointmentRefreshing={this.state.appointmentRefreshing}
           pageSize={this.state.pageSize}
+          appointmentPageSize={this.state.appointmentPageSize}
           _renderFooter={this._renderFooter.bind(this)}
           _toEnd={this._toEnd.bind(this)}
           _doLike={this._doLike.bind(this)}
           _showCommentInput={this._showCommentInput.bind(this)}
           _closeCommentInput={this._closeCommentInput.bind(this)}
-          _onRefresh={this._onRefresh.bind(this)}/>
+          _onRefresh={this._onRefresh.bind(this)}
+          _openImgModal={this._openImgModal.bind(this)}/>
         <ActionSheet
           ref={(o) => this.ActionSheet = o}
           title="请选择你的操作"
