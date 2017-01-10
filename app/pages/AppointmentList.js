@@ -133,12 +133,14 @@ const styles = StyleSheet.create({
   },
 });
 
+let canLoadMore = false;
+
 class AppointmentList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      imgLoading:false,
-      avatarLoading:false,
+      imgLoading: false,
+      avatarLoading: false,
       ...this.props
     };
   }
@@ -171,20 +173,27 @@ class AppointmentList extends Component {
   }
 
   _toEnd() {
-    this.props._toEnd();
+    //如果最后一次请求的数据数量少于每页需要渲染的数量,表明没有更多数据了(在没有更多数据的情况下,暂时不能继续上拉加载更多数据。在实际场景中,这里是可以一直上拉加载更多数据的,便于有即时新数据拉取)
+    if (!canLoadMore || (this.props.appointmentCount < this.state.appointmentPageSize || this.state.appointmentList.length < this.state.appointmentPageSize)) {
+      return false;
+    }
+    InteractionManager.runAfterInteractions(() => {
+      console.log("触发加载更多 toEnd() --> ");
+      this.props._loadMoreData();
+    });
   }
 
   _renderFooter() {
-    if (this.state.appointmentLoadingMore) {
+    if (this.props.appointmentLoadingMore) {
       //这里会显示正在加载更多,但在屏幕下方,需要向上滑动显示(自动或手动),加载指示器,阻止了用户的滑动操作,后期可以让页面自动上滑,显示出这个组件。
       return <LoadMoreFooter />
     }
 
-    if (this.state.lastAppointmentCount < this.state.appointmentPageSize) {
+    if (this.props.appointmentCount < this.state.appointmentPageSize) {
       return (<LoadMoreFooter isLoadAll={true}/>);
     }
 
-    if (!this.state.lastAppointmentCount) {
+    if (!this.props.appointmentCount) {
       return null;
     }
   }
@@ -347,33 +356,39 @@ class AppointmentList extends Component {
 
   render() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return (
-      <ListView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh.bind(this)}
-          />
-        }
-        onScroll={()=> {
-          this._closeCommentInput()
-        }}
-        style={styles.listView}
-        dataSource={ds.cloneWithRows(this.props.appointmentList)}
-        renderRow={
-          this.renderRowData.bind(this)
-        }
-        onEndReached={this._toEnd.bind(this)}
-        renderFooter={
-          this._renderFooter.bind(this)
-        }
-        keyboardDismissMode={'interactive'}
-        keyboardShouldPersistTaps={true}
-        enableEmptySections={true}
-        onEndReachedThreshold={10}
-        initialListSize={3}
-        pageSize={this.props.pageSize}/>
-    )
+    if (this.props.appointmentList.length === 0) {
+      return null;
+    } else {
+
+      return (
+        <ListView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.appointmentRefreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
+          onScroll={()=> {
+            canLoadMore = true;
+            this._closeCommentInput()
+          }}
+          style={styles.listView}
+          dataSource={ds.cloneWithRows(this.props.appointmentList)}
+          renderRow={
+            this.renderRowData.bind(this)
+          }
+          onEndReached={this._toEnd.bind(this)}
+          renderFooter={
+            this._renderFooter.bind(this)
+          }
+          keyboardDismissMode={'interactive'}
+          keyboardShouldPersistTaps={true}
+          enableEmptySections={true}
+          onEndReachedThreshold={10}
+          initialListSize={3}
+          pageSize={this.props.appointmentPageSize}/>
+      )
+    }
   }
 }
 

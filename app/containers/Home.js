@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
 
 let navigator;
 let commentId;
+let lastCount = null, appointmentCount = null;
 
 const buttons = ['取消', '发聚会', '发约会'];
 const CANCEL_INDEX = 0;
@@ -179,21 +180,16 @@ class Home extends BaseComponent {
       appointmentRefreshing: false,
       loadingMore: false,
       appointmentLoadingMore: false,
-      pageSize: 10,
+      pageSize: 4,
       pageIndex: 1,
-      appointmentPageSize: 10,
+      appointmentPageSize: 4,
       appointmentPageIndex: 1,
       postList: [],//聚会列表
       appointmentList: [],//约会列表
-      lastCount: 0,
-      lastAppointmentCount: 0,
       comment: '',
       appointmentComment: '',
       viewMarginBottom: new Animated.Value(0),
-      appointmentViewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
-      avatarLoading: true,
-      appointmentAvatarLoading: true,
       imgLoading: true,
       appointmentImgLoading: true,
       showIndex: 0,
@@ -224,12 +220,7 @@ class Home extends BaseComponent {
       postType: 1
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
-      //lastCount = json.Result.length;
-      this.setState({
-        postList: json.Result,
-        lastCount: json.Result.length
-      });
-
+      lastCount = json.Result.length;
       let params = {
         pageSize: this.state.appointmentPageSize,
         pageIndex: this.state.appointmentPageIndex,
@@ -238,10 +229,10 @@ class Home extends BaseComponent {
       };
       //获取约会列表
       dispatch(HomeActions.getPostList(params, (json2)=> {
-        //lastAppointmentCount = json2.Result.length;
+        appointmentCount = json2.Result.length;
         this.setState({
+          postList: json.Result,
           appointmentList: json2.Result,
-          lastAppointmentCount: json2.Result.length
         });
       }, (error2)=> {
 
@@ -251,36 +242,41 @@ class Home extends BaseComponent {
     }));
   }
 
-  _toEnd() {
-    //如果最后一次请求的数据数量少于每页需要渲染的数量,表明没有更多数据了(在没有更多数据的情况下,暂时不能继续上拉加载更多数据。在实际场景中,这里是可以一直上拉加载更多数据的,便于有即时新数据拉取)
-    if (this.state.lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
-      return false;
-    }
-    InteractionManager.runAfterInteractions(() => {
-      console.log("触发加载更多 toEnd() --> ");
-      this._loadMoreData();
-    });
-  }
-
   _loadMoreData() {
     console.log('加载更多');
-    this.setState({loadingMore: true});
     const {dispatch} = this.props;
-    this.state.pageIndex += 1;
+    if (this.state.tabIndex === 0) {
+      this.setState({loadingMore: true});
+      this.state.pageIndex += 1;
+    } else {
+      this.setState({appointmentLoadingMore: true});
+      this.state.appointmentPageIndex += 1;
+    }
     const data = {
-      pageSize: this.state.pageSize,
-      pageIndex: this.state.pageIndex,
-      ...tmpGlobal.currentLocation
+      pageSize: this.state.tabIndex === 0 ? this.state.pageSize : this.state.appointmentPageSize,
+      pageIndex: this.state.tabIndex === 0 ? this.state.pageIndex : this.state.appointmentPageIndex,
+      ...tmpGlobal.currentLocation,
+      postType: this.state.tabIndex + 1
     };
+
     dispatch(HomeActions.getPostList(data, (json)=> {
-      //lastCount = json.Result.length;
-      this.state.postList = this.state.postList.concat(json.Result);
-      this.setState({
-        ...this.state.postList,
-        refreshing: false,
-        loadingMore: false,
-        lastCount: json.Result.length
-      })
+      if (this.state.tabIndex === 0) {
+        lastCount = json.Result.length;
+        this.state.postList = this.state.postList.concat(json.Result);
+        this.setState({
+          ...this.state.postList,
+          refreshing: false,
+          loadingMore: false,
+        })
+      } else {
+        appointmentCount = json.Result.length;
+        this.state.appointmentList = this.state.appointmentList.concat(json.Result);
+        this.setState({
+          ...this.state.appointmentList,
+          appointmentRefreshing: false,
+          appointmentLoadingMore: false,
+        })
+      }
     }, (error)=> {
 
     }));
@@ -308,18 +304,16 @@ class Home extends BaseComponent {
     };
     dispatch(HomeActions.getPostListQuiet(data, (json)=> {
       if (this.state.tabIndex === 0) {
-        //lastCount = json.Result.length;
+        lastCount = json.Result.length;
         this.setState({
           postList: json.Result,
           refreshing: false,
-          lastCount: json.Result.length
         });
       } else {
-        //lastAppointmentCount = json.Result.length;
+        appointmentCount = json.Result.length;
         this.setState({
           appointmentList: json.Result,
           appointmentRefreshing: false,
-          lastAppointmentCount: json.Result.length
         });
       }
     }, (error)=> {
@@ -333,21 +327,6 @@ class Home extends BaseComponent {
         });
       }
     }));
-  }
-
-  _renderFooter() {
-    if (this.state.loadingMore) {
-      //这里会显示正在加载更多,但在屏幕下方,需要向上滑动显示(自动或手动),加载指示器,阻止了用户的滑动操作,后期可以让页面自动上滑,显示出这个组件。
-      return <LoadMoreFooter />
-    }
-
-    if (this.state.lastCount < this.state.pageSize) {
-      return (<LoadMoreFooter isLoadAll={true}/>);
-    }
-
-    if (!this.state.lastCount) {
-      return null;
-    }
   }
 
   componentDidMount() {
@@ -582,57 +561,6 @@ class Home extends BaseComponent {
     });
   }
 
-  _renderMoreImgLabel(arr, index) {
-    if (arr.length > 3 && index === 2) {
-      return (
-        <View style={styles.moreImgLabel}>
-          <Icon name={'picture-o'} size={10} style={styles.moreImgIcon}/>
-          <Text style={styles.moreImgText}>{arr.length}</Text>
-        </View>
-      )
-    } else {
-      return null
-    }
-  }
-
-  //渲染公告中的图片
-  renderPostImage(arr) {
-    if (arr.length !== 0) {
-      let imageWidth = 0;
-      if (arr.length % 3 === 0) {
-        imageWidth = (width - 60) / 3;
-      } else if (arr.length === 2) {
-        imageWidth = (width - 50) / 2;
-      } else {
-        imageWidth = (width - 60) / 3;
-      }
-      let arrCopy = JSON.parse(JSON.stringify(arr));
-      if (arr.length > 3) {
-        arrCopy.splice(3, arr.length - 3);
-      }
-      return arrCopy.map((item, index)=> {
-        return (
-          <View key={index} style={styles.singleImgContainer}>
-            <Image
-              onLoadEnd={()=> {
-                this.setState({imgLoading: false})
-              }}
-              style={{width: imageWidth, height: imageWidth}}
-              source={{uri: URL_DEV + '/' + item}}>
-              {this.state.imgLoading ?
-                <Image
-                  source={require('./img/imgLoading.gif')}
-                  style={{width: imageWidth, height: imageWidth}}/> : null}
-            </Image>
-            {this._renderMoreImgLabel(arr, index)}
-          </View>
-        )
-      })
-    } else {
-      return null;
-    }
-  }
-
   _openImgModal(arr) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
@@ -662,18 +590,33 @@ class Home extends BaseComponent {
     //关闭评论输入框,并情况评论框内容
     this._closeCommentInput();
 
-    let index = this.state.postList.findIndex((item)=> {
-      return item.Id === commentId;
-    });
-    this.state.postList[index].CommentCount += 1;
+    if (this.state.tabIndex === 0) {
+      let index = this.state.postList.findIndex((item)=> {
+        return item.Id === commentId;
+      });
+      this.state.postList[index].CommentCount += 1;
+    } else {
+      let index = this.state.appointmentList.findIndex((item)=> {
+        return item.Id === commentId;
+      });
+      this.state.appointmentList[index].CommentCount += 1;
+    }
 
     dispatch(HomeActions.comment(data, (json)=> {
       toastShort('评论成功');
-      this.setState({
-        postList: [
-          ...this.state.postList
-        ]
-      });
+      if (this.state.tabIndex === 0) {
+        this.setState({
+          postList: [
+            ...this.state.postList
+          ]
+        });
+      } else {
+        this.setState({
+          appointmentList: [
+            ...this.state.appointmentList
+          ]
+        });
+      }
     }, (error)=> {
     }));
   }
@@ -754,6 +697,7 @@ class Home extends BaseComponent {
   }
 
   _handleChangeTab(index) {
+    this._closeCommentInput();
     this.setState({
       tabIndex: index
     })
@@ -766,22 +710,19 @@ class Home extends BaseComponent {
         style={[styles.container]}>
         <SubTabView
           tabIndex={this._handleChangeTab.bind(this)}
-          renderPostImage={this.renderPostImage.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}
           _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
           refreshing={this.state.refreshing}
           appointmentRefreshing={this.state.appointmentRefreshing}
-          loadingMore={this.state.loadingMore}
-          appointmentLoadingMore={this.state.appointmentLoadingMore}
           pageSize={this.state.pageSize}
           pageIndex={this.state.pageIndex}
           appointmentPageSize={this.state.appointmentPageSize}
           appointmentPageIndex={this.state.appointmentPageIndex}
           postList={this.state.postList}
           appointmentList={this.state.appointmentList}
-          lastCount={this.state.lastCount}
-          lastAppointmentCount={this.state.lastAppointmentCount}
-          _toEnd={this._toEnd.bind(this)}
+          _loadMoreData={this._loadMoreData.bind(this)}
+          lastCount={lastCount}
+          appointmentCount={appointmentCount}
           _doLike={this._doLike.bind(this)}
           _showCommentInput={this._showCommentInput.bind(this)}
           _closeCommentInput={this._closeCommentInput.bind(this)}
