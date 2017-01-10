@@ -37,6 +37,7 @@ import ActionSheet from 'react-native-actionsheet'
 import tmpGlobal from '../utils/TmpVairables'
 import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
+import AnnouncementList from '../pages/AnnouncemenetList'
 
 const {height, width} = Dimensions.get('window');
 
@@ -176,9 +177,9 @@ const styles = StyleSheet.create({
 let lastCount;
 let navigator;
 
-const buttons = ['取消', '发布新公告', '删除'];
+let buttons = ['取消', '发布新公告', '删除'];
 const CANCEL_INDEX = 0;
-const DESTRUCTIVE_INDEX = 1;
+const DESTRUCTIVE_INDEX = 2;
 const DICT = {
   days: [
     {Key: 1, Value: '1天'},
@@ -217,6 +218,8 @@ class AnnouncementDetail extends BaseComponent {
       imgList: [],
       commentInputHeight: 0
     };
+
+    buttons = ['取消', `发布新${this.props.route.params.PostType === 1 ? '聚会' : '约会'}`, '删除'];
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
   }
@@ -271,7 +274,7 @@ class AnnouncementDetail extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '公告详情',
+      title: `${this.props.route.params.PostType === 1 ? '聚会' : '约会'}详情`,
       hideRightButton: false,
       rightTitle: this.state.isSelf ? null : (this.state.AmIFollowedHim ? '取消关注' : '关注TA'),
       rightIcon: this._renderRightIcon()
@@ -305,15 +308,57 @@ class AnnouncementDetail extends BaseComponent {
       }, (error)=> {
       }));
     } else if (index === 1) {
-      navigator.push({
-        component: Addannouncement,
-        name: 'Addannouncement',
-        params: {
-          title: this.state.PostType === 1 ? '发布新聚会' : '发布新约会',
-          postType: this.state.PostType
-        }
-      })
+      this._canPost(this.state.PostType);
     }
+  }
+
+  //检查是否有未过期的聚会/约会
+  _canPost(int) {
+    const {dispatch, navigator}=this.props;
+    let data = {
+      postType: int
+    };
+    dispatch(HomeActions.newPost(data, (json)=> {
+      if (json.Result.CanPost) {
+        navigator.push({
+          component: Addannouncement,
+          name: 'Addannouncement',
+          params: {
+            title: int === 1 ? '发布新聚会' : '发布新约会',
+            postType: int
+          }
+        });
+      } else {
+        this._newPostAlert(int);
+      }
+    }, (error)=> {
+    }));
+  }
+
+  //前往我的历史公告列表(包含聚会和约会)
+  _goAnnouncementList() {
+    navigator.push({
+      component: AnnouncementList,
+      name: 'AnnouncementList',
+      params: {
+        targetUserId: tmpGlobal.currentUser.UserId,
+        Nickname: tmpGlobal.currentUser.Nickname
+      }
+    });
+  }
+
+  _newPostAlert(int) {
+    Alert.alert('提示', '可发布的未过期的动态数量已达上限', [
+      {
+        text: `查看历史${int === 1 ? '聚会' : '约会'}`, onPress: () => {
+        this._goAnnouncementList();
+      }
+      },
+      {
+        text: '关闭', onPress: () => {
+      }
+      }
+    ]);
   }
 
   //关注用户

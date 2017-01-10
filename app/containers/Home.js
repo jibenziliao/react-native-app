@@ -25,12 +25,10 @@ import {
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
-import Icon from 'react-native-vector-icons/FontAwesome'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
 import Spinner from '../components/Spinner'
-import LoadMoreFooter from '../components/LoadMoreFooter'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
@@ -176,7 +174,6 @@ class Home extends BaseComponent {
     navigator = this.props.navigator;
     this.state = {
       tabIndex: 0,
-      index:0,
       refreshing: false,
       appointmentRefreshing: false,
       loadingMore: false,
@@ -345,8 +342,8 @@ class Home extends BaseComponent {
     });
   }
 
-  _changeSubTab(index){
-    this.setState({tabIndex:index},()=>{
+  _changeSubTab(index) {
+    this.setState({tabIndex: index}, ()=> {
       this._onRefresh();
     });
   }
@@ -563,7 +560,8 @@ class Home extends BaseComponent {
       name: 'AnnouncementDetail',
       params: {
         Id: rowData.Id,
-        isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId
+        isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId,
+        PostType: this.state.tabIndex + 1
       }
     });
   }
