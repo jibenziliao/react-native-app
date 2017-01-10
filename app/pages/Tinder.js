@@ -173,7 +173,7 @@ class Tinder extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '摇一摇'
+      title: '眼缘'
     };
   }
 

@@ -295,6 +295,7 @@ class Message extends BaseComponent {
     tmpGlobal.proxy = connection.createHubProxy('ChatCore');
 
     tmpGlobal.connection = connection;
+    //console.log(tmpGlobal.connection, connection);
 
     tmpGlobal.proxy.on('log', (str)=> {
       //console.log(str);
@@ -305,12 +306,12 @@ class Message extends BaseComponent {
     tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
       console.log('连接成功');
       connectionState = true;
-      console.log(connection);
+      //console.log(connection);
       tmpGlobal.proxy.invoke('login', cookie);
       console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
       //tmpGlobal._initWebSocket = this._initWebSocket;
       tmpGlobal.webSocketInitState = true;
-      console.log(tmpGlobal);
+      //console.log(tmpGlobal);
     }).fail(() => {
       console.log('Failed');
       connectionState = false;
@@ -327,7 +328,7 @@ class Message extends BaseComponent {
     tmpGlobal.connection.error(function (error) {
       console.log('SignalR error: ' + error);
       console.log('开始重新连接');
-      console.log(tmpGlobal.connection);
+      //console.log(tmpGlobal.connection);
       //在连接成功的情况下断开,connectionState为true,tmpGlobal._initWebSocket还没有被赋值,为null
       this.reConnectTimer = setTimeout(()=> {
         tmpGlobal.webSocketConnectCount += 1;//断开重连,连接次数+1,超过5次后,提示用户网络不稳定,让用户手动重连
