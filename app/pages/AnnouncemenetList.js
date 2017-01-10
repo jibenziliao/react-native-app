@@ -18,7 +18,8 @@ import {
   Dimensions,
   Platform,
   Keyboard,
-  Animated
+  Animated,
+  DeviceEventEmitter
 } from 'react-native'
 import {connect} from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -191,6 +192,9 @@ class AnnouncementList extends BaseComponent {
   }
 
   componentDidMount() {
+    this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', (data)=> {
+      this._onRefresh();
+    });
     InteractionManager.runAfterInteractions(()=> {
       this._getAllAnnouncementList();
     })
@@ -198,6 +202,7 @@ class AnnouncementList extends BaseComponent {
 
   componentWillUnmount() {
     this.keyboardWillShowListener.remove();
+    this.hasDeleteListener.remove();
   }
 
   //当键盘弹即将起来

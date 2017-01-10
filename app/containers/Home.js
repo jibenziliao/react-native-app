@@ -331,17 +331,17 @@ class Home extends BaseComponent {
   }
 
   componentDidMount() {
-    this.hasReadListener = DeviceEventEmitter.addListener('announcementHasRead', ()=> {
-      this._onRefresh()
+    this.hasReadListener = DeviceEventEmitter.addListener('announcementHasRead', (data)=> {
+      this._changeSubTab(data.data);
     });
-    this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', ()=> {
-      this._onRefresh()
+    this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', (data)=> {
+      this._changeSubTab(data.data);
     });
     this.publishListener = DeviceEventEmitter.addListener('announcementHasPublish', (data)=> {
       this._changeSubTab(data.data);
     });
-    this.commentListener = DeviceEventEmitter.addListener('announcementHasComment', ()=> {
-      this._onRefresh()
+    this.commentListener = DeviceEventEmitter.addListener('announcementHasComment', (data)=> {
+      this._changeSubTab(data.data);
     });
   }
 

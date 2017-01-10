@@ -252,7 +252,7 @@ class AnnouncementDetail extends BaseComponent {
     }
     //ios在销毁页面前发出广播,避免返回前一页面后,页面白屏,点击一下才显示的bug。
     if (Platform.OS === 'ios') {
-      DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
+      DeviceEventEmitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
     }
     this._attentionListener.remove();
     this.keyboardWillShowListener.remove();
@@ -297,7 +297,7 @@ class AnnouncementDetail extends BaseComponent {
     };
     if (index === 2) {
       dispatch(HomeActions.deleteAnnouncement(data, (json)=> {
-        DeviceEventEmitter.emit('announcementHasDelete', '公告被删除');
+        DeviceEventEmitter.emit('announcementHasDelete', {message: '公告被删除', data: this.state.PostType - 1});
         toastShort('删除成功');
         this.deleteTimer = setTimeout(()=> {
           navigator.pop();
@@ -434,7 +434,7 @@ class AnnouncementDetail extends BaseComponent {
     };
     dispatch(HomeActions.comment(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (json)=> {
-        DeviceEventEmitter.emit('announcementHasComment', '公告被评论');
+        DeviceEventEmitter.emit('announcementHasComment', {message: '公告被评论', data: this.state.PostType - 1});
         this.setState({
           CommentCount: this.state.CommentCount,
           commentList: json.Result//评论成功后,需要重新渲染页面,以显示最新的评论
@@ -517,7 +517,7 @@ class AnnouncementDetail extends BaseComponent {
           isSelf: this.state.isSelf
         });
         if (Platform.OS === 'android') {
-          DeviceEventEmitter.emit('announcementHasRead', '公告已阅读');
+          DeviceEventEmitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
         }
       }, (error)=> {
         this.setState({refreshing: false});
