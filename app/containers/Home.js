@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
 
 let navigator;
 let commentId;
-let lastCount, lastAppoinmentCount;
 
 const buttons = ['取消', '发聚会', '发约会'];
 const CANCEL_INDEX = 0;
@@ -186,6 +185,8 @@ class Home extends BaseComponent {
       appointmentPageIndex: 1,
       postList: [],//聚会列表
       appointmentList: [],//约会列表
+      lastCount: 0,
+      lastAppointmentCount: 0,
       comment: '',
       appointmentComment: '',
       viewMarginBottom: new Animated.Value(0),
@@ -223,9 +224,10 @@ class Home extends BaseComponent {
       postType: 1
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
-      lastCount = json.Result.length;
+      //lastCount = json.Result.length;
       this.setState({
-        postList: json.Result
+        postList: json.Result,
+        lastCount: json.Result.length
       });
 
       let params = {
@@ -236,9 +238,10 @@ class Home extends BaseComponent {
       };
       //获取约会列表
       dispatch(HomeActions.getPostList(params, (json2)=> {
-        lastAppoinmentCount = json2.Result.length;
+        //lastAppointmentCount = json2.Result.length;
         this.setState({
-          appointmentList: json2.Result
+          appointmentList: json2.Result,
+          lastAppointmentCount: json2.Result.length
         });
       }, (error2)=> {
 
@@ -250,7 +253,7 @@ class Home extends BaseComponent {
 
   _toEnd() {
     //如果最后一次请求的数据数量少于每页需要渲染的数量,表明没有更多数据了(在没有更多数据的情况下,暂时不能继续上拉加载更多数据。在实际场景中,这里是可以一直上拉加载更多数据的,便于有即时新数据拉取)
-    if (lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
+    if (this.state.lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
       return false;
     }
     InteractionManager.runAfterInteractions(() => {
@@ -270,12 +273,13 @@ class Home extends BaseComponent {
       ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getPostList(data, (json)=> {
-      lastCount = json.Result.length;
+      //lastCount = json.Result.length;
       this.state.postList = this.state.postList.concat(json.Result);
       this.setState({
         ...this.state.postList,
         refreshing: false,
-        loadingMore: false
+        loadingMore: false,
+        lastCount: json.Result.length
       })
     }, (error)=> {
 
@@ -304,16 +308,18 @@ class Home extends BaseComponent {
     };
     dispatch(HomeActions.getPostListQuiet(data, (json)=> {
       if (this.state.tabIndex === 0) {
-        lastCount = json.Result.length;
+        //lastCount = json.Result.length;
         this.setState({
           postList: json.Result,
-          refreshing: false
+          refreshing: false,
+          lastCount: json.Result.length
         });
       } else {
-        lastCount = json.Result.length;
+        //lastAppointmentCount = json.Result.length;
         this.setState({
           appointmentList: json.Result,
-          appointmentRefreshing: false
+          appointmentRefreshing: false,
+          lastAppointmentCount: json.Result.length
         });
       }
     }, (error)=> {
@@ -335,11 +341,11 @@ class Home extends BaseComponent {
       return <LoadMoreFooter />
     }
 
-    if (lastCount < this.state.pageSize) {
+    if (this.state.lastCount < this.state.pageSize) {
       return (<LoadMoreFooter isLoadAll={true}/>);
     }
 
-    if (!lastCount) {
+    if (!this.state.lastCount) {
       return null;
     }
   }
@@ -747,23 +753,34 @@ class Home extends BaseComponent {
     }
   }
 
+  _handleChangeTab(index) {
+    this.setState({
+      tabIndex: index
+    })
+  }
+
   renderBody() {
     return (
       <View
         ref={'root'}
         style={[styles.container]}>
         <SubTabView
-          tabIndex={(index)=> {
-            this.setState({tabIndex: index})
-          }}
+          tabIndex={this._handleChangeTab.bind(this)}
           renderPostImage={this.renderPostImage.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}
           _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
-          data={this.state.postList}
-          appointmentData={this.state.appointmentList}
+          refreshing={this.state.refreshing}
+          appointmentRefreshing={this.state.appointmentRefreshing}
+          loadingMore={this.state.loadingMore}
+          appointmentLoadingMore={this.state.appointmentLoadingMore}
           pageSize={this.state.pageSize}
+          pageIndex={this.state.pageIndex}
           appointmentPageSize={this.state.appointmentPageSize}
-          _renderFooter={this._renderFooter.bind(this)}
+          appointmentPageIndex={this.state.appointmentPageIndex}
+          postList={this.state.postList}
+          appointmentList={this.state.appointmentList}
+          lastCount={this.state.lastCount}
+          lastAppointmentCount={this.state.lastAppointmentCount}
           _toEnd={this._toEnd.bind(this)}
           _doLike={this._doLike.bind(this)}
           _showCommentInput={this._showCommentInput.bind(this)}

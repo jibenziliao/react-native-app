@@ -23,6 +23,8 @@ import {
 } from 'react-native'
 import {URL_DEV, TIME_OUT} from '../constants/Constant'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import LoadMoreFooter from '../components/LoadMoreFooter'
+
 
 const {height, width} = Dimensions.get('window');
 
@@ -138,10 +140,17 @@ class MeetList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      refreshing: this.props.refreshing,
-      imgLoading: true,
-      avatarLoading: true
+      imgLoading:false,
+      avatarLoading:false,
+      ...this.props
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      ...this.state,
+      ...nextProps
+    })
   }
 
   //处理距离
@@ -169,7 +178,18 @@ class MeetList extends Component {
   }
 
   _renderFooter() {
-    this.props._renderFooter();
+    if (this.state.loadingMore) {
+      //这里会显示正在加载更多,但在屏幕下方,需要向上滑动显示(自动或手动),加载指示器,阻止了用户的滑动操作,后期可以让页面自动上滑,显示出这个组件。
+      return <LoadMoreFooter />
+    }
+
+    if (this.state.lastCount < this.state.pageSize) {
+      return (<LoadMoreFooter isLoadAll={true}/>);
+    }
+
+    if (!this.state.lastCount) {
+      return null;
+    }
   }
 
   _goAnnouncementDetail(rowData) {
@@ -342,7 +362,7 @@ class MeetList extends Component {
           this._closeCommentInput()
         }}
         style={styles.listView}
-        dataSource={ds.cloneWithRows(this.props.data)}
+        dataSource={ds.cloneWithRows(this.state.postList)}
         renderRow={
           this.renderRowData.bind(this)
         }
