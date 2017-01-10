@@ -123,7 +123,10 @@ export function getCurrentUserProfile(data, resolve, reject) {
 
 export function newPost(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch(`/post/doihaveanotexpiredpost?postType=${data.postType}`, '', dispatch, {type: ActionTypes.FETCH_BEGIN, data}, {type: ActionTypes.FETCH_END, data}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    getFetch(`/post/doihaveanotexpiredpost?postType=${data.postType}`, '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END, data}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
@@ -143,9 +146,9 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
     PostContent: data.PostContent,
     ...tmpGlobal.currentLocation,
     PicList: imgArr,
-    PartyPayType:data.PartyPayType,
-    PartyPeopleNumber:data.PartyPeopleNumber,
-    PostType:data.postType
+    PartyPayType: data.PartyPayType,
+    PartyPeopleNumber: data.PartyPeopleNumber,
+    PostType: data.postType
   };
   dispatch({type: ActionTypes.FETCH_BEGIN, params});
   fetch(URL_DEV + '/post/newpost/' + data.days, fetchOptions(params))
@@ -156,7 +159,7 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
         toastShort(json.Message);
         return false;
       } else {
-        DeviceEventEmitter.emit('announcementHasPublish', '新公告已发布');
+        DeviceEventEmitter.emit('announcementHasPublish', {message: '新公告已发布', data: data.postType - 1});
         toastShort('发布成功');
         setTimeout(()=> {
           navigator.popToTop();

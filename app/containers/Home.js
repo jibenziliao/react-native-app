@@ -176,13 +176,14 @@ class Home extends BaseComponent {
     navigator = this.props.navigator;
     this.state = {
       tabIndex: 0,
+      index:0,
       refreshing: false,
       appointmentRefreshing: false,
       loadingMore: false,
       appointmentLoadingMore: false,
-      pageSize: 4,
+      pageSize: 10,
       pageIndex: 1,
-      appointmentPageSize: 4,
+      appointmentPageSize: 10,
       appointmentPageIndex: 1,
       postList: [],//聚会列表
       appointmentList: [],//约会列表
@@ -336,11 +337,17 @@ class Home extends BaseComponent {
     this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', ()=> {
       this._onRefresh()
     });
-    this.publishListener = DeviceEventEmitter.addListener('announcementHasPublish', ()=> {
-      this._onRefresh()
+    this.publishListener = DeviceEventEmitter.addListener('announcementHasPublish', (data)=> {
+      this._changeSubTab(data.data);
     });
     this.commentListener = DeviceEventEmitter.addListener('announcementHasComment', ()=> {
       this._onRefresh()
+    });
+  }
+
+  _changeSubTab(index){
+    this.setState({tabIndex:index},()=>{
+      this._onRefresh();
     });
   }
 
@@ -709,6 +716,7 @@ class Home extends BaseComponent {
         ref={'root'}
         style={[styles.container]}>
         <SubTabView
+          index={this.state.tabIndex}
           tabIndex={this._handleChangeTab.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}
           _goAnnouncementDetail={this._goAnnouncementDetail.bind(this)}
