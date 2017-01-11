@@ -22,7 +22,7 @@ import {connect} from 'react-redux'
 import MessageDetail from '../pages/MessageDetail'
 import signalr from 'react-native-signalr'
 import * as Storage from '../utils/Storage'
-import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
+import {URL_DEV, TIME_OUT, URL_TOKEN_DEV, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import tmpGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
@@ -115,7 +115,8 @@ class Message extends BaseComponent {
       messageList: []
     };
     navigator = this.props.navigator;
-    tmpGlobal._initWebSocket = this._initWebSocket.bind(this);
+    //tmpGlobal._initWebSocket = this._initWebSocket.bind(this);
+    tmpGlobal._wsTokenHandler = this._wsTokenHandler.bind(this);
   }
 
   getNavigationBarProps() {
@@ -137,6 +138,9 @@ class Message extends BaseComponent {
     this.subscription = DeviceEventEmitter.addListener('MessageCached', (data)=> {
       this._cacheMessageListener(data)
     });
+    this.startReceiveMsgListener = DeviceEventEmitter.addListener('ReceiveMsg', (data)=> {
+      this._wsResetOnMessageListener();
+    });
     InteractionManager.runAfterInteractions(()=> {
       this._initOldMessage();
     })
@@ -157,11 +161,15 @@ class Message extends BaseComponent {
 
   componentWillUnmount() {
     this.subscription.remove();
+    this.startReceiveMsgListener.remove();
     if (this.connectWebsocketTimer) {
       clearTimeout(this.connectWebsocketTimer);
     }
     if (this.reConnectTimer) {
       clearTimeout(this.reConnectTimer);
+    }
+    if (this.testInterval) {
+      clearInterval(this.testInterval);
     }
   }
 
@@ -218,7 +226,8 @@ class Message extends BaseComponent {
       cookie = res.rkt;
       tmpGlobal.cookie = res.rkt;
       if (tmpGlobal.proxy === null) {
-        this._initWebSocket();
+        //this._initWebSocket();
+        this._wsTokenHandler();
       }
     })
   }
@@ -279,10 +288,11 @@ class Message extends BaseComponent {
     });
   }
 
+  //signalr方法,已废弃
   _initWebSocket() {
     console.log('开始初始化webSocket连接');
+    console.log(navigator);
     let self = this;
-
     //注销重新登录,会重新初始化此页面,connect,proxy需要重置
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;
@@ -343,9 +353,9 @@ class Message extends BaseComponent {
           if (connectionState) {
             console.log('webSockets连接断开后,手动停止,然后重新初始化');
             console.log(tmpGlobal);
-            tmpGlobal._initWebSocket();
+            //tmpGlobal._initWebSocket();
           } else {
-            self._initWebSocket();
+            //self._initWebSocket();
           }
         }
       }, 100);
@@ -355,7 +365,7 @@ class Message extends BaseComponent {
       console.log('服务器返回的原始数据', obj);
       let routes = navigator.getCurrentRoutes();
       console.log('路由栈', routes);
-      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
+      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgFlag);
       console.log('Message页面成功标为已读');
       //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
       if (routes[routes.length - 1].name != 'MessageDetail') {
@@ -365,6 +375,113 @@ class Message extends BaseComponent {
         this._margeMessage(JSON.parse(JSON.stringify(obj.MsgPackage)));
       }
     });
+  }
+
+  //获取token后,初始化原生webSocket
+  _wsTokenHandler() {
+    let getUrl = `${URL_TOKEN_DEV}/signalr/negotiate?clientProtocol=1.5&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
+    fetch(getUrl, {
+      method: 'GET'
+    }).then((response)=> {
+      return response.json()
+    }).then((json)=> {
+      let wsUrl = `${URL_WS_DEV}/chat/signalr/hubs/signalr/connect?transport=webSockets&clientProtocol=1.5&connectionToken=${encodeURIComponent(json.ConnectionToken)}&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
+      this._wsInitHandler(wsUrl);
+    });
+  }
+
+  _wsInitHandler(wsUrl) {
+    tmpGlobal.ws = null;
+    tmpGlobal.ws = new WebSocket(wsUrl);
+    tmpGlobal.ws.onopen = ()=> {
+      this._wsLoginHandler();
+      this._wsOpenReceiveHandler();
+    };
+    tmpGlobal.ws.onmessage = (e) => {
+      this._wsNewMsgHandler(JSON.parse(e.data));
+    };
+    tmpGlobal.ws.onerror = (e) => {
+      console.log(e, e.message);
+      console.log(tmpGlobal.ws.readyState);
+      tmpGlobal.ws.close();
+    };
+    tmpGlobal.ws.onclose = (e) => {
+      console.log(e);
+      console.log(e.code, e.reason);
+      this._wsTokenHandler();//报错后重新初始化webSocket连接
+    };
+  }
+
+  //重置webSocket接收消息的监听器(ws.onmessage的类型是EventListener,进入MessageDetail后会被重新绑定事件,所以离开MessageDetail页面之前需要发布广播,来重置监听器,以便在Message页面或除了MessageDetail以外的页面,能够收到消息)
+  _wsResetOnMessageListener() {
+    tmpGlobal.ws.onmessage = (e) => {
+      this._wsNewMsgHandler(JSON.parse(e.data));
+    };
+  }
+
+  //原生webSocket开启接收消息方法
+  _wsOpenReceiveHandler() {
+    let getNewMsg = {
+      H: 'chatcore',
+      M: 'getNewMsg',
+      A: [],
+      I: Math.floor(Math.random() * 11)
+    };
+    tmpGlobal.ws.send(JSON.stringify(getNewMsg));
+  }
+
+  //原生webSocket连接登录
+  _wsLoginHandler() {
+    let loginParams = {
+      H: 'chatcore',
+      M: 'Login',
+      A: [tmpGlobal.cookie],
+      I: Math.floor(Math.random() * 11)
+    };
+    tmpGlobal.ws.send(JSON.stringify(loginParams));
+    console.log(loginParams);
+    console.log('ws登录成功');
+  }
+
+  //原生webSocket连接从后台接收到的消息处理
+  _wsNewMsgHandler(obj) {
+    tmpGlobal.webSocketInitState = true;
+    //连接成功后,将初始化webSocket连接的方法赋值给全局变量
+    tmpGlobal._wsTokenHandler = this._wsTokenHandler;
+    if (obj.hasOwnProperty('M')) {
+      let tmpArr = obj.M;
+      let index = tmpArr.findIndex((item)=> {
+        return item.M === 'GetNewMsg'
+      });
+      if (index > -1) {
+        let newMsg = tmpArr[index].A;
+        //console.log(newMsg[0]);
+        this._wsMarkAsRead(newMsg[0]);
+      }
+    } else {
+      //console.log(obj);
+    }
+  }
+
+  _wsMarkAsRead(newMsg) {
+    let markRead = {
+      H: 'chatcore',
+      M: 'UserReadMsg',
+      A: [newMsg.LastMsgFlag],
+      I: Math.floor(Math.random() * 11)
+    };
+    console.log(markRead);
+    let routes = navigator.getCurrentRoutes();
+    console.log(routes);
+    tmpGlobal.ws.send(JSON.stringify(markRead));
+    console.log('ws消息成功标为已读');
+    //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
+    if (routes[routes.length - 1].name != 'MessageDetail') {
+      console.log('Message页面收到了新消息');
+      //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
+      //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
+      this._margeMessage(JSON.parse(JSON.stringify(newMsg.MsgPackage)));
+    }
   }
 
   //如果在消息列表界面收到新消息,点击进入聊天界面,聊天界面需要从缓存中加载历史聊天记录

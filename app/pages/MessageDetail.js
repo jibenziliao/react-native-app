@@ -125,7 +125,7 @@ class MessageDetail extends BaseComponent {
     }, ()=> {
       this._initOldMessage();
     });
-    this._attentionListener=DeviceEventEmitter.addListener('hasAttention',()=>{
+    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
       this._getUserInfo()
     });
   }
@@ -146,25 +146,73 @@ class MessageDetail extends BaseComponent {
   }
 
   _getNewMsg() {
-    tmpGlobal.proxy.on('getNewMsg', (obj) => {
-      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgId);
-      //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
-      if (!this.state.destroyed) {
+    /*tmpGlobal.proxy.on('getNewMsg', (obj) => {
+     tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgFlag);
+     //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
+     if (!this.state.destroyed) {
 
-        console.log('MessageDetail页面成功标为已读');
-        console.log('MessageDetail页面开始缓存消息');
-        this._receiveSaveRecord(JSON.parse(JSON.stringify(obj.MsgPackage)));
+     console.log('MessageDetail页面成功标为已读');
+     console.log('MessageDetail页面开始缓存消息');
+     this._receiveSaveRecord(JSON.parse(JSON.stringify(obj.MsgPackage)));
+     }
+     let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(obj.MsgPackage)), this.state.UserId);
+     //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
+     if (resMsg && resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
+     console.log(obj);
+     console.log('MessageDetail页面收到了新消息');
+     for (let i = 0; i < resMsg.MsgList.length; i++) {
+     this.onReceive(resMsg.MsgList[i]);
+     }
+     }
+     });*/
+
+    //进入MessageDetail页面后,ws.onmessage监听器被重新绑定了事件,故离开此页面之前要发布广播,重置ws.onmessage监听器。
+    tmpGlobal.ws.onmessage = (e)=> {
+      this._wsNewMsgHandler(JSON.parse(e.data));
+    };
+  }
+
+  //原生webSocket连接从后台接收到的消息处理
+  _wsNewMsgHandler(obj) {
+    if (obj.hasOwnProperty('M')) {
+      let tmpArr = obj.M;
+      let index = tmpArr.findIndex((item)=> {
+        return item.M === 'GetNewMsg'
+      });
+      if (index > -1) {
+        let newMsg = tmpArr[index].A;
+        //console.log(newMsg[0]);
+        this._wsMarkAsRead(newMsg[0]);
       }
-      let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(obj.MsgPackage)), this.state.UserId);
-      //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
-      if (resMsg && resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
-        console.log(obj);
-        console.log('MessageDetail页面收到了新消息');
-        for (let i = 0; i < resMsg.MsgList.length; i++) {
-          this.onReceive(resMsg.MsgList[i]);
-        }
+    } else {
+      //console.log(obj);
+    }
+  }
+
+  _wsMarkAsRead(newMsg) {
+    let markRead = {
+      H: 'chatcore',
+      M: 'UserReadMsg',
+      A: [newMsg.LastMsgFlag + ''],
+      I: Math.floor(Math.random() * 11)
+    };
+    console.log(markRead);
+    tmpGlobal.ws.send(JSON.stringify(markRead));
+    //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
+    if (!this.state.destroyed) {
+      console.log('MessageDetail页面成功标为已读');
+      console.log('MessageDetail页面开始缓存消息');
+      this._receiveSaveRecord(JSON.parse(JSON.stringify(newMsg.MsgPackage)));
+    }
+    let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(newMsg.MsgPackage)), this.state.UserId);
+    //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
+    if (resMsg && resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
+      console.log(newMsg);
+      console.log('MessageDetail页面收到了新消息');
+      for (let i = 0; i < resMsg.MsgList.length; i++) {
+        this.onReceive(resMsg.MsgList[i]);
       }
-    });
+    }
   }
 
   //从服务器返回的消息列表中筛选出与当前用户聊天的对象的消息
@@ -175,6 +223,7 @@ class MessageDetail extends BaseComponent {
         newMsgList[i].MsgList[j] = {
           HasSend: true,
           MsgContent: newMsgList[i].MsgList[j].MsgContent,
+
           MsgId: newMsgList[i].MsgList[j].MsgId,
           SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
@@ -288,6 +337,7 @@ class MessageDetail extends BaseComponent {
   componentWillUnmount() {
     this.state.destroyed = true;
     this._attentionListener.remove();
+    DeviceEventEmitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
   }
 
   onLoadEarlier() {
@@ -295,13 +345,21 @@ class MessageDetail extends BaseComponent {
   }
 
   //发送消息之前,检查webSocket是否成功初始化
-  _checkBeforeSend(message){
-    if(tmpGlobal.webSocketInitState){
+  _checkBeforeSend(message) {
+    if (tmpGlobal.webSocketInitState) {
       this.onSend(message);
-    }else{
-      Alert.alert('提示', '您的网路异常,点击重试', [
-        {text: '确定', onPress: () => {tmpGlobal._initWebSocket()}},
-        {text: '取消', onPress: () => {}}
+    } else {
+      Alert.alert('提示', '您的网络异常,点击重试', [
+        {
+          text: '确定', onPress: () => {
+          //tmpGlobal._initWebSocket()
+          tmpGlobal._wsTokenHandler();
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+        }
+        }
       ]);
     }
   }
@@ -349,7 +407,16 @@ class MessageDetail extends BaseComponent {
       };
     });
 
-    tmpGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
+    let sendMsgParams = {
+      H: 'chatcore',
+      M: 'UserSendMsgToUser',
+      A: [this.state.UserId + '', messages[0].text],
+      I: Math.floor(Math.random() * 11)
+    };
+
+    tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+
+    //tmpGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
   }
 
   onReceive(data) {
@@ -489,7 +556,7 @@ class MessageDetail extends BaseComponent {
     };
     if (index === 1) {
       dispatch(HomeActions.attention(data, (json)=> {
-        DeviceEventEmitter.emit('hasAttention','已关注/取消关注对方');
+        DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
       }, (error)=> {
       }));
     }
@@ -544,7 +611,9 @@ class MessageDetail extends BaseComponent {
       <View style={{flex: 1}}>
         <GiftedChat
           messages={this.state.messages}
-          onSend={(message)=>{this._checkBeforeSend(message)}}
+          onSend={(message)=> {
+            this._checkBeforeSend(message)
+          }}
           loadEarlier={this.state.loadEarlier}
           onLoadEarlier={this.onLoadEarlier}
           isLoadingEarlier={this.state.isLoadingEarlier}

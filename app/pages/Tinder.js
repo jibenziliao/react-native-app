@@ -239,7 +239,15 @@ class Tinder extends BaseComponent {
     };
     console.log(params);
     this._sendSaveRecord(params, card);
-    tmpGlobal.proxy.invoke('userSendMsgToUser', card.UserId, 'Hi,你好!');
+    //tmpGlobal.proxy.invoke('userSendMsgToUser', card.UserId, 'Hi,你好!');
+
+    let sendMsgParams = {
+      H: 'chatcore',
+      M: 'UserSendMsgToUser',
+      A: [this.state.UserId + '', 'Hi,你好!'],
+      I: Math.floor(Math.random() * 11)
+    };
+    tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
   }
 
   //发送时缓存(同时需要发布订阅,供Message页面监听)
