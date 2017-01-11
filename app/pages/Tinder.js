@@ -99,7 +99,7 @@ let lastCount;
 let Card = React.createClass({
 
   _renderLocation(data) {
-    console.log(this.props);
+    //console.log(this.props);
     if (data !== null) {
       return (
         <View style={[styles.userInfoLabel, styles.locationLabel]}>
@@ -301,8 +301,8 @@ class Tinder extends BaseComponent {
   cardRemoved(index) {
     //在请求发送之前重置是否刷新的状态(因为SwipCards.js中的componentWillReceiveProps方法会在此阶段触发,故不能在请求拿到数据后重置)
     this.setState({refresh: false});
-    console.log(this.props);
-    console.log(`The index is ${index}`);
+    //console.log(this.props);
+    //console.log(`The index is ${index}`);
     let CARD_REFRESH_LIMIT = 3;
     if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
       console.log(`There are only ${this.state.cards.length - index - 1} cards left.`);
