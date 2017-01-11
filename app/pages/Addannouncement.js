@@ -144,9 +144,9 @@ class Addannouncement extends BaseComponent {
     this.state = {
       PostContent: '',
       imageArr: [],
-      days: '1',
-      PartyPeopleNumber: 'TwoOrThree',
-      PartyPayType: 'MyTreat',
+      days: 1,
+      PartyPeopleNumber: 1,
+      PartyPayType: 1,
       ...this.props.route.params
     };
 
