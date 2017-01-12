@@ -188,10 +188,6 @@ class Tinder extends BaseComponent {
     })
   }
 
-  componentWillUnmount(){
-    DeviceEventEmitter.emit('ReceiveMsg', {data: true, message: '即将离开Tinder页面'});
-  }
-
   _getMatchUserList() {
     const {dispatch}=this.props;
     let data = {

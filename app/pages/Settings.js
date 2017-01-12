@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E2E2E2'
   },
+  topItem: {
+    marginTop: 10
+  },
   listItem: {
     backgroundColor: '#fff',
     borderBottomColor: '#E2E2E2',
@@ -32,6 +35,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexDirection: 'row',
     margin: 10,
+    marginTop: 0,
     alignItems: 'center'
   },
   itemIcon: {
@@ -46,6 +50,7 @@ class Settings extends BaseComponent {
   constructor(props) {
     super(props);
     navigator = this.props.navigator;
+    console.log(tmpGlobal.currentUser);
   }
 
   getNavigationBarProps() {
@@ -89,7 +94,7 @@ class Settings extends BaseComponent {
             onPress={()=> {
               this._logOut()
             }}
-            style={styles.listItem}>
+            style={[styles.listItem, styles.topItem]}>
             <Icon
               name={'sign-out'}
               style={styles.itemIcon}
@@ -97,6 +102,15 @@ class Settings extends BaseComponent {
             />
             <Text>{'注销'}</Text>
           </TouchableOpacity>
+          <View style={styles.listItem}>
+            <View>
+              <Icon
+                name={'sign-out'}
+                style={styles.itemIcon}
+                size={20}/>
+
+            </View>
+          </View>
         </View>
       </View>
     )

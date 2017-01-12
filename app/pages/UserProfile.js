@@ -676,7 +676,7 @@ class UserProfile extends BaseComponent {
   }
 
   _createMapData() {
-    return ['0m(精确定位)', '200m', '500m', '1000m', '隐身'];
+    return ['0m(精确定位)', '200m', '500m', '1000m'];
   }
 
   _showDatePicker() {

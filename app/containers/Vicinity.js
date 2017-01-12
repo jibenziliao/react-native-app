@@ -19,6 +19,7 @@ import {connect} from 'react-redux'
 import Map from '../pages/Map'
 import MatchUsers from '../pages/MatchUsers'
 import Tinder from '../pages/Tinder'
+import Revel from '../pages/Revel'
 
 const {height, width} = Dimensions.get('window');
 
@@ -115,6 +116,13 @@ class Vicinity extends BaseComponent {
     })
   }
 
+  _goRevel(){
+    navigator.push({
+      component:Revel,
+      name:'Revel'
+    })
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -147,7 +155,7 @@ class Vicinity extends BaseComponent {
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
-                  this._goShake()
+                  this._goRevel()
                 }}>
                 <Text style={styles.cardText}>{'随缘'}</Text>
               </TouchableOpacity>
