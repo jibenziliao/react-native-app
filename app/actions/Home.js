@@ -276,7 +276,8 @@ export function getMatchUsersQuiet(data, resolve, reject) {
 
 export function setMapPrecisionQuiet(data, resolve, reject) {
   return (dispatch)=> {
-    putFetch(`/profiles/setmapprecision?mapPrecision${data.MapPrecision}`, data, dispatch, {
+    console.log(`/profiles/setmapprecision?mapPrecision=${data.MapPrecision}`);
+    putFetch(`/profiles/setmapprecision?mapPrecision=${data.MapPrecision}`, data, dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
       data
     }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);

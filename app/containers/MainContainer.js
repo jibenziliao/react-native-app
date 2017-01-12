@@ -78,6 +78,7 @@ class MainContainer extends Component {
           onChange={(isOpen)=> {
             this.setState({isOpen})
           }}
+          disableGestures={true}
           navigator={this.props.navigator}>
           <ScrollableTabView
             tabBarPosition="bottom"

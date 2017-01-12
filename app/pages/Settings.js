@@ -10,7 +10,8 @@ import {
   Text,
   TouchableOpacity,
   Switch,
-  Alert
+  Alert,
+  DeviceEventEmitter
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -102,7 +103,7 @@ class Settings extends BaseComponent {
   _updateMapPrecisionQuiet(data) {
     const {dispatch}=this.props;
     dispatch(HomeActions.setMapPrecisionQuiet({MapPrecision: data}, (json)=> {
-
+      DeviceEventEmitter.emit('userInfoChanged','成功开启隐身');
     }, (error)=> {
 
     }));
