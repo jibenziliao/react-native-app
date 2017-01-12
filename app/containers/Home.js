@@ -165,7 +165,7 @@ let lastCount = null, appointmentCount = null;
 
 const buttons = ['取消', '发聚会', '发约会'];
 const CANCEL_INDEX = 0;
-const DESTRUCTIVE_INDEX = 0;
+const DESTRUCTIVE_INDEX = 3;
 
 class Home extends BaseComponent {
 
