@@ -57,7 +57,7 @@ class Settings extends BaseComponent {
   _logOut() {
     //websocket注销当前用户
     //tmpGlobal.proxy.invoke('logout', tmpGlobal.cookie);
-    tmpGlobal.connection.stop();
+    //tmpGlobal.connection.stop();
     //注销后,重置signalr连接
     tmpGlobal.connection = null;
     tmpGlobal.proxy = null;

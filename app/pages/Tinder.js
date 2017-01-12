@@ -244,7 +244,7 @@ class Tinder extends BaseComponent {
     let sendMsgParams = {
       H: 'chatcore',
       M: 'UserSendMsgToUser',
-      A: [this.state.UserId + '', 'Hi,你好!'],
+      A: [card.UserId + '', 'Hi,你好!'],
       I: Math.floor(Math.random() * 11)
     };
     tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
