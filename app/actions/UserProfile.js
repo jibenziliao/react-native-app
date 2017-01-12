@@ -151,8 +151,8 @@ export function editProfile(data, datingPurpose, resolve, reject) {
           Hobby: data.Hobby,
           Location: data.Location,
           SelfEvaluation: data.SelfEvaluation,
-          IsSmoke:data.IsSmoke,
-          IsDrink:data.IsDrink
+          IsSmoke:!!data.IsSmoke,
+          IsDrink:!!data.IsDrink
         };
         postFetch('/profile', params, dispatch,
           {type: ActionTypes.FETCH_BEGIN},
