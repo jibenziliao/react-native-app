@@ -507,30 +507,15 @@ class Message extends BaseComponent {
 
   //点击头像,跳转个人信息详情页
   _goUserInfo(rowData) {
-    const {dispatch}=this.props;
-    let params = {
-      UserId: rowData.SenderId,
-      ...tmpGlobal.currentLocation
-    };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId: rowData.SenderId}, (result)=> {
-        navigator.push({
-          component: UserInfo,
-          name: 'UserInfo',
-          params: {
-            Nickname: rowData.SenderNickname,
-            UserId: rowData.SenderId,
-            myUserId: tmpGlobal.currentUser.UserId,
-            ...json.Result,
-            userPhotos: result.Result.PhotoList,
-            myLocation: tmpGlobal.currentLocation,
-            isSelf: false
-          }
-        });
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: UserInfo,
+      name: 'UserInfo',
+      params: {
+        Nickname: rowData.SenderNickname,
+        UserId: rowData.SenderId,
+        isSelf: false
+      }
+    });
   }
 
   _renderMsgTime(str) {

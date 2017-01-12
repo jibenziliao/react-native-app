@@ -574,30 +574,15 @@ class MessageDetail extends BaseComponent {
     if (this._getPreviousRoute() === 'UserInfo' && props.currentMessage.user._id !== this.state.myUserId) {
       navigator.pop();
     } else {
-      const {dispatch}=this.props;
-      let params = {
-        UserId: props.currentMessage.user._id,
-        ...tmpGlobal.currentLocation
-      };
-      dispatch(HomeActions.getUserInfo(params, (json)=> {
-        dispatch(HomeActions.getUserPhotos({UserId: props.currentMessage.user._id}, (result)=> {
-          navigator.push({
-            component: UserInfo,
-            name: 'UserInfo',
-            params: {
-              Nickname: props.currentMessage.user.name,
-              UserId: props.currentMessage.user._id,
-              myUserId: this.state.myUserId,
-              ...json.Result,
-              userPhotos: result.Result.PhotoList,
-              myLocation: tmpGlobal.currentLocation,
-              isSelf: props.currentMessage.user._id === tmpGlobal.currentUser.UserId
-            }
-          });
-        }, (error)=> {
-        }));
-      }, (error)=> {
-      }));
+      navigator.push({
+        component: UserInfo,
+        name: 'UserInfo',
+        params: {
+          Nickname: props.currentMessage.user.name,
+          UserId: props.currentMessage.user._id,
+          isSelf: props.currentMessage.user._id === tmpGlobal.currentUser.UserId
+        }
+      });
     }
   }
 

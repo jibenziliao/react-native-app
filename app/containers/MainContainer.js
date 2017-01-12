@@ -89,30 +89,15 @@ class MainContainer extends Component {
 
   //点击头像和名字,跳转个人信息详情页
   _goUserInfo() {
-    const {dispatch}=this.props;
-    let params = {
-      UserId: tmpGlobal.currentUser.UserId,
-      ...tmpGlobal.currentLocation
-    };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId: params.UserId}, (result)=> {
-        navigator.push({
-          component: UserInfo,
-          name: 'UserInfo',
-          params: {
-            Nickname: tmpGlobal.currentUser.Nickname,
-            UserId: tmpGlobal.currentUser.UserId,
-            myUserId: tmpGlobal.currentUser.UserId,
-            ...json.Result,
-            userPhotos: result.Result,
-            myLocation: tmpGlobal.currentLocation,
-            isSelf: true,
-          }
-        });
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));
+    this.props.navigator.push({
+      component: UserInfo,
+      name: 'UserInfo',
+      params: {
+        Nickname: tmpGlobal.currentUser.Nickname,
+        UserId: tmpGlobal.currentUser.UserId,
+        isSelf: true,
+      }
+    });
   }
 
   _goSettings() {
@@ -128,7 +113,7 @@ class MainContainer extends Component {
         this._goSignature()
       }}
       goPhotos={()=> {
-        this._goPhotos()
+        this._goUserInfo()
       }}
       goSettings={()=> {
         this._goSettings()

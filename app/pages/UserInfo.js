@@ -13,7 +13,8 @@ import {
   Dimensions,
   TouchableOpacity,
   DeviceEventEmitter,
-  Platform
+  Platform,
+  InteractionManager
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -134,7 +135,8 @@ class UserInfo extends BaseComponent {
       showIndex: 0,
       imgList: [],
       imgLoading: true,
-      avatarLoading: true
+      avatarLoading: true,
+      loading:true
     };
     navigator = this.props.navigator;
     console.log(this.props.route.params);
@@ -144,6 +146,12 @@ class UserInfo extends BaseComponent {
     return {
       title: this.state.Nickname
     };
+  }
+
+  componentWillMount(){
+    InteractionManager.runAfterInteractions(()=> {
+      this._getUserInfo();
+    });
   }
 
   componentDidMount() {
@@ -183,6 +191,7 @@ class UserInfo extends BaseComponent {
         this.setState({
           ...json.Result,
           userPhotos: result.Result.PhotoList,
+          loading:false
         });
       }, (error)=> {
       }))
@@ -376,6 +385,9 @@ class UserInfo extends BaseComponent {
   }
 
   renderBody() {
+    if(this.state.loading){
+      return null;
+    }else{
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollViewContainer}>
@@ -458,7 +470,7 @@ class UserInfo extends BaseComponent {
         </ScrollView>
         {this._renderButtonGroup()}
       </View>
-    )
+    )}
   }
 
   renderModal() {

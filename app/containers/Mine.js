@@ -173,30 +173,15 @@ class Mine extends BaseComponent {
 
   //前往查看我的详细资料(需要先获取我的相册)
   _editMyDetail(data) {
-    const {dispatch}=this.props;
-    let params = {
-      UserId: data.UserId,
-      ...data.myLocation
-    };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
-        navigator.push({
-          component: UserInfo,
-          name: 'UserInfo',
-          params: {
-            Nickname: data.Nickname,
-            UserId: data.UserId,
-            myUserId: data.UserId,//这里的myUserId跟this.state.UserId相等,因为是当前用户
-            ...json.Result,
-            userPhotos: result.Result.PhotoList,
-            myLocation: this.state.myLocation,
-            isSelf: true//从我的页面进入用户详情,那么一定是当前用户
-          }
-        });
-      }, (error)=> {
-      }))
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: UserInfo,
+      name: 'UserInfo',
+      params: {
+        Nickname: data.Nickname,
+        UserId: data.UserId,
+        isSelf: true
+      }
+    });
   }
 
   //前往设置页
