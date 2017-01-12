@@ -21,7 +21,8 @@ import {
   Keyboard,
   Animated,
   TouchableHighlight,
-  Alert
+  Alert,
+  StatusBar
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
@@ -156,7 +157,32 @@ const styles = StyleSheet.create({
   singleImgContainer: {
     marginBottom: 10,
     marginRight: 10
-  }
+  },
+  refreshScreen: {
+    ...Platform.select({
+      ios: {
+        top: 64,
+        height: height - 64 - 46.5
+      },
+      android: {
+        top: 54,
+        height: height - 54 - 50
+      }
+    }),
+    position: 'absolute',
+    left: 0,
+    width: width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff'
+  },
+  refreshBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 4,
+    borderColor: 'gray',
+    borderWidth: 1
+  },
 });
 
 let navigator;
@@ -198,6 +224,7 @@ class Home extends BaseComponent {
       appointmentCommentInputHeight: 0,
     };
 
+    this._commonRefresh = this._commonRefresh.bind(this);
     this._handleInputHeight = this._handleInputHeight.bind(this);
   }
 
@@ -231,12 +258,25 @@ class Home extends BaseComponent {
         this.setState({
           postList: json.Result,
           appointmentList: json2.Result,
+          needRefresh: false
         });
       }, (error2)=> {
-
+        this.setState({
+          needRefresh: true
+        }, ()=> {
+          this._commonRefresh = ()=> {
+            this._getAnnouncementList();
+          }
+        });
       }));
     }, (error)=> {
-
+      this.setState({
+        needRefresh: true
+      }, ()=> {
+        this._commonRefresh = ()=> {
+          this._getAnnouncementList();
+        }
+      });
     }));
   }
 
@@ -306,15 +346,24 @@ class Home extends BaseComponent {
         this.setState({
           postList: json.Result,
           refreshing: false,
+          needRefresh: false,
         });
       } else {
         appointmentCount = json.Result.length;
         this.setState({
           appointmentList: json.Result,
           appointmentRefreshing: false,
+          needRefresh: false,
         });
       }
     }, (error)=> {
+      this.setState({
+        needRefresh: true
+      }, ()=> {
+        this._commonRefresh = ()=> {
+          this._getAnnouncementList();
+        }
+      });
       if (this.state.tabIndex === 0) {
         this.setState({
           refreshing: false
@@ -582,6 +631,10 @@ class Home extends BaseComponent {
     this.refs.modalFullScreen.close();
   }
 
+  _commonRefresh = ()=> {
+    //调用时,重新绑定事件
+  };
+
   //发送评论
   _sendComment() {
     //发送评论,并给当前广告评论数加一
@@ -801,6 +854,26 @@ class Home extends BaseComponent {
         </TouchableOpacity>
       </ModalBox>
     )
+  }
+
+  renderRefreshBtn() {
+    if (this.state.needRefresh) {
+      return (
+        <View style={styles.refreshScreen}>
+          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <TouchableOpacity
+              onPress={()=> {
+                this._commonRefresh();
+              }}
+              style={styles.refreshBtn}>
+              <Text>{'点击重试'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    } else {
+      return null;
+    }
   }
 
   renderSpinner() {

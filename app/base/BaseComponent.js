@@ -61,6 +61,10 @@ class BaseComponent extends Component {
 
   }
 
+  renderRefreshBtn(){
+
+  }
+
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
@@ -68,6 +72,7 @@ class BaseComponent extends Component {
         {this.renderBody()}
         {this.renderModal()}
         {this.renderSpinner()}
+        {this.renderRefreshBtn()}
       </View>
     );
   }
