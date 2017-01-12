@@ -199,6 +199,16 @@ class UserProfile extends BaseComponent {
         {text: '女', iconName: 'circle-o', checked: false}
       ],
       gender: true,
+      habitSmokeArr: [
+        {text: '是', iconName: 'circle-o', checked: false},
+        {text: '否', iconName: 'check-circle-o', checked: true}
+      ],
+      habitDrinkArr: [
+        {text: '是', iconName: 'circle-o', checked: false},
+        {text: '否', iconName: 'check-circle-o', checked: true}
+      ],
+      habitDrink: false,
+      habitSmoke: false,
       expandText: '点击展开更多(选填)',
       expandStatus: false,
       expandIconName: 'angle-double-down',
@@ -341,7 +351,7 @@ class UserProfile extends BaseComponent {
     });
   }
 
-  goFriendFilter(){
+  goFriendFilter() {
     navigator.push({
       component: FriendsFilter,
       name: 'FriendsFilter'
@@ -374,11 +384,87 @@ class UserProfile extends BaseComponent {
     });
   }
 
+  checkSmokeHabit(habit, index) {
+    this.state.habitSmokeArr.map((item)=> {
+      item.iconName = 'circle-o';
+      item.checked = false
+    });
+    this.state.habitSmokeArr[index].iconName = 'check-circle-o';
+    this.state.habitSmokeArr[index].checked = true;
+    this.setState({
+      habitSmoke: this.state.habitSmokeArr[index].text === '是',
+      habitSmokeArr: this.state.habitSmokeArr
+    });
+  }
+
+  checkDrinkHabit(habit, index) {
+    this.state.habitDrinkArr.map((item)=> {
+      item.iconName = 'circle-o';
+      item.checked = false
+    });
+    this.state.habitDrinkArr[index].iconName = 'check-circle-o';
+    this.state.habitDrinkArr[index].checked = true;
+    this.setState({
+      habitDrink: this.state.habitDrinkArr[index].text === '是',
+      habitDrinkArr: this.state.habitDrinkArr
+    });
+  }
+
   renderGenders(arr) {
     return (
       <View style={styles.genderRow}>
         {arr.map((gender, index)=>this.renderGenderItem(gender, index))}
       </View>
+    )
+  }
+
+  renderHabitDrink(arr) {
+    return (
+      <View style={styles.genderRow}>
+        {arr.map((habit, index)=>this.renderHabitDrinkItem(habit, index))}
+      </View>
+    )
+  }
+
+  renderHabitSmoke(arr) {
+    return (
+      <View style={styles.genderRow}>
+        {arr.map((habit, index)=>this.renderHabitSmokeItem(habit, index))}
+      </View>
+    )
+  }
+
+  renderHabitSmokeItem(habit, index) {
+    return (
+      <TouchableHighlight
+        onPress={()=> {
+          this.checkSmokeHabit(habit, index)
+        }}
+        key={index}
+        activeOpacity={0.5}
+        underlayColor="rgba(247,245,245,0.7)">
+        <View style={styles.genderRadioGroup}>
+          <Icon name={habit.iconName} size={24}/>
+          <Text style={styles.genderLabel}>{habit.text}</Text>
+        </View>
+      </TouchableHighlight>
+    )
+  }
+
+  renderHabitDrinkItem(habit, index) {
+    return (
+      <TouchableHighlight
+        onPress={()=> {
+          this.checkDrinkHabit(habit, index)
+        }}
+        key={index}
+        activeOpacity={0.5}
+        underlayColor="rgba(247,245,245,0.7)">
+        <View style={styles.genderRadioGroup}>
+          <Icon name={habit.iconName} size={24}/>
+          <Text style={styles.genderLabel}>{habit.text}</Text>
+        </View>
+      </TouchableHighlight>
     )
   }
 
@@ -864,6 +950,14 @@ class UserProfile extends BaseComponent {
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'性别'}</Text>
               {this.renderGenders(this.state.genderArr)}
+            </View>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'抽烟'}</Text>
+              {this.renderHabitSmoke(this.state.habitSmokeArr)}
+            </View>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'喝酒'}</Text>
+              {this.renderHabitDrink(this.state.habitDrinkArr)}
             </View>
             <View style={styles.listItem}>
               <Text style={styles.datingPurposeLabel}>{'交友目的'}</Text>

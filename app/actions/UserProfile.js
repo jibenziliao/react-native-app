@@ -76,7 +76,9 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
           Hometown: data.hometown,
           Hobby: data.interest,
           Location: data.location,
-          SelfEvaluation: data.selfEvaluation
+          SelfEvaluation: data.selfEvaluation,
+          IsSmoke: data.habitSmoke,
+          IsDrink: data.habitDrink
         };
         postFetch('/profile', params, dispatch,
           {type: ActionTypes.FETCH_BEGIN},
@@ -148,7 +150,9 @@ export function editProfile(data, datingPurpose, resolve, reject) {
           Hometown: data.Hometown,
           Hobby: data.Hobby,
           Location: data.Location,
-          SelfEvaluation: data.SelfEvaluation
+          SelfEvaluation: data.SelfEvaluation,
+          IsSmoke:data.IsSmoke,
+          IsDrink:data.IsDrink
         };
         postFetch('/profile', params, dispatch,
           {type: ActionTypes.FETCH_BEGIN},

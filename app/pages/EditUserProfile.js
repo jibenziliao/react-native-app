@@ -24,6 +24,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import RNPicker from 'react-native-picker'
 import CheckBox from '../components/CheckBox'
 import * as HomeActions from '../actions/Home'
@@ -74,6 +75,23 @@ const styles = StyleSheet.create({
   },
   itemRow: {
     flexDirection: 'row'
+  },
+  genderRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: 40
+  },
+  genderRadioGroup: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 10
+  },
+  genderLabel: {
+    marginLeft: 10
   },
   itemEnter: {
     justifyContent: 'space-between',
@@ -201,11 +219,12 @@ let originalY;
 let DatingPurposeSelectCopy = [];
 
 class EditUserProfile extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
-      hasChanged: false
+      hasChanged: false,
     };
     navigator = this.props.navigator;
     this.onBackAndroid = this.onBackAndroid.bind(this);
@@ -545,6 +564,72 @@ class EditUserProfile extends BaseComponent {
     });
   }
 
+  renderHabitSmoke(value){
+    return (
+      <View style={styles.genderRow}>
+        <TouchableHighlight
+          onPress={()=> {
+            this.setState({
+              IsSmoke:true
+            })
+          }}
+          activeOpacity={0.5}
+          underlayColor="rgba(247,245,245,0.7)">
+          <View style={styles.genderRadioGroup}>
+            <Icon name={value?'check-circle-o':'circle-o'} size={24}/>
+            <Text style={styles.genderLabel}>{'是'}</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={()=> {
+            this.setState({
+              IsSmoke:false
+            })
+          }}
+          activeOpacity={0.5}
+          underlayColor="rgba(247,245,245,0.7)">
+          <View style={styles.genderRadioGroup}>
+            <Icon name={value?'circle-o':'check-circle-o'} size={24}/>
+            <Text style={styles.genderLabel}>{'否'}</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    )
+  }
+
+  renderHabitDrink(value){
+    return (
+      <View style={styles.genderRow}>
+        <TouchableHighlight
+          onPress={()=> {
+            this.setState({
+              IsDrink:true
+            })
+          }}
+          activeOpacity={0.5}
+          underlayColor="rgba(247,245,245,0.7)">
+          <View style={styles.genderRadioGroup}>
+            <Icon name={value?'check-circle-o':'circle-o'} size={24}/>
+            <Text style={styles.genderLabel}>{'是'}</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={()=> {
+            this.setState({
+              IsDrink:false
+            })
+          }}
+          activeOpacity={0.5}
+          underlayColor="rgba(247,245,245,0.7)">
+          <View style={styles.genderRadioGroup}>
+            <Icon name={value?'circle-o':'check-circle-o'} size={24}/>
+            <Text style={styles.genderLabel}>{'否'}</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    )
+  }
+
   renderBody() {
     if (this.state.loading) {
       return null
@@ -658,6 +743,14 @@ class EditUserProfile extends BaseComponent {
                 <View style={[styles.listItem, styles.topItem]}>
                   <Text style={styles.inputLabel}>{'学历'}</Text>
                   {this.renderSinglePicker('EducationLevelName', 'EducationLevelName', this.state.DictMap.EducationLevelDict)}
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'抽烟'}</Text>
+                  {this.renderHabitSmoke(this.state.IsSmoke)}
+                </View>
+                <View style={styles.listItem}>
+                  <Text style={styles.inputLabel}>{'喝酒'}</Text>
+                  {this.renderHabitDrink(this.state.IsDrink)}
                 </View>
                 <View style={[styles.listItem]}>
                   <Text style={styles.inputLabel}>{'地图精度'}</Text>
