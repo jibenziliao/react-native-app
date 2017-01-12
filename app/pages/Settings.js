@@ -8,7 +8,9 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  Switch,
+  Alert
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -17,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Login from '../pages/Login'
 import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
+import * as HomeActions from '../actions/Home'
 
 const styles = StyleSheet.create({
   container: {
@@ -36,12 +39,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: 10,
     marginTop: 0,
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  itemLeft: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  itemIconContainer: {
+    width: 60,
+    justifyContent: 'center',
     alignItems: 'center'
   },
-  itemIcon: {
-    width: 60,
-    textAlign: 'center'
-  }
+  itemIcon: {}
 });
 
 let navigator;
@@ -49,6 +59,9 @@ let navigator;
 class Settings extends BaseComponent {
   constructor(props) {
     super(props);
+    this.state = {
+      MapPrecision: tmpGlobal.currentUser.MapPrecision
+    };
     navigator = this.props.navigator;
     console.log(tmpGlobal.currentUser);
   }
@@ -86,6 +99,45 @@ class Settings extends BaseComponent {
     }
   }
 
+  _updateMapPrecisionQuiet(data) {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.setMapPrecisionQuiet({MapPrecision: data}, (json)=> {
+
+    }, (error)=> {
+
+    }));
+  }
+
+  _confirmChange(value) {
+    //value的值是反的,当前是未开启的状态,value为true,反之则为false
+    if (value) {
+      Alert.alert('提示', '开启隐身后，不可使用寻TA功能，且对附近的人隐身！是否确定隐身？', [
+        {
+          text: '确定', onPress: () => {
+          this.setState({
+            MapPrecision: null
+          }, ()=> {
+            this._updateMapPrecisionQuiet(this.state.MapPrecision);
+          });
+        }
+        },
+        {
+          text: '取消', onPress: () => {
+          this.setState({
+            MapPrecision: 1000
+          })
+        }
+        }
+      ]);
+    } else {
+      this.setState({
+        MapPrecision: 1000
+      }, ()=> {
+        this._updateMapPrecisionQuiet(this.state.MapPrecision);
+      });
+    }
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -95,21 +147,32 @@ class Settings extends BaseComponent {
               this._logOut()
             }}
             style={[styles.listItem, styles.topItem]}>
-            <Icon
-              name={'sign-out'}
-              style={styles.itemIcon}
-              size={20}
-            />
-            <Text>{'注销'}</Text>
+            <View style={styles.itemLeft}>
+              <View style={styles.itemIconContainer}>
+                <Icon
+                  name={'sign-out'}
+                  style={styles.itemIcon}
+                  size={20}
+                />
+              </View>
+              <Text>{'注销'}</Text>
+            </View>
           </TouchableOpacity>
           <View style={styles.listItem}>
-            <View>
-              <Icon
-                name={'sign-out'}
-                style={styles.itemIcon}
-                size={20}/>
-
+            <View style={styles.itemLeft}>
+              <View style={styles.itemIconContainer}>
+                <Icon
+                  name={'low-vision'}
+                  style={styles.itemIcon}
+                  size={20}/>
+              </View>
+              <Text style={styles.itemText}>{'隐身'}</Text>
             </View>
+            <Switch
+              onValueChange={(value)=> {
+                this._confirmChange(value)
+              }}
+              value={this.state.MapPrecision === null}/>
           </View>
         </View>
       </View>
