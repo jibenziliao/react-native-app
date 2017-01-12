@@ -1,3 +1,8 @@
+/**
+ * 眼缘
+ * @author keyy/1501718947@qq.com 17/12/12 14:44
+ * @description
+ */
 import React, {Component} from 'react'
 import {
   StyleSheet,
@@ -181,6 +186,10 @@ class Tinder extends BaseComponent {
     InteractionManager.runAfterInteractions(()=> {
       this._getMatchUserList();
     })
+  }
+
+  componentWillUnmount(){
+    DeviceEventEmitter.emit('ReceiveMsg', {data: true, message: '即将离开Tinder页面'});
   }
 
   _getMatchUserList() {

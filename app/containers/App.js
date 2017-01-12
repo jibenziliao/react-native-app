@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
 });
 
 class App extends Component {
+
   constructor(props) {
     super(props);
     this.renderScene = this.renderScene.bind(this);
@@ -277,7 +278,7 @@ class App extends Component {
         return false;
       }
       lastClickTime = now;
-      toastShort('再按一次退出情缘结');
+      toastShort('再按一次退出觅友 Meet U');
       return true;
     } else if (routers[routers.length - 1].name == 'EditPhotos' || routers[routers.length - 1].name == 'EditUserProfile' || routers[routers.length - 1].name == 'EditFriendFilter' || routers[routers.length - 1].name == 'EditPersonalSignature') {
       return true;
