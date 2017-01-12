@@ -13,7 +13,8 @@ import {
   TouchableOpacity,
   DeviceEventEmitter,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TouchableHighlight
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -67,31 +68,48 @@ const styles = StyleSheet.create({
     paddingVertical: 0.5,
     flex: 1
   },
+  signatureItem: {
+    paddingVertical: 10
+  },
+  signatureText: {
+    paddingLeft: 20,
+    paddingRight: 10
+  },
   touchableItem: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center'
   },
-  listItemIcon: {
-    width: 80,
-    height: 50,
+  itemRow: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center'
+  },
+  iconBox: {
+    width: 50,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  listItemIcon: {
+    width: 50,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   listItemLeft: {
     flex: 1,
     paddingLeft: 10,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  itemIcon: {
-    marginRight: 10
-  }
+  itemIcon: {}
 });
 
 let navigator;
 
 class Mine extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -166,9 +184,11 @@ class Mine extends BaseComponent {
 
   //刷新签名
   _updateSignature(data) {
+    tmpGlobal.currentUser.PersonSignal = data.data;
     this.setState({
       PersonSignal: data.data
-    })
+    });
+    Storage.setItem('userInfo', tmpGlobal.currentUser);
   }
 
   //前往查看我的详细资料(需要先获取我的相册)
@@ -228,9 +248,10 @@ class Mine extends BaseComponent {
                 {this._renderLocation(this.state.Location)}
               </View>
             </View>
-            <View style={styles.listItem}>
+            <View style={[styles.listItem, styles.signatureItem]}>
               <Text
-                style={styles.listItemLeft}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
+                numberOfLines={2}
+                style={[styles.listItemLeft, styles.signatureText]}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
               <TouchableOpacity
                 onPress={()=> {
                   this._editSignature(this.state.PersonSignal)
@@ -241,40 +262,50 @@ class Mine extends BaseComponent {
               </TouchableOpacity>
             </View>
             <View style={styles.listItem}>
-              <TouchableOpacity
+              <TouchableHighlight
                 onPress={()=> {
                   this._editMyDetail(this.state)
                 }}
+                underlayColor={'#b8b8bf'}
                 style={styles.touchableItem}>
-                <View style={styles.listItemLeft}>
-                  <Icon
-                    style={styles.itemIcon}
-                    name={'list-alt'}
-                    size={18}/>
-                  <Text>{'详细资料'}</Text>
+                <View style={styles.itemRow}>
+                  <View style={styles.listItemLeft}>
+                    <View style={styles.iconBox}>
+                      <Icon
+                        style={styles.itemIcon}
+                        name={'list-alt'}
+                        size={18}/>
+                    </View>
+                    <Text>{'详细资料'}</Text>
+                  </View>
+                  <View style={styles.listItemIcon}>
+                    <Icon name={'angle-right'} size={20}/>
+                  </View>
                 </View>
-                <View style={styles.listItemIcon}>
-                  <Icon name={'angle-right'} size={20}/>
-                </View>
-              </TouchableOpacity>
+              </TouchableHighlight>
             </View>
             <View style={styles.listItem}>
-              <TouchableOpacity
+              <TouchableHighlight
                 onPress={()=> {
                   this._goSettings()
                 }}
+                underlayColor={'#b8b8bf'}
                 style={styles.touchableItem}>
-                <View style={styles.listItemLeft}>
-                  <Icon
-                    style={styles.itemIcon}
-                    name={'gear'}
-                    size={18}/>
-                  <Text>{'设置'}</Text>
+                <View style={styles.itemRow}>
+                  <View style={styles.listItemLeft}>
+                    <View style={styles.iconBox}>
+                      <Icon
+                        style={styles.itemIcon}
+                        name={'gear'}
+                        size={18}/>
+                    </View>
+                    <Text>{'设置'}</Text>
+                  </View>
+                  <View style={styles.listItemIcon}>
+                    <Icon name={'angle-right'} size={20}/>
+                  </View>
                 </View>
-                <View style={styles.listItemIcon}>
-                  <Icon name={'angle-right'} size={20}/>
-                </View>
-              </TouchableOpacity>
+              </TouchableHighlight>
             </View>
           </ScrollView>
         </View>

@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
 class Menu extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
   }
 
   render() {
@@ -97,7 +96,7 @@ class Menu extends Component {
             onPress={()=> {
               this.props.goSignature()
             }}>
-            <Text numberOfLines={1}>{this.props.userInfo.PersonSignal}</Text>
+            <Text numberOfLines={1}>{this.props.userInfo.PersonSignal?this.props.userInfo.PersonSignal:'点击编辑个性签名'}</Text>
           </TouchableOpacity>
         </View>
         <ScrollView scrollsToTop={false} style={styles.listItemContainer}>
