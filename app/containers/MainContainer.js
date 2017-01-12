@@ -21,6 +21,9 @@ import TabBar from '../components/TabBar'
 import SideMenu from 'react-native-side-menu'
 import Menu from '../components/Menu'
 import tmpGlobal from '../utils/TmpVairables'
+import EditPersonalSignature from '../pages/EditPersonalSignature'
+import * as HomeActions from '../actions/Home'
+import UserInfo from '../pages/UserInfo'
 
 const {height, width} = Dimensions.get('window');
 
@@ -61,12 +64,59 @@ class MainContainer extends Component {
     };
   }
 
+  _goSignature() {
+    this.props.navigator.push({
+      component: EditPersonalSignature,
+      name: 'EditPersonalSignature',
+      params: {
+        personalSignature: tmpGlobal.currentUser.PersonSignal
+      },
+    })
+  }
+
+  _goPhotos(){
+    this.props.navigator.push({
+      component: EditPersonalSignature,
+      name: 'EditPersonalSignature',
+      params: {
+        personalSignature: tmpGlobal.currentUser.PersonSignal
+      },
+    })
+  }
+
+  //点击头像和名字,跳转个人信息详情页
+  _goUserInfo() {
+    const {dispatch}=this.props;
+    let params = {
+      UserId: tmpGlobal.currentUser.UserId,
+      ...tmpGlobal.currentLocation
+    };
+    dispatch(HomeActions.getUserInfo(params, (json)=> {
+      dispatch(HomeActions.getUserPhotos({UserId: params.UserId}, (result)=> {
+        navigator.push({
+          component: UserInfo,
+          name: 'UserInfo',
+          params: {
+            Nickname: tmpGlobal.currentUser.Nickname,
+            UserId: tmpGlobal.currentUser.UserId,
+            myUserId: tmpGlobal.currentUser.UserId,
+            ...json.Result,
+            userPhotos: result.Result,
+            myLocation: tmpGlobal.currentLocation,
+            isSelf: true,
+          }
+        });
+      }, (error)=> {
+      }));
+    }, (error)=> {
+    }));
+  }
+
   render() {
     const menu = <Menu
+      goSignature={()=>{this._goSignature()}}
+      goPhotos={()=>{this._goPhotos()}}
       userInfo={tmpGlobal.currentUser}
-      onItemSelected={(data)=> {
-        console.log(data)
-      }}
       openMenuOffset={width * 2 / 3}
       navigator={this.props.navigator}/>;
     return (
