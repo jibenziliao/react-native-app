@@ -20,6 +20,7 @@ import Map from '../pages/Map'
 import MatchUsers from '../pages/MatchUsers'
 import Tinder from '../pages/Tinder'
 import Revel from '../pages/Revel'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {height, width} = Dimensions.get('window');
 
@@ -53,7 +54,19 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 24,
     color: '#fff'
-  }
+  },
+  warningContainer: {
+    paddingHorizontal: 10,
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: width / 3,
+  },
+  warningText: {
+    fontSize: 10
+  },
 });
 
 let navigator;
@@ -116,11 +129,24 @@ class Vicinity extends BaseComponent {
     })
   }
 
-  _goRevel(){
+  _goRevel() {
     navigator.push({
-      component:Revel,
-      name:'Revel'
+      component: Revel,
+      name: 'Revel'
     })
+  }
+
+  _renderCannotGoMap() {
+    if (tmpGlobal.currentUser.MapPrecision === null) {
+      return (
+        <View style={styles.warningContainer}>
+          <Text style={styles.warningText}>{'您已隐身'}</Text>
+          <Text style={styles.warningText}>{'不能使用此功能'}</Text>
+        </View>
+      )
+    } else {
+      return null;
+    }
   }
 
   renderBody() {
@@ -132,9 +158,12 @@ class Vicinity extends BaseComponent {
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
-                  this._goMap()
+                  if (tmpGlobal.currentUser.MapPrecision !== null) {
+                    this._goMap()
+                  }
                 }}>
                 <Text style={styles.cardText}>{'寻TA'}</Text>
+                {this._renderCannotGoMap()}
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.card}
