@@ -182,7 +182,7 @@ class UserInfo extends BaseComponent {
       dispatch(HomeActions.getUserPhotos({UserId: this.state.UserId}, (result)=> {
         this.setState({
           ...json.Result,
-          userPhotos: result.Result,
+          userPhotos: result.Result.PhotoList,
         });
       }, (error)=> {
       }))

@@ -589,7 +589,7 @@ class MessageDetail extends BaseComponent {
               UserId: props.currentMessage.user._id,
               myUserId: this.state.myUserId,
               ...json.Result,
-              userPhotos: result.Result,
+              userPhotos: result.Result.PhotoList,
               myLocation: tmpGlobal.currentLocation,
               isSelf: props.currentMessage.user._id === tmpGlobal.currentUser.UserId
             }

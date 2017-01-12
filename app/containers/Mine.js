@@ -188,7 +188,7 @@ class Mine extends BaseComponent {
             UserId: data.UserId,
             myUserId: data.UserId,//这里的myUserId跟this.state.UserId相等,因为是当前用户
             ...json.Result,
-            userPhotos: result.Result,
+            userPhotos: result.Result.PhotoList,
             myLocation: this.state.myLocation,
             isSelf: true//从我的页面进入用户详情,那么一定是当前用户
           }

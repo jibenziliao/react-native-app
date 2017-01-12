@@ -257,9 +257,20 @@ class PhotoViewer extends Component {
     )
   }
 
-  render() {
-    return (
-      <View style={styles.photosContainer}>
+  _renderTakePhotoBtn() {
+    if (this.props.imageArr.length === this.props.totalCount) {
+      return (
+        <TouchableOpacity
+          onPress={()=> {
+            //do nothing
+          }}
+          style={[styles.takePhotoBtn, {height: (width - 40) / 3 + 70}]}>
+          <Icon name={'picture-o'} size={30}/>
+          <Text>{'照片已满'}</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
         <TouchableOpacity
           onPress={()=> {
             this._initImagePicker()
@@ -268,6 +279,14 @@ class PhotoViewer extends Component {
           <Icon name={'picture-o'} size={30}/>
           <Text>{'添加照片'}</Text>
         </TouchableOpacity>
+      )
+    }
+  }
+
+  render() {
+    return (
+      <View style={styles.photosContainer}>
+        {this._renderTakePhotoBtn()}
         {this.state.imageArr.length > 0 && this.state.imageArr.map((item, index)=> {
           return (
             <View

@@ -380,19 +380,24 @@ class Message extends BaseComponent {
   //获取token后,初始化原生webSocket
   _wsTokenHandler() {
     let getUrl = `${URL_TOKEN_DEV}/signalr/negotiate?clientProtocol=1.5&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
+    //console.log(getUrl);
     fetch(getUrl, {
-      method: 'GET'
+      method: 'POST'
     }).then((response)=> {
       return response.json()
     }).then((json)=> {
       let wsUrl = `${URL_WS_DEV}/chat/signalr/hubs/signalr/connect?transport=webSockets&clientProtocol=1.5&connectionToken=${encodeURIComponent(json.ConnectionToken)}&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
       this._wsInitHandler(wsUrl);
+    }).catch((e)=>{
+      console.log(e);
+      this._wsTokenHandler();
     });
   }
 
   _wsInitHandler(wsUrl) {
     tmpGlobal.ws = null;
     tmpGlobal.ws = new WebSocket(wsUrl);
+
     tmpGlobal.ws.onopen = ()=> {
       this._wsLoginHandler();
       this._wsOpenReceiveHandler();
@@ -403,7 +408,7 @@ class Message extends BaseComponent {
     tmpGlobal.ws.onerror = (e) => {
       console.log(e, e.message);
       console.log(tmpGlobal.ws.readyState);
-      tmpGlobal.ws.close();
+      //tmpGlobal.ws.close();
     };
     tmpGlobal.ws.onclose = (e) => {
       console.log(e);
@@ -517,7 +522,7 @@ class Message extends BaseComponent {
             UserId: rowData.SenderId,
             myUserId: tmpGlobal.currentUser.UserId,
             ...json.Result,
-            userPhotos: result.Result,
+            userPhotos: result.Result.PhotoList,
             myLocation: tmpGlobal.currentLocation,
             isSelf: false
           }

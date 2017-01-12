@@ -44,6 +44,15 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1
   },
+  tips: {
+    flexDirection: 'row',
+    padding: 10
+  },
+  tipsText: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 14
+  }
 });
 
 let DictMap = {
@@ -62,6 +71,7 @@ let DictMapArrKey = ['EducationLevelDict', 'IncomeLevelDict', 'JobTypeDict', 'Ma
 let navigator;
 
 class EditPhotos extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -117,8 +127,9 @@ class EditPhotos extends BaseComponent {
       this._initDict((DictMap, result)=> {
         this.setState({
           DictMap: DictMap,
-          userPhotos: result,
-          loading: false
+          userPhotos: result.PhotoList,
+          loading: false,
+          CanUploadCountLeft: result.CanUploadCountLeft
         });
       }, json.Result);
     }, (error)=> {
@@ -175,7 +186,8 @@ class EditPhotos extends BaseComponent {
     this.setState({
       uploaded: false,
       changed: true,
-      ...this.state.userPhotos
+      ...this.state.userPhotos,
+      CanUploadCountLeft: this.state.CanUploadCountLeft - 1 >= 0 ? this.state.CanUploadCountLeft - 1 : 0
     })
   }
 
@@ -194,7 +206,8 @@ class EditPhotos extends BaseComponent {
     });
     this.state.userPhotos.splice(index, 1);
     this.setState({
-      userPhotos: this.state.userPhotos
+      userPhotos: this.state.userPhotos,
+      CanUploadCountLeft: this.state.CanUploadCountLeft + 1
     })
   }
 
@@ -234,6 +247,7 @@ class EditPhotos extends BaseComponent {
     return (
       <PhotoViewer
         imageArr={arr}
+        totalCount={arr.length + this.state.CanUploadCountLeft}
         imageArrChanges={(data)=> {
           this._userPhotosChanges(data)
         }}
@@ -266,6 +280,26 @@ class EditPhotos extends BaseComponent {
     }));
   }
 
+  _renderTips() {
+    if (this.state.CanUploadCountLeft === 0) {
+      return (
+        <View style={styles.tips}>
+          <Text
+            style={styles.tipsText}>{`您总共可以上传${this.state.userPhotos.length + this.state.CanUploadCountLeft}张照片,如需上传新照片,请删除一些再试。`}</Text>
+        </View>
+      )
+    } else if (this.state.CanUploadCountLeft !== 0) {
+      return (
+        <View style={styles.tips}>
+          <Text
+            style={styles.tipsText}>{`您总共可以上传${this.state.userPhotos.length + this.state.CanUploadCountLeft}张照片,还可上传${this.state.CanUploadCountLeft}张照片`}</Text>
+        </View>
+      )
+    } else {
+      return null;
+    }
+  }
+
   renderBody() {
     if (this.state.loading) {
       return null
@@ -274,6 +308,7 @@ class EditPhotos extends BaseComponent {
         <MenuContext style={styles.container}>
           <ScrollView
             style={styles.scrollViewContainer}>
+            {this._renderTips()}
             {this._renderPhotos(this.state.userPhotos)}
           </ScrollView>
         </MenuContext>
