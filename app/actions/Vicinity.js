@@ -61,7 +61,7 @@ export function saveCoordinate(data,resolve,reject) {
 
 export function saveLocation(data,resolve,reject) {
   return (dispatch)=> {
-    postFetch('/profile/ping', data, dispatch, {type: ActionTypes.FETCH_BEGIN}, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+    postFetch('/profile/ping', data, dispatch, {type: ActionTypes.FETCH_BEGIN_QUIET}, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
 

@@ -24,6 +24,8 @@ import tmpGlobal from '../utils/TmpVairables'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import * as HomeActions from '../actions/Home'
 import UserInfo from '../pages/UserInfo'
+import Settings from '../pages/Settings'
+import EditPhotos from '../pages/EditPhotos'
 
 const {height, width} = Dimensions.get('window');
 
@@ -74,12 +76,13 @@ class MainContainer extends Component {
     })
   }
 
-  _goPhotos(){
+  _goPhotos() {
     this.props.navigator.push({
-      component: EditPersonalSignature,
-      name: 'EditPersonalSignature',
+      component: EditPhotos,
+      name: 'EditPhotos',
       params: {
-        personalSignature: tmpGlobal.currentUser.PersonSignal
+        UserId: tmpGlobal.currentUser.UserId,
+        PrimaryPhotoFilename: tmpGlobal.currentUser.PhotoUrl
       },
     })
   }
@@ -112,10 +115,24 @@ class MainContainer extends Component {
     }));
   }
 
+  _goSettings() {
+    this.props.navigator.push({
+      component: Settings,
+      name: 'Settings'
+    });
+  }
+
   render() {
     const menu = <Menu
-      goSignature={()=>{this._goSignature()}}
-      goPhotos={()=>{this._goPhotos()}}
+      goSignature={()=> {
+        this._goSignature()
+      }}
+      goPhotos={()=> {
+        this._goPhotos()
+      }}
+      goSettings={()=> {
+        this._goSettings()
+      }}
       userInfo={tmpGlobal.currentUser}
       openMenuOffset={width * 2 / 3}
       navigator={this.props.navigator}/>;

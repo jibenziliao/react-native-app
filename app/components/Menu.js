@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   listItemContainer:{
-    backgroundColor:'gray'
+    backgroundColor:'#c7c7d0'
   },
   item: {
     fontSize: 14,
@@ -63,12 +63,16 @@ const styles = StyleSheet.create({
   listItem: {},
   itemContainer: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    height:60
   },
   iconContainer: {
     width: 60,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  itemText:{
+    fontSize:16
   },
 });
 
@@ -102,12 +106,40 @@ class Menu extends Component {
               onPress={()=> {
                 this.props.goPhotos()
               }}
-              underlayColor={'darkgray'}>
+              underlayColor={'#b8b8bf'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'home'} size={16}/>
+                  <Icon name={'picture-o'} size={20}/>
                 </View>
-                <Text>{'相册'}</Text>
+                <Text style={styles.itemText}>{'相册'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={styles.listItem}>
+            <TouchableHighlight
+              onPress={()=> {
+                this.props.goPhotos()
+              }}
+              underlayColor={'#b8b8bf'}>
+              <View style={styles.itemContainer}>
+                <View style={styles.iconContainer}>
+                  <Icon name={'address-card-o'} size={20}/>
+                </View>
+                <Text style={styles.itemText}>{'资料'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={styles.listItem}>
+            <TouchableHighlight
+              onPress={()=> {
+                this.props.goSettings()
+              }}
+              underlayColor={'#b8b8bf'}>
+              <View style={styles.itemContainer}>
+                <View style={styles.iconContainer}>
+                  <Icon name={'wrench'} size={20}/>
+                </View>
+                <Text style={styles.itemText}>{'设置'}</Text>
               </View>
             </TouchableHighlight>
           </View>
