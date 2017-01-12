@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   itemLeft: {
     flex: 1,
     flexDirection: 'row',
+    alignItems:'center'
   },
   itemIconContainer: {
     width: 60,
