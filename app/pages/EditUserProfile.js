@@ -472,7 +472,7 @@ class EditUserProfile extends BaseComponent {
   }
 
   _createMapData() {
-    return ['0m(精确定位)', '200m', '500m', '1000m', '隐身'];
+    return ['0m(精确定位)', '200m', '500m', '1000m'];
   }
 
   //通用选择弹窗显示文本方法

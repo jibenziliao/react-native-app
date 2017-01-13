@@ -49,6 +49,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E2E2E2'
   },
+  commonContainer: {
+    flex: 1
+  },
+  tipsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    marginVertical: 10
+  },
+  touchableTips: {
+    flex: 1,
+    backgroundColor: '#e8d62f',
+    alignItems:'center',
+    justifyContent:'center',
+    flexDirection:'row'
+  },
+  tipsContent: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  iconBox: {
+    height: 30,
+    width: 30,
+    alignItems:'center',
+    justifyContent:'center'
+  },
   listView: {
     flex: 1
   },
@@ -199,6 +228,8 @@ class Home extends BaseComponent {
     super(props);
     navigator = this.props.navigator;
     this.state = {
+      gpsStatus:this.props.gpsStatus,
+      closeTips:false,
       tabIndex: 0,
       refreshing: false,
       appointmentRefreshing: false,
@@ -395,6 +426,13 @@ class Home extends BaseComponent {
     this.setState({tabIndex: index}, ()=> {
       this._onRefresh();
     });
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      ...this.state,
+      ...nextProps
+    })
   }
 
   componentWillUnmount() {
@@ -746,12 +784,37 @@ class Home extends BaseComponent {
     })
   }
 
+  _renderLocationTips() {
+    if (this.state.gpsStatus || this.state.closeTips) {
+      return null;
+    } else {
+      return (
+        <View style={styles.tipsContainer}>
+          <TouchableHighlight
+            onPress={()=> {
+              this.setState({closeTips:true});
+            }}
+            underlayColor={'#faebd7'}
+            style={styles.touchableTips}>
+            <View style={styles.tipsContent}>
+              <Text numberOfLines={1}>{"打开定位功能,可查看更准确距离信息"}</Text>
+              <View style={styles.iconBox}>
+                <IonIcon name={'ios-close-outline'} size={24}/>
+              </View>
+            </View>
+          </TouchableHighlight>
+        </View>
+      )
+    }
+  }
+
   renderBody() {
     return (
       <View
         ref={'root'}
         style={[styles.container]}>
         <SubTabView
+          locationTips={this._renderLocationTips.bind(this)}
           index={this.state.tabIndex}
           tabIndex={this._handleChangeTab.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}

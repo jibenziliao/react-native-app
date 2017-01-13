@@ -107,6 +107,14 @@ class MainContainer extends Component {
     });
   }
 
+  _locationHandler() {
+    if (tmpGlobal.currentLocation === null || (tmpGlobal.currentLocation.Lat === 0 && tmpGlobal.currentLocation.Lng === 0)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   render() {
     const menu = <Menu
       goSignature={()=> {
@@ -142,6 +150,7 @@ class MainContainer extends Component {
               return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
             }}>
             <Home
+              gpsStatus={this._locationHandler()}
               isOpen={this.state.isOpen}
               menuChange={(isOpen)=> {
                 this.setState({isOpen: isOpen})

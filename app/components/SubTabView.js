@@ -7,7 +7,8 @@ import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  TouchableHighlight
 } from 'react-native'
 import {
   TabViewAnimated,
@@ -15,6 +16,8 @@ import {
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
+import IonIcon from 'react-native-vector-icons/Ionicons'
+
 
 const {height, width} = Dimensions.get('window');
 
@@ -74,15 +77,34 @@ export default class SubTabView extends Component {
   };
 
   _renderScene = ({route}) => {
-    switch (route.key) {
+    /*switch (route.key) {
       case '1':
-        return <MeetList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
+        return (<MeetList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>);
       case '2':
         return <AppointmentList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
       default:
         return null;
-    }
+    }*/
+    return(
+      <View style={styles.container}>
+        {this.props.locationTips()}
+        {this.renderList(route)}
+      </View>
+    )
   };
+
+
+
+  renderList(route){
+    switch (route.key) {
+      case '1':
+        return <MeetList style={[styles.page,{backgroundColor: '#ff4081'}]} {...this.state}/>;
+      case '2':
+        return <AppointmentList style={[styles.page,{backgroundColor: '#ff4081'}]} {...this.state}/>;
+      default:
+        return null;
+    }
+  }
 
   render() {
     return (
