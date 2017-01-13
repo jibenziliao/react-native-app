@@ -267,7 +267,7 @@ export function getMatchUsers(data, resolve, reject) {
 
 export function getRandomUsers(data,resolve,reject) {
   return (dispatch)=> {
-    getFetch('/profile/getrandomuser', data, dispatch, {
+    getFetch(`/profile/getrandomuser?pagesize=${data.pageSize}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
       data
     }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);

@@ -167,7 +167,7 @@ class Tinder extends BaseComponent {
       cards: [],
       outOfCards: false,
       pageIndex: 1,
-      pageSize: 5,
+      pageSize: 1,
       refresh: false,
       greetCount: 10
     };
