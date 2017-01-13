@@ -27,7 +27,6 @@ import RNPicker from 'react-native-picker'
 import tmpGlobal from '../utils/TmpVairables'
 
 let lastClickTime = 0;
-let watchId;
 
 const styles = StyleSheet.create({
   container: {
@@ -118,35 +117,18 @@ class App extends Component {
     }
   };
 
-  _Alert() {
-    Alert.alert('提示', '本APP依赖手机的GPS,未开启GPS,APP将使用随机位置', [
-      {
-        text: '确定', onPress: () => {
-      }
-      }
-    ]);
-  }
-
   getCurrentPosition() {
     console.log('定位开始');
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        let initialPosition = JSON.stringify(position);
-        console.log(initialPosition);
+        console.log(position);
         this._savePosition(position.coords.latitude, position.coords.longitude);
-        //定位成功后,关闭加载指示器
-        this.setState({loading: false, getRegistered: true});
       },
       (error) => {
         console.log(error);
-        //没有开启位置服务
-        if (error.code === 1) {
-          this._Alert();
-        }
         this._savePosition(0, 0);
-        this.setState({loading: false, getRegistered: true});
       },
-      {enableHighAccuracy: false, timeout: 10000, maximumAge: 5000}
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
     );
   }
 
@@ -156,7 +138,7 @@ class App extends Component {
       Lat: lat,
       Lng: lng
     };
-
+    this.setState({loading: false, getRegistered: true});
     async function saveLocation() {
       await Storage.setItem('currentLocation', params);
       Storage.getItem('hasRegistered').then(

@@ -86,15 +86,9 @@ let compareRegion = {
   sw_lat: 0,
   sw_long: 0
 };
-let compareCenterRegion = {
-  longitude: 0,
-  longitudeDelta: 0,
-  latitude: 0,
-  latitudeDelta: 0
-};
 let searchTimes = 0;
 let pageNavigator;
-let hasMove = false;
+let hasMove = true;
 let myLocation = {};
 
 class Map extends BaseComponent {
@@ -125,7 +119,7 @@ class Map extends BaseComponent {
     this.setState({pending: true});
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log(position);
+        //console.log(position);
         this._positionSuccessHandler(position);
       },
       (error) => {
@@ -134,17 +128,6 @@ class Map extends BaseComponent {
       },
       {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
     );
-    watchId = navigator.geolocation.watchPosition((position) => {
-        console.log(position);
-        //防止进入地图时,使用默认区域搜索,这里将搜索开关设为1,搜索区域发生变化后,即可搜索
-        searchTimes = 1;
-        this._positionSuccessHandler(position);
-        navigator.geolocation.clearWatch(watchId);
-      }, (error) => {
-        console.log(error);
-        this._positionErrorHandler(error);
-      },
-      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000});
   }
 
   _positionSuccessHandler(position) {
@@ -202,6 +185,8 @@ class Map extends BaseComponent {
       locations: [lastPosition],
       region: region,
       pending: false,
+    }, ()=> {
+      this.onRegionChangeComplete(region);
     });
   }
 
@@ -224,6 +209,9 @@ class Map extends BaseComponent {
   onRegionChange(newRegion) {
     //console.log('显示区域发生了变化', newRegion);
     hasMove = true;
+    this.setState({
+      region: newRegion
+    });
   }
 
   onRegionChangeComplete(newRegion) {
@@ -238,59 +226,46 @@ class Map extends BaseComponent {
       sw_lat: sw_lat,
       sw_long: sw_long
     };
-    // Fetch new data...
     //console.log('中心区域', newRegion);
     //console.log('搜索区域', searchRegion);
 
-    const {dispatch} =this.props;
-    //state变化会引起render重绘,继而重复执行onRegionChange方法
-    //dispatch(VicinityActions.searchNearby(searchRegion));
-
     //console.log('搜索对比区域', compareRegion);
-    //console.log('中心对比区域', compareCenterRegion);
 
     if (searchRegion.ne_lat != compareRegion.ne_lat) {
       //console.log('搜索区域发生变化');
-      if (!this.props.pendingStatus) {
-        compareRegion = searchRegion;
-        compareCenterRegion = newRegion;
-      }
-
-      //参数处理
-      const params = {
-        TopRight: {
-          Lat: searchRegion.ne_lat < 90 ? searchRegion.ne_lat : 89,
-          Lng: searchRegion.ne_long < 180 ? searchRegion.ne_long : 179
-        },
-        BottomLeft: {
-          Lat: searchRegion.sw_lat > -90 ? searchRegion.sw_lat : -89,
-          Lng: searchRegion.sw_long > -180 ? searchRegion.sw_long : -179
-        }
-      };
-
-      if (1 === searchTimes || hasMove) {
-        //console.log('开始搜索附近的人');
-
-        hasMove = false;
-        searchTimes += 1;
-        this.setState({pending: true, region: newRegion});
-
-        fetch(URL_DEV + '/contacts/nearby', this.fetchOptions(params))
-          .then(response => response.json())
-          .then(json => {
-            if ('OK' !== json.Code) {
-              toastShort(json.Message);
-            } else {
-              //console.log('搜索结果', json);
-              //console.log('附近的人搜索结束');
-              this.setState({locations: json.Result, pending: false, region: newRegion});
-            }
-          }).catch((err)=> {
-          //console.log(err);
-          toastShort('网络发生错误,请重试');
-        })
-      }
+      compareRegion = searchRegion;
+      this.setState({region: newRegion}, ()=> {
+        this._searchNearBy(searchRegion)
+      });
     }
+  }
+
+  _searchNearBy(searchRegion) {
+    //console.log('开始搜索附近的人');
+    //参数处理
+    const params = {
+      TopRight: {
+        Lat: searchRegion.ne_lat < 90 ? searchRegion.ne_lat : 89,
+        Lng: searchRegion.ne_long < 180 ? searchRegion.ne_long : 179
+      },
+      BottomLeft: {
+        Lat: searchRegion.sw_lat > -90 ? searchRegion.sw_lat : -89,
+        Lng: searchRegion.sw_long > -180 ? searchRegion.sw_long : -179
+      }
+    };
+    fetch(URL_DEV + '/contacts/nearby', this.fetchOptions(params))
+      .then(response => response.json())
+      .then(json => {
+        if ('OK' !== json.Code) {
+          toastShort(json.Message);
+        } else {
+          //console.log('附近的人搜索结束',json.Result);
+          this.setState({locations: json.Result});
+        }
+      }).catch((err)=> {
+      //console.log(err);
+      toastShort('网络发生错误,请重试');
+    })
   }
 
   calloutPress(data) {
@@ -351,7 +326,7 @@ class Map extends BaseComponent {
         toolbarEnabled={false}
         loadingEnabled={false}
         showsScale={true}
-        pitchEnabled={true}
+        pitchEnabled={false}
       >
         {this.state.locations.map((location) => this.renderMapMarkers(location))}
       </MapView>
