@@ -184,11 +184,11 @@ class Tinder extends BaseComponent {
 
   componentDidMount() {
     InteractionManager.runAfterInteractions(()=> {
-      this._getMatchUserList();
-    })
+      this._getRandomUserList();
+    });
   }
 
-  _getMatchUserList() {
+  _getRandomUserList() {
     const {dispatch}=this.props;
     let data = {
       lat: tmpGlobal.currentLocation.Lat,
@@ -196,7 +196,7 @@ class Tinder extends BaseComponent {
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize
     };
-    dispatch(HomeActions.getMatchUsers(data, (json)=> {
+    dispatch(HomeActions.getRandomUsers(data, (json)=> {
       lastCount = json.Result.length;
       this.setState({
         cards: json.Result
@@ -308,7 +308,7 @@ class Tinder extends BaseComponent {
     this.setState({refresh: false});
     //console.log(this.props);
     //console.log(`The index is ${index}`);
-    let CARD_REFRESH_LIMIT = 3;
+    let CARD_REFRESH_LIMIT = 0;
     if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
       console.log(`There are only ${this.state.cards.length - index - 1} cards left.`);
       if (lastCount === this.state.pageSize && this.state.cards.length >= this.state.pageSize) {

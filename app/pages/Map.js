@@ -3,13 +3,16 @@
  * @author keyy/1501718947@qq.com 16/12/21 15:06
  * @description
  */
-import React,{Component} from 'react'
+import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
   Text,
   StatusBar,
-  Platform
+  Platform,
+  InteractionManager,
+  Dimensions,
+  TouchableHighlight
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MapView from 'react-native-maps'
@@ -22,14 +25,58 @@ import {connect} from 'react-redux'
 import {URL_DEV} from '../constants/Constant'
 import UserInfo from '../pages/UserInfo'
 import * as HomeActions from '../actions/Home'
+import tmpGlobal from '../utils/TmpVairables'
+
+const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1
   },
+  gpsTips: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    ...Platform.select({
+      ios: {
+        top: 12,
+        left: 60,
+        right: 60,
+        height: 38,
+      },
+      android: {
+        top: 12,
+        left: 60,
+        right: 60,
+        height: 38,
+      }
+    }),
+    backgroundColor: 'rgba(255,255,0,0.7)'
+  },
+  tipsContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  tipsText: {
+    fontSize: 12,
+    textAlign: 'center',
+    flex: 1,
+  },
   map: {
-    flex:1
-  }
+    position: 'absolute',
+    width: width,
+    ...Platform.select({
+      ios: {
+        height: height - 64
+      },
+      android: {
+        height: height - 54
+      }
+    })
+  },
 });
 
 let watchId;
@@ -49,9 +96,9 @@ let searchTimes = 0;
 let pageNavigator;
 let hasMove = false;
 let myLocation = {};
-let currentUser = {};
 
-class Map extends BaseComponent{
+class Map extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -59,6 +106,7 @@ class Map extends BaseComponent{
       initialPosition: 'unknown',
       lastPosition: 'unknown',
       GPS: true,
+      tipsText: '请在设置中打开高精确度定位,以便查看附近的人',
       refresh: false,
       locations: []
     };
@@ -67,17 +115,9 @@ class Map extends BaseComponent{
   }
 
   componentWillMount() {
-    this._getUserInfo();
-  }
-
-  _getUserInfo() {
-    console.log('开始获取用户信息');
-    const {dispatch}=this.props;
-    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      currentUser = json.Result;
+    InteractionManager.runAfterInteractions(() => {
       this.getPosition();
-    }, (error)=> {
-    }));
+    });
   }
 
   getPosition() {
@@ -85,61 +125,89 @@ class Map extends BaseComponent{
     this.setState({pending: true});
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        let initialPosition = JSON.stringify(position);
-        this.setState({initialPosition});
-        console.log(initialPosition);
+        console.log(position);
+        this._positionSuccessHandler(position);
       },
       (error) => {
-        console.log(JSON.stringify(error));
-        if ('"No available location provider."' == JSON.stringify(error)) {
-          toastShort('请打开GPS开关');
-          this.setState({pending: false, GPS: false});
-        }
+        console.log(error);
+        this._positionErrorHandler(error);
       },
-      {enableHighAccuracy: true, timeout: 10000, maximumAge: 5000}
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
     );
     watchId = navigator.geolocation.watchPosition((position) => {
-      const lastPosition = {
-        UserId: 0,
-        PhotoUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
-        Nickname: 'You are here!',
-        LastLocation: {
-          Lat: position.coords.latitude,
-          Lng: position.coords.longitude
-        },
-        DatingPurpose: ''
-      };
-
-      const initLocation = [{
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      }];
-      //根据坐标计算区域(latPadding=0.15时,zoomLevel是10)
-      const region = calculateRegion(initLocation, {latPadding: 0.02, longPadding: 0.02});
-
-      console.log('成功获取当前区域', region);
-      console.log('成功获取当前位置', lastPosition);
-      this.setState({locations: [lastPosition], region: region, pending: false, lastPosition: lastPosition});
-
-      //防止进入地图时,使用默认区域搜索,这里将搜索开关设为1,搜索区域发生变化后,即可搜索
-      searchTimes = 1;
-
-      const {dispatch}=this.props;
-      const params = {
-        Lat: this.state.lastPosition.LastLocation.Lat,
-        Lng: this.state.lastPosition.LastLocation.Lng
-      };
-      myLocation = params;
-      dispatch(VicinityActions.saveCoordinate(params));
-      navigator.geolocation.clearWatch(watchId);
-    },(error) => {
-        //没有开启位置服务
-        if (error.code === 1) {
-          toastShort('请打开GPS开关');
-          this.setState({pending: false, GPS: false});
-        }
+        console.log(position);
+        //防止进入地图时,使用默认区域搜索,这里将搜索开关设为1,搜索区域发生变化后,即可搜索
+        searchTimes = 1;
+        this._positionSuccessHandler(position);
+        navigator.geolocation.clearWatch(watchId);
+      }, (error) => {
+        console.log(error);
+        this._positionErrorHandler(error);
       },
-      {enableHighAccuracy: false, timeout: 10000, maximumAge: 5000});
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000});
+  }
+
+  _positionSuccessHandler(position) {
+    tmpGlobal.currentLocation = {
+      Lat: position.coords.latitude,
+      Lng: position.coords.longitude
+    };
+    this._initRegion(position.coords.latitude, position.coords.longitude);
+    this._savePosition(position.coords.latitude, position.coords.longitude);
+    this.setState({
+      pending: false,
+      GPS: true
+    });
+  }
+
+  _positionErrorHandler(error) {
+    if (('"No available location provider."' === JSON.stringify(error)) || (error.code && error.code === 1)) {
+      //toastShort('请打开GPS开关');
+      //没有开启位置服务
+      this.setState({
+        pending: false,
+        GPS: false,
+        tipsText: '请在设置中打开定位,以便查看附近的人'
+      });
+    } else if (error.code && error.code === 3) {
+      this.setState({
+        pending: false,
+        GPS: false,
+        tipsText: '请在设置中开启高精度定位后点此重试,以便获取更精确的位置信息'
+      });
+    } else {
+      this.setState({
+        pending: false,
+        GPS: false,
+        tipsText: '请在设置中打开定位,以便查看附近的人'
+      });
+    }
+  }
+
+  _initRegion(lat, lng) {
+    let region = calculateRegion([{latitude: lat, longitude: lng}], {latPadding: 0.02, longPadding: 0.02});
+    const lastPosition = {
+      UserId: 0,
+      PhotoUrl: 'http://oatl31bw3.bkt.clouddn.com/735510dbjw8eoo1nn6h22j20m80m8t9t.jpg',
+      Nickname: 'You are here!',
+      LastLocation: {
+        Lat: lat,
+        Lng: lng
+      },
+      DatingPurpose: ''
+    };
+    //console.log('成功获取当前区域', region);
+    //console.log('成功获取当前位置', lastPosition);
+    this.setState({
+      locations: [lastPosition],
+      region: region,
+      pending: false,
+    });
+  }
+
+  _savePosition(lat, lng) {
+    const {dispatch}=this.props;
+    dispatch(VicinityActions.saveCoordinate({Lat: lat, Lng: lng}));
   }
 
   fetchOptions(data) {
@@ -154,7 +222,7 @@ class Map extends BaseComponent{
   }
 
   onRegionChange(newRegion) {
-    console.log('显示区域发生了变化', newRegion);
+    //console.log('显示区域发生了变化', newRegion);
     hasMove = true;
   }
 
@@ -171,18 +239,18 @@ class Map extends BaseComponent{
       sw_long: sw_long
     };
     // Fetch new data...
-    console.log('中心区域', newRegion);
-    console.log('搜索区域', searchRegion);
+    //console.log('中心区域', newRegion);
+    //console.log('搜索区域', searchRegion);
 
     const {dispatch} =this.props;
     //state变化会引起render重绘,继而重复执行onRegionChange方法
     //dispatch(VicinityActions.searchNearby(searchRegion));
 
-    console.log('搜索对比区域', compareRegion);
-    console.log('中心对比区域', compareCenterRegion);
+    //console.log('搜索对比区域', compareRegion);
+    //console.log('中心对比区域', compareCenterRegion);
 
     if (searchRegion.ne_lat != compareRegion.ne_lat) {
-      console.log('搜索区域发生变化');
+      //console.log('搜索区域发生变化');
       if (!this.props.pendingStatus) {
         compareRegion = searchRegion;
         compareCenterRegion = newRegion;
@@ -201,7 +269,7 @@ class Map extends BaseComponent{
       };
 
       if (1 === searchTimes || hasMove) {
-        console.log('开始搜索附近的人');
+        //console.log('开始搜索附近的人');
 
         hasMove = false;
         searchTimes += 1;
@@ -213,12 +281,12 @@ class Map extends BaseComponent{
             if ('OK' !== json.Code) {
               toastShort(json.Message);
             } else {
-              console.log('搜索结果', json);
-              console.log('附近的人搜索结束');
+              //console.log('搜索结果', json);
+              //console.log('附近的人搜索结束');
               this.setState({locations: json.Result, pending: false, region: newRegion});
             }
           }).catch((err)=> {
-          console.log(err);
+          //console.log(err);
           toastShort('网络发生错误,请重试');
         })
       }
@@ -229,7 +297,7 @@ class Map extends BaseComponent{
     const {dispatch}=this.props;
     let params = {
       UserId: data.UserId,
-      ...myLocation
+      ...tmpGlobal.currentLocation
     };
     dispatch(HomeActions.getUserInfo(params, (json)=> {
       dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
@@ -239,11 +307,11 @@ class Map extends BaseComponent{
           params: {
             Nickname: data.Nickname,
             UserId: data.UserId,
-            myUserId: currentUser.UserId,
+            myUserId: tmpGlobal.currentUser.UserId,
             ...json.Result,
             userPhotos: result.Result,
             myLocation: myLocation,
-            isSelf: data.UserId === currentUser.UserId
+            isSelf: data.UserId === tmpGlobal.currentUser.UserId
           }
         });
       }, (error)=> {
@@ -264,32 +332,30 @@ class Map extends BaseComponent{
     )
   }
 
-  renderMapViews(loading) {
-    if (!loading) {
-      return (
-        <MapView
-          provider={"google"}
-          style={styles.map}
-          region={this.state.region}
-          onRegionChangeComplete={(newRegion)=> {
-            this.onRegionChangeComplete(newRegion)
-          }}
-          onRegionChange={(newRegion)=> {
-            this.onRegionChange(newRegion);
-          }}
-          showsCompass={true}
-          showsUserLocation={true}
-          followsUserLocation={false}
-          showsMyLocationButton={true}
-          toolbarEnabled={false}
-          loadingEnabled={false}
-          showsScale={true}
-          pitchEnabled={true}
-        >
-          {this.state.locations.map((location) => this.renderMapMarkers(location))}
-        </MapView>
-      )
-    }
+  renderMapViews() {
+    return (
+      <MapView
+        provider={"google"}
+        style={styles.map}
+        region={this.state.region}
+        onRegionChangeComplete={(newRegion)=> {
+          this.onRegionChangeComplete(newRegion)
+        }}
+        onRegionChange={(newRegion)=> {
+          this.onRegionChange(newRegion);
+        }}
+        showsCompass={true}
+        showsUserLocation={true}
+        followsUserLocation={false}
+        showsMyLocationButton={true}
+        toolbarEnabled={false}
+        loadingEnabled={false}
+        showsScale={true}
+        pitchEnabled={true}
+      >
+        {this.state.locations.map((location) => this.renderMapMarkers(location))}
+      </MapView>
+    )
   }
 
   renderSpinner() {
@@ -310,14 +376,18 @@ class Map extends BaseComponent{
   renderWarningView(data) {
     if (data) {
       return (
-        <View style={{margin: 30}}>
-          <Text style={{fontSize: 28}} onPress={()=> {
+        <TouchableHighlight
+          onPress={()=> {
             this.refreshPage()
-          }
-          }>
-            打开手机GPS开关,并给本APP权限后,点此重试
-          </Text>
-        </View>
+          }}
+          underlayColor={'rgba(214,214,14,0.7)'}
+          style={styles.gpsTips}>
+          <View style={styles.tipsContent}>
+            <Text style={styles.tipsText}>
+              {this.state.tipsText}
+            </Text>
+          </View>
+        </TouchableHighlight>
       )
     }
   }
@@ -331,11 +401,12 @@ class Map extends BaseComponent{
   renderBody() {
     return (
       <View style={styles.container}>
+        {this.renderMapViews()}
         {this.renderWarningView(!this.state.GPS)}
-        {this.renderMapViews(this.props.saveCoordinateStatus || !this.state.GPS)}
       </View>
     )
   }
+
 }
 
 const mapStateToProps = (state) => {

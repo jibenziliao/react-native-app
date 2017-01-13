@@ -44,16 +44,16 @@ export function searchNearby(data) {
 
 export function saveCoordinate(data,resolve,reject) {
   return (dispatch)=> {
-    dispatch({type: ActionTypes.SAVE_USER_COORDINATE_BEGIN, data});
+    dispatch({type: ActionTypes.FETCH_BEGIN_QUIET, data});
     fetch(URL_DEV + '/profile/ping', fetchOptions(data))
       .then(response=>response.json())
       .then(json=> {
-        dispatch({type: ActionTypes.SAVE_USER_COORDINATE_END, data, json});
+        dispatch({type: ActionTypes.FETCH_END_QUIET, data, json});
         if ('OK' !== json.Code) {
           toastShort(json.Message);
         }
       }).catch((err)=> {
-      dispatch({type: ActionTypes.SAVE_USER_COORDINATE_END, data, err});
+      dispatch({type: ActionTypes.FETCH_FAILED_QUIET, data, err});
       toastShort('网络发生错误,请重试')
     })
   };
