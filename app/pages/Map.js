@@ -79,17 +79,13 @@ const styles = StyleSheet.create({
   },
 });
 
-let watchId;
 let compareRegion = {
   ne_lat: 0,
   ne_long: 0,
   sw_lat: 0,
   sw_long: 0
 };
-let searchTimes = 0;
 let pageNavigator;
-let hasMove = true;
-let myLocation = {};
 
 class Map extends BaseComponent {
 
@@ -144,27 +140,40 @@ class Map extends BaseComponent {
   }
 
   _positionErrorHandler(error) {
-    if (('"No available location provider."' === JSON.stringify(error)) || (error.code && error.code === 1)) {
-      //toastShort('请打开GPS开关');
-      //没有开启位置服务
-      this.setState({
-        pending: false,
-        GPS: false,
-        tipsText: '请在设置中打开定位,以便查看附近的人'
-      });
-    } else if (error.code && error.code === 3) {
-      this.setState({
-        pending: false,
-        GPS: false,
-        tipsText: '请在设置中开启高精度定位后点此重试,以便获取更精确的位置信息'
-      });
-    } else {
-      this.setState({
-        pending: false,
-        GPS: false,
-        tipsText: '请在设置中打开定位,以便查看附近的人'
-      });
+    let index = this._errorCodeHandler(error, Platform.OS);
+    this.setState({
+      pending: false,
+      GPS: false,
+      tipsText: this._tipsTextHandler(index, Platform.OS)
+    });
+  }
+
+  _tipsTextHandler(index, osType) {
+    switch (index) {
+      case 1:
+        return osType === 'ios' ? '请前往设置->隐私->觅友 Meet U->允许访问位置信息改为始终,然后点此获取位置信息' : '请在设置中开启位置服务,并选择高精确度,然后点此获取位置信息';
+        break;
+      case 2:
+        return osType === 'ios' ? '定位失败,点此重试或者手动查看附近的人' : '定位失败,点此重试或者手动查看附近的人';
+        break;
+      case 3:
+        return osType === 'ios' ? '你可以手动查看附近的人或者点此重新定位' : '你可以手动查看附近的人或者点此重新定位';
+        break;
+      case 4://特殊处理的iOS错误码,表明虽然开启的定位服务,但是没有给本APP权限
+        return '请前往设置->隐私->定位服务->开启->觅友 Meet U->始终,然后点此获取位置信息';
+        break;
+      default:
+        return '定位失败,点此重试或者手动查看附近的人';
     }
+  }
+
+  _errorCodeHandler(error, osType) {
+    if (osType === 'android' && '"No available location provider."' === JSON.stringify(error)) {
+      return 1;
+    } else if (osType === 'ios' && error.code === 2 && error.message === 'Location services disabled.') {
+      return 4;
+    }
+    return error.code;
   }
 
   _initRegion(lat, lng) {
@@ -208,7 +217,6 @@ class Map extends BaseComponent {
 
   onRegionChange(newRegion) {
     //console.log('显示区域发生了变化', newRegion);
-    hasMove = true;
     this.setState({
       region: newRegion
     });
@@ -269,30 +277,15 @@ class Map extends BaseComponent {
   }
 
   calloutPress(data) {
-    const {dispatch}=this.props;
-    let params = {
-      UserId: data.UserId,
-      ...tmpGlobal.currentLocation
-    };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
-        pageNavigator.push({
-          component: UserInfo,
-          name: 'UserInfo',
-          params: {
-            Nickname: data.Nickname,
-            UserId: data.UserId,
-            myUserId: tmpGlobal.currentUser.UserId,
-            ...json.Result,
-            userPhotos: result.Result,
-            myLocation: myLocation,
-            isSelf: data.UserId === tmpGlobal.currentUser.UserId
-          }
-        });
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));
+    pageNavigator.push({
+      component: UserInfo,
+      name: 'UserInfo',
+      params: {
+        Nickname: data.Nickname,
+        UserId: data.UserId,
+        isSelf: tmpGlobal.currentUser.UserId === data.UserId,
+      }
+    });
   }
 
   renderMapMarkers(location) {
@@ -342,10 +335,12 @@ class Map extends BaseComponent {
   }
 
   refreshPage() {
-    setTimeout(()=> {
-      this.setState({pending: true, GPS: false});
-      this.getPosition();
-    }, 100);
+    this.setState({
+      pending: true,
+      GPS: false,
+      tipsText: '正在获取您的位置信息'
+    });
+    this.getPosition();
   }
 
   renderWarningView(data) {
