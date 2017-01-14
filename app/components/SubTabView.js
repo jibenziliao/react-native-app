@@ -12,7 +12,8 @@ import {
 } from 'react-native'
 import {
   TabViewAnimated,
-  TabBar
+  TabBar,
+  TabBarTop
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
@@ -38,9 +39,15 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   tabBar: {
-    backgroundColor: '#5067FF'
+    //backgroundColor: '#5067FF',
+    zIndex:0
   },
 });
+
+const initialLayout = {
+  height: 0,
+  width: Dimensions.get('window').width,
+};
 
 export default class SubTabView extends Component {
 
@@ -64,12 +71,13 @@ export default class SubTabView extends Component {
   }
 
   _handleChangeTab = (index) => {
-    this.setState({index});
-    this.props.tabIndex(index);
+    this.setState({index:index},()=>{
+      this.props.tabIndex(index);
+    });
   };
 
   _renderHeader = (props) => {
-    return <TabBar
+    return <TabBarTop
       scrollEnabled={true}
       tabWidth={width / 2}
       tabStyle={styles.tabBar}
@@ -106,9 +114,12 @@ export default class SubTabView extends Component {
     }
   }
 
+
+
   render() {
     return (
       <TabViewAnimated
+        initialLayout={initialLayout}
         style={styles.container}
         navigationState={this.state}
         renderScene={this._renderScene}

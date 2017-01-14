@@ -152,16 +152,12 @@ class Map extends BaseComponent {
     switch (index) {
       case 1:
         return osType === 'ios' ? '请前往设置->隐私->觅友 Meet U->允许访问位置信息改为始终,然后点此获取位置信息' : '请在设置中开启位置服务,并选择高精确度,然后点此获取位置信息';
-        break;
       case 2:
         return osType === 'ios' ? '定位失败,点此重试或者手动查看附近的人' : '定位失败,点此重试或者手动查看附近的人';
-        break;
       case 3:
         return osType === 'ios' ? '你可以手动查看附近的人或者点此重新定位' : '你可以手动查看附近的人或者点此重新定位';
-        break;
       case 4://特殊处理的iOS错误码,表明虽然开启的定位服务,但是没有给本APP权限
         return '请前往设置->隐私->定位服务->开启->觅友 Meet U->始终,然后点此获取位置信息';
-        break;
       default:
         return '定位失败,点此重试或者手动查看附近的人';
     }
