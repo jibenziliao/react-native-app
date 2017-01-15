@@ -6,7 +6,7 @@
 import * as ActionTypes from './ActionTypes'
 import {postFetch, getFetch, putFetch, deleteFetch} from '../utils/NetUtil'
 import {toastShort} from '../utils/ToastUtil'
-import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import {URL_DEV} from '../constants/Constant'
 import {DeviceEventEmitter} from 'react-native'
 import tmpGlobal from '../utils/TmpVairables'
 

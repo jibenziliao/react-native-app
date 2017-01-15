@@ -14,12 +14,10 @@ import {
   TouchableOpacity,
   TouchableHighlight
 } from 'react-native'
-import {URL_DEV, TIME_OUT} from '../constants/Constant'
-import tmpGlobal from '../utils/TmpVairables'
+import {URL_DEV} from '../constants/Constant'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 const window = Dimensions.get('window');
-const uri = 'https://pickaface.net/gallery/avatar/Opi51c74d0125fd4.png';
 
 const styles = StyleSheet.create({
   menu: {

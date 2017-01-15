@@ -17,7 +17,8 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
-import {getRouteMap, registerNavigator} from '../navigation/Route'
+import {registerNavigator} from '../navigation/Route'
+import {LOCATION_TIME_OUT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import Login from '../pages/Login'
 import MainContainer from '../containers/MainContainer'
@@ -128,7 +129,7 @@ class App extends Component {
         console.log(error);
         this._savePosition(0, 0);
       },
-      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
+      {enableHighAccuracy: false, timeout: LOCATION_TIME_OUT, maximumAge: 5000}
     );
   }
 

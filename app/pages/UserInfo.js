@@ -18,7 +18,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import {URL_DEV} from '../constants/Constant'
 import * as HomeActions from '../actions/Home'
 import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import AnnouncementList from '../pages/AnnouncemenetList'

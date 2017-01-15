@@ -18,7 +18,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
+import {URL_DEV} from '../constants/Constant'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as HomeActions from '../actions/Home'
 import LoadMoreFooter from '../components/LoadMoreFooter'

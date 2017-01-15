@@ -25,7 +25,7 @@ import Menu, {
   MenuOption,
   MenuTrigger
 } from 'react-native-popup-menu'
-import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import {URL_DEV} from '../constants/Constant'
 
 const {width, height}=Dimensions.get('window');
 

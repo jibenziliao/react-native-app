@@ -18,7 +18,7 @@ import {
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {URL_DEV, TIME_OUT} from '../constants/Constant'
+import {URL_DEV} from '../constants/Constant'
 import Spinner from '../components/Spinner'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import UserInfo from '../pages/UserInfo'

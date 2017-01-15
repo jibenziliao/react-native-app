@@ -18,10 +18,10 @@ import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import SwipeCards from 'react-native-swipe-cards'
 import {connect} from 'react-redux'
-import {URL_DEV, TIME_OUT, URL_WS_DEV} from '../constants/Constant'
+import {URL_DEV} from '../constants/Constant'
 import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
-import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import {dateFormat} from '../utils/DateUtil'
 import * as Storage from '../utils/Storage'
 
 const {width, height}=Dimensions.get('window');
