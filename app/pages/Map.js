@@ -22,7 +22,7 @@ import MapCallout from '../components/MapCallout'
 import {toastShort} from '../utils/ToastUtil'
 import * as VicinityActions from '../actions/Vicinity'
 import {connect} from 'react-redux'
-import {URL_DEV} from '../constants/Constant'
+import {URL_DEV,LOCATION_TIME_OUT} from '../constants/Constant'
 import UserInfo from '../pages/UserInfo'
 import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
@@ -122,7 +122,7 @@ class Map extends BaseComponent {
         console.log(error);
         this._positionErrorHandler(error);
       },
-      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
+      {enableHighAccuracy: false, timeout: LOCATION_TIME_OUT, maximumAge: 5000}
     );
   }
 
