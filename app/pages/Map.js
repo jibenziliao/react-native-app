@@ -360,7 +360,7 @@ class Map extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '附近'
+      title: '寻TA'
     };
   }
 

@@ -388,7 +388,7 @@ class Message extends BaseComponent {
     }).then((json)=> {
       let wsUrl = `${URL_WS_DEV}/chat/signalr/hubs/signalr/connect?transport=webSockets&clientProtocol=1.5&connectionToken=${encodeURIComponent(json.ConnectionToken)}&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
       this._wsInitHandler(wsUrl);
-    }).catch((e)=>{
+    }).catch((e)=> {
       console.log(e);
       this._wsTokenHandler();
     });
@@ -399,8 +399,10 @@ class Message extends BaseComponent {
     tmpGlobal.ws = new WebSocket(wsUrl);
 
     tmpGlobal.ws.onopen = ()=> {
-      this._wsLoginHandler();
-      this._wsOpenReceiveHandler();
+      if (tmpGlobal.ws.readyState === 1) {
+        this._wsLoginHandler();
+        this._wsOpenReceiveHandler();
+      }
     };
     tmpGlobal.ws.onmessage = (e) => {
       this._wsNewMsgHandler(JSON.parse(e.data));
