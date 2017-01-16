@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   likeBtn: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: width/4
+    width: width / 4
   }
 });
 
@@ -151,9 +151,9 @@ let NoMoreCards = React.createClass({
       <TouchableOpacity
         style={styles.noMoreCards}
         onPress={()=> {
-          this.props.refresh()
+          //this.props.refresh()
         }}>
-        <Text>没有更多卡片了,点击刷新</Text>
+        <Text>没有更多卡片了,请明天再试</Text>
       </TouchableOpacity>
     )
   }
@@ -169,7 +169,7 @@ class Tinder extends BaseComponent {
       pageIndex: 1,
       pageSize: 1,
       refresh: false,
-      greetCount: 10
+      greetCount: 0
     };
     this.handleYup = this.handleYup.bind(this);
     this.handleNope = this.handleNope.bind(this);
@@ -191,17 +191,22 @@ class Tinder extends BaseComponent {
   _getRandomUserList() {
     const {dispatch}=this.props;
     let data = {
-      lat: tmpGlobal.currentLocation.Lat,
-      lng: tmpGlobal.currentLocation.Lng,
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize
     };
     dispatch(HomeActions.getRandomUsers(data, (json)=> {
       lastCount = json.Result.length;
-      this.setState({
-        cards: json.Result
-      });
+      dispatch(HomeActions.getRandomUsers(data, (res)=> {
+        this.setState({
+          cards: json.Result.concat(res.Result)
+        });
+      }, (error)=> {
+        this.setState({
+          cards: json.Result
+        });
+      }));
     }, (error)=> {
+
     }));
   }
 
@@ -295,7 +300,7 @@ class Tinder extends BaseComponent {
       if (this.state.greetCount > 0 && tmpGlobal.webSocketInitState) {
         this._greet(card);
       }
-    })
+    });
   }
 
   //跳过
@@ -311,25 +316,21 @@ class Tinder extends BaseComponent {
     let CARD_REFRESH_LIMIT = 0;
     if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
       console.log(`There are only ${this.state.cards.length - index - 1} cards left.`);
-      if (lastCount === this.state.pageSize && this.state.cards.length >= this.state.pageSize) {
-        const {dispatch} = this.props;
-        this.state.pageIndex += 1;
-        const data = {
-          pageSize: this.state.pageSize,
-          pageIndex: this.state.pageIndex,
-          lat: tmpGlobal.currentLocation.Lat,
-          lng: tmpGlobal.currentLocation.Lng
-        };
-        dispatch(HomeActions.getMatchUsersQuiet(data, (json)=> {
-          lastCount = json.Result.length;
-          this.setState({
-            cards: this.state.cards.concat(json.Result)
-          });
-          console.log(`Adding ${json.Result.length} more cards`);
-        }, (error)=> {
+      const {dispatch} = this.props;
+      this.state.pageIndex += 1;
+      const data = {
+        pageSize: this.state.pageSize,
+        pageIndex: this.state.pageIndex
+      };
+      dispatch(HomeActions.getRandomUsersQuiet(data, (json)=> {
+        lastCount = json.Result.length;
+        this.setState({
+          cards: this.state.cards.concat(json.Result)
+        });
+        console.log(`Adding ${json.Result.length} more cards`);
+      }, (error)=> {
 
-        }));
-      }
+      }));
     }
   }
 

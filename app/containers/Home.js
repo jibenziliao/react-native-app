@@ -33,7 +33,7 @@ import Spinner from '../components/Spinner'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
-import {URL_DEV} from '../constants/Constant'
+import {URL_DEV,LOCATION_TIME_OUT} from '../constants/Constant'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
 });
 
-let navigator;
+let pageNavigator;
 let commentId;
 let lastCount = null, appointmentCount = null;
 
@@ -226,7 +226,7 @@ class Home extends BaseComponent {
 
   constructor(props) {
     super(props);
-    navigator = this.props.navigator;
+    pageNavigator = this.props.navigator;
     this.state = {
       gpsStatus: this.props.gpsStatus,
       closeTips: false,
@@ -495,13 +495,13 @@ class Home extends BaseComponent {
 
   //检查是否有未过期的聚会/约会
   _canPost(int) {
-    const {dispatch, navigator}=this.props;
+    const {dispatch, pageNavigator}=this.props;
     let data = {
       postType: int
     };
     dispatch(HomeActions.newPost(data, (json)=> {
       if (json.Result.CanPost) {
-        navigator.push({
+        pageNavigator.push({
           component: Addannouncement,
           name: 'Addannouncement',
           params: {
@@ -518,7 +518,7 @@ class Home extends BaseComponent {
 
   //前往我的历史公告列表(包含聚会和约会)
   _goAnnouncementList() {
-    navigator.push({
+    pageNavigator.push({
       component: AnnouncementList,
       name: 'AnnouncementList',
       params: {
@@ -545,7 +545,7 @@ class Home extends BaseComponent {
   //点击头像和名字,跳转个人信息详情页
   _goUserInfo(data) {
     this._closeCommentInput();
-    navigator.push({
+    pageNavigator.push({
       component: UserInfo,
       name: 'UserInfo',
       params: {
@@ -627,7 +627,7 @@ class Home extends BaseComponent {
   //前往公告详情(先判断是否是本人发布的动态,然后获取公告详情和评论列表)
   _goAnnouncementDetail(rowData) {
     this._closeCommentInput();
-    navigator.push({
+    pageNavigator.push({
       component: AnnouncementDetail,
       name: 'AnnouncementDetail',
       params: {
