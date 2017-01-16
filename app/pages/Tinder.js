@@ -358,7 +358,8 @@ class Tinder extends BaseComponent {
         <Text style={styles.tipsText}>{`你今日还有${this.state.greetCount}次打招呼的机会`}</Text>
       );
     } else {
-      return (<Text style={styles.tipsText}>{'今日打招呼机会已用完,右滑跳过此张卡片'}</Text>);
+      //return (<Text style={styles.tipsText}>{'今日打招呼机会已用完,右滑跳过此张卡片'}</Text>);
+      return null;
     }
   }
 

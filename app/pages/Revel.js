@@ -82,20 +82,7 @@ class Revel extends BaseComponent {
   _saveSignature(data) {
     Keyboard.dismiss();
     const {dispatch}=this.props;
-
-
-    /*dispatch(UserProfileActions.savePersonalSignature({personSignal: data}, (result)=> {
-      dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-        Storage.setItem('userInfo', json.Result);
-        DeviceEventEmitter.emit('signatureChanged', {data: data, message: '随缘发布成功'});
-        toastShort('发送成功');
-        this.saveSignatureTimer = setTimeout(()=> {
-          navigator.pop();
-        }, 1000)
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));*/
+    
   }
 
   componentDidMount() {
@@ -148,7 +135,7 @@ class Revel extends BaseComponent {
           keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
           <Text style={styles.tips}>
-            {'您的随缘消息会随机发给10个人,期待有缘人'}
+            {'您的随缘消息会随机发给若干个人,期待有缘人'}
           </Text>
           <TextInput
             placeholder={'请在此编辑你想说的话'}
