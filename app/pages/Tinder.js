@@ -331,7 +331,7 @@ class Tinder extends BaseComponent {
         });
         console.log(`Adding ${json.Result.length} more cards`);
       }, (error)=> {
-
+        toastShort(error.Message);
       }));
     }
   }
