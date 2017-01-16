@@ -20,10 +20,8 @@ import {
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
-import * as UserProfileActions from '../actions/UserProfile'
 import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
-import * as Storage from '../utils/Storage'
 
 const {width, height}=Dimensions.get('window');
 
@@ -63,10 +61,12 @@ const styles = StyleSheet.create({
 let navigator;
 
 class Revel extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
-      hasChanged: false
+      hasChanged: false,
+      msg:''
     };
     navigator = this.props.navigator;
     this.onBackAndroid = this.onBackAndroid.bind(this);
@@ -79,10 +79,17 @@ class Revel extends BaseComponent {
   }
 
   //保存随缘
-  _saveSignature(data) {
+  _saveFloatMsg(data) {
     Keyboard.dismiss();
     const {dispatch}=this.props;
-
+    dispatch(HomeActions.setFloatMsg({Msg:data},(json)=>{
+      toastShort('发送成功');
+      this.sendFloatTimer = setTimeout(()=> {
+        navigator.pop();
+      }, 1000)
+    },(error)=>{
+      toastShort(json.Message);
+    }));
   }
 
   componentDidMount() {
@@ -119,8 +126,8 @@ class Revel extends BaseComponent {
   }
 
   componentWillUnmount() {
-    if (this.saveSignatureTimer) {
-      clearTimeout(this.saveSignatureTimer);
+    if (this.sendFloatTimer) {
+      clearTimeout(this.sendFloatTimer);
     }
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
@@ -142,17 +149,17 @@ class Revel extends BaseComponent {
             multiline={true}
             maxLength={25}
             style={styles.signatureContent}
-            value={this.state.personalSignature}
+            value={this.state.msg}
             underlineColorAndroid={'transparent'}
-            onChangeText={(personalSignature)=> {
-              this.setState({personalSignature: personalSignature, hasChanged: true})
+            onChangeText={(msg)=> {
+              this.setState({msg: msg, hasChanged: true})
             }}
           />
           <NBButton
             block
             style={styles.saveBtn}
-            onPress={()=>this._saveSignature(this.state.personalSignature)}
-            disabled={!this.state.personalSignature}>
+            onPress={()=>this._saveFloatMsg(this.state.msg)}
+            disabled={!this.state.msg}>
             完成
           </NBButton>
         </ScrollView>

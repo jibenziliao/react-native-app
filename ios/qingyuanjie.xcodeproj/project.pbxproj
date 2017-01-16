@@ -1459,7 +1459,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.qingyuanjie;
-				PRODUCT_NAME = "情缘结";
+				PRODUCT_NAME = "觅友 Meet U";
 				PROVISIONING_PROFILE = "429d8e70-3342-4ee9-a827-9133dbd74caf";
 				VERSIONING_SYSTEM = "apple-generic";
 			};

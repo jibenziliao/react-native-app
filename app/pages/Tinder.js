@@ -23,6 +23,8 @@ import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
 import {dateFormat} from '../utils/DateUtil'
 import * as Storage from '../utils/Storage'
+import {toastShort} from '../utils/ToastUtil'
+
 
 const {width, height}=Dimensions.get('window');
 
@@ -234,12 +236,12 @@ class Tinder extends BaseComponent {
   _greet(card) {
     //单条发送的消息存入缓存中时,需要将日期转成字符串存储
     let params = {
-      MsgContent: 'Hi,你好!',
+      MsgContent: '[眼缘]Hi,你好!',
       MsgId: Math.round(Math.random() * 1000000),
       SendTime: dateFormat(new Date()),
       HasSend: true,
       _id: Math.round(Math.random() * 1000000),
-      text: 'Hi,你好!',
+      text: '[眼缘]Hi,你好!',
       createdAt: dateFormat(new Date()),
       user: {
         _id: tmpGlobal.currentUser.UserId,
@@ -293,14 +295,14 @@ class Tinder extends BaseComponent {
 
   //打招呼
   handleYup(card) {
-    console.log("yup");
-    this.setState({
-      greetCount: this.state.greetCount - 1 > 0 ? this.state.greetCount - 1 : 0
-    }, ()=> {
-      if (this.state.greetCount > 0 && tmpGlobal.webSocketInitState) {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.canSayHey('',(json)=>{
+      if(json.Result){
         this._greet(card);
+      }else{
+        toastShort(json.Message);
       }
-    });
+    },(error)=>{}));
   }
 
   //跳过

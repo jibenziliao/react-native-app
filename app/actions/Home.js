@@ -283,6 +283,15 @@ export function getRandomUsersQuiet(data,resolve,reject) {
   }
 }
 
+export function canSayHey(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch('/profile/cansayhey', '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+  }
+}
+
 export function getMatchUsersQuiet(data, resolve, reject) {
   return (dispatch)=> {
     postFetch('/profile/getmatchlist', data, dispatch, {
@@ -294,10 +303,18 @@ export function getMatchUsersQuiet(data, resolve, reject) {
 
 export function setMapPrecisionQuiet(data, resolve, reject) {
   return (dispatch)=> {
-    console.log(`/profiles/setmapprecision?mapPrecision=${data.MapPrecision}`);
     putFetch(`/profiles/setmapprecision?mapPrecision=${data.MapPrecision}`, data, dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
       data
     }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
+  }
+}
+
+export function setFloatMsg(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch(`/msg/sendfloatermsg?msg=${data.Msg}`, data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }

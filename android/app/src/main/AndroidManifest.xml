@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.qingyuanjie"
-          android:versionCode="63"
-          android:versionName="1.9.8">
+          android:versionCode="64"
+          android:versionName="1.9.9">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
