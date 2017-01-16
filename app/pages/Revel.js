@@ -66,6 +66,7 @@ class Revel extends BaseComponent {
     super(props);
     this.state = {
       hasChanged: false,
+      hasSend:false,
       msg:''
     };
     navigator = this.props.navigator;
@@ -88,6 +89,9 @@ class Revel extends BaseComponent {
         navigator.pop();
       }, 1000)
     },(error)=>{
+      this.setState({
+        hasSend:true
+      });
       toastShort(error.Message);
     }));
   }
@@ -108,7 +112,7 @@ class Revel extends BaseComponent {
 
   _backAlert() {
     Keyboard.dismiss();
-    if (this.state.hasChanged) {
+    if (this.state.hasChanged && !this.state.hasSend) {
       Alert.alert('提示', '您编辑的资料未保存,确定要离开吗?', [
         {
           text: '确定', onPress: () => {
