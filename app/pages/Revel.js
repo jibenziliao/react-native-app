@@ -82,7 +82,7 @@ class Revel extends BaseComponent {
   _saveSignature(data) {
     Keyboard.dismiss();
     const {dispatch}=this.props;
-    
+
   }
 
   componentDidMount() {

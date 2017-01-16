@@ -495,7 +495,7 @@ class Home extends BaseComponent {
 
   //检查是否有未过期的聚会/约会
   _canPost(int) {
-    const {dispatch, pageNavigator}=this.props;
+    const {dispatch}=this.props;
     let data = {
       postType: int
     };
