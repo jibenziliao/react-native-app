@@ -88,7 +88,7 @@ class Revel extends BaseComponent {
         navigator.pop();
       }, 1000)
     },(error)=>{
-      toastShort(json.Message);
+      toastShort(error.Message);
     }));
   }
 
