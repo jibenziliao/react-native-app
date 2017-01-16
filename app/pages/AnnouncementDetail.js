@@ -624,6 +624,9 @@ class AnnouncementDetail extends BaseComponent {
 
   //处理距离
   _distance(data) {
+    if (data === null) {
+      return '--';
+    }
     return (parseFloat(data) / 1000).toFixed(2);
   }
 

@@ -238,6 +238,9 @@ class AnnouncementList extends BaseComponent {
 
   //处理距离
   _distance(data) {
+    if (data === null) {
+      return '--';
+    }
     return (parseFloat(data) / 1000).toFixed(2);
   }
 
@@ -375,6 +378,7 @@ class AnnouncementList extends BaseComponent {
       params: {
         Id: rowData.Id,
         isSelf: tmpGlobal.currentUser.UserId === rowData.CreaterId,
+        PostType: rowData.PostType
       }
     });
   }

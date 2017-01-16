@@ -446,7 +446,7 @@ class Message extends BaseComponent {
       I: Math.floor(Math.random() * 11)
     };
     tmpGlobal.ws.send(JSON.stringify(loginParams));
-    console.log(loginParams);
+    //console.log(loginParams);
     console.log('ws登录成功');
   }
 

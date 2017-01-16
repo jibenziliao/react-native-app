@@ -60,9 +60,9 @@ const styles = StyleSheet.create({
   touchableTips: {
     flex: 1,
     backgroundColor: '#e8d62f',
-    alignItems:'center',
-    justifyContent:'center',
-    flexDirection:'row'
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
   },
   tipsContent: {
     flex: 1,
@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   iconBox: {
     height: 30,
     width: 30,
-    alignItems:'center',
-    justifyContent:'center'
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   listView: {
     flex: 1
@@ -228,8 +228,8 @@ class Home extends BaseComponent {
     super(props);
     navigator = this.props.navigator;
     this.state = {
-      gpsStatus:this.props.gpsStatus,
-      closeTips:false,
+      gpsStatus: this.props.gpsStatus,
+      closeTips: false,
       tabIndex: 0,
       refreshing: false,
       appointmentRefreshing: false,
@@ -428,7 +428,7 @@ class Home extends BaseComponent {
     });
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       ...this.state,
       ...nextProps
@@ -792,7 +792,7 @@ class Home extends BaseComponent {
         <View style={styles.tipsContainer}>
           <TouchableHighlight
             onPress={()=> {
-              this.setState({closeTips:true});
+              this.setState({closeTips: true});
             }}
             underlayColor={'#faebd7'}
             style={styles.touchableTips}>
