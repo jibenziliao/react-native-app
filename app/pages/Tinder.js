@@ -315,7 +315,7 @@ class Tinder extends BaseComponent {
     this.setState({refresh: false});
     //console.log(this.props);
     //console.log(`The index is ${index}`);
-    let CARD_REFRESH_LIMIT = 0;
+    let CARD_REFRESH_LIMIT = 1;
     if (this.state.cards.length - index <= CARD_REFRESH_LIMIT + 1) {
       console.log(`There are only ${this.state.cards.length - index - 1} cards left.`);
       const {dispatch} = this.props;
@@ -331,7 +331,7 @@ class Tinder extends BaseComponent {
         });
         console.log(`Adding ${json.Result.length} more cards`);
       }, (error)=> {
-        toastShort(error.Message);
+        //toastShort(error.Message);
       }));
     }
   }
