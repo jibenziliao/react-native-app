@@ -148,30 +148,15 @@ class MatchUsers extends BaseComponent {
 
   //点击头像和名字,跳转个人信息详情页
   _goUserInfo(data) {
-    const {dispatch}=this.props;
-    let params = {
-      UserId: data.UserId,
-      ...tmpGlobal.currentLocation
-    };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId: data.UserId}, (result)=> {
-        navigator.push({
-          component: UserInfo,
-          name: 'UserInfo',
-          params: {
-            Nickname: data.Nickname,
-            UserId: data.UserId,
-            myUserId: tmpGlobal.currentUser.UserId,
-            ...json.Result,
-            userPhotos: result.Result,
-            myLocation: tmpGlobal.currentLocation,
-            isSelf: false
-          }
-        });
-      }, (error)=> {
-      }));
-    }, (error)=> {
-    }));
+    navigator.push({
+      component: UserInfo,
+      name: 'UserInfo',
+      params: {
+        Nickname: data.Nickname,
+        UserId: data.UserId,
+        isSelf: false
+      }
+    });
   }
 
   _toEnd() {

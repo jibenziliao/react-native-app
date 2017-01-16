@@ -146,26 +146,6 @@ class MessageDetail extends BaseComponent {
   }
 
   _getNewMsg() {
-    /*tmpGlobal.proxy.on('getNewMsg', (obj) => {
-     tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgFlag);
-     //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
-     if (!this.state.destroyed) {
-
-     console.log('MessageDetail页面成功标为已读');
-     console.log('MessageDetail页面开始缓存消息');
-     this._receiveSaveRecord(JSON.parse(JSON.stringify(obj.MsgPackage)));
-     }
-     let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(obj.MsgPackage)), this.state.UserId);
-     //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
-     if (resMsg && resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
-     console.log(obj);
-     console.log('MessageDetail页面收到了新消息');
-     for (let i = 0; i < resMsg.MsgList.length; i++) {
-     this.onReceive(resMsg.MsgList[i]);
-     }
-     }
-     });*/
-
     //进入MessageDetail页面后,ws.onmessage监听器被重新绑定了事件,故离开此页面之前要发布广播,重置ws.onmessage监听器。
     tmpGlobal.ws.onmessage = (e)=> {
       this._wsNewMsgHandler(JSON.parse(e.data));
@@ -352,7 +332,6 @@ class MessageDetail extends BaseComponent {
       Alert.alert('提示', '您的网络异常,点击重试', [
         {
           text: '确定', onPress: () => {
-          //tmpGlobal._initWebSocket()
           tmpGlobal._wsTokenHandler();
         }
         },

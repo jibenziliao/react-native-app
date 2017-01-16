@@ -99,10 +99,8 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
-let connection;
-let proxy;
+let reconnectCount = 0;
 let cookie;
-let connectionState = false;
 
 const {height, width} = Dimensions.get('window');
 
@@ -162,15 +160,6 @@ class Message extends BaseComponent {
   componentWillUnmount() {
     this.subscription.remove();
     this.startReceiveMsgListener.remove();
-    if (this.connectWebsocketTimer) {
-      clearTimeout(this.connectWebsocketTimer);
-    }
-    if (this.reConnectTimer) {
-      clearTimeout(this.reConnectTimer);
-    }
-    if (this.testInterval) {
-      clearInterval(this.testInterval);
-    }
   }
 
   //每次收到新的消息,缓存消息列表(前面已经包装过,这里不需要再次处理,直接存缓存就好了)
@@ -226,7 +215,6 @@ class Message extends BaseComponent {
       cookie = res.rkt;
       tmpGlobal.cookie = res.rkt;
       if (tmpGlobal.proxy === null) {
-        //this._initWebSocket();
         this._wsTokenHandler();
       }
     })
@@ -288,95 +276,6 @@ class Message extends BaseComponent {
     });
   }
 
-  //signalr方法,已废弃
-  _initWebSocket() {
-    console.log('开始初始化webSocket连接');
-    console.log(navigator);
-    let self = this;
-    //注销重新登录,会重新初始化此页面,connect,proxy需要重置
-    tmpGlobal.connection = null;
-    tmpGlobal.proxy = null;
-
-    connection = signalr.hubConnection(URL_WS_DEV);
-    connection.logging = false;
-    //console.log(connection);
-
-    //将proxy保存在全局变量中,以便其他地方使用
-    tmpGlobal.proxy = connection.createHubProxy('ChatCore');
-
-    tmpGlobal.connection = connection;
-    //console.log(tmpGlobal.connection, connection);
-
-    tmpGlobal.proxy.on('log', (str)=> {
-      //console.log(str);
-    });
-
-    //{transport: ['webSockets', 'longPolling']}
-
-    tmpGlobal.connection.start({transport: 'webSockets'}).done(() => {
-      console.log('连接成功');
-      connectionState = true;
-      //console.log(connection);
-      tmpGlobal.proxy.invoke('login', cookie);
-      console.log('Now connected, connection ID=' + tmpGlobal.connection.id);
-      //tmpGlobal._initWebSocket = this._initWebSocket;
-      tmpGlobal.webSocketInitState = true;
-      //console.log(tmpGlobal);
-    }).fail(() => {
-      console.log('Failed');
-      connectionState = false;
-      this.connectWebsocketTimer = setTimeout(()=> {
-        //self._initWebSocket();
-      }, 100);
-    });
-
-    tmpGlobal.connection.connectionSlow(function () {
-      console.log('We are currently experiencing difficulties with the connection.')
-    });
-
-    //连接出错需要重连(连接不成功或已成功又断开)
-    tmpGlobal.connection.error(function (error) {
-      console.log('SignalR error: ' + error);
-      console.log('开始重新连接');
-      //console.log(tmpGlobal.connection);
-      //在连接成功的情况下断开,connectionState为true,tmpGlobal._initWebSocket还没有被赋值,为null
-      this.reConnectTimer = setTimeout(()=> {
-        tmpGlobal.webSocketConnectCount += 1;//断开重连,连接次数+1,超过5次后,提示用户网络不稳定,让用户手动重连
-        if (tmpGlobal.webSocketConnectCount > 5) {
-          toastLong('聊天模块初始化失败');
-          tmpGlobal.webSocketInitState = false;
-          tmpGlobal.webSocketConnectCount = 0;
-        } else {
-          //连接断开后,重置connection的token,确保每次重连都带不一样的token
-          tmpGlobal.connection.token = null;
-          tmpGlobal.connection.stop();
-          if (connectionState) {
-            console.log('webSockets连接断开后,手动停止,然后重新初始化');
-            console.log(tmpGlobal);
-            //tmpGlobal._initWebSocket();
-          } else {
-            //self._initWebSocket();
-          }
-        }
-      }, 100);
-    });
-
-    tmpGlobal.proxy.on('getNewMsg', (obj) => {
-      console.log('服务器返回的原始数据', obj);
-      let routes = navigator.getCurrentRoutes();
-      console.log('路由栈', routes);
-      tmpGlobal.proxy.invoke('userReadMsg', obj.LastMsgFlag);
-      console.log('Message页面成功标为已读');
-      //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
-      if (routes[routes.length - 1].name != 'MessageDetail') {
-        console.log('Message页面收到了新消息');
-        //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
-        //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
-        this._margeMessage(JSON.parse(JSON.stringify(obj.MsgPackage)));
-      }
-    });
-  }
-
   //获取token后,初始化原生webSocket
   _wsTokenHandler() {
     let getUrl = `${URL_TOKEN_DEV}/signalr/negotiate?clientProtocol=1.5&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
@@ -415,7 +314,10 @@ class Message extends BaseComponent {
     tmpGlobal.ws.onclose = (e) => {
       console.log(e);
       console.log(e.code, e.reason);
-      this._wsTokenHandler();//报错后重新初始化webSocket连接
+      reconnectCount += 1;
+      if (reconnectCount <= 5) {
+        this._wsTokenHandler();//报错后重新初始化webSocket连接
+      }
     };
   }
 
