@@ -836,7 +836,7 @@ class Home extends BaseComponent {
       gpsStatus: true
     },()=>{
       this._onRefresh();
-      //this._savePosition(position.coords.latitude, position.coords.longitude);
+      this._savePosition(position.coords.latitude, position.coords.longitude);
     });
   }
 
