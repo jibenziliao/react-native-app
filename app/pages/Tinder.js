@@ -296,7 +296,7 @@ class Tinder extends BaseComponent {
   //打招呼
   handleYup(card) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.canSayHey({Id:card.UserId},(json)=>{
+    dispatch(HomeActions.canSayHey({UserId:card.UserId},(json)=>{
       if(json.Result){
         this._greet(card);
       }else{
