@@ -20,12 +20,10 @@ import {
 import BaseComponent from '../base/BaseComponent'
 import {connect} from 'react-redux'
 import MessageDetail from '../pages/MessageDetail'
-import signalr from 'react-native-signalr'
 import * as Storage from '../utils/Storage'
 import {URL_DEV, URL_TOKEN_DEV, URL_WS_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import tmpGlobal from '../utils/TmpVairables'
-import * as HomeActions from '../actions/Home'
 import UserInfo from '../pages/UserInfo'
 import {toastLong} from '../utils/ToastUtil'
 
@@ -113,7 +111,6 @@ class Message extends BaseComponent {
       messageList: []
     };
     navigator = this.props.navigator;
-    //tmpGlobal._initWebSocket = this._initWebSocket.bind(this);
     tmpGlobal._wsTokenHandler = this._wsTokenHandler.bind(this);
   }
 
@@ -139,6 +136,10 @@ class Message extends BaseComponent {
     this.startReceiveMsgListener = DeviceEventEmitter.addListener('ReceiveMsg', (data)=> {
       this._wsResetOnMessageListener();
     });
+    this.reConnectWebSocketListener=DeviceEventEmitter.addListener('reConnectWebSocket', (data)=> {
+      reconnectCount = 0;//在聊天页面重连时,重置重连次数
+      this._wsTokenHandler();
+    });
     InteractionManager.runAfterInteractions(()=> {
       this._initOldMessage();
     })
@@ -160,6 +161,7 @@ class Message extends BaseComponent {
   componentWillUnmount() {
     this.subscription.remove();
     this.startReceiveMsgListener.remove();
+    this.reConnectWebSocketListener.remove();
   }
 
   //每次收到新的消息,缓存消息列表(前面已经包装过,这里不需要再次处理,直接存缓存就好了)
@@ -317,6 +319,8 @@ class Message extends BaseComponent {
       reconnectCount += 1;
       if (reconnectCount <= 5) {
         this._wsTokenHandler();//报错后重新初始化webSocket连接
+      }else{
+        toastLong('聊天功能初始化失败');
       }
     };
   }

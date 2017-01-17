@@ -285,7 +285,7 @@ export function getRandomUsersQuiet(data,resolve,reject) {
 
 export function canSayHey(data,resolve,reject) {
   return (dispatch)=> {
-    getFetch('/profile/cansayhey', '', dispatch, {
+    getFetch(`/profile/cansayhey/${data.UserId}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
       data
     }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);

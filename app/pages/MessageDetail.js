@@ -332,7 +332,7 @@ class MessageDetail extends BaseComponent {
       Alert.alert('提示', '您的网络异常,点击重试', [
         {
           text: '确定', onPress: () => {
-          tmpGlobal._wsTokenHandler();
+          DeviceEventEmitter.emit('reConnectWebSocket',{data:true,message:'在聊天页面重新连接webSocket'});
         }
         },
         {

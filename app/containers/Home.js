@@ -41,6 +41,7 @@ import ModalBox from 'react-native-modalbox'
 import SubTabView from '../components/SubTabView'
 import ActionSheet from 'react-native-actionsheet'
 import AnnouncementList from '../pages/AnnouncemenetList'
+import * as VicinityActions from '../actions/Vicinity'
 
 const {height, width} = Dimensions.get('window');
 
@@ -52,28 +53,24 @@ const styles = StyleSheet.create({
   commonContainer: {
     flex: 1
   },
-  tipsContainer: {
-    flexDirection: 'row'
-  },
-  touchableTips: {
-    backgroundColor: '#e8d62f',
+  gpsTips: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row'
+    backgroundColor: 'rgba(255,255,0,0.7)',
+    padding: 10
   },
   tipsContent: {
     flex: 1,
     flexDirection: 'row',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  iconBox: {
-    height: 30,
-    width: 30,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  tipsText: {
+    fontSize: 12,
+    textAlign: 'center',
+    flex: 1,
+    flexWrap:'wrap'
   },
   listView: {
     flex: 1
@@ -225,8 +222,9 @@ class Home extends BaseComponent {
     super(props);
     pageNavigator = this.props.navigator;
     this.state = {
+      pending:false,
       gpsStatus: this.props.gpsStatus,
-      closeTips: false,
+      tipsText: '请在设置中打开高精确度定位,然后点此重试',
       tabIndex: 0,
       refreshing: false,
       appointmentRefreshing: false,
@@ -426,13 +424,14 @@ class Home extends BaseComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(this.props.gpsStatus!==nextProps.gpsStatus){
+    if(!this.props.gpsStatus && this.props.gpsStatus!==nextProps.gpsStatus){
+      this.setState({
+        gpsStatus:true,
+      });
       this._onRefresh();
+    }else{
+
     }
-    this.setState({
-      ...this.state,
-      ...nextProps
-    })
   }
 
   componentWillUnmount() {
@@ -784,26 +783,99 @@ class Home extends BaseComponent {
     })
   }
 
-  _renderLocationTips() {
-    if (this.state.gpsStatus || this.state.closeTips) {
+  _renderLocationTips(data) {
+    if (data) {
       return null;
     } else {
       return (
           <TouchableHighlight
             onPress={()=> {
-              this.setState({closeTips: true});
+              this.refreshPage()
             }}
-            underlayColor={'#faebd7'}
-            style={styles.touchableTips}>
+            underlayColor={'rgba(214,214,14,0.7)'}
+            style={styles.gpsTips}>
             <View style={styles.tipsContent}>
-              <Text numberOfLines={1}>{"打开定位功能,可查看更准确距离信息"}</Text>
-              <View style={styles.iconBox}>
-                <IonIcon name={'ios-close-outline'} size={24}/>
-              </View>
+              <Text style={styles.tipsText}>{this.state.tipsText}</Text>
             </View>
           </TouchableHighlight>
       )
     }
+  }
+
+  getPosition() {
+    console.log('定位开始');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this._positionSuccessHandler(position);
+      },
+      (error) => {
+        console.log(error);
+        this._positionErrorHandler(error);
+      },
+      {enableHighAccuracy: false, timeout: LOCATION_TIME_OUT, maximumAge: 5000}
+    );
+  }
+
+  refreshPage() {
+    this.setState({
+      pending:true,
+      gpsStatus: false,
+      tipsText: '正在获取您的位置信息'
+    });
+    this.getPosition();
+  }
+
+  _positionSuccessHandler(position) {
+    tmpGlobal.currentLocation = {
+      Lat: position.coords.latitude,
+      Lng: position.coords.longitude
+    };
+    console.log('定位成功');
+    this.setState({
+      pending:false,
+      gpsStatus: true
+    },()=>{
+      this._onRefresh();
+      //this._savePosition(position.coords.latitude, position.coords.longitude);
+    });
+  }
+
+  _positionErrorHandler(error) {
+    let index = this._errorCodeHandler(error, Platform.OS);
+    this.setState({
+      pending:false,
+      gpsStatus: false,
+      tipsText: this._tipsTextHandler(index, Platform.OS)
+    });
+  }
+
+  _savePosition(lat, lng) {
+    const {dispatch}=this.props;
+    dispatch(VicinityActions.saveCoordinate({Lat: lat, Lng: lng}));
+  }
+
+  _tipsTextHandler(index, osType) {
+    switch (index) {
+      case 1:
+        return osType === 'ios' ? '请前往设置->隐私->觅友 Meet U->允许访问位置信息改为始终,然后点此获取位置信息' : '请在设置中开启位置服务,并选择高精确度,然后点此获取位置信息';
+      case 2:
+        return osType === 'ios' ? '定位失败,点此重试' : '定位失败,点此重试';
+      case 3:
+        return osType === 'ios' ? '定位失败,点此重试' : '定位失败,点此重试';
+      case 4://特殊处理的iOS错误码,表明虽然开启的定位服务,但是没有给本APP权限
+        return '请前往设置->隐私->定位服务->开启->觅友 Meet U->始终,然后点此获取位置信息';
+      default:
+        return '定位失败,点此重试';
+    }
+  }
+
+  _errorCodeHandler(error, osType) {
+    if (osType === 'android' && '"No available location provider."' === JSON.stringify(error)) {
+      return 1;
+    } else if (osType === 'ios' && error.code === 2 && error.message === 'Location services disabled.') {
+      return 4;
+    }
+    return error.code;
   }
 
   renderBody() {
@@ -812,7 +884,7 @@ class Home extends BaseComponent {
         ref={'root'}
         style={[styles.container]}>
         <SubTabView
-          locationTips={this._renderLocationTips.bind(this)}
+          locationTips={()=>this._renderLocationTips(this.state.gpsStatus)}
           index={this.state.tabIndex}
           tabIndex={this._handleChangeTab.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}
@@ -923,9 +995,9 @@ class Home extends BaseComponent {
   }
 
   renderSpinner() {
-    if (this.props.pendingStatus) {
+    if (this.props.pendingStatus||this.state.pending) {
       return (
-        <Spinner animating={this.props.pendingStatus}/>
+        <Spinner animating={this.props.pendingStatus||this.state.pending}/>
       )
     }
   }
@@ -934,7 +1006,6 @@ class Home extends BaseComponent {
 export default connect((state)=> {
   return {
     ...state,
-    result: state.InitialApp.res,
     pendingStatus: state.InitialApp.pending
   }
 })(Home)
