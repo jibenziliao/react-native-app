@@ -53,12 +53,9 @@ const styles = StyleSheet.create({
     flex: 1
   },
   tipsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 10,
-    marginVertical: 10
+    flexDirection: 'row'
   },
   touchableTips: {
-    flex: 1,
     backgroundColor: '#e8d62f',
     alignItems: 'center',
     justifyContent: 'center',
@@ -429,6 +426,9 @@ class Home extends BaseComponent {
   }
 
   componentWillReceiveProps(nextProps) {
+    if(this.props.gpsStatus!==nextProps.gpsStatus){
+      this._onRefresh();
+    }
     this.setState({
       ...this.state,
       ...nextProps
@@ -789,7 +789,6 @@ class Home extends BaseComponent {
       return null;
     } else {
       return (
-        <View style={styles.tipsContainer}>
           <TouchableHighlight
             onPress={()=> {
               this.setState({closeTips: true});
@@ -803,7 +802,6 @@ class Home extends BaseComponent {
               </View>
             </View>
           </TouchableHighlight>
-        </View>
       )
     }
   }

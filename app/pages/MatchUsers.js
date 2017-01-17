@@ -141,7 +141,7 @@ class MatchUsers extends BaseComponent {
       loadingMore: false,
       pending: false,
       GPS: true,
-      tipsText: '请在设置中打开高精确度定位,以便查看匹配到的人',
+      tipsText: '请在设置中打开高精确度定位,然后点此重试',
     };
     pageNavigator = this.props.navigator;
   }
