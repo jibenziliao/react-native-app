@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
 		00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
@@ -77,6 +76,7 @@
 		FD6E73A11E0188D9006F60F1 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD6E739E1E018899006F60F1 /* libRCTAnimation.a */; };
 		FD9AA5D91E135FC2008DCD39 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		FD9AA5DA1E135FCD008DCD39 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD9AA5D61E135FA5008DCD39 /* libReact.a */; };
+		89ADECEF42DC4B38A7F7D629 /* libRCTJPushModule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DB6A7F009054450868A2E4D /* libRCTJPushModule.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -387,6 +387,8 @@
 		FD9AA5B61E135ED3008DCD39 /* React.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = React.framework; path = "Pods/../build/Debug-iphoneos/React/React.framework"; sourceTree = "<group>"; };
 		FD9AA5D01E135FA5008DCD39 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		FDBEEA931E1B691600BF9D2E /* AirMaps.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
+		CCFE586EF59C4F62AE6A1A3E /* RCTJPushModule.xcodeproj */ = {isa = PBXFileReference; name = "RCTJPushModule.xcodeproj"; path = "../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		1DB6A7F009054450868A2E4D /* libRCTJPushModule.a */ = {isa = PBXFileReference; name = "libRCTJPushModule.a"; path = "libRCTJPushModule.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -420,6 +422,7 @@
 				50A1B8A45384421FB49942D7 /* libRNVectorIcons.a in Frameworks */,
 				63187A9E271DFD8B99E9A59C /* Pods_qingyuanjie.framework in Frameworks */,
 				FD6E73A11E0188D9006F60F1 /* libRCTAnimation.a in Frameworks */,
+				89ADECEF42DC4B38A7F7D629 /* libRCTJPushModule.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,6 +578,7 @@
 				940E727F3C1B4C839FD89EE5 /* RNImagePicker.xcodeproj */,
 				2EC3FC037EE04B229BCEED29 /* RCTBEEPickerManager.xcodeproj */,
 				4106DC533BE547DCB1E35179 /* RNVectorIcons.xcodeproj */,
+				CCFE586EF59C4F62AE6A1A3E /* RCTJPushModule.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1359,6 +1363,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/情缘结.app/情缘结";
@@ -1375,6 +1380,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1412,10 +1418,31 @@
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
 				);
 				INFOPLIST_FILE = qingyuanjie/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
+						"-framework",
+						Adsupport,
+						"-framework",
+						Security,
+						"-framework",
+						UIKit,
+						"-framework",
+						Foundation,
+						"-framework",
+						CoreGraphics,
+						"-framework",
+						SystemConfiguration,
+						"-framework",
+						CoreTelephony,
+						"-framework",
+						CoreFoundation,
+						"-framework",
+						CFNetwork,
+                        "-lresolv",
+						"-lz",
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
@@ -1450,10 +1477,31 @@
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
 				);
 				INFOPLIST_FILE = qingyuanjie/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
+						"-framework",
+						Adsupport,
+						"-framework",
+						Security,
+						"-framework",
+						UIKit,
+						"-framework",
+						Foundation,
+						"-framework",
+						CoreGraphics,
+						"-framework",
+						SystemConfiguration,
+						"-framework",
+						CoreTelephony,
+						"-framework",
+						CoreFoundation,
+						"-framework",
+						CFNetwork,
+                        "-lresolv",
+						"-lz",
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
@@ -1511,6 +1559,7 @@
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1558,6 +1607,7 @@
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

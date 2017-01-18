@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
+import cn.jpush.reactnativejpush.JPushPackage;
 import com.reactnative.photoview.PhotoViewPackage;
 import com.psykar.cookiemanager.CookieManagerPackage;
 import com.airbnb.android.react.maps.MapsPackage;
@@ -23,6 +24,9 @@ import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
+  private boolean SHUTDOWN_TOAST = false;
+  private boolean SHUTDOWN_LOG = false;
+
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     protected boolean getUseDeveloperSupport() {
@@ -33,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new JPushPackage(SHUTDOWN_TOAST, SHUTDOWN_LOG),
             new PhotoViewPackage(),
             new CookieManagerPackage(),
             new MapsPackage(),

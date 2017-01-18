@@ -42,6 +42,8 @@ import SubTabView from '../components/SubTabView'
 import ActionSheet from 'react-native-actionsheet'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import * as VicinityActions from '../actions/Vicinity'
+import JPushModule from 'jpush-react-native'
+import Settings from '../pages/Settings'
 
 const {height, width} = Dimensions.get('window');
 
@@ -415,6 +417,27 @@ class Home extends BaseComponent {
     this.commentListener = DeviceEventEmitter.addListener('announcementHasComment', (data)=> {
       this._changeSubTab(data.data);
     });
+
+    JPushModule.addGetRegistrationIdListener((registrationId) => {
+      console.log("Device register succeed, registrationId " + registrationId);
+    });
+
+    JPushModule.addReceiveCustomMsgListener((message) => {
+      console.log(message);
+    });
+    JPushModule.addReceiveNotificationListener((message) => {
+      console.log("receive notification: " ,message);
+    });
+
+    JPushModule.addReceiveOpenNotificationListener((map) => {
+      console.log("Opening notification!",map);
+      //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
+      pageNavigator.push({
+        component:Settings,
+        name: "Settings"
+      });
+    });
+
   }
 
   _changeSubTab(index) {
@@ -441,6 +464,10 @@ class Home extends BaseComponent {
     this.commentListener.remove();
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+    JPushModule.removeReceiveCustomMsgListener();
+    JPushModule.removeReceiveNotificationListener();
+    JPushModule.removeReceiveOpenNotificationListener();
+    JPushModule.removeGetRegistrationIdListener("getRegistrationId");
   }
 
   //因为在MainContainer中在ScrollableTabView外层包裹了一个View,所以这里的keyboardWillShow、keyboardWillHide失效,只能用keyboardDidShow及keyboardDidHide监听键盘事件
