@@ -444,9 +444,6 @@ class Home extends BaseComponent {
         console.log("content: " + JSON.stringify(message));
       });
     }
-
-
-
   }
 
   _changeSubTab(index) {

@@ -13,6 +13,8 @@ export const TIME_OUT = 10000;
 
 export const LOCATION_TIME_OUT = 10000;
 
+export const LOCATION_TIME_OUT_SHORT = 3000;
+
 export const DEBUG_SETTINGS = {
   useFixtures: false,
   ezLogin: false,
