@@ -16,6 +16,29 @@ react-native link
 
 1. react-native版本是0.38.0,不要轻易升级react-native版本。0.39.0、0.39.1、0.39.2在iOS平台跟cocoapods不太兼容,编译各种报错。本人对原生不是很熟悉,所以退而求其次,使用react-native@0.38.0
 
+2. 因集成极光推送插件,xCode需更新到8.2.1版本,以便支持iOS10,在iOS工程target的Build Phases->Link Binary with Libraries中加入如下库
+
+    > libz.tbd
+      
+    > CoreTelephony.framework
+      
+    > Security.framework
+      
+    > CFNetwork.framework
+      
+    > CoreFoundation.framework
+      
+    > SystemConfiguration.framework
+      
+    > Foundation.framework
+      
+    > UIKit.framework
+      
+    > UserNotifications.framework
+      
+    > libresolv.tbd
+
+    关于极光推送插件详细配置,请参考极光推送插件 [jpush-react-native](https://github.com/jpush/jpush-react-native)文档,及这篇博客 [react native极光推送全程教程android和ios](http://www.jianshu.com/p/e7f81b5e1807)
 
 ### Android
 
