@@ -33,7 +33,7 @@ import Spinner from '../components/Spinner'
 import AnnouncementDetail from '../pages/AnnouncementDetail'
 import Addannouncement from '../pages/Addannouncement'
 import UserInfo from '../pages/UserInfo'
-import {URL_DEV,LOCATION_TIME_OUT} from '../constants/Constant'
+import {URL_DEV, LOCATION_TIME_OUT} from '../constants/Constant'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     flex: 1,
-    flexWrap:'wrap'
+    flexWrap: 'wrap'
   },
   listView: {
     flex: 1
@@ -224,7 +224,7 @@ class Home extends BaseComponent {
     super(props);
     pageNavigator = this.props.navigator;
     this.state = {
-      pending:false,
+      pending: false,
       gpsStatus: this.props.gpsStatus,
       tipsText: '请在设置中打开高精确度定位,然后点此重试',
       tabIndex: 0,
@@ -426,14 +426,14 @@ class Home extends BaseComponent {
       console.log(message);
     });
     JPushModule.addReceiveNotificationListener((message) => {
-      console.log("receive notification: " ,message);
+      console.log("receive notification: ", message);
     });
 
     JPushModule.addReceiveOpenNotificationListener((map) => {
-      console.log("Opening notification!",map);
+      console.log("Opening notification!", map);
       //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
       pageNavigator.push({
-        component:Settings,
+        component: Settings,
         name: "Settings"
       });
     });
@@ -447,12 +447,12 @@ class Home extends BaseComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!this.props.gpsStatus && this.props.gpsStatus!==nextProps.gpsStatus){
+    if (!this.props.gpsStatus && this.props.gpsStatus !== nextProps.gpsStatus) {
       this.setState({
-        gpsStatus:true,
+        gpsStatus: true,
       });
       this._onRefresh();
-    }else{
+    } else {
 
     }
   }
@@ -815,16 +815,16 @@ class Home extends BaseComponent {
       return null;
     } else {
       return (
-          <TouchableHighlight
-            onPress={()=> {
-              this.refreshPage()
-            }}
-            underlayColor={'rgba(214,214,14,0.7)'}
-            style={styles.gpsTips}>
-            <View style={styles.tipsContent}>
-              <Text style={styles.tipsText}>{this.state.tipsText}</Text>
-            </View>
-          </TouchableHighlight>
+        <TouchableHighlight
+          onPress={()=> {
+            this.refreshPage()
+          }}
+          underlayColor={'rgba(214,214,14,0.7)'}
+          style={styles.gpsTips}>
+          <View style={styles.tipsContent}>
+            <Text style={styles.tipsText}>{this.state.tipsText}</Text>
+          </View>
+        </TouchableHighlight>
       )
     }
   }
@@ -845,7 +845,7 @@ class Home extends BaseComponent {
 
   refreshPage() {
     this.setState({
-      pending:true,
+      pending: true,
       gpsStatus: false,
       tipsText: '正在获取您的位置信息'
     });
@@ -859,9 +859,9 @@ class Home extends BaseComponent {
     };
     console.log('定位成功');
     this.setState({
-      pending:false,
+      pending: false,
       gpsStatus: true
-    },()=>{
+    }, ()=> {
       this._onRefresh();
       this._savePosition(position.coords.latitude, position.coords.longitude);
     });
@@ -870,7 +870,7 @@ class Home extends BaseComponent {
   _positionErrorHandler(error) {
     let index = this._errorCodeHandler(error, Platform.OS);
     this.setState({
-      pending:false,
+      pending: false,
       gpsStatus: false,
       tipsText: this._tipsTextHandler(index, Platform.OS)
     });
@@ -1022,9 +1022,9 @@ class Home extends BaseComponent {
   }
 
   renderSpinner() {
-    if (this.props.pendingStatus||this.state.pending) {
+    if (this.props.pendingStatus || this.state.pending) {
       return (
-        <Spinner animating={this.props.pendingStatus||this.state.pending}/>
+        <Spinner animating={this.props.pendingStatus || this.state.pending}/>
       )
     }
   }

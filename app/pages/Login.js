@@ -177,11 +177,11 @@ class Login extends BaseComponent {
       if (phone.indexOf('0') === 0) {
         let tmpPhone = phone.substring(1);
         if (tmpPhone.indexOf('2') !== 0) {
-          toastShort('新西兰手机号为+61-2开头,请检查您的手机号');
+          toastShort('新西兰手机号为+64-2开头,请检查您的手机号');
           return false;
         }
       } else if (phone.indexOf('2') !== 0) {
-        toastShort('新西兰手机号为+61-2开头,请检查您的手机号');
+        toastShort('新西兰手机号为+64-2开头,请检查您的手机号');
         return false;
       }
       return true;
