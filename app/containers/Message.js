@@ -89,10 +89,11 @@ const styles = StyleSheet.create({
   },
   tips: {
     flexDirection: 'row',
-    margin: 40
+    margin: 40,
+    justifyContent:'center'
   },
   tipsText: {
-    fontSize: 20
+    fontSize: 20,
   }
 });
 
