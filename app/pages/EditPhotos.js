@@ -121,6 +121,10 @@ class EditPhotos extends BaseComponent {
     }
   }
 
+  onLeftPressed(){
+    this._backAlert();
+  }
+
   _initPhotos() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getUserPhotos({UserId: this.props.route.params.UserId}, (json)=> {

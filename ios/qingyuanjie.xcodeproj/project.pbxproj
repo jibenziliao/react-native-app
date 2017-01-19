@@ -87,6 +87,7 @@
 		FD6E73A11E0188D9006F60F1 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD6E739E1E018899006F60F1 /* libRCTAnimation.a */; };
 		FD9AA5D91E135FC2008DCD39 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		FD9AA5DA1E135FCD008DCD39 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD9AA5D61E135FA5008DCD39 /* libReact.a */; };
+		FDA75C4A1E305DC600327C04 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA75C491E305DC600327C04 /* UserNotifications.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -414,6 +415,7 @@
 		FD9AA5481E1355E0008DCD39 /* React.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = React.framework; path = "../../../../Library/Developer/Xcode/DerivedData/qingyuanjie-bevveyvfphcbcehkzloxihzmiivn/Build/Products/Debug-iphoneos/React/React.framework"; sourceTree = "<group>"; };
 		FD9AA5B61E135ED3008DCD39 /* React.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = React.framework; path = "Pods/../build/Debug-iphoneos/React/React.framework"; sourceTree = "<group>"; };
 		FD9AA5D01E135FA5008DCD39 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		FDA75C491E305DC600327C04 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		FDBEEA931E1B691600BF9D2E /* AirMaps.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -430,6 +432,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDA75C4A1E305DC600327C04 /* UserNotifications.framework in Frameworks */,
 				FD2A10331E305514009A5686 /* UIKit.framework in Frameworks */,
 				FD2A10311E30550B009A5686 /* Foundation.framework in Frameworks */,
 				FD2A102F1E305501009A5686 /* SystemConfiguration.framework in Frameworks */,
@@ -656,6 +659,7 @@
 		AF83379F48979F15B66EC3E8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FDA75C491E305DC600327C04 /* UserNotifications.framework */,
 				FD2A10321E305514009A5686 /* UIKit.framework */,
 				FD2A10301E30550B009A5686 /* Foundation.framework */,
 				FD2A102E1E305501009A5686 /* SystemConfiguration.framework */,
