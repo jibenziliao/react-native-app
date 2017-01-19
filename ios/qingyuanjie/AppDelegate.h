@@ -14,3 +14,9 @@
 @property (nonatomic, strong) UIWindow *window;
 
 @end
+
+static NSString *appKey = @"ad98571f95006c8b9bba6f31";    //填写appkey
+
+static NSString *channel = @"";    //填写channel  一般为nil
+
+static BOOL isProduction = false;  //填写isProdurion  平时测试时为false ，生产时填写true

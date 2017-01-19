@@ -22,7 +22,8 @@ import {
   Animated,
   TouchableHighlight,
   Alert,
-  StatusBar
+  StatusBar,
+  NativeAppEventEmitter
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
@@ -418,25 +419,33 @@ class Home extends BaseComponent {
       this._changeSubTab(data.data);
     });
 
-    JPushModule.addGetRegistrationIdListener((registrationId) => {
-      console.log("Device register succeed, registrationId " + registrationId);
-    });
-
-    JPushModule.addReceiveCustomMsgListener((message) => {
-      console.log(message);
-    });
-    JPushModule.addReceiveNotificationListener((message) => {
-      console.log("receive notification: ", message);
-    });
-
-    JPushModule.addReceiveOpenNotificationListener((map) => {
-      console.log("Opening notification!", map);
-      //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
-      pageNavigator.push({
-        component: Settings,
-        name: "Settings"
+    if(Platform.OS==='android'){
+      JPushModule.addGetRegistrationIdListener((registrationId) => {
+        console.log("Device register succeed, registrationId " + registrationId);
       });
-    });
+
+      JPushModule.addReceiveCustomMsgListener((message) => {
+        console.log(message);
+      });
+      JPushModule.addReceiveNotificationListener((message) => {
+        console.log("receive notification: ", message);
+      });
+
+      JPushModule.addReceiveOpenNotificationListener((map) => {
+        console.log("Opening notification!", map);
+        //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
+        pageNavigator.push({
+          component: Settings,
+          name: "Settings"
+        });
+      });
+    }else{
+      NativeAppEventEmitter.addListener('ReceiveNotification',(message)=>{
+        console.log("content: " + JSON.stringify(message));
+      });
+    }
+
+
 
   }
 
@@ -468,6 +477,8 @@ class Home extends BaseComponent {
     JPushModule.removeReceiveNotificationListener();
     JPushModule.removeReceiveOpenNotificationListener();
     JPushModule.removeGetRegistrationIdListener("getRegistrationId");
+    NativeAppEventEmitter.removeAllListeners();
+    DeviceEventEmitter.removeAllListeners();
   }
 
   //因为在MainContainer中在ScrollableTabView外层包裹了一个View,所以这里的keyboardWillShow、keyboardWillHide失效,只能用keyboardDidShow及keyboardDidHide监听键盘事件

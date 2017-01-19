@@ -29,19 +29,19 @@
  
 #endif
 } else if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
-    [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |
-                                                      UIUserNotificationTypeSound |
-                                                      UIUserNotificationTypeAlert)
+    [JPUSHService registerForRemoteNotificationTypes:(UNAuthorizationOptionBadge |
+                                                      UNAuthorizationOptionSound |
+                                                      UNAuthorizationOptionAlert)
                                           categories:nil];
   } else {
-    [JPUSHService registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
-                                                      UIRemoteNotificationTypeSound |
-                                                      UIRemoteNotificationTypeAlert)
+    [JPUSHService registerForRemoteNotificationTypes:(UNAuthorizationOptionBadge |
+                                                      UNAuthorizationOptionSound |
+                                                      UNAuthorizationOptionAlert)
                                           categories:nil];
   }
   
-  [JPUSHService setupWithOption:launchOptions appKey:@"ad98571f95006c8b9bba6f31"
-                        channel:nil apsForProduction:nil];
+  [JPUSHService setupWithOption:launchOptions appKey:appKey
+                        channel:channel apsForProduction:isProduction];
   NSURL *jsCodeLocation;
   
   [GMSServices provideAPIKey:@"AIzaSyCRCMYDj_jI6Vo5KIhQcvy1QduzNfrHkq4"];
@@ -74,17 +74,21 @@
 - (void)jpushNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(NSInteger))completionHandler {
  NSDictionary * userInfo = notification.request.content.userInfo;
  if([notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
- [JPUSHService handleRemoteNotification:userInfo];
- [[NSNotificationCenter defaultCenter] postNotificationName:kJPFDidReceiveRemoteNotification object:userInfo];
-    }
+   [JPUSHService handleRemoteNotification:userInfo];
+   [[NSNotificationCenter defaultCenter] postNotificationName:kJPFDidReceiveRemoteNotification object:userInfo];
+ }
  completionHandler(UNNotificationPresentationOptionAlert);
 }
 - (void)jpushNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
 NSDictionary * userInfo = response.notification.request.content.userInfo;
-if([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
-[JPUSHService handleRemoteNotification:userInfo];
-[[NSNotificationCenter defaultCenter] postNotificationName:kJPFOpenNotification object:userInfo];
+  if([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+    [JPUSHService handleRemoteNotification:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJPFOpenNotification object:userInfo];
+  }
+  completionHandler();
 }
-completionHandler();
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  //Optional
+  NSLog(@"did Fail To Register For Remote Notifications With Error: %@", error);
 }
 @end

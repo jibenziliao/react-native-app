@@ -416,6 +416,7 @@
 		FD9AA5B61E135ED3008DCD39 /* React.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = React.framework; path = "Pods/../build/Debug-iphoneos/React/React.framework"; sourceTree = "<group>"; };
 		FD9AA5D01E135FA5008DCD39 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		FDA75C491E305DC600327C04 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		FDA75C661E30654E00327C04 /* qingyuanjie.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = qingyuanjie.entitlements; path = qingyuanjie/qingyuanjie.entitlements; sourceTree = "<group>"; };
 		FDBEEA931E1B691600BF9D2E /* AirMaps.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -547,6 +548,7 @@
 		13B07FAE1A68108700A75B9A /* qingyuanjie */ = {
 			isa = PBXGroup;
 			children = (
+				FDA75C661E30654E00327C04 /* qingyuanjie.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -896,7 +898,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 610;
+				LastUpgradeCheck = 820;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -905,6 +907,11 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 5V87T658ZY;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1466,10 +1473,12 @@
 			baseConfigurationReference = EFC2B45D99EF2ED786A6A650 /* Pods-qingyuanjie.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = qingyuanjie/qingyuanjie.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: 洋洋 柯 (4SZ427W4AU)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: 洋洋 柯 (4SZ427W4AU)";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 5V87T658ZY;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos/React",
@@ -1517,7 +1526,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.qingyuanjie;
 				PRODUCT_NAME = qingyuanjie;
-				PROVISIONING_PROFILE = "32cdf6eb-130f-4dc4-914c-5edf6857f85f";
+				PROVISIONING_PROFILE = "cdbea707-51b4-46b8-a55e-e49058358080";
+				PROVISIONING_PROFILE_SPECIFIER = "Qingyuanjie Development";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1527,9 +1537,11 @@
 			baseConfigurationReference = 9AB8CA771DCCCDC6A0B78EFB /* Pods-qingyuanjie.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = qingyuanjie/qingyuanjie.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: HAIJIAO PTY LTD (5V87T658ZY)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: HAIJIAO PTY LTD (5V87T658ZY)";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5V87T658ZY;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos/React",
@@ -1577,7 +1589,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.qingyuanjie;
 				PRODUCT_NAME = "觅友 Meet U";
-				PROVISIONING_PROFILE = "429d8e70-3342-4ee9-a827-9133dbd74caf";
+				PROVISIONING_PROFILE = "93e399c0-1e95-4113-893f-67d5d7d16fe2";
+				PROVISIONING_PROFILE_SPECIFIER = "Qingyuanjie Distribution";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1595,8 +1608,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1605,6 +1620,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1630,7 +1646,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1650,8 +1666,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1659,6 +1677,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1678,7 +1697,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
