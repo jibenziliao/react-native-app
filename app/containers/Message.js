@@ -415,8 +415,7 @@ class Message extends BaseComponent {
       params: {
         UserId: rowData.SenderId,
         Nickname: rowData.SenderNickname,
-        UserAvatar: rowData.SenderAvatar,
-        myUserId: tmpGlobal.currentUser.UserId
+        UserAvatar: rowData.SenderAvatar
       }
     })
   }

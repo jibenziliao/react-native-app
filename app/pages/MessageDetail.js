@@ -16,7 +16,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
-import {GiftedChat, Actions} from 'react-native-gifted-chat'
+import {GiftedChat} from 'react-native-gifted-chat'
 import CustomView from '../components/CustomView'
 import {URL_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
@@ -77,7 +77,6 @@ class MessageDetail extends BaseComponent {
 
     this.onSend = this.onSend.bind(this);
     this.onReceive = this.onReceive.bind(this);
-    this.renderCustomActions = this.renderCustomActions.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
@@ -89,7 +88,7 @@ class MessageDetail extends BaseComponent {
   }
 
   _initOldMessage() {
-    Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null && this._getChatRecord(res) && this._getChatRecord(res).MsgList.length > 0) {
         console.log('MessageDetail加载缓存', res);
         this.setState({
@@ -98,7 +97,7 @@ class MessageDetail extends BaseComponent {
           this._getNewMsg();
         });
       } else {
-        console.log(res, this.state.myUserId, this.state.UserId);
+        console.log(res, tmpGlobal.currentUser.UserId, this.state.UserId);
         console.log('没有聊天记录');
         this._getNewMsg();
       }
@@ -213,7 +212,7 @@ class MessageDetail extends BaseComponent {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
             avatar: newMsgList[i].SenderAvatar,
-            myUserId: this.state.myUserId
+            myUserId: tmpGlobal.currentUser.UserId
           }
         };
       }
@@ -251,14 +250,14 @@ class MessageDetail extends BaseComponent {
             _id: newMsgList[i].SenderId,
             name: newMsgList[i].SenderNickname,
             avatar: URL_DEV + newMsgList[i].SenderAvatar,
-            myUserId: this.state.myUserId
+            myUserId: tmpGlobal.currentUser.UserId
           }
         };
       }
     }
     dataCopy = JSON.parse(JSON.stringify(newMsgList));
     console.log('待缓存的数据', dataCopy);
-    Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
           for (let j = 0; j < data.length; j++) {
@@ -270,12 +269,12 @@ class MessageDetail extends BaseComponent {
         }
         res = res.concat(newMsgList);
         console.log('已有缓存时,待缓存的数据', res);
-        Storage.setItem(`${this.state.myUserId}_MsgList`, res).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
         //没有历史记录,且服务器第一次推送消息
-        Storage.setItem(`${this.state.myUserId}_MsgList`, dataCopy).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, dataCopy).then(()=> {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       }
@@ -291,7 +290,7 @@ class MessageDetail extends BaseComponent {
       SenderNickname: this.state.Nickname,
       MsgList: [data]
     };
-    Storage.getItem(`${this.state.myUserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null && res.length > 0) {
         let index = res.findIndex((item)=> {
           return item.SenderId === this.state.UserId
@@ -302,11 +301,11 @@ class MessageDetail extends BaseComponent {
           res.push(allMsg);
         }
         console.log('发送时更新消息缓存数据', res, data);
-        Storage.setItem(`${this.state.myUserId}_MsgList`, res).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
-        Storage.setItem(`${this.state.myUserId}_MsgList`, [allMsg]).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(()=> {
           DeviceEventEmitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
         });
       }
@@ -356,9 +355,10 @@ class MessageDetail extends BaseComponent {
       text: messages[0].text,
       createdAt: messages[0].createdAt,
       user: {
-        _id: this.state.myUserId,
+        _id: tmpGlobal.currentUser.UserId,
         name: tmpGlobal.currentUser.Nickname,
-        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
       },
     };
 
@@ -372,9 +372,10 @@ class MessageDetail extends BaseComponent {
       text: messages[0].text,
       createdAt: dateFormat(messages[0].createdAt),
       user: {
-        _id: this.state.myUserId,
+        _id: tmpGlobal.currentUser.UserId,
         name: tmpGlobal.currentUser.Nickname,
-        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
       },
     };
     console.log(params);
@@ -394,8 +395,6 @@ class MessageDetail extends BaseComponent {
     };
 
     tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
-
-    //tmpGlobal.proxy.invoke('userSendMsgToUser', this.state.UserId, messages[0].text);
   }
 
   onReceive(data) {
@@ -413,30 +412,12 @@ class MessageDetail extends BaseComponent {
           user: {
             _id: data.user._id,
             name: data.user.name,
-            avatar: URL_DEV + data.user.avatar
+            avatar: URL_DEV + data.user.avatar,
+            myUserId: tmpGlobal.currentUser.UserId
           },
         }),
       };
     });
-  }
-
-  renderCustomActions(props) {
-    const options = {
-      'Action 1': (props) => {
-        alert('option 1');
-      },
-      'Action 2': (props) => {
-        alert('option 2');
-      },
-      'Cancel': () => {
-      },
-    };
-    return (
-      <Actions
-        {...props}
-        options={options}
-      />
-    );
   }
 
   renderBubble(props) {
@@ -550,7 +531,7 @@ class MessageDetail extends BaseComponent {
   }
 
   _goUserInfo(props) {
-    if (this._getPreviousRoute() === 'UserInfo' && props.currentMessage.user._id !== this.state.myUserId) {
+    if (this._getPreviousRoute() === 'UserInfo' && props.currentMessage.user._id !== tmpGlobal.currentUser.UserId) {
       navigator.pop();
     } else {
       navigator.push({
@@ -582,14 +563,13 @@ class MessageDetail extends BaseComponent {
           onLoadEarlier={this.onLoadEarlier}
           isLoadingEarlier={this.state.isLoadingEarlier}
           user={{
-            _id: this.state.myUserId, // sent messages should have same user._id
+            _id: tmpGlobal.currentUser.UserId,
             name: tmpGlobal.currentUser.Nickname,
             avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
           }}
           locale={'zh-cn'}
           label={'发送'}
           placeholder={'输入消息内容'}
-          //renderActions={this.renderCustomActions}
           renderBubble={this.renderBubble}
           renderCustomView={this.renderCustomView}
           renderFooter={this.renderFooter}
