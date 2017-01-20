@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   tips: {
     flexDirection: 'row',
     margin: 40,
-    justifyContent:'center'
+    justifyContent: 'center'
   },
   tipsText: {
     fontSize: 20,
@@ -137,7 +137,7 @@ class Message extends BaseComponent {
     this.startReceiveMsgListener = DeviceEventEmitter.addListener('ReceiveMsg', (data)=> {
       this._wsResetOnMessageListener();
     });
-    this.reConnectWebSocketListener=DeviceEventEmitter.addListener('reConnectWebSocket', (data)=> {
+    this.reConnectWebSocketListener = DeviceEventEmitter.addListener('reConnectWebSocket', (data)=> {
       reconnectCount = 0;//在聊天页面重连时,重置重连次数
       this._wsTokenHandler();
     });
@@ -249,7 +249,7 @@ class Message extends BaseComponent {
     let objCopy = JSON.parse(JSON.stringify(newMsgList));
     console.log(newMsgList);
     console.log(objCopy);
-
+    let index = 0;
     for (let i = 0; i < this.state.messageList.length; i++) {
       for (let j = 0; j < data.length; j++) {
         if (this.state.messageList[i].SenderId === data[j].SenderId) {
@@ -257,6 +257,7 @@ class Message extends BaseComponent {
           this.state.messageList[i].SenderNickname = objCopy[j].SenderNickname;
           this.state.messageList[i].SenderAvatar = objCopy[j].SenderAvatar;
           this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(objCopy[j].MsgList);
+          index = i;
           newMsgList.splice(j, 1);
         }
       }
@@ -265,6 +266,11 @@ class Message extends BaseComponent {
     console.log(objCopy);
     //剩下的新消息不和已存在的对话合并,单独占一(多)行
     this.state.messageList = this.state.messageList.concat(newMsgList);
+    //将最新的一条消息放在列表最上面
+    if (index !== 0) {
+      let tmpArr = this.state.messageList.splice(index, 1);
+      this.state.messageList.unshift(tmpArr[0]);
+    }
     console.log('合并后的页面消息列表', this.state.messageList);
 
     this.setState({
@@ -317,10 +323,11 @@ class Message extends BaseComponent {
     tmpGlobal.ws.onclose = (e) => {
       console.log(e);
       console.log(e.code, e.reason);
+      tmpGlobal.webSocketInitState = false;
       reconnectCount += 1;
       if (reconnectCount <= 5) {
         this._wsTokenHandler();//报错后重新初始化webSocket连接
-      }else{
+      } else {
         toastLong('聊天功能初始化失败');
       }
     };

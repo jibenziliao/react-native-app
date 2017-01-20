@@ -12,7 +12,7 @@ let tmpGlobal = {
   _initWebSocket: null,
   isConnected: true, //全局保存网络状态
   cookie: null,
-  webSocketInitState: null,//webSocket连接初始化状态true成功,false失败
+  webSocketInitState: false,//webSocket连接初始化状态true成功,false失败
   webSocketConnectCount: 0,//webSocket连接次数
   ws:null,
   _wsTokenHandler:null
