@@ -264,8 +264,8 @@ class Message extends BaseComponent {
     }
     console.log(newMsgList);
     console.log(objCopy);
-    //剩下的新消息不和已存在的对话合并,单独占一(多)行
-    this.state.messageList = this.state.messageList.concat(newMsgList);
+    //剩下的新消息不和已存在的对话合并,单独占一(多)行,并在列表头部显示。
+    this.state.messageList.unshift(...newMsgList);
     //将最新的一条消息放在列表最上面
     if (index !== 0) {
       let tmpArr = this.state.messageList.splice(index, 1);
