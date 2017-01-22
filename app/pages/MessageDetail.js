@@ -525,9 +525,9 @@ class MessageDetail extends BaseComponent {
 
   _initButtons(data) {
     if (data) {
-      return ['取消', '取消关注'];
+      return ['取消', '取消关注','举报'];
     } else {
-      return ['取消', '关注TA'];
+      return ['取消', '关注TA','举报'];
     }
   }
 

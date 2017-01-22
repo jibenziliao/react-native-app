@@ -76,11 +76,6 @@ class Settings extends BaseComponent {
 
   _logOut() {
     //websocket注销当前用户
-    //tmpGlobal.proxy.invoke('logout', tmpGlobal.cookie);
-    //tmpGlobal.connection.stop();
-    //注销后,重置signalr连接
-    tmpGlobal.connection = null;
-    tmpGlobal.proxy = null;
     tmpGlobal.currentUser = null;
     tmpGlobal.cookie = null;
     Storage.removeItem('hasRegistered');
@@ -88,10 +83,11 @@ class Settings extends BaseComponent {
     Storage.removeItem('hasInit');
     toastShort('注销成功');
     this.logoutTimer = setTimeout(()=> {
-      navigator.resetTo({
+      //这里用replace,避免跳转登录页后安卓物理返回键监听失效。但这样做的话,app运行期间,每进行一次注销重新登录,路由栈中就会多一个MainContainer的路由。
+      navigator.replace({
         component: Login,
         name: 'Login'
-      })
+      });
     }, 1000);
   }
 

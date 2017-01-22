@@ -17,7 +17,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
-import {registerNavigator} from '../navigation/Route'
+import {registerNavigator,getRouteMap} from '../navigation/Route'
 import {LOCATION_TIME_OUT_SHORT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import Login from '../pages/Login'
@@ -68,14 +68,14 @@ class App extends Component {
   }
 
   componentWillMount() {
-    if (Platform.OS === 'android') {
-      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
-    }
     this.setState({loading: true});
     this.loadRegisteredStatus().done();
   }
 
   componentDidMount() {
+    if (Platform.OS === 'android') {
+      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
     NetInfo.addEventListener('change', this._handleConnectivityChange);
     this.setState({loading: true});
   }
@@ -226,6 +226,7 @@ class App extends Component {
 
   //出场动画(需要禁用Navigator手势滑动返回)
   configureScene(route) {
+    //let sceneAnimation = getRouteMap().get(route.name).sceneAnimation;
     let sceneAnimation = route.component.sceneAnimation;
     if (sceneAnimation) {
       return sceneAnimation;
@@ -239,7 +240,8 @@ class App extends Component {
     registerNavigator(navigator);
     //Each component name should start with an uppercase letter
     //jsx中的组件都得是大写字母开头, 否则将报错, expected a component class, got [object Object]
-    let Component = route.component;
+    let Component = getRouteMap().get(route.name).component;
+    //let Component = route.component;
     if (!Component) {
       return (
         <View style={styles.errorView}>
@@ -263,7 +265,7 @@ class App extends Component {
       lastClickTime = now;
       toastShort('再按一次退出觅友 Meet U');
       return true;
-    } else if (routers[routers.length - 1].name == 'EditPhotos' || routers[routers.length - 1].name == 'EditUserProfile' || routers[routers.length - 1].name == 'EditFriendFilter' || routers[routers.length - 1].name == 'EditPersonalSignature'|| routers[routers.length - 1].name == 'Revel') {
+    } else if (routers[routers.length - 1].name == 'EditPhotos' || routers[routers.length - 1].name == 'EditUserProfile' || routers[routers.length - 1].name == 'EditFriendFilter' || routers[routers.length - 1].name == 'EditPersonalSignature' || routers[routers.length - 1].name == 'Revel') {
       return true;
     } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)

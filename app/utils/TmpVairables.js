@@ -5,10 +5,8 @@
  */
 
 let tmpGlobal = {
-  proxy: null,
   currentLocation: null,
   currentUser: null,
-  connection: null,
   _initWebSocket: null,
   isConnected: true, //全局保存网络状态
   cookie: null,

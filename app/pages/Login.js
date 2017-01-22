@@ -225,7 +225,8 @@ class Login extends BaseComponent {
         } else {
           //如果新装APP登录老账号,这里默认用户已注册,以便下次打开APP时,直接进入首页
           Storage.setItem('hasRegistered', true);
-          navigator.resetTo({
+          //这里用resetTo进入首页后,安卓物理返回键监听会失效,用replace代替
+          navigator.replace({
             component: MainContainer,
             name: 'MainContainer'
           });

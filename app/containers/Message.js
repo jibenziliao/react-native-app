@@ -217,9 +217,7 @@ class Message extends BaseComponent {
       //rkt为当前cookie的key
       cookie = res.rkt;
       tmpGlobal.cookie = res.rkt;
-      if (tmpGlobal.proxy === null) {
-        this._wsTokenHandler();
-      }
+      this._wsTokenHandler();
     })
   }
 
@@ -399,7 +397,7 @@ class Message extends BaseComponent {
     console.log(routes);
     tmpGlobal.ws.send(JSON.stringify(markRead));
     console.log('ws消息成功标为已读');
-    //Message和MessageDetail页面的obj联动(proxy的原因),当前页面是MessageDetail时,此页面停止接收消息,并停止marge
+    //Message和MessageDetail会同时接收消息(因为Message页面在app运行期间不会被销毁),这里判断,当不在MessageDetail页面时,Message页面才会接收消息
     if (routes[routes.length - 1].name != 'MessageDetail') {
       console.log('Message页面收到了新消息');
       //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
