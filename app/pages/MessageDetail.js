@@ -233,9 +233,8 @@ class MessageDetail extends BaseComponent {
   //接收时缓存(同时需要发布缓存成功的订阅,供Message页面监听)
   _receiveSaveRecord(data) {
     console.log('这是从服务器返回的消息', data);
-    let newMsgList = [];
     let dataCopy = [];
-    newMsgList = JSON.parse(JSON.stringify(data));
+    let newMsgList = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newMsgList.length; i++) {
       for (let j = 0; j < newMsgList[i].MsgList.length; j++) {
         newMsgList[i].MsgList[j] = {
@@ -260,14 +259,16 @@ class MessageDetail extends BaseComponent {
     Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-          for (let j = 0; j < data.length; j++) {
-            if (res[i].SenderId === data[j].SenderId) {
+          for (let j = 0; j < dataCopy.length; j++) {
+            if (res[i].SenderId === dataCopy[j].SenderId) {
               res[i].MsgList = res[i].MsgList.concat(dataCopy[j].MsgList);
-              newMsgList.splice(j, 1);
+              dataCopy.splice(j, 1);
+              break;
             }
           }
         }
-        res = res.concat(newMsgList);
+        console.log('需要和缓存记录拼接的消息',dataCopy);
+        res = res.concat(dataCopy);
         console.log('已有缓存时,待缓存的数据', res);
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});

@@ -251,21 +251,24 @@ class Message extends BaseComponent {
     console.log(objCopy);
     let index = 0;
     for (let i = 0; i < this.state.messageList.length; i++) {
-      for (let j = 0; j < data.length; j++) {
-        if (this.state.messageList[i].SenderId === data[j].SenderId) {
+      for (let j = 0; j < objCopy.length; j++) {
+        if (this.state.messageList[i].SenderId === objCopy[j].SenderId) {
           //若用户头像、昵称有更新,则更新缓存中的头像和昵称
           this.state.messageList[i].SenderNickname = objCopy[j].SenderNickname;
           this.state.messageList[i].SenderAvatar = objCopy[j].SenderAvatar;
           this.state.messageList[i].MsgList = this.state.messageList[i].MsgList.concat(objCopy[j].MsgList);
           index = i;
-          newMsgList.splice(j, 1);
+          objCopy.splice(j, 1);
+          break;
         }
       }
     }
     console.log(newMsgList);
     console.log(objCopy);
     //剩下的新消息不和已存在的对话合并,单独占一(多)行,并在列表头部显示。
-    this.state.messageList.unshift(...newMsgList);
+    if(objCopy.length>0){
+      this.state.messageList.unshift(...objCopy);
+    }
     //将最新的一条消息放在列表最上面
     if (index !== 0) {
       let tmpArr = this.state.messageList.splice(index, 1);
