@@ -24,7 +24,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import {dateFormat} from '../utils/DateUtil'
 import * as Storage from '../utils/Storage'
 import {toastShort} from '../utils/ToastUtil'
-
+import UserInfo from '../pages/UserInfo'
 
 const {width, height}=Dimensions.get('window');
 
@@ -103,10 +103,12 @@ const styles = StyleSheet.create({
 
 let lastCount;
 
-let Card = React.createClass({
+class Card extends Component{
+  constructor(props){
+    super(props);
+  }
 
   _renderLocation(data) {
-    //console.log(this.props);
     if (data !== null) {
       return (
         <View style={[styles.userInfoLabel, styles.locationLabel]}>
@@ -116,18 +118,32 @@ let Card = React.createClass({
     } else {
       return null;
     }
-  },
+  }
 
   _renderGenderStyle(gender) {
     return {
       backgroundColor: gender ? '#1496ea' : 'pink',
       borderColor: gender ? '#1496ea' : 'pink',
     }
-  },
+  }
+
+  _goUserInfo(){
+    this.props.navigator.push({
+      component: UserInfo,
+      name: 'UserInfo',
+      params: {
+        Nickname: this.props.Nickname,
+        UserId: this.props.UserId,
+        isSelf: tmpGlobal.currentUser.UserId === this.props.UserId,
+      }
+    });
+  }
 
   render() {
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        onPress={()=>{this._goUserInfo()}}
+        style={styles.card}>
         <Image style={styles.thumbnail} source={{uri: URL_DEV + this.props.PrimaryPhotoFilename}}/>
         <View style={styles.userInfo}>
           <Text style={styles.nameText}>{this.props.Nickname}</Text>
@@ -142,12 +158,15 @@ let Card = React.createClass({
             {this._renderLocation(this.props.Location)}
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
-});
+}
 
-let NoMoreCards = React.createClass({
+class NoMoreCards extends Component{
+  constructor(props){
+    super(props);
+  }
   render() {
     return (
       <TouchableOpacity
@@ -159,7 +178,7 @@ let NoMoreCards = React.createClass({
       </TouchableOpacity>
     )
   }
-});
+}
 
 class Tinder extends BaseComponent {
 
@@ -251,7 +270,6 @@ class Tinder extends BaseComponent {
     };
     console.log(params);
     this._sendSaveRecord(params, card);
-    //tmpGlobal.proxy.invoke('userSendMsgToUser', card.UserId, 'Hi,你好!');
 
     let sendMsgParams = {
       H: 'chatcore',
@@ -379,7 +397,7 @@ class Tinder extends BaseComponent {
             refresh={this.state.refresh}
             cards={this.state.cards}
             loop={false}
-            renderCard={(cardData) => <Card {...cardData} />}
+            renderCard={(cardData) => <Card {...cardData}{...this.props} />}
             renderNoMoreCards={() => <NoMoreCards refresh={()=> {
               this._refresh()
             }}/>}
