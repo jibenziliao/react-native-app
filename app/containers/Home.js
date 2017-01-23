@@ -813,11 +813,12 @@ class Home extends BaseComponent {
     }
   }
 
+  //顶部tab切换完成后才会触发此方法,如果切换tab时下拉刷新,速度过快,会出现加载指示器不消失的bug
   _handleChangeTab(index) {
     this._closeCommentInput();
     this.setState({
       tabIndex: index
-    })
+    });
   }
 
   _renderLocationTips(data) {
