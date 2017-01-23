@@ -17,7 +17,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
-import {registerNavigator,getRouteMap} from '../navigation/Route'
+import {registerNavigator, getRouteMap} from '../navigation/Route'
 import {LOCATION_TIME_OUT_SHORT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import Login from '../pages/Login'
@@ -163,8 +163,7 @@ class App extends Component {
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
-    NetInfo.removeEventListener('change', this._handleConnectivityChange
-    );
+    NetInfo.removeEventListener('change', this._handleConnectivityChange);
   }
 
   _handleConnectivityChange(data) {
@@ -237,11 +236,11 @@ class App extends Component {
 
   renderScene(route, navigator) {
     this.navigator = navigator;
-    registerNavigator(navigator);
+    //registerNavigator(navigator);
     //Each component name should start with an uppercase letter
     //jsx中的组件都得是大写字母开头, 否则将报错, expected a component class, got [object Object]
-    let Component = getRouteMap().get(route.name).component;
-    //let Component = route.component;
+    //let Component = getRouteMap().get(route.name).component;
+    let Component = route.component;
     if (!Component) {
       return (
         <View style={styles.errorView}>

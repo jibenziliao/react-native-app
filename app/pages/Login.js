@@ -208,9 +208,7 @@ class Login extends BaseComponent {
   }
 
   loginSuccess(json) {
-    this.setState({
-      hasSendCode: false,
-    });
+
     tmpGlobal.currentUser = json.Result;
     console.log('登录成功后,保存用户信息到全局变量', tmpGlobal.currentUser);
 
@@ -235,7 +233,11 @@ class Login extends BaseComponent {
         console.log(error);
       }
     };
-    saveUserInfo();
+    this.setState({
+      hasSendCode: false,
+    },()=>{
+      saveUserInfo();
+    });
   }
 
   getValidCode(phoneCountry, phone) {

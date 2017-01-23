@@ -474,8 +474,10 @@ class Home extends BaseComponent {
     JPushModule.removeReceiveNotificationListener();
     JPushModule.removeReceiveOpenNotificationListener();
     JPushModule.removeGetRegistrationIdListener("getRegistrationId");
-    NativeAppEventEmitter.removeAllListeners();
     DeviceEventEmitter.removeAllListeners();
+    if(Platform.OS==='ios'){
+      NativeAppEventEmitter.removeAllListeners();
+    }
   }
 
   //因为在MainContainer中在ScrollableTabView外层包裹了一个View,所以这里的keyboardWillShow、keyboardWillHide失效,只能用keyboardDidShow及keyboardDidHide监听键盘事件
