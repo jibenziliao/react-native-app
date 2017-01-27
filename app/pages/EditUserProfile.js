@@ -323,6 +323,12 @@ class EditUserProfile extends BaseComponent {
 
   //点击完成(保存编辑后的个人资料)
   onRightPressed() {
+    if(this._validForm()){
+      this._saveUserProfile();
+    }
+  }
+
+  _saveUserProfile(){
     const {dispatch}=this.props;
     dispatch(UserProfileActions.editProfile(this.state, DatingPurposeSelectCopy, (json)=> {
       DeviceEventEmitter.emit('userInfoChanged', '编辑用户资料成功');
@@ -331,7 +337,23 @@ class EditUserProfile extends BaseComponent {
         navigator.pop();
       }, 1000)
     }, (error)=> {
-    }))
+    }));
+  }
+
+  _validForm(){
+    let nickNameReg = /^[\u4E00-\u9FA5\uF900-\uFA2D\da-zA-Z]+$/;
+    if (this.state.Nickname == '') {
+      toastShort('请填写昵称');
+      return false;
+    } else if (this.state.Nickname.split('').length < 3) {
+      toastShort('昵称长度不能小于3位');
+      return false;
+    } else if (!nickNameReg.test(this.state.Nickname)) {
+      toastShort('昵称只能为英文、数字、汉字');
+      return false;
+    }else{
+      return true;
+    }
   }
 
   onBackAndroid() {
