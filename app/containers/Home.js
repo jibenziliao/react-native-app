@@ -470,13 +470,14 @@ class Home extends BaseComponent {
     this.commentListener.remove();
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
-    JPushModule.removeReceiveCustomMsgListener();
-    JPushModule.removeReceiveNotificationListener();
-    JPushModule.removeReceiveOpenNotificationListener();
-    JPushModule.removeGetRegistrationIdListener("getRegistrationId");
     DeviceEventEmitter.removeAllListeners();
     if(Platform.OS==='ios'){
       NativeAppEventEmitter.removeAllListeners();
+    }else{
+      JPushModule.removeReceiveCustomMsgListener();
+      JPushModule.removeReceiveNotificationListener();
+      JPushModule.removeReceiveOpenNotificationListener();
+      JPushModule.removeGetRegistrationIdListener("getRegistrationId");
     }
   }
 

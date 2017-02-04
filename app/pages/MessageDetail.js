@@ -28,6 +28,7 @@ import ActionSheet from 'react-native-actionsheet'
 import CustomGiftedAvatar from '../components/CustomGiftAvatar'
 import UserInfo from '../pages/UserInfo'
 import CustomBubble from '../components/CustomBubble'
+import Report from '../pages/Report'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -267,7 +268,7 @@ class MessageDetail extends BaseComponent {
             }
           }
         }
-        console.log('需要和缓存记录拼接的消息',dataCopy);
+        console.log('需要和缓存记录拼接的消息', dataCopy);
         res = res.concat(dataCopy);
         console.log('已有缓存时,待缓存的数据', res);
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
@@ -332,7 +333,7 @@ class MessageDetail extends BaseComponent {
       Alert.alert('提示', '您的网络异常,点击重试', [
         {
           text: '确定', onPress: () => {
-          DeviceEventEmitter.emit('reConnectWebSocket',{data:true,message:'在聊天页面重新连接webSocket'});
+          DeviceEventEmitter.emit('reConnectWebSocket', {data: true, message: '在聊天页面重新连接webSocket'});
         }
         },
         {
@@ -520,14 +521,22 @@ class MessageDetail extends BaseComponent {
         DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
       }, (error)=> {
       }));
+    } else if (index === 2) {
+      navigator.push({
+        component: Report,
+        name: 'Report',
+        params: {
+          UserId: this.state.UserId
+        }
+      });
     }
   }
 
   _initButtons(data) {
     if (data) {
-      return ['取消', '取消关注','举报'];
+      return ['取消', '取消关注', '举报'];
     } else {
-      return ['取消', '关注TA','举报'];
+      return ['取消', '关注TA', '举报'];
     }
   }
 

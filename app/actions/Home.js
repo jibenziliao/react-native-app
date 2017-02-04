@@ -318,3 +318,12 @@ export function setFloatMsg(data,resolve,reject) {
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function report(data,resolve,reject) {
+  return (dispatch)=> {
+    postFetch('/report', data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
