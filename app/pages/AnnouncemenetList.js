@@ -20,7 +20,8 @@ import {
   Keyboard,
   Animated,
   DeviceEventEmitter,
-  NativeAppEventEmitter
+  NativeAppEventEmitter,
+  BackAndroid
 } from 'react-native'
 import {connect} from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -189,6 +190,7 @@ class AnnouncementList extends BaseComponent {
       commentInputHeight: 0
     };
     console.log(this.props.route.params);
+    this.onBackAndroid = this.onBackAndroid.bind(this);
   }
 
   componentWillMount() {
@@ -213,7 +215,10 @@ class AnnouncementList extends BaseComponent {
     });
     InteractionManager.runAfterInteractions(()=> {
       this._getAllAnnouncementList();
-    })
+    });
+    if (Platform.OS === 'android') {
+      BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
+    }
   }
 
   componentWillUnmount() {
@@ -221,6 +226,9 @@ class AnnouncementList extends BaseComponent {
     this.hasDeleteListener.remove();
     this.hasReadListener.remove();
     this.commentListener.remove();
+    if (Platform.OS === 'android') {
+      BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
+    }
   }
 
   //当键盘弹即将起来
@@ -236,6 +244,13 @@ class AnnouncementList extends BaseComponent {
 
   //在历史列表页返回时,直接返回首页(路由栈中可能存在AnnouncementDetail路由,使用pop()会导致路由循环,在删除聚会/约会时,会返回到不存在的页面上)
   onLeftPressed(){
+    navigator.resetTo({
+      component:MainContainer,
+      name:'MainContainer'
+    })
+  }
+
+  onBackAndroid(){
     navigator.resetTo({
       component:MainContainer,
       name:'MainContainer'

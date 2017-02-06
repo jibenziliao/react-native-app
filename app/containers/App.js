@@ -264,7 +264,7 @@ class App extends Component {
       lastClickTime = now;
       toastShort('再按一次退出觅友 Meet U');
       return true;
-    } else if (routers[routers.length - 1].name == 'EditPhotos' || routers[routers.length - 1].name == 'EditUserProfile' || routers[routers.length - 1].name == 'EditFriendFilter' || routers[routers.length - 1].name == 'EditPersonalSignature' || routers[routers.length - 1].name == 'Revel') {
+    } else if (routers[routers.length - 1].name == 'EditPhotos' || routers[routers.length - 1].name == 'EditUserProfile' || routers[routers.length - 1].name == 'EditFriendFilter' || routers[routers.length - 1].name == 'EditPersonalSignature' || routers[routers.length - 1].name == 'Revel' || routers[routers.length - 1].name == 'AnnouncementList') {
       return true;
     } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
