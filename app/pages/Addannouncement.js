@@ -19,10 +19,11 @@ import {
   ActionSheetIOS,
   Picker,
   Alert,
-  Keyboard
+  Keyboard,
+  DeviceEventEmitter,
+  NativeAppEventEmitter
 } from 'react-native'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import ImagePicker from 'react-native-image-picker'
@@ -36,6 +37,7 @@ import Menu, {
 import * as HomeActions from '../actions/Home'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import tmpGlobal from '../utils/TmpVairables'
+import {toastShort} from '../utils/ToastUtil'
 
 const {height, width} = Dimensions.get('window');
 
@@ -136,6 +138,7 @@ const dict = {
     {Key: 2, Value: 'AA'},
     {Key: 3, Value: '男AA女免费'}]
 };
+let emitter;
 
 class Addannouncement extends BaseComponent {
 
@@ -151,6 +154,7 @@ class Addannouncement extends BaseComponent {
     };
 
     navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
   getNavigationBarProps() {
@@ -166,7 +170,13 @@ class Addannouncement extends BaseComponent {
     Keyboard.dismiss();
     const {dispatch, navigator}=this.props;
     this.state.PostContent = this.state.PostContent.trim();
-    dispatch(HomeActions.postAnnouncement(this.state, navigator));
+    dispatch(HomeActions.postAnnouncement(this.state, navigator,(data)=>{
+      toastShort('发布成功');
+      setTimeout(()=> {
+        navigator.popToTop();
+        emitter.emit('announcementHasPublish', {message: '新公告已发布', data: data});
+      }, 1000);
+    }));
   }
 
   _initImagePicker() {

@@ -19,7 +19,8 @@ import {
   Platform,
   Keyboard,
   Animated,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  NativeAppEventEmitter
 } from 'react-native'
 import {connect} from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -34,6 +35,7 @@ import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
+import MainContainer from '../containers/MainContainer'
 
 const {height, width} = Dimensions.get('window');
 
@@ -162,12 +164,14 @@ const styles = StyleSheet.create({
 let navigator;
 let commentId;
 let lastCount;
+let emitter;
 
 class AnnouncementList extends BaseComponent {
 
   constructor(props) {
     super(props);
     navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
     this.state = {
       refreshing: false,
       loadingMore: false,
@@ -192,8 +196,20 @@ class AnnouncementList extends BaseComponent {
   }
 
   componentDidMount() {
-    this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', (data)=> {
-      this._onRefresh();
+    this.hasReadListener = emitter.addListener('announcementHasRead', (data)=> {
+      InteractionManager.runAfterInteractions(()=> {
+        this._onRefresh();
+      });
+    });
+    this.commentListener = emitter.addListener('announcementHasComment', (data)=> {
+      InteractionManager.runAfterInteractions(()=> {
+        this._onRefresh();
+      });
+    });
+    this.hasDeleteListener = emitter.addListener('announcementHasDelete', (data)=> {
+      InteractionManager.runAfterInteractions(() => {
+        this._onRefresh();
+      });
     });
     InteractionManager.runAfterInteractions(()=> {
       this._getAllAnnouncementList();
@@ -203,6 +219,8 @@ class AnnouncementList extends BaseComponent {
   componentWillUnmount() {
     this.keyboardWillShowListener.remove();
     this.hasDeleteListener.remove();
+    this.hasReadListener.remove();
+    this.commentListener.remove();
   }
 
   //当键盘弹即将起来
@@ -214,6 +232,14 @@ class AnnouncementList extends BaseComponent {
         duration: 100,
       }
     ).start();
+  }
+
+  //在历史列表页返回时,直接返回首页(路由栈中可能存在AnnouncementDetail路由,使用pop()会导致路由循环,在删除聚会/约会时,会返回到不存在的页面上)
+  onLeftPressed(){
+    navigator.resetTo({
+      component:MainContainer,
+      name:'MainContainer'
+    })
   }
 
   _getAllAnnouncementList() {

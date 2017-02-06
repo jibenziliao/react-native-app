@@ -141,7 +141,7 @@ function fetchOptions(data) {
   }
 }
 
-function pushNewPost(dispatch, data, imgArr, navigator) {
+function pushNewPost(dispatch, data, imgArr, navigator,callback) {
   let params = {
     PostContent: data.PostContent,
     ...tmpGlobal.currentLocation,
@@ -159,11 +159,7 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
         toastShort(json.Message);
         return false;
       } else {
-        DeviceEventEmitter.emit('announcementHasPublish', {message: '新公告已发布', data: data.postType - 1});
-        toastShort('发布成功');
-        setTimeout(()=> {
-          navigator.popToTop();
-        }, 1000);
+        callback(data.postType-1);
       }
     }).catch((error)=> {
     dispatch({type: ActionTypes.FETCH_FAILED, params, error});
@@ -171,7 +167,7 @@ function pushNewPost(dispatch, data, imgArr, navigator) {
   })
 }
 
-export function postAnnouncement(data, navigator) {
+export function postAnnouncement(data, navigator,callback) {
   return (dispatch)=> {
     const photoCount = data.imageArr.length;
     let uploadReq = 0;
@@ -179,13 +175,13 @@ export function postAnnouncement(data, navigator) {
     if (photoCount !== 0) {
       dispatch({type: ActionTypes.UPLOAD_PHOTO_BEGIN});
       for (let i = 0; i < data.imageArr.length; i++) {
-        uploadSingleImage(data.imageArr[i], data, dispatch);
+        uploadSingleImage(data.imageArr[i], data, dispatch,callback);
       }
     } else {
-      pushNewPost(dispatch, data, [], navigator);
+      pushNewPost(dispatch, data, [], navigator,callback);
     }
 
-    function uploadSingleImage(obj, data, dispatch) {
+    function uploadSingleImage(obj, data, dispatch,callback) {
       let formData = new FormData();
       let file = {
         uri: obj.uri,
@@ -211,7 +207,7 @@ export function postAnnouncement(data, navigator) {
             uploadReq += 1;
             if (uploadReq === photoCount) {
               dispatch({type: ActionTypes.UPLOAD_PHOTO_END, data, json});
-              pushNewPost(dispatch, data, uploadImgArr, navigator);
+              pushNewPost(dispatch, data, uploadImgArr, navigator,callback);
             }
           }
         })

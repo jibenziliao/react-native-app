@@ -18,6 +18,7 @@ import {
   InteractionManager,
   Alert,
   DeviceEventEmitter,
+  NativeAppEventEmitter,
   Platform,
   Keyboard,
   Animated
@@ -176,6 +177,8 @@ const styles = StyleSheet.create({
 
 let lastCount;
 let navigator;
+let emitter;
+let deleteFlag;
 
 let buttons = ['取消', '发布新公告', '删除'];
 const CANCEL_INDEX = 0;
@@ -218,10 +221,11 @@ class AnnouncementDetail extends BaseComponent {
       imgList: [],
       commentInputHeight: 0
     };
-
+    deleteFlag = false;
     buttons = ['取消', `发布新${this.props.route.params.PostType === 1 ? '聚会' : '约会'}`, '删除'];
     lastCount = this.state.pageSize;
     navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
   _renderRightIcon() {
@@ -240,7 +244,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   componentDidMount() {
-    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
+    this._attentionListener = emitter.addListener('hasAttention', ()=> {
       this._onRefresh()
     });
     InteractionManager.runAfterInteractions(()=> {
@@ -254,8 +258,8 @@ class AnnouncementDetail extends BaseComponent {
       clearTimeout(this.deleteTimer);
     }
     //ios在销毁页面前发出广播,避免返回前一页面后,页面白屏,点击一下才显示的bug。
-    if (Platform.OS === 'ios') {
-      DeviceEventEmitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
+    if (Platform.OS === 'ios' && !deleteFlag) {
+      emitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
     }
     this._attentionListener.remove();
     this.keyboardWillShowListener.remove();
@@ -281,6 +285,12 @@ class AnnouncementDetail extends BaseComponent {
     };
   }
 
+  onLeftPressed(){
+    let routes = navigator.getCurrentRoutes();
+    console.log(routes,navigator);
+    navigator.pop();
+  }
+
   onRightPressed() {
     this._closeCommentInput();
     if (this.state.isSelf) {
@@ -300,10 +310,11 @@ class AnnouncementDetail extends BaseComponent {
     };
     if (index === 2) {
       dispatch(HomeActions.deleteAnnouncement(data, (json)=> {
-        DeviceEventEmitter.emit('announcementHasDelete', {message: '公告被删除', data: this.state.PostType - 1});
+        deleteFlag = true;
         toastShort('删除成功');
         this.deleteTimer = setTimeout(()=> {
           navigator.pop();
+          emitter.emit('announcementHasDelete', {message: '公告被删除', data: this.state.PostType - 1});
         }, 1000);
       }, (error)=> {
       }));
@@ -335,16 +346,24 @@ class AnnouncementDetail extends BaseComponent {
     }));
   }
 
-  //前往我的历史公告列表(包含聚会和约会)
+  //前往我的历史公告列表(包含聚会和约会)(需要检查路由栈中是否有历史公告列表页面,有则跳转到路由栈中的页面,避免循环跳转)
   _goAnnouncementList() {
-    navigator.push({
-      component: AnnouncementList,
-      name: 'AnnouncementList',
-      params: {
-        targetUserId: tmpGlobal.currentUser.UserId,
-        Nickname: tmpGlobal.currentUser.Nickname
-      }
+    let routes = navigator.getCurrentRoutes();
+    let index = routes.findIndex((item)=> {
+      return item.name === 'AnnouncementList'
     });
+    if (index === -1) {
+      navigator.push({
+        component: AnnouncementList,
+        name: 'AnnouncementList',
+        params: {
+          targetUserId: tmpGlobal.currentUser.UserId,
+          Nickname: tmpGlobal.currentUser.Nickname
+        }
+      });
+    } else {
+      navigator.popToRoute(routes[index]);
+    }
   }
 
   _newPostAlert(int) {
@@ -368,7 +387,7 @@ class AnnouncementDetail extends BaseComponent {
       attentionUserId: this.state.PosterInfo.UserId
     };
     dispatch(HomeActions.attention(data, (json)=> {
-      DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
+      emitter.emit('hasAttention', '已关注/取消关注对方');
       //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error)=> {
     }))
@@ -464,7 +483,7 @@ class AnnouncementDetail extends BaseComponent {
     };
     dispatch(HomeActions.comment(data, (json)=> {
       dispatch(HomeActions.getCommentList(params, (json)=> {
-        DeviceEventEmitter.emit('announcementHasComment', {message: '公告被评论', data: this.state.PostType - 1});
+        emitter.emit('announcementHasComment', {message: '公告被评论', data: this.state.PostType - 1});
         this.setState({
           CommentCount: this.state.CommentCount,
           commentList: json.Result//评论成功后,需要重新渲染页面,以显示最新的评论
@@ -547,7 +566,7 @@ class AnnouncementDetail extends BaseComponent {
           isSelf: this.state.isSelf
         });
         if (Platform.OS === 'android') {
-          DeviceEventEmitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
+          emitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
         }
       }, (error)=> {
         this.setState({refreshing: false});

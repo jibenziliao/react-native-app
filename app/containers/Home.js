@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
 let pageNavigator;
 let commentId;
 let lastCount = null, appointmentCount = null;
+let emitter;
 
 const buttons = ['取消', '发聚会', '发约会'];
 const CANCEL_INDEX = 0;
@@ -224,6 +225,7 @@ class Home extends BaseComponent {
   constructor(props) {
     super(props);
     pageNavigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
     this.state = {
       pending: false,
       gpsStatus: this.props.gpsStatus,
@@ -406,20 +408,28 @@ class Home extends BaseComponent {
   }
 
   componentDidMount() {
-    this.hasReadListener = DeviceEventEmitter.addListener('announcementHasRead', (data)=> {
-      this._changeSubTab(data.data);
+    this.hasReadListener = emitter.addListener('announcementHasRead', (data)=> {
+      InteractionManager.runAfterInteractions(()=> {
+        this._changeSubTab(data.data);
+      });
     });
-    this.hasDeleteListener = DeviceEventEmitter.addListener('announcementHasDelete', (data)=> {
-      this._changeSubTab(data.data);
+    this.hasDeleteListener = emitter.addListener('announcementHasDelete', (data)=> {
+      InteractionManager.runAfterInteractions(()=> {
+        this._changeSubTab(data.data);
+      });
     });
-    this.publishListener = DeviceEventEmitter.addListener('announcementHasPublish', (data)=> {
-      this._changeSubTab(data.data);
+    this.publishListener = emitter.addListener('announcementHasPublish', (data)=> {
+      InteractionManager.runAfterInteractions(()=> {
+        this._changeSubTab(data.data);
+      });
     });
-    this.commentListener = DeviceEventEmitter.addListener('announcementHasComment', (data)=> {
-      this._changeSubTab(data.data);
+    this.commentListener = emitter.addListener('announcementHasComment', (data)=> {
+      InteractionManager.runAfterInteractions(()=> {
+        this._changeSubTab(data.data);
+      });
     });
 
-    if(Platform.OS==='android'){
+    if (Platform.OS === 'android') {
       JPushModule.addGetRegistrationIdListener((registrationId) => {
         console.log("Device register succeed, registrationId " + registrationId);
       });
@@ -439,8 +449,8 @@ class Home extends BaseComponent {
           name: "Settings"
         });
       });
-    }else{
-      NativeAppEventEmitter.addListener('ReceiveNotification',(message)=>{
+    } else {
+      emitter.addListener('ReceiveNotification', (message)=> {
         console.log("content: " + JSON.stringify(message));
       });
     }
@@ -470,10 +480,8 @@ class Home extends BaseComponent {
     this.commentListener.remove();
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
-    DeviceEventEmitter.removeAllListeners();
-    if(Platform.OS==='ios'){
-      NativeAppEventEmitter.removeAllListeners();
-    }else{
+    emitter.removeAllListeners();
+    if (Platform.OS === 'android') {
       JPushModule.removeReceiveCustomMsgListener();
       JPushModule.removeReceiveNotificationListener();
       JPushModule.removeReceiveOpenNotificationListener();
