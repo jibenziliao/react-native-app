@@ -46,12 +46,16 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>需要拍摄照片</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>需要定位</string>
 	<key>NSLocationWhenInUseDescription</key>
 	<string>需要定位</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>需要定位</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要查看相册</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Andale Mono.ttf</string>
