@@ -44,6 +44,17 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     textAlign: 'center'
   },
+  noCardContainer:{
+    flex:1,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  noCard: {
+    flexWrap: 'wrap',
+    textAlign: 'center',
+    fontSize: 16,
+    alignItems:'center'
+  },
   card: {
     alignItems: 'flex-start',
     borderRadius: 5,
@@ -103,8 +114,8 @@ const styles = StyleSheet.create({
 
 let lastCount;
 
-class Card extends Component{
-  constructor(props){
+class Card extends Component {
+  constructor(props) {
     super(props);
   }
 
@@ -127,7 +138,7 @@ class Card extends Component{
     }
   }
 
-  _goUserInfo(){
+  _goUserInfo() {
     this.props.navigator.push({
       component: UserInfo,
       name: 'UserInfo',
@@ -142,7 +153,9 @@ class Card extends Component{
   render() {
     return (
       <TouchableOpacity
-        onPress={()=>{this._goUserInfo()}}
+        onPress={()=> {
+          this._goUserInfo()
+        }}
         style={styles.card}>
         <Image style={styles.thumbnail} source={{uri: URL_DEV + this.props.PrimaryPhotoFilename}}/>
         <View style={styles.userInfo}>
@@ -163,10 +176,11 @@ class Card extends Component{
   }
 }
 
-class NoMoreCards extends Component{
-  constructor(props){
+class NoMoreCards extends Component {
+  constructor(props) {
     super(props);
   }
+
   render() {
     return (
       <TouchableOpacity
@@ -269,7 +283,6 @@ class Tinder extends BaseComponent {
       },
     };
     console.log(params);
-    this._sendSaveRecord(params, card);
 
     let sendMsgParams = {
       H: 'chatcore',
@@ -277,7 +290,11 @@ class Tinder extends BaseComponent {
       A: [card.UserId + '', 'Hi,你好!'],
       I: Math.floor(Math.random() * 11)
     };
-    tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    //打招呼之前,检查webSocket是否成功初始化
+    if (tmpGlobal.webSocketInitState) {
+      this._sendSaveRecord(params, card);
+      tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    }
   }
 
   //发送时缓存(同时需要发布订阅,供Message页面监听)
@@ -314,13 +331,14 @@ class Tinder extends BaseComponent {
   //打招呼
   handleYup(card) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.canSayHey({UserId:card.UserId},(json)=>{
-      if(json.Result){
+    dispatch(HomeActions.canSayHey({UserId: card.UserId}, (json)=> {
+      if (json.Result) {
         this._greet(card);
-      }else{
+      } else {
         toastShort(json.Message);
       }
-    },(error)=>{}));
+    }, (error)=> {
+    }));
   }
 
   //跳过
@@ -385,8 +403,13 @@ class Tinder extends BaseComponent {
 
   renderBody() {
     if (this.state.cards.length === 0) {
-      return null
-    } else {
+      return (
+        <View style={styles.noCardContainer}>
+          <Text style={styles.noCard}>{'暂无有缘人'}</Text>
+        </View>
+      )
+    }
+    else {
       return (
         <View style={{flex: 1, justifyContent: 'center'}}>
           <View style={styles.tipsArea}>
