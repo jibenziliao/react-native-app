@@ -117,7 +117,6 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   link: {
-    textDecorationLine: 'underline',
     color: 'blue',
     marginTop: 10
   }
@@ -429,7 +428,7 @@ class Addannouncement extends BaseComponent {
               onPress={()=> {
                 this._goAnnouncementList()
               }}
-              style={styles.link}>{'查看求关注历程'}</Text>
+              style={styles.link}>{'查看历史聚会/约会消息'}</Text>
           </View>
         </ScrollView>
       </MenuContext>

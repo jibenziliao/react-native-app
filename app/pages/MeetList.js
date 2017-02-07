@@ -240,7 +240,12 @@ class MeetList extends Component {
       }
       return arrCopy.map((item, index)=> {
         return (
-          <View key={index} style={styles.singleImgContainer}>
+          <TouchableOpacity
+            key={index}
+            style={styles.singleImgContainer}
+            onPress={()=> {
+              this._openImgModal(arr)
+            }}>
             <Image
               onLoadEnd={()=> {
                 this.setState({imgLoading: false})
@@ -253,7 +258,7 @@ class MeetList extends Component {
                   style={{width: imageWidth, height: imageWidth}}/> : null}
             </Image>
             {this._renderMoreImgLabel(arr, index)}
-          </View>
+          </TouchableOpacity>
         )
       })
     } else {
@@ -275,8 +280,12 @@ class MeetList extends Component {
 
   renderRowData(rowData) {
     return (
-      <View key={rowData.PosterInfo.UserId}
-            style={styles.card}>
+      <TouchableOpacity
+        onPress={()=> {
+          this._goAnnouncementDetail(rowData)
+        }}
+        key={rowData.PosterInfo.UserId}
+        style={styles.card}>
         <View style={styles.cardRow}>
           <TouchableOpacity
             activeOpacity={0.5}
@@ -313,24 +322,16 @@ class MeetList extends Component {
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.moodView}
-          onPress={()=> {
-            this._goAnnouncementDetail(rowData)
-          }}>
+        <View style={styles.moodView}>
           <Text
             style={styles.moodText}
             numberOfLines={2}>
             {rowData.PostContent}
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.postImage}
-          onPress={()=> {
-            this._openImgModal(rowData.PicList)
-          }}>
-          {this.renderPostImage(rowData.PicList)}
-        </TouchableOpacity>
+          <View style={styles.postImage}>
+            {this.renderPostImage(rowData.PicList)}
+          </View>
+        </View>
         <View style={styles.cardRow}>
           <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
@@ -355,7 +356,7 @@ class MeetList extends Component {
             <Icon name="comments-o" size={20}/>
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 

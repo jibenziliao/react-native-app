@@ -421,7 +421,7 @@ class UserInfo extends BaseComponent {
           </View>
           <View style={styles.section}>
             <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>{'求关注消息'}</Text>
+              <Text style={styles.sectionTitleText}>{'历史聚会/约会消息'}</Text>
             </View>
             <View style={[styles.sectionContent, styles.announcementCard]}>
               <Image
@@ -440,7 +440,7 @@ class UserInfo extends BaseComponent {
                   this._goHistoryAnnouncementList()
                 }}
                 style={styles.textBtnContainer}>
-                <Text style={styles.textBtn}>{this.state.isSelf ? '点击查看我的历史求关注消息' : '点击查看用户历史求关注消息'}</Text>
+                <Text style={styles.textBtn}>{'查看历史聚会/约会消息'}</Text>
               </TouchableOpacity>
             </View>
           </View>

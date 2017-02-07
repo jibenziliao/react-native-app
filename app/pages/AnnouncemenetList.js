@@ -243,23 +243,23 @@ class AnnouncementList extends BaseComponent {
   }
 
   //在历史列表页返回时,直接返回首页(路由栈中可能存在AnnouncementDetail路由,使用pop()会导致路由循环,在删除聚会/约会时,会返回到不存在的页面上)
-  onLeftPressed(){
+  onLeftPressed() {
     this._goBack();
   }
 
-  _goBack(){
-    let routes=navigator.getCurrentRoutes();
-    if(routes[routes.length-2].name==='UserInfo'){
+  _goBack() {
+    let routes = navigator.getCurrentRoutes();
+    if (routes[routes.length - 2].name === 'UserInfo') {
       navigator.pop();
-    }else{
+    } else {
       navigator.resetTo({
-        component:MainContainer,
-        name:'MainContainer'
+        component: MainContainer,
+        name: 'MainContainer'
       });
     }
   }
 
-  onBackAndroid(){
+  onBackAndroid() {
     this._goBack();
   }
 
@@ -460,7 +460,11 @@ class AnnouncementList extends BaseComponent {
       }
       return arrCopy.map((item, index)=> {
         return (
-          <View key={index} style={styles.singleImgContainer}>
+          <TouchableOpacity
+            onPress={()=> {
+              this._openImgModal(arr)
+            }}
+            key={index} style={styles.singleImgContainer}>
             <Image
               onLoadEnd={()=> {
                 this.setState({imgLoading: false})
@@ -473,7 +477,7 @@ class AnnouncementList extends BaseComponent {
                   style={{width: imageWidth, height: imageWidth}}/> : null}
             </Image>
             {this._renderMoreImgLabel(arr, index)}
-          </View>
+          </TouchableOpacity>
         )
       })
     } else {
@@ -483,66 +487,53 @@ class AnnouncementList extends BaseComponent {
 
   renderRowData(rowData) {
     return (
-      <View key={rowData.PosterInfo.UserId}
-            style={styles.card}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={()=> {
-            {/*this._goUserInfo(rowData.PosterInfo)*/
-            }
-            console.log('你点击了用户公告历史记录中的头像及昵称')
-          }}>
-          <View style={styles.cardRow}>
-            <Image
-              onLoadEnd={()=> {
-                this.setState({avatarLoading: false})
-              }}
-              source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-              style={styles.avatarImg}>
-              {this.state.avatarLoading ?
-                <Image
-                  source={require('./img/imgLoading.gif')}
-                  style={styles.avatarImg}/> : null}
-            </Image>
-            <View style={styles.userInfo}>
-              <View style={styles.nameTextContainer}>
-                <Text
-                  numberOfLines={1}
-                  style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
-                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
+      <TouchableOpacity
+        onPress={()=> {
+          this._goAnnouncementDetail(rowData)
+        }}
+        key={rowData.PosterInfo.UserId}
+        style={styles.card}>
+        <View style={styles.cardRow}>
+          <Image
+            onLoadEnd={()=> {
+              this.setState({avatarLoading: false})
+            }}
+            source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
+            style={styles.avatarImg}>
+            {this.state.avatarLoading ?
+              <Image
+                source={require('./img/imgLoading.gif')}
+                style={styles.avatarImg}/> : null}
+          </Image>
+          <View style={styles.userInfo}>
+            <View style={styles.nameTextContainer}>
+              <Text
+                numberOfLines={1}
+                style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
+              <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
 
-              </View>
-              <View style={styles.userInfoLabelContainer}>
-                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                  <Icon
-                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={10}
-                    style={styles.userInfoIcon}/>
-                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
-                </View>
+            </View>
+            <View style={styles.userInfoLabelContainer}>
+              <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                <Icon
+                  name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                  size={10}
+                  style={styles.userInfoIcon}/>
+                <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
               </View>
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.moodView}
-          onPress={()=> {
-            this._goAnnouncementDetail(rowData)
-          }}>
+        </View>
+        <View style={styles.moodView}>
           <Text
             style={styles.moodText}
             numberOfLines={3}>
             {rowData.PostContent}
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={()=> {
-            this._openImgModal(rowData.PicList)
-          }}>
           <View style={styles.postImage}>
             {this.renderPostImage(rowData.PicList)}
           </View>
-        </TouchableOpacity>
+        </View>
         <View style={styles.cardRow}>
           <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
@@ -567,7 +558,7 @@ class AnnouncementList extends BaseComponent {
             <Icon name="comments-o" size={20}/>
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 
