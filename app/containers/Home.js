@@ -713,7 +713,7 @@ class Home extends BaseComponent {
       comment: this.state.comment
     };
 
-    //关闭评论输入框,并情况评论框内容
+    //关闭评论输入框,并清空评论框内容
     this._closeCommentInput();
 
     if (this.state.tabIndex === 0) {
