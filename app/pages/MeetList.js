@@ -277,12 +277,12 @@ class MeetList extends Component {
     return (
       <View key={rowData.PosterInfo.UserId}
             style={styles.card}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={()=> {
-            this._goUserInfo(rowData.PosterInfo)
-          }}>
-          <View style={styles.cardRow}>
+        <View style={styles.cardRow}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={()=> {
+              this._goUserInfo(rowData.PosterInfo)
+            }}>
             <Image
               onLoadEnd={()=> {
                 this.setState({avatarLoading: false})
@@ -294,25 +294,25 @@ class MeetList extends Component {
                   source={require('./img/imgLoading.gif')}
                   style={styles.avatarImg}/> : null}
             </Image>
-            <View style={styles.userInfo}>
-              <View style={styles.nameTextContainer}>
-                <Text
-                  numberOfLines={1}
-                  style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
-                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
-              </View>
-              <View style={styles.userInfoLabelContainer}>
-                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                  <Icon
-                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={10}
-                    style={styles.userInfoIcon}/>
-                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
-                </View>
+          </TouchableOpacity>
+          <View style={styles.userInfo}>
+            <View style={styles.nameTextContainer}>
+              <Text
+                numberOfLines={1}
+                style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
+              <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
+            </View>
+            <View style={styles.userInfoLabelContainer}>
+              <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                <Icon
+                  name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                  size={10}
+                  style={styles.userInfoIcon}/>
+                <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
               </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
         <TouchableOpacity
           style={styles.moodView}
           onPress={()=> {
