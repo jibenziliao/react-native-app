@@ -244,17 +244,23 @@ class AnnouncementList extends BaseComponent {
 
   //在历史列表页返回时,直接返回首页(路由栈中可能存在AnnouncementDetail路由,使用pop()会导致路由循环,在删除聚会/约会时,会返回到不存在的页面上)
   onLeftPressed(){
-    navigator.resetTo({
-      component:MainContainer,
-      name:'MainContainer'
-    })
+    this._goBack();
+  }
+
+  _goBack(){
+    let routes=navigator.getCurrentRoutes();
+    if(routes[routes.length-2].name==='UserInfo'){
+      navigator.pop();
+    }else{
+      navigator.resetTo({
+        component:MainContainer,
+        name:'MainContainer'
+      });
+    }
   }
 
   onBackAndroid(){
-    navigator.resetTo({
-      component:MainContainer,
-      name:'MainContainer'
-    })
+    this._goBack();
   }
 
   _getAllAnnouncementList() {
