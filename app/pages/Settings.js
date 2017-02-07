@@ -76,6 +76,7 @@ class Settings extends BaseComponent {
 
   _logOut() {
     //websocket注销当前用户
+    tmpGlobal.ws = null;
     tmpGlobal.currentUser = null;
     tmpGlobal.cookie = null;
     Storage.removeItem('hasRegistered');

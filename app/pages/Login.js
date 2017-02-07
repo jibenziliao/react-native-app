@@ -94,7 +94,7 @@ let ancestorTarget;
 
 let moveY;
 
-let second = 10;
+let second = 120;
 
 class Login extends BaseComponent {
 
@@ -292,7 +292,7 @@ class Login extends BaseComponent {
   }
 
   _startCountdown() {
-    let second = 10;
+    let second = 120;
     let phone = this.state.phone;
     let phoneCountry = this.state.phoneCountry;
     this.setState({

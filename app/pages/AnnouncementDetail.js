@@ -287,7 +287,7 @@ class AnnouncementDetail extends BaseComponent {
 
   onLeftPressed(){
     let routes = navigator.getCurrentRoutes();
-    console.log(routes,navigator);
+    //console.log(routes,navigator);
     navigator.pop();
   }
 
