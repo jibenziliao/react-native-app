@@ -22,11 +22,6 @@ const {width, height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: '#000',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0
   },
   slide: {
     flex: 1,
@@ -47,10 +42,10 @@ const renderPagination = (index, total, context) => {
       justifyContent: 'center',
       alignItems: 'center',
       ...Platform.select({
-        ios:{
-          top:25,
+        ios: {
+          top: 25,
         },
-        android:{
+        android: {
           top: 15,
         }
       }),
@@ -72,33 +67,80 @@ const renderPagination = (index, total, context) => {
   )
 };
 
+class Viewer extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+      imgLoading:true,
+      item:this.props.item
+    };
+  }
+
+  render(){
+    return(
+      <Image
+        onLayout={()=>{console.log('挂载')}}
+        onLoad={()=>{this.setState({imgLoading:false})}}
+        defaultSource={require('./img/imgLoading.gif')}
+        source={{uri: this.state.item}}
+        resizeMode='cover'
+        minimumZoomScale={0.5}
+        maximumZoomScale={3}
+        androidScaleType='fitCenter'
+        style={styles.photo}>
+        {this.state.imgLoading ?
+          <Image
+            source={require('./img/imgLoading.gif')}
+            style={{width: width, height: height}}/> : null}
+      </Image>
+    )
+  }
+}
+
 class PhotoScaleViewer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      imgLoading: true,
+      ...this.props
+    };
+    console.log(this.props);
+  }
+
+  _renderPhotos() {
+    return (
+      this.props.imgList.map((item, i) => <View
+        key={i}
+        style={styles.slide}>
+        <Viewer
+          item={item}/>
+        {/*<PhotoView
+          onLayout={()=>{console.log('挂载')}}
+          onLoad={()=>{this.setState({imgLoading:false})}}
+          defaultSource={require('./img/imgLoading.gif')}
+          source={{uri: item}}
+          resizeMode='cover'
+          minimumZoomScale={0.5}
+          maximumZoomScale={3}
+          androidScaleType='fitCenter'
+          style={styles.photo}>
+          {this.state.imgLoading ?
+            <Image
+              source={require('./img/imgLoading.gif')}
+              style={{width: width, height: height}}/> : null}
+        </PhotoView>*/}
+      </View>)
+    )
   }
 
   render() {
     return (
       <Swiper
+        removeClippedSubviews={false}
         index={this.props.index}
         style={styles.wrapper}
         renderPagination={renderPagination}>
-        {
-          this.props.imgList.map((item, i) => <View
-            key={i}
-            style={styles.slide}>
-            <TouchableWithoutFeedback
-              onPress={e => this.props.pressHandle()}>
-              <PhotoView
-                source={{uri: item}}
-                resizeMode='cover'
-                minimumZoomScale={0.5}
-                maximumZoomScale={3}
-                androidScaleType='fitCenter'
-                style={styles.photo}/>
-            </TouchableWithoutFeedback>
-          </View>)
-        }
+        {this._renderPhotos()}
       </Swiper>
     )
   }

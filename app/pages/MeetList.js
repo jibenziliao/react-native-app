@@ -140,8 +140,8 @@ class MeetList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      imgLoading: false,
-      avatarLoading: false,
+      imgLoading: true,
+      avatarLoading: true,
       ...this.props
     };
   }
@@ -155,8 +155,8 @@ class MeetList extends Component {
 
   //处理距离
   _distance(data) {
-    if(data===null){
-     return '--';
+    if (data === null) {
+      return '--';
     }
     return (parseFloat(data) / 1000).toFixed(2);
   }

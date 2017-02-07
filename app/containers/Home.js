@@ -973,7 +973,7 @@ class Home extends BaseComponent {
           width: width,
           ...Platform.select({
             ios: {
-              height: height - 46
+              height: height - 45.5
             },
             android: {
               height: height - 50
