@@ -641,14 +641,6 @@ class AnnouncementDetail extends BaseComponent {
     }
   }
 
-  //处理距离
-  _distance(data) {
-    if (data === null) {
-      return '--';
-    }
-    return (parseFloat(data) / 1000).toFixed(2);
-  }
-
   //处理到期日期
   _expirationDate(data) {
     return data.split("T")[0];
@@ -760,7 +752,7 @@ class AnnouncementDetail extends BaseComponent {
               </TouchableOpacity>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-              <Text>{this._distance(rowData.CommentUserInfo.Distance)}{'km'}</Text>
+              <Text>{rowData.CommentUserInfo.Distance}</Text>
               <Text>{this._createTime(rowData.CreateTime)}</Text>
             </View>
           </View>
@@ -835,7 +827,7 @@ class AnnouncementDetail extends BaseComponent {
           {this.renderPartyOptions(this.state.PostType)}
         </View>
         <View style={styles.cardRow}>
-          <Text>{this._distance(this.state.Distance)}{'km'}{'·'}</Text>
+          <Text>{this.state.Distance}{'·'}</Text>
           <Text>{this.state.LikeCount}{'赞'}{'·'}</Text>
           <Text>{this.state.CommentCount}{'评论'}{'·'}</Text>
           <Text>{this.state.ViewCount}{'阅读'}</Text>

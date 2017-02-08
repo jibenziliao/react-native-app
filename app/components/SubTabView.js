@@ -17,8 +17,6 @@ import {
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
-import IonIcon from 'react-native-vector-icons/Ionicons'
-
 
 const {height, width} = Dimensions.get('window');
 
@@ -32,15 +30,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   indicator: {
-    height: 2,
+    height: 40,
     width: width / 2,
-    backgroundColor: '#fff',
+    backgroundColor: '#5067FF',
     position: 'absolute',
     bottom: 0,
+    zIndex:999
   },
   tabBar: {
-    //backgroundColor: '#5067FF',
-    zIndex:0
+    backgroundColor: 'rgba(0,0,0,0)',
+    zIndex: -999,
+    height: 40
+  },
+  customStyle:{
+    backgroundColor:'gray',
+    zIndex:-999
   },
 });
 
@@ -71,7 +75,7 @@ export default class SubTabView extends Component {
   }
 
   _handleChangeTab = (index) => {
-    this.setState({index:index},()=>{
+    this.setState({index: index}, ()=> {
       this.props.tabIndex(index)
     });
   };
@@ -81,19 +85,13 @@ export default class SubTabView extends Component {
       scrollEnabled={true}
       tabWidth={width / 2}
       tabStyle={styles.tabBar}
+      style={styles.customStyle}
+      indicatorStyle={styles.indicator}
       {...props} />;
   };
 
   _renderScene = ({route}) => {
-    /*switch (route.key) {
-      case '1':
-        return (<MeetList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>);
-      case '2':
-        return <AppointmentList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
-      default:
-        return null;
-    }*/
-    return(
+    return (
       <View style={styles.container}>
         {this.props.locationTips()}
         {this.renderList(route)}
@@ -101,20 +99,16 @@ export default class SubTabView extends Component {
     )
   };
 
-
-
-  renderList(route){
+  renderList(route) {
     switch (route.key) {
       case '1':
-        return <MeetList style={[styles.page,{backgroundColor: '#ff4081'}]} {...this.state}/>;
+        return <MeetList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
       case '2':
-        return <AppointmentList style={[styles.page,{backgroundColor: '#ff4081'}]} {...this.state}/>;
+        return <AppointmentList style={[styles.page, {backgroundColor: '#ff4081'}]} {...this.state}/>;
       default:
         return null;
     }
   }
-
-
 
   render() {
     return (

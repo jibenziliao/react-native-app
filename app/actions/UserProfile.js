@@ -77,7 +77,7 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
           Hobby: data.interest,
           Location: data.location,
           SelfEvaluation: data.selfEvaluation,
-          Concat:data.contact,
+          Contact:data.contact,
           IsSmoke: data.habitSmoke,
           IsDrink: data.habitDrink
         };
@@ -151,6 +151,7 @@ export function editProfile(data, datingPurpose, resolve, reject) {
           Hometown: data.Hometown,
           Hobby: data.Hobby,
           Location: data.Location,
+          Contact:data.Contact,
           SelfEvaluation: data.SelfEvaluation,
           IsSmoke:!!data.IsSmoke,
           IsDrink:!!data.IsDrink
