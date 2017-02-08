@@ -24,7 +24,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import EditPersonalSignature from '../pages/EditPersonalSignature'
 import UserInfo from '../pages/UserInfo'
 import Settings from '../pages/Settings'
-import EditPhotos from '../pages/EditPhotos'
+import Album from '../pages/Album'
 
 const {height, width} = Dimensions.get('window');
 
@@ -75,10 +75,10 @@ class MainContainer extends Component {
     })
   }
 
-  _goPhotos() {
+  _goAlbum() {
     this.props.navigator.push({
-      component: EditPhotos,
-      name: 'EditPhotos',
+      component: Album,
+      name: 'Album',
       params: {
         UserId: tmpGlobal.currentUser.UserId,
         PrimaryPhotoFilename: tmpGlobal.currentUser.PhotoUrl
@@ -119,7 +119,10 @@ class MainContainer extends Component {
       goSignature={()=> {
         this._goSignature()
       }}
-      goPhotos={()=> {
+      goAlbum={()=>{
+        this._goAlbum()
+      }}
+      goUserInfo={()=> {
         this._goUserInfo()
       }}
       goSettings={()=> {

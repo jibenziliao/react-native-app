@@ -18,9 +18,7 @@ import {
   InteractionManager,
   DeviceEventEmitter
 } from 'react-native'
-import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 import Menu, {
   MenuContext,
@@ -28,13 +26,12 @@ import Menu, {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import {Button as NBButton} from 'native-base'
 import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import PhotoViewer from '../components/PhotoViewer'
 import * as PhotoActions from '../actions/Photo'
 import Spinner from '../components/Spinner'
+import tmpGlobal from '../utils/TmpVairables'
 
 const styles = StyleSheet.create({
   container: {
@@ -75,7 +72,6 @@ class EditPhotos extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.route.params,
       loading: true,
       uploaded: true,
       changed: false
@@ -127,7 +123,7 @@ class EditPhotos extends BaseComponent {
 
   _initPhotos() {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getUserPhotos({UserId: this.props.route.params.UserId}, (json)=> {
+    dispatch(HomeActions.getUserPhotos({UserId: tmpGlobal.currentUser.UserId}, (json)=> {
       this._initDict((DictMap, result)=> {
         this.setState({
           DictMap: DictMap,

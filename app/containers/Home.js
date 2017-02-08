@@ -46,7 +46,6 @@ import * as VicinityActions from '../actions/Vicinity'
 import JPushModule from 'jpush-react-native'
 import Settings from '../pages/Settings'
 import Refresh from '../components/Refresh'
-import CheckBox from '../components/CheckBox'
 
 const {height, width} = Dimensions.get('window');
 

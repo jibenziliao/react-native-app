@@ -101,7 +101,7 @@ class Menu extends Component {
           <View style={styles.listItem}>
             <TouchableHighlight
               onPress={()=> {
-                this.props.goPhotos()
+                this.props.goAlbum()
               }}
               underlayColor={'#b8b8bf'}>
               <View style={styles.itemContainer}>
@@ -115,7 +115,7 @@ class Menu extends Component {
           <View style={styles.listItem}>
             <TouchableHighlight
               onPress={()=> {
-                this.props.goPhotos()
+                this.props.goUserInfo()
               }}
               underlayColor={'#b8b8bf'}>
               <View style={styles.itemContainer}>

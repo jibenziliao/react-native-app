@@ -335,11 +335,7 @@ class UserInfo extends BaseComponent {
   _editMyPhotos() {
     navigator.push({
       component: EditPhotos,
-      name: 'EditPhotos',
-      params: {
-        UserId: this.state.UserId,
-        PrimaryPhotoFilename: this.state.PrimaryPhotoFilename
-      },
+      name: 'EditPhotos'
     });
   }
 
