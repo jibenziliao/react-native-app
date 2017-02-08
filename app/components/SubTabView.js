@@ -35,16 +35,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#5067FF',
     position: 'absolute',
     bottom: 0,
-    zIndex:999
   },
   tabBar: {
     backgroundColor: 'rgba(0,0,0,0)',
-    zIndex: -999,
-    height: 40
+    height: 40,
+    zIndex: 0
   },
-  customStyle:{
-    backgroundColor:'gray',
-    zIndex:-999
+  customStyle: {
+    backgroundColor: 'gray',
   },
 });
 
