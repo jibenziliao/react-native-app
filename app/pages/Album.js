@@ -3,7 +3,7 @@
  * @author keyy/1501718947@qq.com 17/2/8 14:48
  * @description
  */
-import React,{Component} from 'react'
+import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
@@ -13,7 +13,9 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
-  InteractionManager
+  InteractionManager,
+  DeviceEventEmitter,
+  NativeAppEventEmitter
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {connect} from 'react-redux'
@@ -26,37 +28,63 @@ import EditPhotos from '../pages/EditPhotos'
 
 const {height, width} = Dimensions.get('window');
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E2E2E2'
   },
-  scrollView:{
-    flex:1
+  scrollView: {
+    flex: 1
   },
   singleImgContainer: {
     marginBottom: 10,
     marginRight: 10
   },
+  albumContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 10,
+    alignItems: 'flex-start',
+    justifyContent:'flex-start'
+  },
+  tipsArea: {
+    flex:1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  tipsText: {
+    fontSize: 20,
+    paddingHorizontal: 20,
+    textAlign: 'center'
+  },
 });
 
 let navigator;
+let emitter;
 
-class Album extends BaseComponent{
-  constructor(props){
+class Album extends BaseComponent {
+  constructor(props) {
     super(props);
-    navigator=this.props.navigator;
-    this.state={
-      photos:[],
-      imgLoading:true,
-      imgList:[]
+    this.state = {
+      photos: [],
+      imgLoading: true,
+      imgList: []
     };
+    navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
-  componentDidMount(){
+  componentDidMount() {
     InteractionManager.runAfterInteractions(()=> {
       this._initPhotos();
     });
+    this._photoListener = emitter.addListener('photoChanged', ()=> {
+      this._initPhotos();
+    });
+  }
+
+  componentWillUnmount() {
+    this._photoListener.remove();
   }
 
   getNavigationBarProps() {
@@ -78,7 +106,7 @@ class Album extends BaseComponent{
     const {dispatch}=this.props;
     dispatch(HomeActions.getUserPhotos({UserId: this.props.route.params.UserId}, (json)=> {
       this.setState({
-        photos:json.Result.PhotoList
+        photos: json.Result.PhotoList
       });
     }, (error)=> {
     }));
@@ -100,49 +128,64 @@ class Album extends BaseComponent{
     this.refs.modalFullScreen.close();
   }
 
-  renderAlbum(arr){
-    if (arr.length !== 0) {
-      let arrCopy = JSON.parse(JSON.stringify(arr));
-      if (arr.length > 3) {
-        arrCopy.splice(3, arr.length - 3);
-      }
-      return arrCopy.map((item, index)=> {
-        return (
-          <TouchableOpacity
-            key={index}
-            style={styles.singleImgContainer}
-            onPress={()=> {
-              this._openImgModal(arr)
-            }}>
-            <Image
-              onLoadEnd={()=> {
-                this.setState({imgLoading: false})
-              }}
-              style={{width: (width-40)/3, height: (width-40)/3}}
-              source={{uri: URL_DEV + item.PhotoUrl}}>
-              {this.state.imgLoading ?
-                <Image
-                  source={require('./img/imgLoading.gif')}
-                  style={{width: (width-40)/3, height: (width-40)/3}}/> : null}
-            </Image>
-          </TouchableOpacity>
-        )
-      })
-    } else {
-      return null;
+  renderAlbum(arr) {
+    let arrCopy = JSON.parse(JSON.stringify(arr));
+    if (arr.length > 3) {
+      arrCopy.splice(3, arr.length - 3);
     }
-  }
-
-  renderBody(){
-    return(
-      <View style={styles.container}>
-        <ScrollView style={styles.scrollView}>
-          <View style={{flex:1,flexDirection:'row',padding:10}}>
-          {this.renderAlbum(this.state.photos)}
-          </View>
-        </ScrollView>
+    return (
+      <View style={styles.albumContainer}>
+        {arrCopy.map((item, index)=> {
+          return (
+            <TouchableOpacity
+              key={index}
+              style={styles.singleImgContainer}
+              onPress={()=> {
+                this._openImgModal(arr)
+              }}>
+              <Image
+                onLoadEnd={()=> {
+                  this.setState({imgLoading: false})
+                }}
+                style={{width: (width - 40) / 3, height: (width - 40) / 3}}
+                source={{uri: URL_DEV + item.PhotoUrl}}>
+                {this.state.imgLoading ?
+                  <Image
+                    source={require('./img/imgLoading.gif')}
+                    style={{width: (width - 40) / 3, height: (width - 40) / 3}}/> : null}
+              </Image>
+            </TouchableOpacity>
+          )
+        })}
       </View>
     )
+  }
+
+  renderEmptyAlbum() {
+    return (
+      <View style={styles.tipsArea}>
+        <Text style={styles.tipsText}>{'你还没有照片'}</Text>
+        <Text style={styles.tipsText}>{'点击右上角编辑按钮上传照片'}</Text>
+      </View>
+    )
+  }
+
+  renderBody() {
+    if (this.state.photos.length > 0) {
+      return (
+        <View style={styles.container}>
+          <ScrollView style={styles.scrollView}>
+            {this.renderAlbum(this.state.photos)}
+          </ScrollView>
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.container}>
+          {this.renderEmptyAlbum()}
+        </View>
+      )
+    }
   }
 
   renderModal() {
