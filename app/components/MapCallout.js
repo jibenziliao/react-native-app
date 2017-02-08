@@ -111,18 +111,6 @@ export default class MapCallout extends Component {
     };
   }
 
-  renderGenderIcon(data) {
-    if (data) {
-      return (
-        <Icon name="mars-stroke" size={16} style={[styles.genderIcon, {color: '#2977FB'}]}/>
-      )
-    } else {
-      return (
-        <Icon name="venus" size={16} style={[styles.genderIcon, {color: '#FF8F77'}]}/>
-      )
-    }
-  }
-
   _renderGenderStyle(gender) {
     return {
       backgroundColor: gender ? '#1496ea' : 'pink',
@@ -145,7 +133,7 @@ export default class MapCallout extends Component {
                 this.setState({avatarLoading: false})
               }}
               style={styles.avatar}
-              source={{uri: URL_DEV + location.PhotoUrl}}>
+              source={{uri: URL_DEV + location.PrimaryPhotoFilename}}>
               {this.state.avatarLoading ?
                 <Image
                   source={require('./img/imgLoading.gif')}
@@ -156,7 +144,6 @@ export default class MapCallout extends Component {
             <View style={styles.nickRow}>
               <Text>{location.Nickname}</Text>
             </View>
-            {/*{this.renderGenderIcon(location.Gender)}*/}
             <View style={styles.userInfoLabelContainer}>
               <View style={[styles.userInfoLabel, this._renderGenderStyle(location.Gender)]}>
                 <Icon

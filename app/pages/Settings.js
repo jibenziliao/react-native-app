@@ -173,6 +173,18 @@ class Settings extends BaseComponent {
               }}
               value={this.state.MapPrecision === null}/>
           </View>
+          <View style={styles.listItem}>
+            <View style={styles.itemLeft}>
+              <View style={styles.itemIconContainer}>
+                <Icon
+                  name={'info-circle'}
+                  style={styles.itemIcon}
+                  size={20}/>
+              </View>
+              <Text style={styles.itemText}>{'软件版本'}</Text>
+            </View>
+            <Text>{tmpGlobal.appInfo.appVersionReadable}</Text>
+          </View>
         </View>
       </View>
     )

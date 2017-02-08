@@ -13,7 +13,8 @@ let tmpGlobal = {
   webSocketInitState: false,//webSocket连接初始化状态true成功,false失败
   webSocketConnectCount: 0,//webSocket连接次数
   ws:null,
-  _wsTokenHandler:null
+  _wsTokenHandler:null,
+  appInfo:null
 };
 
 export default tmpGlobal

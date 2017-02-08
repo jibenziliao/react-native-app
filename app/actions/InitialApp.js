@@ -6,6 +6,7 @@
 import * as ActionTypes from './ActionTypes'
 import DeviceInfo from 'react-native-device-info'
 import {postFetch, getFetch} from '../utils/NetUtil'
+import tmpGlobal from '../utils/TmpVairables'
 
 console.log("Device Unique ID", DeviceInfo.getUniqueID());  // e.g. FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9
 // * note this is IDFV on iOS so it will change if all apps from the current apps vendor have been previously uninstalled
@@ -37,6 +38,24 @@ console.log("User Agent", DeviceInfo.getUserAgent()); // e.g. Dalvik/2.1.0 (Linu
 console.log("Device Locale", DeviceInfo.getDeviceLocale()); // e.g en-US
 
 console.log("Device Country", DeviceInfo.getDeviceCountry()); // e.g US
+
+tmpGlobal.appInfo = {
+  appVersionReadable: DeviceInfo.getReadableVersion(),
+  appVersion: DeviceInfo.getVersion(),
+  buildNumber: DeviceInfo.getBuildNumber(),
+  bundleId: DeviceInfo.getBundleId(),
+  systemVersion: DeviceInfo.getSystemVersion(),
+  systemName: DeviceInfo.getSystemName(),
+  deviceId: DeviceInfo.getDeviceId(),
+  deviceModel: DeviceInfo.getModel(),
+  deviceBrand: DeviceInfo.getBrand(),
+  deviceManufacturer: DeviceInfo.getManufacturer(),
+  deviceUniqueId: DeviceInfo.getUniqueID(),
+  deviceName: DeviceInfo.getDeviceName(),
+  deviceLocale: DeviceInfo.getDeviceLocale(),
+  userAgent: DeviceInfo.getUserAgent(),
+  deviceCountry: DeviceInfo.getDeviceCountry()
+};
 
 export function initDevice(data, resolve, reject) {
   return (dispatch)=> {
