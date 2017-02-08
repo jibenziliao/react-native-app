@@ -16,7 +16,9 @@ import {
   ListView,
   RefreshControl,
   InteractionManager,
-  Platform
+  Platform,
+  DeviceEventEmitter,
+  NativeAppEventEmitter
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -28,6 +30,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import UserInfo from '../pages/UserInfo'
 import * as VicinityActions from '../actions/Vicinity'
 import Spinner from '../components/Spinner'
+import EditFriendFilter from '../pages/EditFriendFilter'
 
 const {height, width} = Dimensions.get('window');
 
@@ -126,8 +129,8 @@ const styles = StyleSheet.create({
 });
 
 let lastCount;
-
 let pageNavigator;
+let emitter;
 
 class MatchUsers extends BaseComponent {
 
@@ -144,6 +147,7 @@ class MatchUsers extends BaseComponent {
       tipsText: '请在设置中打开高精确度定位,然后点此重试',
     };
     pageNavigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
   componentDidMount() {
@@ -155,7 +159,15 @@ class MatchUsers extends BaseComponent {
       }else{
         this._getMatchUserList();
       }
-    })
+    });
+
+    this.friendFilterListener = emitter.addListener('friendFilterChanged', ()=> {
+      this._getMatchUserList();
+    });
+  }
+
+  componentWillUnmount(){
+    this.friendFilterListener.remove();
   }
 
   _getMatchUserList() {
@@ -175,8 +187,17 @@ class MatchUsers extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '匹配'
+      title: '匹配',
+      hideRightButton: false,
+      rightTitle: '编辑'
     };
+  }
+
+  onRightPressed(){
+    pageNavigator.push({
+      component: EditFriendFilter,
+      name: 'EditFriendFilter'
+    });
   }
 
   //点击头像和名字,跳转个人信息详情页

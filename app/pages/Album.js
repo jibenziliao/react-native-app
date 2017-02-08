@@ -63,6 +63,7 @@ let navigator;
 let emitter;
 
 class Album extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
