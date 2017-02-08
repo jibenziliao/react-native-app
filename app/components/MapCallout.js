@@ -46,6 +46,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 5
   },
+  userInfoLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+  userInfoLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: 'pink',
+    borderWidth: 1,
+    borderColor: 'pink',
+    paddingHorizontal: 6
+  },
+  userInfoIcon: {
+    marginRight: 4,
+    color: '#FFF'
+  },
+  userInfoText: {
+    fontSize: 10,
+    color: '#FFF'
+  },
+  personSignal: {
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+    fontSize: 12
+  },
   nickRow: {
     flexDirection: 'row',
     justifyContent: 'flex-start'
@@ -97,6 +123,13 @@ export default class MapCallout extends Component {
     }
   }
 
+  _renderGenderStyle(gender) {
+    return {
+      backgroundColor: gender ? '#1496ea' : 'pink',
+      borderColor: gender ? '#1496ea' : 'pink',
+    }
+  }
+
   render() {
     const {location} = this.props;
     return (
@@ -123,9 +156,22 @@ export default class MapCallout extends Component {
             <View style={styles.nickRow}>
               <Text>{location.Nickname}</Text>
             </View>
-            {this.renderGenderIcon(location.Gender)}
+            {/*{this.renderGenderIcon(location.Gender)}*/}
+            <View style={styles.userInfoLabelContainer}>
+              <View style={[styles.userInfoLabel, this._renderGenderStyle(location.Gender)]}>
+                <Icon
+                  name={location.Gender ? 'mars-stroke' : 'venus'}
+                  size={10}
+                  style={styles.userInfoIcon}/>
+                <Text style={styles.userInfoText}>{location.Age}{'岁'}</Text>
+              </View>
+            </View>
             <View>
-              <Text>ID: {location.UserId}</Text>
+              <Text
+                numberOfLines={2}
+                style={styles.personSignal}>
+                签名:{location.PersonSignal || 'TA暂无签名'}
+              </Text>
             </View>
           </View>
           <View style={styles.link}>

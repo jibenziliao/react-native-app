@@ -1028,7 +1028,9 @@ class Home extends BaseComponent {
       return (
         <Refresh
           text={'点击重试'}
-          refresh={()=>{this._commonRefresh()}}
+          refresh={()=> {
+            this._commonRefresh()
+          }}
         />
       )
     } else {

@@ -263,7 +263,7 @@ class Map extends BaseComponent {
         if ('OK' !== json.Code) {
           toastShort(json.Message);
         } else {
-          console.log('附近的人搜索结束',json.Result);
+          //console.log('附近的人搜索结束',json.Result);
           this.setState({locations: json.Result});
         }
       }).catch((err)=> {
