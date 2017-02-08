@@ -67,9 +67,9 @@ export function postFetch(url, data, dispatch, fetchReq, receive, error, resolve
   timeoutPromise(TIME_OUT, fetch(URL_DEV + url, fetchOptions(data))
     .then((response) => {
       if (response && response.status == 200) {
-        return response.json()
+        return response.json();
       } else {
-        reject(response);
+        return Promise.reject(new Error(response.status));
       }
     })
     .then((json) => {
@@ -134,7 +134,7 @@ export function getFetch(url, data, dispatch, fetchReq, receive, error, resolveF
     if (response && response.status == 200) {
       return response.json()
     } else {
-      reject(response)
+      return Promise.reject(new Error(response.status));
     }
   })
     .then((json) => {
@@ -162,7 +162,7 @@ export function putFetch(url, data, dispatch, fetchReq, receive, error, resolveF
     if (response && response.status == 200) {
       return response.json()
     } else {
-      reject(response);
+      return Promise.reject(new Error(response.status));
     }
   })
     .then((json) => {
@@ -189,7 +189,7 @@ export function deleteFetch(url, data, dispatch, fetchReq, receive, error, resol
     if (response && response.status == 200) {
       return response.json()
     } else {
-      reject(response);
+      return Promise.reject(new Error(response.status));
     }
   })
     .then((json) => {
