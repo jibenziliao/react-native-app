@@ -209,6 +209,7 @@ class UserProfile extends BaseComponent {
       ],
       habitDrink: false,
       habitSmoke: false,
+      contact:'',
       expandText: '点击展开更多(选填)',
       expandStatus: false,
       expandIconName: 'angle-double-down',
@@ -854,16 +855,15 @@ class UserProfile extends BaseComponent {
             style={[styles.input, styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
-              this._hidePicker('MobileNo')
+              this._hidePicker('Contact')
             }}
             onBlur={()=> {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
-            ref={'MobileNo'}
-            //这里的联系方式暂时无效,默认为用户手机号
-            //onChangeText={(ethnicity)=>this.setState({ethnicity})}
+            ref={'Contact'}
+            onChangeText={(contact)=>this.setState({contact})}
             maxLength={20}/>
         </View>
         <View style={styles.inputRow}>

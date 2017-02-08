@@ -806,16 +806,16 @@ class EditUserProfile extends BaseComponent {
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
                     onFocus={()=> {
-                      this._hidePicker('MobileNo')
+                      this._hidePicker('Concat')
                     }}
                     onBlur={()=> {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
-                    ref={'MobileNo'}
-                    value={this.state.MobileNo}
-                    onChangeText={(MobileNo)=>this.setState({MobileNo: MobileNo, hasChanged: true})}
+                    ref={'Concat'}
+                    value={this.state.Concat}
+                    onChangeText={(Concat)=>this.setState({Concat: Concat, hasChanged: true})}
                     maxLength={15}/>
                 </View>
                 <View style={styles.listItem}>

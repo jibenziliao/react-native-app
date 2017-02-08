@@ -13,6 +13,7 @@ import {
   ListView,
   RefreshControl,
   TouchableOpacity,
+  TouchableHighlight,
   Image,
   Dimensions,
   DeviceEventEmitter
@@ -26,6 +27,7 @@ import CookieManager from 'react-native-cookies'
 import tmpGlobal from '../utils/TmpVairables'
 import UserInfo from '../pages/UserInfo'
 import {toastLong} from '../utils/ToastUtil'
+import {SwipeListView} from 'react-native-swipe-list-view'
 
 const styles = StyleSheet.create({
   container: {
@@ -94,12 +96,30 @@ const styles = StyleSheet.create({
   },
   tipsText: {
     fontSize: 20,
+  },
+  hiddenRow: {
+    backgroundColor: 'red',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flex: 1,
+  },
+  deleteBtn: {
+    width: 75,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  deleteBtnText: {
+    fontSize: 20,
+    color: '#fff',
+    textAlign: 'center'
   }
 });
 
 let navigator;
 let reconnectCount = 0;
 let cookie;
+let rowIsOpen = false;
 
 const {height, width} = Dimensions.get('window');
 
@@ -264,7 +284,7 @@ class Message extends BaseComponent {
     console.log(newMsgList);
     console.log(objCopy);
     //剩下的新消息不和已存在的对话合并,单独占一(多)行,并在列表头部显示。
-    if(objCopy.length>0){
+    if (objCopy.length > 0) {
       this.state.messageList.unshift(...objCopy);
     }
     //将最新的一条消息放在列表最上面
@@ -298,7 +318,11 @@ class Message extends BaseComponent {
       let wsUrl = `${URL_WS_DEV}/chat/signalr/hubs/signalr/connect?transport=webSockets&clientProtocol=1.5&connectionToken=${encodeURIComponent(json.ConnectionToken)}&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
       this._wsInitHandler(wsUrl);
     }).catch((e)=> {
-      console.log(e);
+      if(typeof(e) == "object" && Object.prototype.toString.call(e).toLowerCase() == "[object object]" && !e.length){
+        console.log(e);
+      }else{
+        console.log(e+'');
+      }
       this._wsTokenHandler();
     });
   }
@@ -465,23 +489,45 @@ class Message extends BaseComponent {
     return rowData.MsgList[rowData.MsgList.length - 1].text;
   }
 
+  deleteRow(data, rowId) {
+    this._deleteRecordRow(data);
+    this.refs.swipeListView.safeCloseOpenRow();
+    let newData = [...this.state.messageList];
+    newData.splice(rowId, 1);
+    this.setState({messageList: newData});
+  }
+
+  _deleteRecordRow(data) {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+      let index = res.findIndex((item)=> {
+        return data.SenderId === item.SenderId;
+      });
+      if(index!==-1){
+        res.splice(index,1);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`,res);
+      }
+    });
+  }
+
   renderRowData(rowData) {
     return (
-      <View
+      <TouchableOpacity
+        onPress={()=> {
+          if (!rowIsOpen) {
+            this._goChat(rowData)
+          } else {
+            this.refs.swipeListView.safeCloseOpenRow()
+          }
+        }}
+        activeOpacity={1}
         key={rowData.SenderId}
         style={styles.cardItem}>
-        <TouchableOpacity
-          onPress={()=> {
-            this._goUserInfo(rowData)
-          }}>
+        <View>
           <Image
             style={styles.avatar}
             source={{uri: URL_DEV + rowData.SenderAvatar}}/>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={()=> {
-            this._goChat(rowData)
-          }}
+        </View>
+        <View
           style={styles.cardContent}>
           <View style={styles.cardRow}>
             <Text
@@ -501,20 +547,43 @@ class Message extends BaseComponent {
             </Text>
             {this._renderUnReadCount(rowData.MsgList)}
           </View>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     )
   }
 
   renderListView(ds, messageList) {
     if (messageList.length > 0) {
       return (
-        <ListView
+        <SwipeListView
+          ref={'swipeListView'}
           style={styles.listView}
           dataSource={ds.cloneWithRows(messageList)}
           renderRow={
             this.renderRowData.bind(this)
           }
+          onRowDidClose={()=> {
+            rowIsOpen = false
+          }}
+          onRowDidOpen={()=> {
+            rowIsOpen = true
+          }}
+          closeOnScroll={true}
+          closeOnRowPress={false}
+          recalculateHiddenLayout={true}
+          renderHiddenRow={ (data, rowId, secId, rowMap) => (
+            <TouchableHighlight
+              onPress={(_)=> {
+                this.deleteRow(data, rowId)
+              }}
+              style={styles.hiddenRow}>
+              <View style={styles.deleteBtn}>
+                <Text style={styles.deleteBtnText}>{'删除'}</Text>
+              </View>
+            </TouchableHighlight>
+          )}
+          disableRightSwipe={true}
+          rightOpenValue={-75}
           enableEmptySections={true}
           onEndReachedThreshold={10}
           initialListSize={10}

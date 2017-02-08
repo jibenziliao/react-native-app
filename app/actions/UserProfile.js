@@ -77,6 +77,7 @@ export function saveProfile(data, datingPurpose, resolve, reject) {
           Hobby: data.interest,
           Location: data.location,
           SelfEvaluation: data.selfEvaluation,
+          Concat:data.contact,
           IsSmoke: data.habitSmoke,
           IsDrink: data.habitDrink
         };
