@@ -45,6 +45,8 @@ import AnnouncementList from '../pages/AnnouncemenetList'
 import * as VicinityActions from '../actions/Vicinity'
 import JPushModule from 'jpush-react-native'
 import Settings from '../pages/Settings'
+import Refresh from '../components/Refresh'
+import CheckBox from '../components/CheckBox'
 
 const {height, width} = Dimensions.get('window');
 
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         top: 64,
-        height: height - 64 - 46.5
+        height: height - 64 - 45.5
       },
       android: {
         top: 54,
@@ -1024,20 +1026,13 @@ class Home extends BaseComponent {
   renderRefreshBtn() {
     if (this.state.needRefresh) {
       return (
-        <View style={styles.refreshScreen}>
-          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <TouchableOpacity
-              onPress={()=> {
-                this._commonRefresh();
-              }}
-              style={styles.refreshBtn}>
-              <Text>{'点击重试'}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Refresh
+          text={'点击重试'}
+          refresh={()=>{this._commonRefresh()}}
+        />
       )
     } else {
-      return null;
+      return null
     }
   }
 

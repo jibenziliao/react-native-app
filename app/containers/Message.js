@@ -323,7 +323,12 @@ class Message extends BaseComponent {
       }else{
         console.log(e+'');
       }
-      this._wsTokenHandler();
+      reconnectCount += 1;
+      if (reconnectCount <= 5) {
+        this._wsTokenHandler();//报错后重新获取token
+      } else {
+        toastLong('聊天功能初始化失败');
+      }
     });
   }
 
