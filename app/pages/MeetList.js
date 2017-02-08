@@ -153,14 +153,6 @@ class MeetList extends Component {
     })
   }
 
-  //处理距离
-  _distance(data) {
-    if (data === null) {
-      return '--';
-    }
-    return (parseFloat(data) / 1000).toFixed(2);
-  }
-
   _renderGenderStyle(gender) {
     return {
       backgroundColor: gender ? '#1496ea' : 'pink',
@@ -333,7 +325,7 @@ class MeetList extends Component {
           </View>
         </View>
         <View style={styles.cardRow}>
-          <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
+          <Text>{rowData.Distance}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
           <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
           <Text>{rowData.ViewCount}{'阅读'}</Text>

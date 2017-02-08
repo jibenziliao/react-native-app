@@ -283,14 +283,6 @@ class AnnouncementList extends BaseComponent {
     }));
   }
 
-  //处理距离
-  _distance(data) {
-    if (data === null) {
-      return '--';
-    }
-    return (parseFloat(data) / 1000).toFixed(2);
-  }
-
   _toEnd() {
     //如果最后一次请求的数据数量少于每页需要渲染的数量,表明没有更多数据了(在没有更多数据的情况下,暂时不能继续上拉加载更多数据。在实际场景中,这里是可以一直上拉加载更多数据的,便于有即时新数据拉取)
     if (lastCount < this.state.pageSize || this.state.postList.length < this.state.pageSize) {
@@ -535,7 +527,7 @@ class AnnouncementList extends BaseComponent {
           </View>
         </View>
         <View style={styles.cardRow}>
-          <Text>{this._distance(rowData.Distance)}{'km'}{'·'}</Text>
+          <Text>{rowData.Distance}{'·'}</Text>
           <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
           <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
           <Text>{rowData.ViewCount}{'阅读'}</Text>
