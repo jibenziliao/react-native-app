@@ -17,6 +17,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
+import {registerNavigator, getRouteMap} from '../navigation/Route'
 import {LOCATION_TIME_OUT_SHORT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import Login from '../pages/Login'
@@ -78,7 +79,6 @@ class App extends Component {
     NetInfo.addEventListener('change', this._handleConnectivityChange);
     this.setState({loading: true});
   }
-
 
   _getNetStatus() {
     //检测网络是否连接
