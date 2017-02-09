@@ -17,7 +17,6 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {toastShort} from '../utils/ToastUtil'
-import {registerNavigator, getRouteMap} from '../navigation/Route'
 import {LOCATION_TIME_OUT_SHORT} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import Login from '../pages/Login'
@@ -225,7 +224,6 @@ class App extends Component {
 
   //出场动画(需要禁用Navigator手势滑动返回)
   configureScene(route) {
-    //let sceneAnimation = getRouteMap().get(route.name).sceneAnimation;
     let sceneAnimation = route.component.sceneAnimation;
     if (sceneAnimation) {
       return sceneAnimation;
@@ -236,10 +234,7 @@ class App extends Component {
 
   renderScene(route, navigator) {
     this.navigator = navigator;
-    //registerNavigator(navigator);
-    //Each component name should start with an uppercase letter
-    //jsx中的组件都得是大写字母开头, 否则将报错, expected a component class, got [object Object]
-    //let Component = getRouteMap().get(route.name).component;
+
     let Component = route.component;
     if (!Component) {
       return (

@@ -9,7 +9,6 @@ import {
   Text,
   StyleSheet
 } from 'react-native'
-import {getNavigator} from '../navigation/Route'
 import NavigationBar from '../components/NavigationBar'
 
 const styles = StyleSheet.create({
