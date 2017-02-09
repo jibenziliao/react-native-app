@@ -10,7 +10,11 @@ import {
   Text,
   ScrollView,
   TouchableHighlight,
-  Switch
+  Switch,
+  InteractionManager,
+  Platform,
+  DeviceEventEmitter,
+  NativeAppEventEmitter,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
@@ -18,6 +22,8 @@ import BaseComponent from '../base/BaseComponent'
 import {connect} from 'react-redux'
 import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
+import tmpGlobal from '../utils/TmpVairables'
+import * as Storage from '../utils/Storage'
 
 const styles = StyleSheet.create({
   container: {
@@ -37,13 +43,13 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center',
+    alignItems: 'center',
     padding: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: '#E2E2E2',
   },
-  itemText:{
-    fontSize:14
+  itemText: {
+    fontSize: 14
   },
   iconBox: {
     justifyContent: 'center',
@@ -57,12 +63,13 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff'
   },
-  blockBtn:{
-    paddingHorizontal:10
+  blockBtn: {
+    paddingHorizontal: 10
   },
 });
 
 let navigator;
+let emitter;
 
 class Report extends BaseComponent {
 
@@ -83,10 +90,17 @@ class Report extends BaseComponent {
       reportType: null,
     };
     navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
-  componentWillUnmount(){
-    if(this.reportTimer){
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(()=> {
+      this.isInBlackList();
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.reportTimer) {
       clearTimeout(this.reportTimer);
     }
   }
@@ -97,19 +111,58 @@ class Report extends BaseComponent {
     };
   }
 
-  report(){
-    const{dispatch}=this.props;
-    let data={
-      ForUserId:this.state.UserId,
-      ReportType:this.state.reportType,
-      Remark:''
+  isInBlackList() {
+    const {dispatch}=this.props;
+    let data = {
+      blackUserId: this.state.UserId
     };
-    dispatch(HomeActions.report(data,(json)=>{
-      toastShort('举报成功');
-      this.reportTimer = setTimeout(()=> {
-        navigator.pop();
-      }, 1000)
-    },(error)=>{}));
+    dispatch(HomeActions.isInBlackList(data, (json)=> {
+      this.setState({
+        addToBackList: json.Result
+      });
+    }, (error)=> {
+    }));
+  }
+
+  _deleteRecordRow(userId) {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+      let index = res.findIndex((item)=> {
+        return userId === item.SenderId;
+      });
+      if (index !== -1) {
+        res.splice(index, 1);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res);
+        emitter.emit('MessageCached',{data:true,message:'拉黑成功,并删除缓存中响应聊天记录'});
+      }
+    });
+  }
+
+  report() {
+    const {dispatch}=this.props;
+    let data = {
+      ForUserId: this.state.UserId,
+      ReportType: this.state.reportType,
+      Remark: ''
+    };
+    dispatch(HomeActions.report(data, (json)=> {
+      if (this.state.addToBackList) {
+        dispatch(HomeActions.putToBlackList(data, (json)=> {
+          this._deleteRecordRow(this.state.UserId);
+          toastShort('举报成功');
+          let routes = navigator.getCurrentRoutes();
+          this.reportTimer = setTimeout(()=> {
+            navigator.popToRoute(routes[routes.length-3]);
+          }, 1000)
+        }, (error)=> {
+        }));
+      } else {
+        toastShort('举报成功');
+        this.reportTimer = setTimeout(()=> {
+          navigator.pop();
+        }, 1000)
+      }
+    }, (error)=> {
+    }));
   }
 
   checkedItem(index) {
@@ -118,8 +171,8 @@ class Report extends BaseComponent {
     });
     this.state.reportArr[index].checked = true;
     this.setState({
-      reportArr:this.state.reportArr,
-      reportType:this.state.reportArr[index].value
+      reportArr: this.state.reportArr,
+      reportType: this.state.reportArr[index].value
     });
   }
 
@@ -168,14 +221,14 @@ class Report extends BaseComponent {
     )
   }
 
-  renderReportButton(){
-    return(
+  renderReportButton() {
+    return (
       <View style={styles.blockBtn}>
         <NBButton
           block
           style={{marginTop: 20, height: 40, alignItems: 'center'}}
           onPress={()=>this.report()}
-          disabled={this.state.reportType===null}>
+          disabled={this.state.reportType === null}>
           举报
         </NBButton>
       </View>

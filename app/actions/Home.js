@@ -323,3 +323,21 @@ export function report(data,resolve,reject) {
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function isInBlackList(data,resolve,reject) {
+  return (dispatch)=> {
+    getFetch(`/blacklist/isinblacklist/${data.blackUserId}`,'' , dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function putToBlackList(data,resolve,reject) {
+  return (dispatch)=> {
+    putFetch(`/blacklist/changestatus/${data.ForUserId}`,'' , dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
