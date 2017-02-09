@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
 
 const tmpGenderArr = ['不限', '男', '女'];
 const tmpPhotoOnlyArr = ['不限', '是', '否'];
+const tmpDistanceArr = ['50km以内', '不限'];
 
 class FriendsFilter extends BaseComponent {
 
@@ -115,9 +116,9 @@ class FriendsFilter extends BaseComponent {
       heightRangeText: '不限',
       minHeight: null,
       maxHeight: null,
-      weightRangeText:'不限',
-      minWeight:null,
-      maxWeight:null,
+      weightRangeText: '不限',
+      minWeight: null,
+      maxWeight: null,
       genderText: '不限',
       gender: null,
       educationText: '不限',
@@ -128,7 +129,9 @@ class FriendsFilter extends BaseComponent {
         other: false
       },
       photoOnly: null,
-      photoOnlyText: '不限'
+      photoOnlyText: '不限',
+      matchDistanceText: '50km以内',
+      MatchDistance: 50000
     }
   }
 
@@ -351,6 +354,12 @@ class FriendsFilter extends BaseComponent {
           photoOnly: pickedValue[0] == '不限' ? null : pickedValue[0] == '是'
         });
         break;
+      case 'matchDistanceText':
+        this.setState({
+          matchDistanceText: pickedValue[0],
+          MatchDistance: pickedValue[0] === '50km以内' ? 50000 : 100000000
+        });
+        break;
       default:
         console.error('设置数据出错!');
         break;
@@ -423,6 +432,10 @@ class FriendsFilter extends BaseComponent {
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'只看有照片的人'}</Text>
               {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.gender, tmpPhotoOnlyArr)}
+            </View>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>{'匹配距离'}</Text>
+              {this._renderSinglePicker('matchDistanceText', '请选择匹配距离', this.state.MatchDistance, tmpDistanceArr)}
             </View>
           </View>
           <NBButton

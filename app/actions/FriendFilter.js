@@ -15,7 +15,8 @@ export function saveFriendFilter(data,resolve,reject) {
     WeightMin:data.minWeight,
     WeightMax:data.maxWeight,
     Gender:data.gender,
-    PhotoOnly:data.photoOnly
+    PhotoOnly:data.photoOnly,
+    MatchDistance:data.MatchDistance
   };
 
   return(dispatch)=>{

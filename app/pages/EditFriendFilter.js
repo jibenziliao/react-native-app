@@ -94,18 +94,20 @@ const styles = StyleSheet.create({
 
 const tmpGenderArr = ['不限', '男', '女'];
 const tmpPhotoOnlyArr = ['不限', '是', '否'];
+const tmpDistanceArr = ['50km以内', '不限'];
 
 let navigator;
 
 class EditFriendFilter extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
-      hasChanged:false
+      hasChanged: false
     };
     navigator = this.props.navigator;
-    this.onBackAndroid=this.onBackAndroid.bind(this);
+    this.onBackAndroid = this.onBackAndroid.bind(this);
   }
 
   getNavigationBarProps() {
@@ -124,7 +126,8 @@ class EditFriendFilter extends BaseComponent {
       Gender: this.state.Gender,
       PhotoOnly: this.state.PhotoOnly,
       WeightMin: this.state.WeightMin,
-      WeightMax: this.state.WeightMax
+      WeightMax: this.state.WeightMax,
+      MatchDistance: this.state.MatchDistance
     };
     dispatch(FriendFilterActions.editFriendFilter(data, (json)=> {
       DeviceEventEmitter.emit('friendFilterChanged', '编辑交友信息成功');
@@ -142,13 +145,13 @@ class EditFriendFilter extends BaseComponent {
     })
   }
 
-  componentDidMount(){
+  componentDidMount() {
     if (Platform.OS === 'android') {
       BackAndroid.addEventListener('hardwareBackPress', this.onBackAndroid);
     }
   }
 
-  onLeftPressed(){
+  onLeftPressed() {
     this._backAlert();
   }
 
@@ -197,7 +200,8 @@ class EditFriendFilter extends BaseComponent {
         weightRangeText: this._handleRange(json.Result.WeightMin, json.Result.WeightMax, 'kg'),
         genderText: json.Result.Gender === null ? '不限' : (json.Result.Gender ? '男' : '女'),
         photoOnlyText: json.Result.PhotoOnly === null ? '不限' : (json.Result.PhotoOnly ? '是' : '否'),
-        loading: false
+        loading: false,
+        matchDistanceText: json.Result.MatchDistance === 50000 ? '50km以内' : '不限'
       })
     }, (error)=> {
     }));
@@ -359,7 +363,7 @@ class EditFriendFilter extends BaseComponent {
   }
 
   _updateState(text, pickedValue) {
-    this.setState({hasChanged:true});
+    this.setState({hasChanged: true});
     switch (text) {
       case 'ageRangeText':
         if (pickedValue[0] == '不限' && pickedValue[1] == '不限') {
@@ -442,6 +446,12 @@ class EditFriendFilter extends BaseComponent {
           PhotoOnly: pickedValue[0] == '不限' ? null : pickedValue[0] == '是'
         });
         break;
+      case 'matchDistanceText':
+        this.setState({
+          matchDistanceText: pickedValue[0],
+          MatchDistance: pickedValue[0] === '50km以内' ? 50000 : 100000000
+        });
+        break;
       default:
         console.error('设置数据出错!');
         break;
@@ -472,9 +482,13 @@ class EditFriendFilter extends BaseComponent {
                 <Text style={styles.inputLabel}>{'体重'}</Text>
                 {this._renderDoublePicker('weightRangeText', '请选择体重范围', this.state.WeightMin + '', this.state.WeightMax + '', this._createWeightRangeData())}
               </View>
-              <View style={[styles.listItem, styles.bottomItem]}>
+              <View style={[styles.listItem]}>
                 <Text style={styles.inputLabel}>{'只看有照片的人'}</Text>
                 {this._renderSinglePicker('photoOnlyText', '是否只看有照片的人', this.state.Gender, tmpPhotoOnlyArr)}
+              </View>
+              <View style={[styles.listItem, styles.bottomItem]}>
+                <Text style={styles.inputLabel}>{'匹配距离'}</Text>
+                {this._renderSinglePicker('matchDistanceText', '请选择匹配距离', this.state.MatchDistance, tmpDistanceArr)}
               </View>
             </View>
             <NBButton
