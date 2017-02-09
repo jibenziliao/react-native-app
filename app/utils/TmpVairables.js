@@ -14,7 +14,8 @@ let tmpGlobal = {
   webSocketConnectCount: 0,//webSocket连接次数
   ws:null,
   _wsTokenHandler:null,
-  appInfo:null
+  appInfo:null,
+  currentStatusBarHeightIOS:20//iOS监听动态状态栏高度,默认为20
 };
 
 export default tmpGlobal

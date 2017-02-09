@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   container: {
     ...Platform.select({
       ios: {
-        height: height//iOS将状态栏视为视图一部分
+        height: height - tmpGlobal.currentStatusBarHeightIOS + 20//iOS在通话过程中使用APP,顶部状态栏会变高,APP视图会被挤下去,这里的tmpGlobal.currentStatusBarHeightIOS是状态栏动态高度
       },
       android: {
         height: height - StatusBar.currentHeight//StatusBar.currentHeight为安卓状态栏高度
@@ -119,7 +119,7 @@ class MainContainer extends Component {
       goSignature={()=> {
         this._goSignature()
       }}
-      goAlbum={()=>{
+      goAlbum={()=> {
         this._goAlbum()
       }}
       goUserInfo={()=> {
