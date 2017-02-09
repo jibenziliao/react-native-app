@@ -88,44 +88,6 @@ export function postFetch(url, data, dispatch, fetchReq, receive, error, resolve
       rejectFn({error: '请求错误',errorMessage:err});
       throw err;
     }));
-
-  /*new Promise(function(resolve, reject) {
-   let timeout = setTimeout(function() {
-   reject(new Error('Request timed out'));
-   }, TIME_OUT);
-   fetch(URL_DEV + url, fetchOptions(data))
-   .then(function(response) {
-   clearTimeout(timeout);
-   if (response && response.status == 200) return response.json();
-   else reject(new Error('Response error'));
-   })
-   .then(function(json) {
-   // process results
-   resolve(json);
-   })
-   .catch(function(err) {
-   reject(err);
-   });
-   })
-   .then((json)=>{
-   if ('OK' != json.Code) {
-   dispatch({...error, data, json});
-   toastShort(json.Message);
-   rejectFn(json);
-   } else {
-   dispatch({...receive, data, json});
-   resolveFn(json);
-   }
-   }
-   )
-   .catch(function(err) {
-   toastShort('网络发生错误,请重试');
-   // error: response error, request timeout or runtime error
-   dispatch({...error, error: '请求错误'});
-   rejectFn({error: '请求错误'});
-   console.log(err);
-   });*/
-
 }
 
 export function getFetch(url, data, dispatch, fetchReq, receive, error, resolveFn, rejectFn) {

@@ -1013,9 +1013,10 @@ class Home extends BaseComponent {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
-              fontWeight: '100'
-            }}/>
+            <IonIcon
+              name={'ios-close-outline'}
+              size={44} color={'#fff'}
+              style={{fontWeight: '100'}}/>
           </View>
         </TouchableOpacity>
       </ModalBox>
