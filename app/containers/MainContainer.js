@@ -25,6 +25,7 @@ import EditPersonalSignature from '../pages/EditPersonalSignature'
 import UserInfo from '../pages/UserInfo'
 import Settings from '../pages/Settings'
 import Album from '../pages/Album'
+import Account from '../pages/Account'
 
 const {height, width} = Dimensions.get('window');
 
@@ -99,6 +100,14 @@ class MainContainer extends Component {
     });
   }
 
+  //前往用户账户资料页面
+  _goAccount(){
+    this.props.navigator.push({
+      component: Account,
+      name: 'Account'
+    });
+  }
+
   _goSettings() {
     this.props.navigator.push({
       component: Settings,
@@ -127,6 +136,9 @@ class MainContainer extends Component {
       }}
       goSettings={()=> {
         this._goSettings()
+      }}
+      goAccount={()=>{
+        this._goAccount()
       }}
       userInfo={tmpGlobal.currentUser}
       openMenuOffset={width * 2 / 3}

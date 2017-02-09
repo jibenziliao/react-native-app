@@ -249,6 +249,6 @@ class Album extends BaseComponent {
 
 export default connect((state)=> {
   return {
-    pendingStatus: state.Photo.pending
+    ...state
   }
 })(Album)

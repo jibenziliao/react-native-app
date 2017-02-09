@@ -122,7 +122,21 @@ class Menu extends Component {
                 <View style={styles.iconContainer}>
                   <Icon name={'address-card-o'} size={20}/>
                 </View>
-                <Text style={styles.itemText}>{'资料'}</Text>
+                <Text style={styles.itemText}>{'个人资料'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={styles.listItem}>
+            <TouchableHighlight
+              onPress={()=> {
+                this.props.goAccount()
+              }}
+              underlayColor={'#b8b8bf'}>
+              <View style={styles.itemContainer}>
+                <View style={styles.iconContainer}>
+                  <Icon name={'credit-card'} size={20}/>
+                </View>
+                <Text style={styles.itemText}>{'账户资料'}</Text>
               </View>
             </TouchableHighlight>
           </View>
