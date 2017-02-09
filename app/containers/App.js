@@ -25,7 +25,6 @@ import * as VicinityActions from '../actions/Vicinity'
 import Spinner from '../components/Spinner'
 import RNPicker from 'react-native-picker'
 import tmpGlobal from '../utils/TmpVairables'
-import StatusBarSizeIOS from 'react-native-status-bar-size'
 
 let lastClickTime = 0;
 
@@ -57,7 +56,6 @@ class App extends Component {
     this.renderScene = this.renderScene.bind(this);
     this.onBackAndroid = this.onBackAndroid.bind(this);
     this._handleConnectivityChange = this._handleConnectivityChange.bind(this);
-    this._handleStatusBarSizeDidChange = this._handleStatusBarSizeDidChange.bind(this);
     this.state = {
       pending: false,
       hasRegistered: false,
@@ -79,12 +77,8 @@ class App extends Component {
     }
     NetInfo.addEventListener('change', this._handleConnectivityChange);
     this.setState({loading: true});
-    StatusBarSizeIOS.addEventListener('didChange', this._handleStatusBarSizeDidChange);
   }
 
-  _handleStatusBarSizeDidChange(currentStatusBarHeight) {
-    tmpGlobal.currentStatusBarHeightIOS = currentStatusBarHeight;
-  }
 
   _getNetStatus() {
     //检测网络是否连接
@@ -170,7 +164,6 @@ class App extends Component {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
     NetInfo.removeEventListener('change', this._handleConnectivityChange);
-    StatusBarSizeIOS.removeEventListener('didChange', this._handleStatusBarSizeDidChange);
   }
 
   _handleConnectivityChange(data) {

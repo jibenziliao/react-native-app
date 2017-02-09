@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   container: {
     ...Platform.select({
       ios: {
-        height: height - tmpGlobal.currentStatusBarHeightIOS + 20//iOS在通话过程中使用APP,顶部状态栏会变高,APP视图会被挤下去,这里的tmpGlobal.currentStatusBarHeightIOS是状态栏动态高度
+        height: height //iOS在通话过程中使用APP,顶部状态栏会变高,APP视图会被挤下去
       },
       android: {
         height: height - StatusBar.currentHeight//StatusBar.currentHeight为安卓状态栏高度
