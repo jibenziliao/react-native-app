@@ -143,6 +143,20 @@ class Menu extends Component {
           <View style={styles.listItem}>
             <TouchableHighlight
               onPress={()=> {
+                this.props.goScore()
+              }}
+              underlayColor={'#b8b8bf'}>
+              <View style={styles.itemContainer}>
+                <View style={styles.iconContainer}>
+                  <Icon name={'star-o'} size={20}/>
+                </View>
+                <Text style={styles.itemText}>{'给好评'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={styles.listItem}>
+            <TouchableHighlight
+              onPress={()=> {
                 this.props.goSettings()
               }}
               underlayColor={'#b8b8bf'}>

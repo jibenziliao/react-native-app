@@ -10,7 +10,8 @@ import {
   ScrollView,
   Dimensions,
   Platform,
-  StatusBar
+  StatusBar,
+  Linking
 } from 'react-native'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import Home from './Home'
@@ -101,11 +102,17 @@ class MainContainer extends Component {
   }
 
   //前往用户账户资料页面
-  _goAccount(){
+  _goAccount() {
     this.props.navigator.push({
       component: Account,
       name: 'Account'
     });
+  }
+
+  //去应用市场给本APP打分
+  _goScore() {
+    let url = Platform.OS === 'ios' ? 'https://itunes.apple.com/cn/app/qq/id444934666?mt=8' : 'https://play.google.com/store/apps/details?id=com.twitter.android';
+    Linking.openURL(url).catch(err => console.error('An error occurred', err));
   }
 
   _goSettings() {
@@ -137,8 +144,11 @@ class MainContainer extends Component {
       goSettings={()=> {
         this._goSettings()
       }}
-      goAccount={()=>{
+      goAccount={()=> {
         this._goAccount()
+      }}
+      goScore={()=> {
+        this._goScore()
       }}
       userInfo={tmpGlobal.currentUser}
       openMenuOffset={width * 2 / 3}

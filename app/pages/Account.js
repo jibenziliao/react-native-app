@@ -20,6 +20,7 @@ import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import tmpGlobal from '../utils/TmpVairables'
 import {URL_DEV} from '../constants/Constant'
+import Recharge from '../pages/Recharge'
 
 const {height, width} = Dimensions.get('window');
 
@@ -85,10 +86,13 @@ const styles = StyleSheet.create({
   }
 });
 
+let navigator;
+
 class Account extends BaseComponent {
 
   constructor(props) {
     super(props);
+    navigator=this.props.navigator;
   }
 
   getNavigationBarProps() {
@@ -100,6 +104,13 @@ class Account extends BaseComponent {
   componentDidMount() {
     InteractionManager.runAfterInteractions(()=> {
 
+    });
+  }
+
+  _goRecharge(){
+    navigator.push({
+      component:Recharge,
+      name:'Recharge'
     });
   }
 
@@ -127,10 +138,10 @@ class Account extends BaseComponent {
     return (
       <View style={styles.btnRow}>
         <TouchableHighlight
-          style={styles.btnContainer}
+          style={[styles.btnContainer,styles.btnLeft]}
           underlayColor={'#b8b8bf'}
           onPress={()=> {
-            console.log('充值');
+            this._goRecharge()
           }}>
           <View style={styles.btn}>
             <View style={styles.iconBox}>
