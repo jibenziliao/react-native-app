@@ -21,6 +21,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import tmpGlobal from '../utils/TmpVairables'
 import {URL_DEV} from '../constants/Constant'
 import Recharge from '../pages/Recharge'
+import TranscationRecordList from '../pages/TranscationRecordList'
 
 const {height, width} = Dimensions.get('window');
 
@@ -114,6 +115,13 @@ class Account extends BaseComponent {
     });
   }
 
+  _goTransRecord(){
+    navigator.push({
+      component:TranscationRecordList,
+      name:'TranscationRecordList'
+    });
+  }
+
   renderAccountInfo() {
     return (
       <View style={styles.userInfoContainer}>
@@ -123,10 +131,10 @@ class Account extends BaseComponent {
             source={{uri: URL_DEV + tmpGlobal.currentUser.PhotoUrl}}/>
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>{'张三'}</Text>
+          <Text style={styles.userName}>{tmpGlobal.currentUser.Nickname}</Text>
           <Text>
             {'剩余觅豆'}
-            <Text style={styles.money}>{'1200'}</Text>
+            <Text style={styles.money}>{tmpGlobal.currentUser.UserBalance}</Text>
             {'个'}
           </Text>
         </View>
@@ -154,7 +162,7 @@ class Account extends BaseComponent {
           style={styles.btnContainer}
           underlayColor={'#b8b8bf'}
           onPress={()=> {
-            console.log('交易记录');
+            this._goTransRecord()
           }}>
           <View style={styles.btn}>
             <View style={styles.iconBox}>
