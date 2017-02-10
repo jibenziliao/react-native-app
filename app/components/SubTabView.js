@@ -8,12 +8,12 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  TouchableHighlight
+  TouchableHighlight,
+  Text
 } from 'react-native'
 import {
   TabViewAnimated,
-  TabBar,
-  TabBarTop
+  TabBar
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   indicator: {
-    height: 40,
+    height: 4,
     width: width / 2,
     backgroundColor: '#5067FF',
     position: 'absolute',
@@ -39,10 +39,24 @@ const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: 'rgba(0,0,0,0)',
     height: 40,
-    zIndex: 0
+    zIndex: 0,
+    width:width / 2,
+    borderRightColor:'#E2E2E2',
+    borderRightWidth:0.5
+  },
+  tabLabel:{
+    backgroundColor: 'transparent',
+    color: '#ddd',
+    margin: 8,
   },
   customStyle: {
-    backgroundColor: 'gray',
+    backgroundColor: '#fff',
+  },
+  focusLabel:{
+    color:'#5067FF'
+  },
+  label:{
+    color:'gray'
   },
 });
 
@@ -78,12 +92,18 @@ export default class SubTabView extends Component {
     });
   };
 
+  _renderLabel(scene){
+    return(
+      <Text style={[ styles.tabLabel, (scene.focused?styles.focusLabel:styles.label)]}>{scene.route.title}</Text>
+    );
+  }
+
   _renderHeader = (props) => {
-    return <TabBarTop
+    return <TabBar
       scrollEnabled={true}
-      tabWidth={width / 2}
       tabStyle={styles.tabBar}
       style={styles.customStyle}
+      renderLabel={this._renderLabel}
       indicatorStyle={styles.indicator}
       {...props} />;
   };
