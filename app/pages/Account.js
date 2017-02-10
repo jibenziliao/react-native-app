@@ -12,7 +12,6 @@ import {
   ScrollView,
   Image,
   TouchableHighlight,
-  InteractionManager,
   Dimensions
 } from 'react-native'
 import {connect} from 'react-redux'
@@ -20,8 +19,9 @@ import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import tmpGlobal from '../utils/TmpVairables'
 import {URL_DEV} from '../constants/Constant'
-import Recharge from '../pages/Recharge'
 import TranscationRecordList from '../pages/TranscationRecordList'
+import Settlement from '../pages/Settlement'
+import Recharge from '../pages/Recharge'
 
 const {height, width} = Dimensions.get('window');
 
@@ -34,18 +34,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:'#fff'
+    backgroundColor: '#fff'
   },
   btnRow: {
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor:'#fff',
-    alignItems:'center'
+    backgroundColor: '#fff',
+    alignItems: 'center'
   },
-  avatarContainer:{
-    paddingHorizontal:20,
-    paddingVertical:10
+  avatarContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10
   },
   avatar: {
     width: width / 6,
@@ -53,37 +53,37 @@ const styles = StyleSheet.create({
     borderRadius: width / 12
   },
   userInfo: {
-    flex:1,
-    justifyContent:'space-around'
+    flex: 1,
+    justifyContent: 'space-around'
   },
   userName: {
     fontWeight: '400',
     fontSize: 18
   },
-  btnContainer:{
-    flex:1
+  btnContainer: {
+    flex: 1
   },
-  btnLeft:{
-    borderRightWidth:0.5,
-    borderRightColor:'#E2E2E2'
+  btnLeft: {
+    borderRightWidth: 0.5,
+    borderRightColor: '#E2E2E2'
   },
-  btn:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center',
-    paddingVertical:20,
-    flex:1
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    flex: 1
   },
-  iconBox:{
-    justifyContent:'center',
-    alignItems:'center',
-    marginRight:20
+  iconBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20
   },
   money: {
     color: '#5067FF'
   },
-  btnText:{
-    fontSize:20
+  btnText: {
+    fontSize: 20
   }
 });
 
@@ -93,7 +93,7 @@ class Account extends BaseComponent {
 
   constructor(props) {
     super(props);
-    navigator=this.props.navigator;
+    navigator = this.props.navigator;
   }
 
   getNavigationBarProps() {
@@ -102,23 +102,17 @@ class Account extends BaseComponent {
     };
   }
 
-  componentDidMount() {
-    InteractionManager.runAfterInteractions(()=> {
-
+  _goRecharge() {
+    navigator.push({
+      component: Recharge,
+      name: 'Recharge'
     });
   }
 
-  _goRecharge(){
+  _goTransRecord() {
     navigator.push({
-      component:Recharge,
-      name:'Recharge'
-    });
-  }
-
-  _goTransRecord(){
-    navigator.push({
-      component:TranscationRecordList,
-      name:'TranscationRecordList'
+      component: TranscationRecordList,
+      name: 'TranscationRecordList'
     });
   }
 
@@ -146,7 +140,7 @@ class Account extends BaseComponent {
     return (
       <View style={styles.btnRow}>
         <TouchableHighlight
-          style={[styles.btnContainer,styles.btnLeft]}
+          style={[styles.btnContainer, styles.btnLeft]}
           underlayColor={'#b8b8bf'}
           onPress={()=> {
             this._goRecharge()

@@ -69,7 +69,7 @@ class Recharge extends BaseComponent {
           onLoadEnd={()=> {
             {/*this.setState({loading: false})*/}
           }}
-          source={{uri: 'https://m.baidu.com'}}
+          source={require('./html/demo.html')}
         />
       </View>
     )

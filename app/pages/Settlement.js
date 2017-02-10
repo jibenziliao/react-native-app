@@ -3,24 +3,37 @@
  * @author keyy/1501718947@qq.com 17/2/10 14:33
  * @description
  */
-import React,{Component} from 'react'
+import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
-  Text
+  Text,
+  TouchableHighlight,
+  ScrollView
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
+import {Button as NBButton, Icon as NBIcon} from 'native-base'
+import Recharge from '../pages/Recharge'
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E2E2E2'
   },
+  scrollView: {
+    flex: 1,
+  },
+  blockBtn: {
+    flex: 1,
+    borderRadius: 0,
+    height: 40
+  }
 });
 
-class Settlement extends BaseComponent{
-  constructor(props){
+class Settlement extends BaseComponent {
+
+  constructor(props) {
     super(props);
   }
 
@@ -30,10 +43,21 @@ class Settlement extends BaseComponent{
     };
   }
 
-  renderBody(){
-    return(
+  renderBody() {
+    return (
       <View style={styles.container}>
+        <ScrollView style={styles.scrollView}>
 
+        </ScrollView>
+        <NBButton
+          block
+          style={styles.blockBtn}
+          onPress={()=> {
+            console.log('12');
+          }}
+          disabled={true}>
+          立即支付
+        </NBButton>
       </View>
     )
   }
