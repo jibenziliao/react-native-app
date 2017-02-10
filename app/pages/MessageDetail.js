@@ -152,35 +152,30 @@ class MessageDetail extends BaseComponent {
     };
   }
 
-  //原生webSocket连接从后台接收到的消息处理
+  //原生webSocket连接从后台接收消息
   _wsNewMsgHandler(obj) {
     if (obj.hasOwnProperty('M')) {
-      let tmpArr = obj.M;
-      let index = tmpArr.findIndex((item)=> {
+      let index = obj.M.findIndex((item)=> {
         return item.M === 'GetNewMsg'
       });
       if (index > -1) {
-        let newMsg = tmpArr[index].A;
-        //console.log(newMsg[0]);
-        this._wsMarkAsRead(newMsg[0]);
+        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=>{
+          if(obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId - 1 > parseInt(res||0)){
+            //缓存最后一条消息Id
+            Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
+            this._handleNewMsg(obj.M[index].A[0]);
+          }
+        });
       }
     } else {
       //console.log(obj);
     }
   }
 
-  _wsMarkAsRead(newMsg) {
-    let markRead = {
-      H: 'chatcore',
-      M: 'UserReadMsg',
-      A: [newMsg.LastMsgFlag + ''],
-      I: Math.floor(Math.random() * 11)
-    };
-    console.log(markRead);
-    tmpGlobal.ws.send(JSON.stringify(markRead));
+  //收到新消息后处理(缓存、展示)
+  _handleNewMsg(newMsg) {
     //离开此页面后,不在此页面缓存消息,也不在此页面将消息标为已读
     if (!this.state.destroyed) {
-      console.log('MessageDetail页面成功标为已读');
       console.log('MessageDetail页面开始缓存消息');
       this._receiveSaveRecord(JSON.parse(JSON.stringify(newMsg.MsgPackage)));
     }

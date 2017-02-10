@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   itemLeft: {
     flex: 1,
     flexDirection: 'row',
-    alignItems:'center'
+    alignItems: 'center'
   },
   itemIconContainer: {
     width: 60,
@@ -62,7 +62,8 @@ class Settings extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      MapPrecision: tmpGlobal.currentUser.MapPrecision
+      MapPrecision: tmpGlobal.currentUser.MapPrecision,
+      receiveNotification: true
     };
     navigator = this.props.navigator;
     console.log(tmpGlobal.currentUser);
@@ -101,7 +102,7 @@ class Settings extends BaseComponent {
   _updateMapPrecisionQuiet(data) {
     const {dispatch}=this.props;
     dispatch(HomeActions.setMapPrecisionQuiet({MapPrecision: data}, (json)=> {
-      DeviceEventEmitter.emit('userInfoChanged','成功开启隐身');
+      DeviceEventEmitter.emit('userInfoChanged', '成功开启隐身');
     }, (error)=> {
 
     }));
@@ -172,6 +173,24 @@ class Settings extends BaseComponent {
                 this._confirmChange(value)
               }}
               value={this.state.MapPrecision === null}/>
+          </View>
+          <View style={styles.listItem}>
+            <View style={styles.itemLeft}>
+              <View style={styles.itemIconContainer}>
+                <Icon
+                  name={'commenting-o'}
+                  style={styles.itemIcon}
+                  size={20}/>
+              </View>
+              <Text style={styles.itemText}>{'新消息通知'}</Text>
+            </View>
+            <Switch
+              onValueChange={(value)=> {
+                this.setState({
+                  receiveNotification: value
+                })
+              }}
+              value={this.state.receiveNotification}/>
           </View>
           <View style={styles.listItem}>
             <View style={styles.itemLeft}>

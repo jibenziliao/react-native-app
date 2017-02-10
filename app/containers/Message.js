@@ -318,10 +318,10 @@ class Message extends BaseComponent {
       let wsUrl = `${URL_WS_DEV}/chat/signalr/hubs/signalr/connect?transport=webSockets&clientProtocol=1.5&connectionToken=${encodeURIComponent(json.ConnectionToken)}&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
       this._wsInitHandler(wsUrl);
     }).catch((e)=> {
-      if(typeof(e) == "object" && Object.prototype.toString.call(e).toLowerCase() == "[object object]" && !e.length){
+      if (typeof(e) == "object" && Object.prototype.toString.call(e).toLowerCase() == "[object object]" && !e.length) {
         console.log(e);
-      }else{
-        console.log(e+'');
+      } else {
+        console.log(e + '');
       }
       reconnectCount += 1;
       if (reconnectCount <= 5) {
@@ -381,17 +381,21 @@ class Message extends BaseComponent {
     tmpGlobal.ws.send(JSON.stringify(getNewMsg));
   }
 
-  //原生webSocket连接登录
+  //原生webSocket连接登录,登录时请求离线消息(传的LastMsgId默认为0)
   _wsLoginHandler() {
-    let loginParams = {
-      H: 'chatcore',
-      M: 'Login',
-      A: [tmpGlobal.cookie],
-      I: Math.floor(Math.random() * 11)
-    };
-    tmpGlobal.ws.send(JSON.stringify(loginParams));
-    //console.log(loginParams);
-    console.log('ws登录成功');
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
+      let loginParams = {
+        H: 'chatcore',
+        M: 'Login',
+        A: [tmpGlobal.cookie,parseInt(res||0)],
+        I: Math.floor(Math.random() * 11)
+      };
+      tmpGlobal.ws.send(JSON.stringify(loginParams));
+      console.log(loginParams);
+      console.log('ws登录成功');
+    }).catch((error)=>{
+      console.log(error);
+    });
   }
 
   //原生webSocket连接从后台接收到的消息处理
@@ -400,38 +404,27 @@ class Message extends BaseComponent {
     //连接成功后,将初始化webSocket连接的方法赋值给全局变量
     tmpGlobal._wsTokenHandler = this._wsTokenHandler;
     if (obj.hasOwnProperty('M')) {
-      let tmpArr = obj.M;
-      let index = tmpArr.findIndex((item)=> {
+      let index = obj.M.findIndex((item)=> {
         return item.M === 'GetNewMsg'
       });
       if (index > -1) {
-        let newMsg = tmpArr[index].A;
-        //console.log(newMsg[0]);
-        this._wsMarkAsRead(newMsg[0]);
+        console.log(obj);
+        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
+          if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId - 1 > parseInt(res||0)) {
+            //缓存最后一条消息Id
+            Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
+            let routes = navigator.getCurrentRoutes();
+            if (routes[routes.length - 1].name != 'MessageDetail') {
+              console.log('Message页面收到了新消息');
+              //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
+              //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
+              this._margeMessage(JSON.parse(JSON.stringify(obj.M[0].A[0].MsgPackage)));
+            }
+          }
+        });
       }
     } else {
       //console.log(obj);
-    }
-  }
-
-  _wsMarkAsRead(newMsg) {
-    let markRead = {
-      H: 'chatcore',
-      M: 'UserReadMsg',
-      A: [newMsg.LastMsgFlag],
-      I: Math.floor(Math.random() * 11)
-    };
-    console.log(markRead);
-    let routes = navigator.getCurrentRoutes();
-    console.log(routes);
-    tmpGlobal.ws.send(JSON.stringify(markRead));
-    console.log('ws消息成功标为已读');
-    //Message和MessageDetail会同时接收消息(因为Message页面在app运行期间不会被销毁),这里判断,当不在MessageDetail页面时,Message页面才会接收消息
-    if (routes[routes.length - 1].name != 'MessageDetail') {
-      console.log('Message页面收到了新消息');
-      //这里需要用到js复杂对象的深拷贝,这里用JSON转换并不是很安全的方法。
-      //http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript/122704#
-      this._margeMessage(JSON.parse(JSON.stringify(newMsg.MsgPackage)));
     }
   }
 
@@ -507,9 +500,9 @@ class Message extends BaseComponent {
       let index = res.findIndex((item)=> {
         return data.SenderId === item.SenderId;
       });
-      if(index!==-1){
-        res.splice(index,1);
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`,res);
+      if (index !== -1) {
+        res.splice(index, 1);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res);
       }
     });
   }
