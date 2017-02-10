@@ -387,13 +387,13 @@ class Message extends BaseComponent {
       let loginParams = {
         H: 'chatcore',
         M: 'Login',
-        A: [tmpGlobal.cookie,parseInt(res||0)],
+        A: [tmpGlobal.cookie, parseInt(res || 0)],
         I: Math.floor(Math.random() * 11)
       };
       tmpGlobal.ws.send(JSON.stringify(loginParams));
       console.log(loginParams);
       console.log('ws登录成功');
-    }).catch((error)=>{
+    }).catch((error)=> {
       console.log(error);
     });
   }
@@ -410,7 +410,7 @@ class Message extends BaseComponent {
       if (index > -1) {
         console.log(obj);
         Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
-          if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId - 1 > parseInt(res||0)) {
+          if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId - 1 > parseInt(res || 0)) {
             //缓存最后一条消息Id
             Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
             let routes = navigator.getCurrentRoutes();
@@ -487,11 +487,11 @@ class Message extends BaseComponent {
     return rowData.MsgList[rowData.MsgList.length - 1].text;
   }
 
-  deleteRow(data, rowId) {
+  deleteRow(data, secId) {
     this._deleteRecordRow(data);
     this.refs.swipeListView.safeCloseOpenRow();
     let newData = [...this.state.messageList];
-    newData.splice(rowId, 1);
+    newData.splice(secId, 1);
     this.setState({messageList: newData});
   }
 
@@ -572,7 +572,7 @@ class Message extends BaseComponent {
           renderHiddenRow={ (data, rowId, secId, rowMap) => (
             <TouchableHighlight
               onPress={(_)=> {
-                this.deleteRow(data, rowId)
+                this.deleteRow(data, secId)
               }}
               style={styles.hiddenRow}>
               <View style={styles.deleteBtn}>
