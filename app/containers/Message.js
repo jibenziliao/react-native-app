@@ -567,10 +567,10 @@ class Message extends BaseComponent {
           renderRow={
             this.renderRowData.bind(this)
           }
-          onRowDidClose={()=> {
+          onRowClose={()=> {
             rowIsOpen = false
           }}
-          onRowDidOpen={()=> {
+          onRowOpen={()=> {
             rowIsOpen = true
           }}
           closeOnScroll={true}

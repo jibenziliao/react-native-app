@@ -150,7 +150,7 @@ class Menu extends Component {
                 <View style={styles.iconContainer}>
                   <Icon name={'star-o'} size={20}/>
                 </View>
-                <Text style={styles.itemText}>{'给好评'}</Text>
+                <Text style={styles.itemText}>{'给好评(送50觅豆)'}</Text>
               </View>
             </TouchableHighlight>
           </View>
