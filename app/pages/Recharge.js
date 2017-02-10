@@ -64,10 +64,10 @@ class Recharge extends BaseComponent {
           bounces={false}
           style={styles.webView}
           onLoadStart={()=> {
-            this.setState({loading: true})
+            {/*this.setState({loading: true})*/}
           }}
           onLoadEnd={()=> {
-            this.setState({loading: false})
+            {/*this.setState({loading: false})*/}
           }}
           source={{uri: 'https://m.baidu.com'}}
         />
