@@ -47,15 +47,15 @@ const styles = StyleSheet.create({
   },
   balanceContainer: {
     width: width / 5,
-    alignItems:'center',
-    justifyContent:'space-between'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   recordText: {
     fontSize: 18,
     marginBottom: 10,
     fontWeight: '200',
-    flexWrap:'nowrap',
-    overflow:'hidden'
+    flexWrap: 'nowrap',
+    overflow: 'hidden'
   },
   recordTime: {
     fontSize: 14
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   moneyLabel: {
     fontSize: 14,
-    paddingBottom:3
+    paddingBottom: 3
   },
   money: {
     fontSize: 24,
@@ -188,7 +188,8 @@ class TranscationRecordList extends BaseComponent {
             <Text style={styles.recordTime}>{dateFormat(new Date(rowData.CreateDate))}</Text>
           </View>
           <View style={styles.balanceContainer}>
-            <Text style={styles.tradeAmount}>{rowData.TradeAmount}</Text>
+            <Text
+              style={styles.tradeAmount}>{rowData.TradeAmount > 0 ? '+' + rowData.TradeAmount : '-' + rowData.TradeAmount}</Text>
             <View style={styles.balance}>
               <Text style={styles.moneyLabel}>{'剩余'}</Text>
               <Text style={styles.money}>{rowData.NewBalance}</Text>
