@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: width / 6,
     height: width / 6,
-    borderRadius: width / 6
+    borderRadius: width / 12
   },
   userInfo: {
     flex:1,
