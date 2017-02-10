@@ -111,7 +111,7 @@ class PhotoViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.imageArr.length > 0 && nextProps.imageArr[nextProps.imageArr.length - 1].OnLine) {
+    if (nextProps.imageArr.length > 0 && !nextProps.imageArr[nextProps.imageArr.length - 1].OnLine) {
       this.setState({
         uploaded: true,
         imageArr: nextProps.imageArr
@@ -156,14 +156,7 @@ class PhotoViewer extends Component {
         } else {
           source = {PhotoUrl: response.uri, OnLine: false};
         }
-
-        /*this.state.imageArr.push({
-         Id: (new Date()).getTime().toString(),
-         ...source,
-         IsPrimary: false,
-         Permission: 'Everybody',
-         PermissionKey: 'Everybody'
-         });*/
+        
         this.props.imageArrChanges({
           Id: (new Date()).getTime().toString(),
           ...source,

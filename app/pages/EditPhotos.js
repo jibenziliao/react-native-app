@@ -188,7 +188,7 @@ class EditPhotos extends BaseComponent {
       changed: true,
       ...this.state.userPhotos,
       CanUploadCountLeft: this.state.CanUploadCountLeft - 1 >= 0 ? this.state.CanUploadCountLeft - 1 : 0
-    })
+    });
   }
 
   _deletePhotoOnline(data) {
