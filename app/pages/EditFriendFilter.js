@@ -117,6 +117,9 @@ class EditFriendFilter extends BaseComponent {
   }
 
   _saveFriendFilter() {
+    RNPicker.isPickerShow((status)=> {
+      if (status) RNPicker.hide()
+    });
     const {dispatch}=this.props;
     let data = {
       AgeMin: this.state.AgeMin,

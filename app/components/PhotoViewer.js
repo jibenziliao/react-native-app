@@ -156,7 +156,7 @@ class PhotoViewer extends Component {
         } else {
           source = {PhotoUrl: response.uri, OnLine: false};
         }
-        
+
         this.props.imageArrChanges({
           Id: (new Date()).getTime().toString(),
           ...source,
