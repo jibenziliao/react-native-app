@@ -13,7 +13,8 @@ import {
 } from 'react-native'
 import {
   TabViewAnimated,
-  TabBar
+  TabBar,
+  TabBarTop
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
@@ -99,9 +100,10 @@ export default class SubTabView extends Component {
   }
 
   _renderHeader = (props) => {
-    return <TabBar
+    return <TabBarTop
       scrollEnabled={true}
       tabStyle={styles.tabBar}
+      tabWidth={width/2}
       style={styles.customStyle}
       renderLabel={this._renderLabel}
       indicatorStyle={styles.indicator}
