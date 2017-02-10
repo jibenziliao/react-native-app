@@ -45,10 +45,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
     alignItems: 'flex-start',
-    justifyContent:'flex-start'
+    justifyContent: 'flex-start'
   },
   tipsArea: {
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -236,9 +236,12 @@ class Album extends BaseComponent {
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
-              fontWeight: '100'
-            }}/>
+            <IonIcon
+              name={'ios-close-outline'}
+              size={44} color={'#fff'}
+              style={{
+                fontWeight: '100'
+              }}/>
           </View>
         </TouchableOpacity>
       </ModalBox>

@@ -141,7 +141,7 @@ function fetchOptions(data) {
   }
 }
 
-function pushNewPost(dispatch, data, imgArr, navigator,callback) {
+function pushNewPost(dispatch, data, imgArr, navigator, callback) {
   let params = {
     PostContent: data.PostContent,
     ...tmpGlobal.currentLocation,
@@ -159,7 +159,7 @@ function pushNewPost(dispatch, data, imgArr, navigator,callback) {
         toastShort(json.Message);
         return false;
       } else {
-        callback(data.postType-1);
+        callback(data.postType - 1);
       }
     }).catch((error)=> {
     dispatch({type: ActionTypes.FETCH_FAILED, params, error});
@@ -167,7 +167,7 @@ function pushNewPost(dispatch, data, imgArr, navigator,callback) {
   })
 }
 
-export function postAnnouncement(data, navigator,callback) {
+export function postAnnouncement(data, navigator, callback) {
   return (dispatch)=> {
     const photoCount = data.imageArr.length;
     let uploadReq = 0;
@@ -175,13 +175,13 @@ export function postAnnouncement(data, navigator,callback) {
     if (photoCount !== 0) {
       dispatch({type: ActionTypes.UPLOAD_PHOTO_BEGIN});
       for (let i = 0; i < data.imageArr.length; i++) {
-        uploadSingleImage(data.imageArr[i], data, dispatch,callback);
+        uploadSingleImage(data.imageArr[i], data, dispatch, callback);
       }
     } else {
-      pushNewPost(dispatch, data, [], navigator,callback);
+      pushNewPost(dispatch, data, [], navigator, callback);
     }
 
-    function uploadSingleImage(obj, data, dispatch,callback) {
+    function uploadSingleImage(obj, data, dispatch, callback) {
       let formData = new FormData();
       let file = {
         uri: obj.uri,
@@ -207,7 +207,7 @@ export function postAnnouncement(data, navigator,callback) {
             uploadReq += 1;
             if (uploadReq === photoCount) {
               dispatch({type: ActionTypes.UPLOAD_PHOTO_END, data, json});
-              pushNewPost(dispatch, data, uploadImgArr, navigator,callback);
+              pushNewPost(dispatch, data, uploadImgArr, navigator, callback);
             }
           }
         })
@@ -261,7 +261,7 @@ export function getMatchUsers(data, resolve, reject) {
   }
 }
 
-export function getRandomUsers(data,resolve,reject) {
+export function getRandomUsers(data, resolve, reject) {
   return (dispatch)=> {
     getFetch(`/profile/getrandomuser?pagesize=${data.pageSize}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN,
@@ -270,7 +270,7 @@ export function getRandomUsers(data,resolve,reject) {
   }
 }
 
-export function getRandomUsersQuiet(data,resolve,reject) {
+export function getRandomUsersQuiet(data, resolve, reject) {
   return (dispatch)=> {
     getFetch(`/profile/getrandomuser?pagesize=${data.pageSize}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
@@ -279,7 +279,7 @@ export function getRandomUsersQuiet(data,resolve,reject) {
   }
 }
 
-export function canSayHey(data,resolve,reject) {
+export function canSayHey(data, resolve, reject) {
   return (dispatch)=> {
     getFetch(`/profile/cansayhey/${data.UserId}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN_QUIET,
@@ -306,7 +306,7 @@ export function setMapPrecisionQuiet(data, resolve, reject) {
   }
 }
 
-export function setFloatMsg(data,resolve,reject) {
+export function setFloatMsg(data, resolve, reject) {
   return (dispatch)=> {
     postFetch(`/msg/sendfloatermsg?msg=${data.Msg}`, data, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
@@ -315,7 +315,7 @@ export function setFloatMsg(data,resolve,reject) {
   }
 }
 
-export function report(data,resolve,reject) {
+export function report(data, resolve, reject) {
   return (dispatch)=> {
     postFetch('/report', data, dispatch, {
       type: ActionTypes.FETCH_BEGIN,
@@ -324,20 +324,38 @@ export function report(data,resolve,reject) {
   }
 }
 
-export function isInBlackList(data,resolve,reject) {
+export function isInBlackList(data, resolve, reject) {
   return (dispatch)=> {
-    getFetch(`/blacklist/isinblacklist/${data.blackUserId}`,'' , dispatch, {
+    getFetch(`/blacklist/isinblacklist/${data.blackUserId}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN,
       data
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
 
-export function putToBlackList(data,resolve,reject) {
+export function putToBlackList(data, resolve, reject) {
   return (dispatch)=> {
-    putFetch(`/blacklist/changestatus/${data.ForUserId}`,'' , dispatch, {
+    putFetch(`/blacklist/changestatus/${data.ForUserId}`, '', dispatch, {
       type: ActionTypes.FETCH_BEGIN,
       data
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getTransRecord(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch(`/profile/traderecord?pageIndex=${data.pageIndex}&pageSize=${data.pageSize}`, '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+
+export function getTransRecordQuiet(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch(`/profile/traderecord?pageIndex=${data.pageIndex}&pageSize=${data.pageSize}`, '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN_QUIET,
+      data
+    }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
