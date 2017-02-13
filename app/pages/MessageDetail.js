@@ -72,7 +72,10 @@ class MessageDetail extends BaseComponent {
       isLoadingEarlier: false,
       AmIFollowedHim: false,
       ...this.props.route.params,
-      targetUser: null
+      targetUser: null,
+      tips: null,
+      tipsClick: '解除黑名单',
+      isInBlackList: false
     };
     navigator = this.props.navigator;
 
@@ -107,7 +110,6 @@ class MessageDetail extends BaseComponent {
 
   //从缓存中找出当前用户与聊天对象用户之间的聊天记录
   _getChatRecord(data) {
-    console.log(data);
     return data.find((item)=> {
       return item.SenderId === this.state.UserId
     });
@@ -139,7 +141,8 @@ class MessageDetail extends BaseComponent {
     dispatch(HomeActions.getUserInfo(params, (json)=> {
       this.setState({
         AmIFollowedHim: json.Result.AmIFollowedHim,
-        targetUser: json.Result
+        targetUser: json.Result,
+        isInBlackList: json.Result.IsBlackUser
       });
     }, (error)=> {
     }));
@@ -159,8 +162,8 @@ class MessageDetail extends BaseComponent {
         return item.M === 'GetNewMsg'
       });
       if (index > -1) {
-        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=>{
-          if(obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId> parseInt(res||0)){
+        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
+          if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId > parseInt(res || 0)) {
             //缓存最后一条消息Id
             Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
             this._handleNewMsg(obj.M[index].A[0]);
@@ -474,7 +477,7 @@ class MessageDetail extends BaseComponent {
 
   renderMessage(props) {
     return (
-      <CustomMessage {...props}/>
+      <CustomMessage isInBlackList={this.state.isInBlackList}{...props}/>
     )
   }
 
@@ -489,6 +492,10 @@ class MessageDetail extends BaseComponent {
         {...props}
         onPress={this._goUserInfo}/>
     )
+  }
+
+  _tipsPress() {
+    console.log('点击了消息提示');
   }
 
   getNavigationBarProps() {
@@ -575,6 +582,10 @@ class MessageDetail extends BaseComponent {
           locale={'zh-cn'}
           label={'发送'}
           placeholder={'输入消息内容'}
+          tipsClick={this.state.tipsClick}
+          tipsPress={()=> {
+            this._tipsPress()
+          }}
           renderBubble={this.renderBubble}
           renderCustomView={this.renderCustomView}
           renderFooter={this.renderFooter}

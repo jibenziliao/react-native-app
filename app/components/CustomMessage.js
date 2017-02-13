@@ -3,18 +3,36 @@
  * @author keyy/1501718947@qq.com 16/12/22 15:31
  * @description
  */
-import React,{Component} from 'react'
+import React, {Component} from 'react'
 import {
   View,
   StyleSheet,
+  Text
 } from 'react-native'
 
 import moment from 'moment'
 import CustomBubble from './CustomBubble'
 import CustomDay from './CustomDay'
-import {Avatar,Bubble,Day} from 'react-native-gifted-chat'
+import {Avatar, Bubble, Day} from 'react-native-gifted-chat'
 
 export default class CustomMessage extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isInBlackList: this.props.isInBlackList,
+      hasRemoveBlackList: false
+    };
+    console.log(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
+    this.setState({
+      isInBlackList: nextProps.isInBlackList,
+      hasRemoveBlackList: !nextProps.isInBlackList && this.props.isInBlackList
+    });
+  }
 
   isSameDay(currentMessage = {}, diffMessage = {}) {
     let diff = 0;
@@ -36,6 +54,31 @@ export default class CustomMessage extends Component {
       }
     }
     return false;
+  }
+
+  renderTips() {
+    console.log(this.props.isInBlackList);
+    if (this.state.isInBlackList) {
+      return (
+        <View style={styles.tipsContainer}>
+          <Text style={styles.tipsText}>
+            {'你已拉黑对方,将不会收到对方的消息,'}
+            <Text style={styles.clickTipsText}>{'解除黑名单'}</Text>
+            {'后可恢复正常聊天'}
+          </Text>
+        </View>
+      )
+    } else if(!this.state.isInBlackList && this.state.hasRemoveBlackList) {
+      return (
+        <View style={styles.tipsContainer}>
+          <Text style={styles.tipsText}>
+            {'你已将对方移出黑名单'}
+          </Text>
+        </View>
+      )
+    }else{
+      return null
+    }
   }
 
   renderDay() {
@@ -86,6 +129,7 @@ export default class CustomMessage extends Component {
     return (
       <View>
         {this.renderDay()}
+        {this.renderTips()}
         <View style={[styles[this.props.position].container, {
           marginBottom: this.isSameUser(this.props.currentMessage, this.props.nextMessage) ? 2 : 10,
         }, this.props.containerStyle[this.props.position]]}>
@@ -117,6 +161,21 @@ const styles = {
       marginRight: 8,
     },
   }),
+  tipsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
+    marginBottom: 10,
+    backgroundColor:'#E2E2E2',
+    borderRadius:4
+  },
+  tipsText: {
+    color: '#fff',
+    flexWrap:'wrap'
+  },
+  clickTipsText: {
+    color: 'blue'
+  }
 };
 
 CustomMessage.defaultProps = {

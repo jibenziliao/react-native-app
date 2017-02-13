@@ -500,7 +500,6 @@ class Message extends BaseComponent {
         return item.HasSend === false;
       }).length;
     }
-    console.log(count);
     emitter.emit('msgUnReadCountChange',{data:count,message:'未读消息数量发生变化'});
   }
 
