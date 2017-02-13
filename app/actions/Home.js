@@ -368,3 +368,13 @@ export function pushSwitch(data, resolve, reject) {
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function sendSms(data, resolve, reject) {
+  return (dispatch)=> {
+    postFetch(`/profile/${data.UserId}/sms`, data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
+

@@ -448,6 +448,19 @@ class MessageDetail extends BaseComponent {
     );
   }
 
+  _sendSms(text) {
+    const {dispatch}=this.props;
+    let data = {
+      UserId: this.state.UserId,
+      SmsCost: 1,
+      Text: text
+    };
+    dispatch(HomeActions.sendSms(data, (json)=> {
+      toastShort('发送成功');
+    }, (error)=> {
+    }));
+  }
+
   renderFooter(props) {
     if (this.state.typingText) {
       return (
@@ -464,13 +477,22 @@ class MessageDetail extends BaseComponent {
   renderSend(props) {
     if (props.text.trim().length > 0) {
       return (
-        <TouchableOpacity
-          style={[styles.container, this.props.containerStyle]}
-          onPress={() => {
-            props.onSend({text: props.text.trim()}, true);
-          }}>
-          <Text style={[styles.text, props.textStyle]}>{props.label}</Text>
-        </TouchableOpacity>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <TouchableOpacity
+            style={[styles.container, this.props.containerStyle]}
+            onPress={() => {
+              props.onSend({text: props.text.trim()}, true);
+            }}>
+            <Text style={[styles.text, props.textStyle]}>{props.label}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.container, this.props.containerStyle]}
+            onPress={() => {
+              this._sendSms(props.text.trim());
+            }}>
+            <Text style={[styles.text, props.textStyle]}>{'发短信'}</Text>
+          </TouchableOpacity>
+        </View>
       );
     }
     return <View/>;
