@@ -178,6 +178,8 @@ class Message extends BaseComponent {
       if (res !== null) {
         this.setState({
           messageList: res
+        },()=>{
+          this._totalUnReadCountHandler()
         });
       }
     });
@@ -415,9 +417,7 @@ class Message extends BaseComponent {
         return item.M === 'GetNewMsg'
       });
       if (index > -1) {
-        console.log(obj);
         Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
-          console.log(res);
           if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId > parseInt(res || 0)) {
             //缓存最后一条消息Id
             Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
