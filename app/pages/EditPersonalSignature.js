@@ -24,6 +24,7 @@ import * as UserProfileActions from '../actions/UserProfile'
 import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
 import * as Storage from '../utils/Storage'
+import tmpGlobal from '../utils/TmpVairables'
 
 const {width, height}=Dimensions.get('window');
 
@@ -79,6 +80,7 @@ class EditPersonalSignature extends BaseComponent {
     dispatch(UserProfileActions.savePersonalSignature({personSignal: data}, (result)=> {
       dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
         Storage.setItem('userInfo', json.Result);
+        tmpGlobal.currentUser = json.Result;
         DeviceEventEmitter.emit('signatureChanged', {data: data, message: '签名更改成功'});
         toastShort('保存成功');
         this.saveSignatureTimer = setTimeout(()=> {

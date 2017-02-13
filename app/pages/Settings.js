@@ -59,11 +59,12 @@ const styles = StyleSheet.create({
 let navigator;
 
 class Settings extends BaseComponent {
+
   constructor(props) {
     super(props);
     this.state = {
       MapPrecision: tmpGlobal.currentUser.MapPrecision,
-      receiveNotification: true
+      TurnPushOn: tmpGlobal.currentUser.TurnPushOn
     };
     navigator = this.props.navigator;
     console.log(tmpGlobal.currentUser);
@@ -138,6 +139,27 @@ class Settings extends BaseComponent {
     }
   }
 
+  _pushSwitch(value) {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.pushSwitch('', (json)=> {
+      this._updateUserInfo()
+    }, (error)=> {
+      this._updateUserInfo()
+    }));
+  }
+
+  _updateUserInfo() {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      Storage.setItem('userInfo', json.Result);
+      tmpGlobal.currentUser = json.Result;
+      this.setState({
+        TurnPushOn: tmpGlobal.currentUser.TurnPushOn
+      });
+    }, (error)=> {
+    }));
+  }
+
   renderBody() {
     return (
       <View style={styles.container}>
@@ -186,11 +208,9 @@ class Settings extends BaseComponent {
             </View>
             <Switch
               onValueChange={(value)=> {
-                this.setState({
-                  receiveNotification: value
-                })
+                this._pushSwitch(value);
               }}
-              value={this.state.receiveNotification}/>
+              value={this.state.TurnPushOn}/>
           </View>
           <View style={styles.listItem}>
             <View style={styles.itemLeft}>

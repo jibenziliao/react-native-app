@@ -359,3 +359,12 @@ export function getTransRecordQuiet(data, resolve, reject) {
     }, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
   }
 }
+
+export function pushSwitch(data, resolve, reject) {
+  return (dispatch)=> {
+    putFetch('/profile/turnonpush/', '', dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}
