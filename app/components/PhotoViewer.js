@@ -111,9 +111,9 @@ class PhotoViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.imageArr.length > 0 && !nextProps.imageArr[nextProps.imageArr.length - 1].OnLine) {
+    if (nextProps.imageArr.length > 0) {
       this.setState({
-        uploaded: true,
+        uploaded: nextProps.imageArr[nextProps.imageArr.length-1].OnLine,
         imageArr: nextProps.imageArr
       });
     } else if (nextProps.imageArr.length === 0) {
