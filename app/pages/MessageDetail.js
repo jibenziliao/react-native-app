@@ -55,6 +55,22 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
+  tipsContainer: {
+    alignItems: 'center',
+    margin: 40,
+    justifyContent: 'center',
+    marginTop: 5,
+    backgroundColor: 'gray',
+    borderRadius: 4,
+    paddingHorizontal: 10
+  },
+  tipsText: {
+    color: '#fff',
+    flexWrap: 'wrap'
+  },
+  clickTipsText: {
+    color: 'blue'
+  }
 });
 
 const CANCEL_INDEX = 0;
@@ -90,6 +106,7 @@ class MessageDetail extends BaseComponent {
     this.renderTime = this.renderTime.bind(this);
     this._goUserInfo = this._goUserInfo.bind(this);
     this.renderAvatar = this.renderAvatar.bind(this);
+    this.renderLoadEarlier = this.renderLoadEarlier.bind(this);
   }
 
   _initOldMessage() {
@@ -318,6 +335,18 @@ class MessageDetail extends BaseComponent {
     this.state.destroyed = true;
     this._attentionListener.remove();
     DeviceEventEmitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
+  }
+
+  renderLoadEarlier() {
+    return (
+      <View style={styles.tipsContainer}>
+        <Text style={styles.tipsText}>
+          {'你已拉黑对方,将不会收到对方的消息,'}
+          <Text style={styles.clickTipsText}>{'解除黑名单'}</Text>
+          {'后可恢复正常聊天'}
+        </Text>
+      </View>
+    )
   }
 
   onLoadEarlier() {
@@ -598,7 +627,8 @@ class MessageDetail extends BaseComponent {
           onSend={(message)=> {
             this._checkBeforeSend(message)
           }}
-          loadEarlier={this.state.loadEarlier}
+          renderLoadEarlier={this.renderLoadEarlier}
+          loadEarlier={this.state.isInBlackList}
           onLoadEarlier={this.onLoadEarlier}
           isLoadingEarlier={this.state.isLoadingEarlier}
           user={{
