@@ -234,15 +234,7 @@ class App extends Component {
 
   renderScene(route, navigator) {
     this.navigator = navigator;
-
     let Component = route.component;
-    if (!Component) {
-      return (
-        <View style={styles.errorView}>
-          <Text style={styles.errorText}>您所启动的Component未在routeMap中注册</Text>
-        </View>
-      );
-    }
     return (
       <Component navigator={navigator} route={route}/>
     );

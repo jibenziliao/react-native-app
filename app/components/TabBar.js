@@ -9,9 +9,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  Platform
+  Dimensions,
 } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
+import IonIcon from 'react-native-vector-icons/Ionicons'
+
+const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -23,6 +25,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#5067FF'
+  },
+  badgeContainer: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 4,
+    right: 8,
+    width: width / 18,
+    height: width / 16,
+    borderRadius: width / 36,
+  },
+  badgeText: {
+    color: '#fff'
   }
 });
 
@@ -32,6 +48,18 @@ class TabBar extends Component {
     super(props);
     if (props.tabBarResources.length !== props.tabs.length) {
       console.warn('ScrollableTabView TabBar config error, please check');
+    }
+  }
+
+  renderBadge(index) {
+    if (this.props.unReadCount > 0 && index === 2) {
+      return (
+        <View style={styles.badgeContainer}>
+          <Text style={styles.badgeText}>{this.props.unReadCount}</Text>
+        </View>
+      )
+    } else {
+      return null
     }
   }
 
@@ -54,13 +82,15 @@ class TabBar extends Component {
                   goToPage(index)
                 }}
                 activeOpacity={1}>
-                <Icon
+                <IonIcon
                   name={tabBarResources[index].name}
                   size={tabBarResources[index].size}
-                  color={activeTab == index ? '#FFF' : '#B2B5B1'}/>
-                <Text style={{color: activeTab == index ? '#FFF' : '#B2B5B1'}}>
+                  color={activeTab === index ? '#FFF' : '#B2B5B1'}/>
+                <Text
+                  style={{color: activeTab === index ? '#FFF' : '#B2B5B1'}}>
                   {tabBarResources[index].title}
                 </Text>
+                {this.renderBadge(index)}
               </TouchableOpacity>
             );
           })

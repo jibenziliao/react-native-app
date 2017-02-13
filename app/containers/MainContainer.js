@@ -11,7 +11,9 @@ import {
   Dimensions,
   Platform,
   StatusBar,
-  Linking
+  Linking,
+  DeviceEventEmitter,
+  NativeAppEventEmitter,
 } from 'react-native'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import Home from './Home'
@@ -59,12 +61,34 @@ const TAB_BAR_RESOURCES = [
   {name: 'ios-contact-outline', size: 28, title: '我的'}
 ];
 
+let emitter;
+
 class MainContainer extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: false
+      isOpen: false,
+      unReadMsgCount: 0
     };
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
+    this._renderBadge = this._renderBadge.bind(this);
+  }
+
+  componentDidMount() {
+    this.badgeListener = emitter.addListener('msgUnReadCountChange', (data)=> {
+      this._renderBadge(data);
+    });
+  }
+
+  _renderBadge(data) {
+    this.setState({
+      unReadMsgCount: data.data
+    });
+  }
+
+  componentWillUnmount() {
+    this.badgeListener.remove();
   }
 
   _goSignature() {
@@ -171,7 +195,9 @@ class MainContainer extends Component {
             prerenderingSiblingsNumber={4}
             initialPage={0}
             renderTabBar={() => {
-              return <TabBar tabBarResources={TAB_BAR_RESOURCES}/>
+              return <TabBar
+                tabBarResources={TAB_BAR_RESOURCES}
+                unReadCount={this.state.unReadMsgCount}/>
             }}>
             <Home
               gpsStatus={this._locationHandler()}

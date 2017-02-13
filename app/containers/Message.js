@@ -16,7 +16,9 @@ import {
   TouchableHighlight,
   Image,
   Dimensions,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  NativeAppEventEmitter,
+  Platform
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import {connect} from 'react-redux'
@@ -120,6 +122,7 @@ let navigator;
 let reconnectCount = 0;
 let cookie;
 let rowIsOpen = false;
+let emitter;
 
 const {height, width} = Dimensions.get('window');
 
@@ -133,6 +136,7 @@ class Message extends BaseComponent {
     };
     navigator = this.props.navigator;
     tmpGlobal._wsTokenHandler = this._wsTokenHandler.bind(this);
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
   getNavigationBarProps() {
@@ -213,6 +217,7 @@ class Message extends BaseComponent {
         }
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res);
       });
+      this._totalUnReadCountHandler();
     });
   }
 
@@ -221,6 +226,8 @@ class Message extends BaseComponent {
       if (res !== null) {
         this.setState({
           messageList: res
+        },()=>{
+          this._totalUnReadCountHandler()
         });
       }
       console.log('Message页面从缓存中取出的消息记录', res);
@@ -303,6 +310,7 @@ class Message extends BaseComponent {
       //深拷贝
       let params = JSON.parse(JSON.stringify(this.state.messageList));
       this._cacheMessageList(params);
+      this._totalUnReadCountHandler();
     });
   }
 
@@ -348,7 +356,6 @@ class Message extends BaseComponent {
     tmpGlobal.ws.onerror = (e) => {
       console.log(e, e.message);
       console.log(tmpGlobal.ws.readyState);
-      //tmpGlobal.ws.close();
     };
     tmpGlobal.ws.onclose = (e) => {
       console.log(e);
@@ -410,7 +417,8 @@ class Message extends BaseComponent {
       if (index > -1) {
         console.log(obj);
         Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
-          if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId - 1 > parseInt(res || 0)) {
+          console.log(res);
+          if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId > parseInt(res || 0)) {
             //缓存最后一条消息Id
             Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
             let routes = navigator.getCurrentRoutes();
@@ -461,12 +469,9 @@ class Message extends BaseComponent {
   }
 
   _renderUnReadCount(data) {
-    let tmpArr = [];
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].HasSend === false) {
-        tmpArr.push(i);
-      }
-    }
+    let tmpArr = data.filter((item)=> {
+      return item.HasSend === false;
+    });
     if (tmpArr.length > 0) {
       return (
         <View style={styles.badgeContainer}>
@@ -487,12 +492,26 @@ class Message extends BaseComponent {
     return rowData.MsgList[rowData.MsgList.length - 1].text;
   }
 
+  _totalUnReadCountHandler() {
+    let arr = this.state.messageList;
+    let count = 0;
+    for (let i = 0; i < arr.length; i++) {
+      count += arr[i].MsgList.filter((item)=> {
+        return item.HasSend === false;
+      }).length;
+    }
+    console.log(count);
+    emitter.emit('msgUnReadCountChange',{data:count,message:'未读消息数量发生变化'});
+  }
+
   deleteRow(data, secId) {
     this._deleteRecordRow(data);
     this.refs.swipeListView.safeCloseOpenRow();
     let newData = [...this.state.messageList];
     newData.splice(secId, 1);
-    this.setState({messageList: newData});
+    this.setState({messageList: newData},()=>{
+      this._totalUnReadCountHandler();
+    });
   }
 
   _deleteRecordRow(data) {
