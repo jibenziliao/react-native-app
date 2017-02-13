@@ -29,6 +29,7 @@ import CustomGiftedAvatar from '../components/CustomGiftAvatar'
 import UserInfo from '../pages/UserInfo'
 import CustomBubble from '../components/CustomBubble'
 import Report from '../pages/Report'
+import {toastShort} from '../utils/ToastUtil'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -531,15 +532,19 @@ class MessageDetail extends BaseComponent {
           UserId: this.state.UserId
         }
       });
+    } else if (index === 3) {
+      let data = {
+        ForUserId: this.state.UserId
+      };
+      dispatch(HomeActions.putToBlackList(data, (json)=> {
+        toastShort(this.state.isInBlackList ? '解除拉黑成功' : '拉黑成功');
+        this._getUserInfo();
+      }));
     }
   }
 
-  _initButtons(data) {
-    if (data) {
-      return ['取消', '取消关注', '举报'];
-    } else {
-      return ['取消', '关注TA', '举报'];
-    }
+  _initButtons(data, arg) {
+    return ['取消', data ? '取消关注' : '关注', '举报', arg ? '解除拉黑' : '拉黑'];
   }
 
   _goUserInfo(props) {
@@ -598,7 +603,7 @@ class MessageDetail extends BaseComponent {
         <ActionSheet
           ref={(o) => this.ActionSheet = o}
           title="请选择你的操作"
-          options={this._initButtons(this.state.AmIFollowedHim)}
+          options={this._initButtons(this.state.AmIFollowedHim, this.state.isInBlackList)}
           cancelButtonIndex={CANCEL_INDEX}
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
           onPress={this._actionSheetPress.bind(this)}
