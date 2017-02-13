@@ -431,6 +431,21 @@ class Home extends BaseComponent {
     });
 
     if (Platform.OS === 'android') {
+
+      JPushModule.initPush();
+
+      JPushModule.getRegistrationID((id)=> {
+        console.log(id);
+      });
+
+      let alias = `${tmpGlobal.currentUser.UserId}`;
+
+      JPushModule.setAlias(alias, ()=> {
+        console.log('成功', alias);
+      }, ()=> {
+        console.log('失败');
+      });
+
       JPushModule.addGetRegistrationIdListener((registrationId) => {
         console.log("Device register succeed, registrationId " + registrationId);
       });
