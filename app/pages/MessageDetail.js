@@ -482,7 +482,8 @@ class MessageDetail extends BaseComponent {
     );
   }
 
-  _sendSms(text) {
+  sendSms(text) {
+    Keyboard.dismiss();
     const {dispatch}=this.props;
     let data = {
       UserId: this.state.UserId,
@@ -522,7 +523,7 @@ class MessageDetail extends BaseComponent {
           <TouchableOpacity
             style={[styles.container, this.props.containerStyle]}
             onPress={() => {
-              this._sendSms(props.text.trim());
+              this.sendSms(props.text.trim());
             }}>
             <Text style={[styles.text, props.textStyle]}>{'发短信'}</Text>
           </TouchableOpacity>
@@ -589,7 +590,7 @@ class MessageDetail extends BaseComponent {
     }
   }
 
-  _addOrRemoveBlackList(){
+  _addOrRemoveBlackList() {
     const {dispatch}=this.props;
     let data = {
       ForUserId: this.state.UserId

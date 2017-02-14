@@ -63,13 +63,7 @@ class Recharge extends BaseComponent {
           javaScriptEnabled={true}
           bounces={false}
           style={styles.webView}
-          onLoadStart={()=> {
-            {/*this.setState({loading: true})*/}
-          }}
-          onLoadEnd={()=> {
-            {/*this.setState({loading: false})*/}
-          }}
-          source={require('./html/demo.html')}
+          source={{uri: 'https://m.baidu.com'}}
         />
       </View>
     )
