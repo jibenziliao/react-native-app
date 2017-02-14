@@ -23,6 +23,7 @@ import {URL_DEV} from '../constants/Constant'
 import TranscationRecordList from '../pages/TranscationRecordList'
 import Recharge from '../pages/Recharge'
 import * as HomeActions from '../actions/Home'
+import * as Storage from '../utils/Storage'
 
 const {height, width} = Dimensions.get('window');
 
@@ -122,6 +123,8 @@ class Account extends BaseComponent {
         Nickname: json.Result.Nickname,
         UserBalance: json.Result.UserBalance
       });
+      tmpGlobal.currentUser = json.Result;
+      Storage.setItem('userInfo', json.Result);
     }, (error)=> {
     }));
   }
