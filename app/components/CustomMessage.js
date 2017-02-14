@@ -17,14 +17,6 @@ import {Avatar, Bubble, Day} from 'react-native-gifted-chat'
 
 export default class CustomMessage extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isInBlackList: this.props.isInBlackList,
-      hasRemoveBlackList: false
-    };
-  }
-
   isSameDay(currentMessage = {}, diffMessage = {}) {
     let diff = 0;
     if (diffMessage.createdAt && currentMessage.createdAt) {

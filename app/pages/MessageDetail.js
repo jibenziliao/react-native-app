@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: 'gray',
     borderRadius: 4,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    paddingVertical: 5
   },
   tipsText: {
     color: '#fff',
@@ -342,7 +343,11 @@ class MessageDetail extends BaseComponent {
       <View style={styles.tipsContainer}>
         <Text style={styles.tipsText}>
           {'你已拉黑对方,将不会收到对方的消息,'}
-          <Text style={styles.clickTipsText}>{'解除黑名单'}</Text>
+          <Text
+            style={styles.clickTipsText}
+            onPress={()=> {
+              this._addOrRemoveBlackList()
+            }}>{'解除黑名单'}</Text>
           {'后可恢复正常聊天'}
         </Text>
       </View>
@@ -546,10 +551,6 @@ class MessageDetail extends BaseComponent {
     )
   }
 
-  _tipsPress() {
-    console.log('点击了消息提示');
-  }
-
   getNavigationBarProps() {
     return {
       title: `${this.state.Nickname}`,
@@ -584,14 +585,19 @@ class MessageDetail extends BaseComponent {
         }
       });
     } else if (index === 3) {
-      let data = {
-        ForUserId: this.state.UserId
-      };
-      dispatch(HomeActions.putToBlackList(data, (json)=> {
-        toastShort(this.state.isInBlackList ? '解除拉黑成功' : '拉黑成功');
-        this._getUserInfo();
-      }));
+      this._addOrRemoveBlackList();
     }
+  }
+
+  _addOrRemoveBlackList(){
+    const {dispatch}=this.props;
+    let data = {
+      ForUserId: this.state.UserId
+    };
+    dispatch(HomeActions.putToBlackList(data, (json)=> {
+      toastShort(this.state.isInBlackList ? '解除拉黑成功' : '拉黑成功');
+      this._getUserInfo();
+    }));
   }
 
   _initButtons(data, arg) {
@@ -639,10 +645,6 @@ class MessageDetail extends BaseComponent {
           locale={'zh-cn'}
           label={'发送'}
           placeholder={'输入消息内容'}
-          tipsClick={this.state.tipsClick}
-          tipsPress={()=> {
-            this._tipsPress()
-          }}
           renderBubble={this.renderBubble}
           renderCustomView={this.renderCustomView}
           renderFooter={this.renderFooter}
