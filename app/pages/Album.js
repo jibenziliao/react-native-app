@@ -37,15 +37,15 @@ const styles = StyleSheet.create({
     flex: 1
   },
   singleImgContainer: {
-    marginBottom: 10,
+    marginTop: 10,
     marginRight: 10
   },
   albumContainer: {
-    flex: 1,
     flexDirection: 'row',
-    padding: 10,
     alignItems: 'flex-start',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
+    paddingLeft: 10
   },
   tipsArea: {
     flex: 1,
@@ -130,36 +130,28 @@ class Album extends BaseComponent {
   }
 
   renderAlbum(arr) {
-    let arrCopy = JSON.parse(JSON.stringify(arr));
-    if (arr.length > 3) {
-      arrCopy.splice(3, arr.length - 3);
-    }
-    return (
-      <View style={styles.albumContainer}>
-        {arrCopy.map((item, index)=> {
-          return (
-            <TouchableOpacity
-              key={index}
-              style={styles.singleImgContainer}
-              onPress={()=> {
-                this._openImgModal(arr)
-              }}>
+    return arr.map((item, index)=> {
+      return (
+        <TouchableOpacity
+          key={index}
+          style={styles.singleImgContainer}
+          onPress={()=> {
+            this._openImgModal(arr)
+          }}>
+          <Image
+            onLoadEnd={()=> {
+              this.setState({imgLoading: false})
+            }}
+            style={{width: (width - 40) / 3, height: (width - 40) / 3}}
+            source={{uri: URL_DEV + item.PhotoUrl}}>
+            {this.state.imgLoading ?
               <Image
-                onLoadEnd={()=> {
-                  this.setState({imgLoading: false})
-                }}
-                style={{width: (width - 40) / 3, height: (width - 40) / 3}}
-                source={{uri: URL_DEV + item.PhotoUrl}}>
-                {this.state.imgLoading ?
-                  <Image
-                    source={require('./img/imgLoading.gif')}
-                    style={{width: (width - 40) / 3, height: (width - 40) / 3}}/> : null}
-              </Image>
-            </TouchableOpacity>
-          )
-        })}
-      </View>
-    )
+                source={require('./img/imgLoading.gif')}
+                style={{width: (width - 40) / 3, height: (width - 40) / 3}}/> : null}
+          </Image>
+        </TouchableOpacity>
+      )
+    })
   }
 
   renderEmptyAlbum() {
@@ -176,7 +168,9 @@ class Album extends BaseComponent {
       return (
         <View style={styles.container}>
           <ScrollView style={styles.scrollView}>
-            {this.renderAlbum(this.state.photos)}
+            <View style={styles.albumContainer}>
+              {this.renderAlbum(this.state.photos)}
+            </View>
           </ScrollView>
         </View>
       )
