@@ -178,7 +178,7 @@ class Message extends BaseComponent {
       if (res !== null) {
         this.setState({
           messageList: res
-        },()=>{
+        }, ()=> {
           this._totalUnReadCountHandler()
         });
       }
@@ -228,7 +228,7 @@ class Message extends BaseComponent {
       if (res !== null) {
         this.setState({
           messageList: res
-        },()=>{
+        }, ()=> {
           this._totalUnReadCountHandler()
         });
       }
@@ -259,6 +259,7 @@ class Message extends BaseComponent {
         newMsgList[i].MsgList[j] = {
           MsgContent: newMsgList[i].MsgList[j].MsgContent,
           MsgId: newMsgList[i].MsgList[j].MsgId,
+          MsgType: newMsgList[i].MsgList[j].MsgType,
           HasSend: false,
           SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
@@ -500,7 +501,7 @@ class Message extends BaseComponent {
         return item.HasSend === false;
       }).length;
     }
-    emitter.emit('msgUnReadCountChange',{data:count,message:'未读消息数量发生变化'});
+    emitter.emit('msgUnReadCountChange', {data: count, message: '未读消息数量发生变化'});
   }
 
   deleteRow(data, secId) {
@@ -508,7 +509,7 @@ class Message extends BaseComponent {
     this.refs.swipeListView.safeCloseOpenRow();
     let newData = [...this.state.messageList];
     newData.splice(secId, 1);
-    this.setState({messageList: newData},()=>{
+    this.setState({messageList: newData}, ()=> {
       this._totalUnReadCountHandler();
     });
   }

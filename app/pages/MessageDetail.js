@@ -220,8 +220,8 @@ class MessageDetail extends BaseComponent {
         newMsgList[i].MsgList[j] = {
           HasSend: true,
           MsgContent: newMsgList[i].MsgList[j].MsgContent,
-
           MsgId: newMsgList[i].MsgList[j].MsgId,
+          MsgType: newMsgList[i].MsgList[j].MsgType,
           SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
           text: newMsgList[i].MsgList[j].MsgContent,
@@ -258,6 +258,7 @@ class MessageDetail extends BaseComponent {
         newMsgList[i].MsgList[j] = {
           MsgContent: newMsgList[i].MsgList[j].MsgContent,
           MsgId: newMsgList[i].MsgList[j].MsgId,
+          MsgType: newMsgList[i].MsgList[j].MsgType,
           HasSend: true,
           SendTime: this._renderMsgTime(newMsgList[i].MsgList[j].SendTime),
           _id: Math.round(Math.random() * 1000000),
@@ -384,6 +385,7 @@ class MessageDetail extends BaseComponent {
     let singleMsg = {
       MsgContent: messages[0].text,
       MsgId: Math.round(Math.random() * 1000000),
+      MsgType: 1,//1代表用户之间的普通聊天消息
       SendTime: messages[0].createdAt,
       HasSend: true,
       _id: Math.round(Math.random() * 1000000),
@@ -401,6 +403,7 @@ class MessageDetail extends BaseComponent {
     let params = {
       MsgContent: messages[0].text,
       MsgId: Math.round(Math.random() * 1000000),
+      MsgType: 1,//1代表用户之间的普通聊天消息
       SendTime: dateFormat(messages[0].createdAt),
       HasSend: true,
       _id: Math.round(Math.random() * 1000000),
@@ -438,7 +441,8 @@ class MessageDetail extends BaseComponent {
       return {
         messages: GiftedChat.append(previousState.messages, {
           MsgContent: data.text,
-          MsgId: data.id,
+          MsgId: data.MsgId,
+          MsgType: data.MsgType,
           HasSend: true,
           _id: data._id,
           text: data.text,
@@ -482,10 +486,12 @@ class MessageDetail extends BaseComponent {
     );
   }
 
-  _sendSmsAlert(text){
+  _sendSmsAlert(text) {
     Alert.alert('提示', '发送短信需要收取金币,确认发送吗?', [
       {
-        text: '确定', onPress: () => {this.sendSms(text)}
+        text: '确定', onPress: () => {
+        this.sendSms(text)
+      }
       },
       {
         text: '取消', onPress: () => {
@@ -547,7 +553,7 @@ class MessageDetail extends BaseComponent {
 
   renderMessage(props) {
     return (
-      <CustomMessage isInBlackList={this.state.isInBlackList}{...props}/>
+      <CustomMessage {...props}/>
     )
   }
 
