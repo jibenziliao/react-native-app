@@ -12,7 +12,8 @@ import {
   ScrollView,
   Image,
   TouchableHighlight,
-  Dimensions
+  Dimensions,
+  InteractionManager
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -20,8 +21,8 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import tmpGlobal from '../utils/TmpVairables'
 import {URL_DEV} from '../constants/Constant'
 import TranscationRecordList from '../pages/TranscationRecordList'
-import Settlement from '../pages/Settlement'
 import Recharge from '../pages/Recharge'
+import * as HomeActions from '../actions/Home'
 
 const {height, width} = Dimensions.get('window');
 
@@ -94,12 +95,35 @@ class Account extends BaseComponent {
   constructor(props) {
     super(props);
     navigator = this.props.navigator;
+    this.state = {
+      PhotoUrl: tmpGlobal.currentUser.PhotoUrl,
+      Nickname: tmpGlobal.currentUser.Nickname,
+      UserBalance: tmpGlobal.currentUser.UserBalance
+    };
   }
 
   getNavigationBarProps() {
     return {
       title: '账户资料'
     };
+  }
+
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(()=> {
+      this._getUserInfo();
+    })
+  }
+
+  _getUserInfo() {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+      this.setState({
+        PhotoUrl: json.Result.PhotoUrl,
+        Nickname: json.Result.Nickname,
+        UserBalance: json.Result.UserBalance
+      });
+    }, (error)=> {
+    }));
   }
 
   _goRecharge() {
@@ -122,13 +146,13 @@ class Account extends BaseComponent {
         <View style={styles.avatarContainer}>
           <Image
             style={styles.avatar}
-            source={{uri: URL_DEV + tmpGlobal.currentUser.PhotoUrl}}/>
+            source={{uri: URL_DEV + this.state.PhotoUrl}}/>
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>{tmpGlobal.currentUser.Nickname}</Text>
+          <Text style={styles.userName}>{this.state.Nickname}</Text>
           <Text>
             {'剩余觅豆'}
-            <Text style={styles.money}>{tmpGlobal.currentUser.UserBalance}</Text>
+            <Text style={styles.money}>{this.state.UserBalance}</Text>
             {'个'}
           </Text>
         </View>

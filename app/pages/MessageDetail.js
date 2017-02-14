@@ -482,6 +482,18 @@ class MessageDetail extends BaseComponent {
     );
   }
 
+  _sendSmsAlert(text){
+    Alert.alert('提示', '发送短信需要收取金币,确认发送吗?', [
+      {
+        text: '确定', onPress: () => {this.sendSms(text)}
+      },
+      {
+        text: '取消', onPress: () => {
+      }
+      }
+    ]);
+  }
+
   sendSms(text) {
     Keyboard.dismiss();
     const {dispatch}=this.props;
@@ -523,7 +535,7 @@ class MessageDetail extends BaseComponent {
           <TouchableOpacity
             style={[styles.container, this.props.containerStyle]}
             onPress={() => {
-              this.sendSms(props.text.trim());
+              this._sendSmsAlert(props.text.trim());
             }}>
             <Text style={[styles.text, props.textStyle]}>{'发短信'}</Text>
           </TouchableOpacity>

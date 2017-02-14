@@ -189,7 +189,7 @@ class TranscationRecordList extends BaseComponent {
           </View>
           <View style={styles.balanceContainer}>
             <Text
-              style={styles.tradeAmount}>{rowData.TradeAmount > 0 ? '+' + rowData.TradeAmount : '-' + rowData.TradeAmount}</Text>
+              style={styles.tradeAmount}>{rowData.TradeAmount > 0 ? '+' + rowData.TradeAmount : rowData.TradeAmount}</Text>
             <View style={styles.balance}>
               <Text style={styles.moneyLabel}>{'剩余'}</Text>
               <Text style={styles.money}>{rowData.NewBalance}</Text>
