@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   money: {
     fontSize: 24,
     fontWeight: '200',
-    color: '#5067FF',
+    color: '#4CD472',
   },
   balance: {
     flexDirection: 'row',

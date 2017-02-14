@@ -213,7 +213,7 @@ class App extends Component {
     return (
       <View style={{flex: 1}}>
         <StatusBar
-          backgroundColor="#5067FF"
+          backgroundColor="#4CD472"
           barStyle="light-content"
         />
         {this.renderNavigator(status)}

@@ -19,7 +19,7 @@ const {width, height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   navigationBar: {
-    backgroundColor: '#5067FF',
+    backgroundColor: '#4CD472',
     ...Platform.select({
       ios: {
         height: 64

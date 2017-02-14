@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   textBtn: {
-    color: '#5067FF'
+    color: '#4CD472'
   }
 });
 

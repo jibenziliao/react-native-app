@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   goreBtn: {
-    color: '#5067FF'
+    color: '#4CD472'
   },
   cardBtn: {
     marginTop: 10,

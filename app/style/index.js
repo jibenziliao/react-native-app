@@ -17,7 +17,7 @@ const {height, width} = Dimensions.get('window');
 
 export const StyleConfig = {
 
-  color_primary: '#5067FF',
+  color_primary: '#4CD472',
   color_danger: '#d9534f',
   color_warning: '#f0ad4e',
   color_success: '#5cb85c',

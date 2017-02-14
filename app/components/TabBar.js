@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#5067FF'
+    backgroundColor: '#fff'
   },
   badgeContainer: {
     backgroundColor: 'red',

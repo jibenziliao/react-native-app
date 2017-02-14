@@ -63,12 +63,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'flex-start',
+    overflow: 'hidden'
+  },
+  userLabelContainer: {
+    borderColor: 'blue',
+    borderWidth: 0.5,
+    borderRadius: 4,
+    paddingHorizontal: 2,
+    paddingVertical: 1,
+    marginHorizontal: 5
+  },
+  userType: {
+    fontSize: 10,
+    color: 'blue'
+  },
   cardText: {
     flexWrap: 'nowrap'
   },
   nameText: {
     overflow: 'hidden',
-    flex: 1
   },
   badgeContainer: {
     width: 60,
@@ -544,15 +562,19 @@ class Message extends BaseComponent {
             style={styles.avatar}
             source={{uri: URL_DEV + rowData.SenderAvatar}}/>
         </View>
-        <View
-          style={styles.cardContent}>
+        <View style={styles.cardContent}>
           <View style={styles.cardRow}>
-            <Text
-              numberOfLines={1}
-              style={[styles.cardText, styles.nameText]}>
-              {rowData.SenderNickname}
-            </Text>
-            <Text>
+            <View style={styles.nameRow}>
+              <Text
+                numberOfLines={1}
+                style={[styles.cardText, styles.nameText]}>
+                {rowData.SenderNickname}
+              </Text>
+              <View style={styles.userLabelContainer}>
+                <Text style={styles.userType}>{'系统'}</Text>
+              </View>
+            </View>
+            <Text style={{paddingHorizontal: 2,marginLeft:2}}>
               {rowData.MsgList[rowData.MsgList.length - 1].SendTime}
             </Text>
           </View>

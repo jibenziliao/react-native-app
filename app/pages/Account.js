@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     marginRight: 20
   },
   money: {
-    color: '#5067FF'
+    color: '#4CD472'
   },
   btnText: {
     fontSize: 20
@@ -174,7 +174,7 @@ class Account extends BaseComponent {
           }}>
           <View style={styles.btn}>
             <View style={styles.iconBox}>
-              <Icon name={'usd'} size={24} color={'#5067FF'}/>
+              <Icon name={'usd'} size={24} color={'#4CD472'}/>
             </View>
             <Text style={styles.btnText}>{'充值'}</Text>
           </View>

@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   indicator: {
     height: 4,
     width: width / 2,
-    backgroundColor: '#5067FF',
+    backgroundColor: '#4CD472',
     position: 'absolute',
     bottom: 0,
   },
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   focusLabel:{
-    color:'#5067FF'
+    color:'#4CD472'
   },
   label:{
     color:'gray'
