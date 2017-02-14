@@ -61,29 +61,11 @@ const styles = StyleSheet.create({
   },
   cardRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'flex-start',
-    overflow: 'hidden'
-  },
-  userLabelContainer: {
-    borderColor: 'blue',
-    borderWidth: 0.5,
-    borderRadius: 4,
-    paddingHorizontal: 2,
-    paddingVertical: 1,
-    marginHorizontal: 5
-  },
-  userType: {
-    fontSize: 10,
-    color: 'blue'
+    justifyContent: 'space-between',
   },
   cardText: {
-    flexWrap: 'nowrap'
+    flexWrap: 'nowrap',
+    flex: 1
   },
   nameText: {
     overflow: 'hidden',
@@ -107,7 +89,8 @@ const styles = StyleSheet.create({
   },
   msgContent: {
     overflow: 'hidden',
-    flex: 1
+    flex: 1,
+    paddingVertical: 2
   },
   tips: {
     flexDirection: 'row',
@@ -557,24 +540,17 @@ class Message extends BaseComponent {
         activeOpacity={1}
         key={rowData.SenderId}
         style={styles.cardItem}>
-        <View>
-          <Image
-            style={styles.avatar}
-            source={{uri: URL_DEV + rowData.SenderAvatar}}/>
-        </View>
+        <Image
+          style={styles.avatar}
+          source={{uri: URL_DEV + rowData.SenderAvatar}}/>
         <View style={styles.cardContent}>
           <View style={styles.cardRow}>
-            <View style={styles.nameRow}>
-              <Text
-                numberOfLines={1}
-                style={[styles.cardText, styles.nameText]}>
-                {rowData.SenderNickname}
-              </Text>
-              <View style={styles.userLabelContainer}>
-                <Text style={styles.userType}>{'系统'}</Text>
-              </View>
-            </View>
-            <Text style={{paddingHorizontal: 2,marginLeft:2}}>
+            <Text
+              numberOfLines={1}
+              style={[styles.cardText, styles.nameText]}>
+              {rowData.SenderNickname}
+            </Text>
+            <Text style={{paddingHorizontal: 2, marginLeft: 2}}>
               {rowData.MsgList[rowData.MsgList.length - 1].SendTime}
             </Text>
           </View>
