@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     }),
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: 'gray',
+    borderBottomColor: '#4CD472',
     flexDirection: 'row'
   },
   navigationBarTitleContainer: {

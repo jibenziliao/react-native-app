@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   indicator: {
-    height: 4,
+    height: 2,
     width: width / 2,
     backgroundColor: '#4CD472',
     position: 'absolute',

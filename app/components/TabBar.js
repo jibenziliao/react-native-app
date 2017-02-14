@@ -24,7 +24,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderTopColor: '#cecece',
+    borderTopWidth: 0.5
   },
   badgeContainer: {
     backgroundColor: 'red',
@@ -85,9 +87,9 @@ class TabBar extends Component {
                 <IonIcon
                   name={tabBarResources[index].name}
                   size={tabBarResources[index].size}
-                  color={activeTab === index ? '#FFF' : '#B2B5B1'}/>
+                  color={activeTab === index ? '#4CD472' : '#B2B5B1'}/>
                 <Text
-                  style={{color: activeTab === index ? '#FFF' : '#B2B5B1'}}>
+                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1'}}>
                   {tabBarResources[index].title}
                 </Text>
                 {this.renderBadge(index)}
