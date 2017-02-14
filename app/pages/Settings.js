@@ -25,14 +25,14 @@ import * as HomeActions from '../actions/Home'
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E2E2E2'
+    backgroundColor: '#F3F3F3'
   },
   topItem: {
     marginTop: 10
   },
   listItem: {
     backgroundColor: '#fff',
-    borderBottomColor: '#E2E2E2',
+    borderBottomColor: '#F3F3F3',
     borderBottomWidth: 1,
     height: 50,
     paddingVertical: 5,

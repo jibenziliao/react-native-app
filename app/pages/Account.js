@@ -30,7 +30,7 @@ const {height, width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E2E2E2'
+    backgroundColor: '#F3F3F3'
   },
   userInfoContainer: {
     flexDirection: 'row',
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   btnLeft: {
     borderRightWidth: 0.5,
-    borderRightColor: '#E2E2E2'
+    borderRightColor: '#F3F3F3'
   },
   btn: {
     flexDirection: 'row',

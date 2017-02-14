@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   loginPage: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#E2E2E2'
+    backgroundColor: '#F3F3F3'
   },
   flex_1: {
     flex: 1

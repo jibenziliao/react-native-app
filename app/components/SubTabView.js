@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     height: 40,
     zIndex: 0,
     width:width / 2,
-    borderRightColor:'#E2E2E2',
+    borderRightColor:'#F3F3F3',
     borderRightWidth:0.5
   },
   tabLabel:{

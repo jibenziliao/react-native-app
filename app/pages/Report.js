@@ -28,7 +28,7 @@ import * as Storage from '../utils/Storage'
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E2E2E2'
+    backgroundColor: '#F3F3F3'
   },
   scrollView: {
     flex: 1
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#E2E2E2',
+    borderBottomColor: '#F3F3F3',
   },
   itemText: {
     fontSize: 14
