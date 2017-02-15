@@ -378,3 +378,11 @@ export function sendSms(data, resolve, reject) {
   }
 }
 
+export function getSettings(data, resolve, reject) {
+  return (dispatch)=> {
+    postFetch('/profile/setting', data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}

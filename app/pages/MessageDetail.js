@@ -93,7 +93,8 @@ class MessageDetail extends BaseComponent {
       targetUser: null,
       tips: null,
       tipsClick: '解除黑名单',
-      isInBlackList: false
+      isInBlackList: false,
+      SmsCost: 50//默认50觅豆发一条短信
     };
     navigator = this.props.navigator;
 
@@ -158,11 +159,15 @@ class MessageDetail extends BaseComponent {
       ...this.state.myLocation
     };
     dispatch(HomeActions.getUserInfo(params, (json)=> {
-      this.setState({
-        AmIFollowedHim: json.Result.AmIFollowedHim,
-        targetUser: json.Result,
-        isInBlackList: json.Result.IsBlackUser
-      });
+      dispatch(HomeActions.getSettings('', (result)=> {
+        this.setState({
+          SmsCost: result.Result.SmsCost,
+          AmIFollowedHim: json.Result.AmIFollowedHim,
+          targetUser: json.Result,
+          isInBlackList: json.Result.IsBlackUser
+        });
+      }, (error)=> {
+      }));
     }, (error)=> {
     }));
   }
@@ -487,7 +492,7 @@ class MessageDetail extends BaseComponent {
   }
 
   _sendSmsAlert(text) {
-    Alert.alert('提示', '发送短信需要收取金币,确认发送吗?', [
+    Alert.alert('提示', `发送短信需要收取${this.state.SmsCost}觅豆,确认发送吗?`, [
       {
         text: '确定', onPress: () => {
         this.sendSms(text)
