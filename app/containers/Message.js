@@ -227,6 +227,7 @@ class Message extends BaseComponent {
   _initOldMessage() {
     Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null) {
+
         this.setState({
           messageList: res
         }, ()=> {

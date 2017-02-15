@@ -17,6 +17,7 @@ import {
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import {GiftedChat} from 'react-native-gifted-chat'
+import {CustomGiftedChat} from '../components/CustomGiftedChat'
 import CustomView from '../components/CustomView'
 import {URL_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
@@ -99,6 +100,7 @@ class MessageDetail extends BaseComponent {
     navigator = this.props.navigator;
 
     this.onSend = this.onSend.bind(this);
+    this.onSendSms = this.onSendSms.bind(this);
     this.onReceive = this.onReceive.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
@@ -182,6 +184,7 @@ class MessageDetail extends BaseComponent {
   //原生webSocket连接从后台接收消息
   _wsNewMsgHandler(obj) {
     if (obj.hasOwnProperty('M')) {
+      console.log(obj);
       let index = obj.M.findIndex((item)=> {
         return item.M === 'GetNewMsg'
       });
@@ -387,13 +390,14 @@ class MessageDetail extends BaseComponent {
   onSend(messages) {
     Keyboard.dismiss();
     console.log(messages);
+    let tmpId = Math.round(Math.random() * 1000000);
     let singleMsg = {
       MsgContent: messages[0].text,
       MsgId: Math.round(Math.random() * 1000000),
       MsgType: 1,//1代表用户之间的普通聊天消息
       SendTime: messages[0].createdAt,
       HasSend: true,
-      _id: Math.round(Math.random() * 1000000),
+      _id: tmpId,
       text: messages[0].text,
       createdAt: messages[0].createdAt,
       user: {
@@ -411,7 +415,7 @@ class MessageDetail extends BaseComponent {
       MsgType: 1,//1代表用户之间的普通聊天消息
       SendTime: dateFormat(messages[0].createdAt),
       HasSend: true,
-      _id: Math.round(Math.random() * 1000000),
+      _id: tmpId,
       text: messages[0].text,
       createdAt: dateFormat(messages[0].createdAt),
       user: {
@@ -433,7 +437,7 @@ class MessageDetail extends BaseComponent {
     let sendMsgParams = {
       H: 'chatcore',
       M: 'UserSendMsgToUser',
-      A: [this.state.UserId + '', messages[0].text],
+      A: [this.state.UserId + '', messages[0].text, tmpId],
       I: Math.floor(Math.random() * 11)
     };
 
@@ -491,11 +495,11 @@ class MessageDetail extends BaseComponent {
     );
   }
 
-  _sendSmsAlert(text) {
+  onSendSms(text) {
     Alert.alert('提示', `发送短信需要收取${this.state.SmsCost}觅豆,确认发送吗?`, [
       {
         text: '确认', onPress: () => {
-        this.sendSms(text)
+        this._sendSms(text)
       }
       },
       {
@@ -505,16 +509,62 @@ class MessageDetail extends BaseComponent {
     ]);
   }
 
-  sendSms(text) {
+  _sendSms(messages) {
     Keyboard.dismiss();
+    console.log(messages);
+    let tmpId = Math.round(Math.random() * 1000000);
+    let singleMsg = {
+      MsgContent: messages[0].text,
+      MsgId: Math.round(Math.random() * 1000000),
+      MsgType: 4,//4代表短信
+      SendTime: messages[0].createdAt,
+      HasSend: true,
+      _id: tmpId,
+      text: messages[0].text,
+      createdAt: messages[0].createdAt,
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params = {
+      MsgContent: messages[0].text,
+      MsgId: Math.round(Math.random() * 1000000),
+      MsgType: 4,//4代表短信
+      SendTime: dateFormat(messages[0].createdAt),
+      HasSend: true,
+      _id: tmpId,
+      text: messages[0].text,
+      createdAt: dateFormat(messages[0].createdAt),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+    console.log(params);
+    this._sendSaveRecord(params);
+
+    this.setState((previousState) => {
+      return {
+        messages: GiftedChat.append(previousState.messages, singleMsg),
+      };
+    });
+
     const {dispatch}=this.props;
     let data = {
       UserId: this.state.UserId,
       SmsCost: 1,
-      Text: text
+      Text: messages[0].text
     };
     dispatch(HomeActions.sendSms(data, (json)=> {
       toastShort(json.Result.msg);
+
     }, (error)=> {
     }));
   }
@@ -546,7 +596,7 @@ class MessageDetail extends BaseComponent {
           <TouchableOpacity
             style={[styles.container, this.props.containerStyle]}
             onPress={() => {
-              this._sendSmsAlert(props.text.trim());
+              props.onSendSms({text: props.text.trim()},true);
             }}>
             <Text style={[styles.text, props.textStyle]}>{'发短信'}</Text>
           </TouchableOpacity>
@@ -652,10 +702,13 @@ class MessageDetail extends BaseComponent {
   renderBody() {
     return (
       <View style={{flex: 1}}>
-        <GiftedChat
+        <CustomGiftedChat
           messages={this.state.messages}
           onSend={(message)=> {
             this._checkBeforeSend(message)
+          }}
+          onSendSms={(message)=> {
+            this.onSendSms(message)
           }}
           renderLoadEarlier={this.renderLoadEarlier}
           loadEarlier={this.state.isInBlackList}

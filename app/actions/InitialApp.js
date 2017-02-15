@@ -56,7 +56,8 @@ tmpGlobal.appInfo = {
   deviceName: DeviceInfo.getDeviceName(),
   deviceLocale: DeviceInfo.getDeviceLocale(),
   userAgent: DeviceInfo.getUserAgent(),
-  deviceCountry: DeviceInfo.getDeviceCountry()
+  deviceCountry: DeviceInfo.getDeviceCountry(),
+  timeZone: DeviceInfo.getTimezone()
 };
 
 export function initDevice(data, resolve, reject) {
