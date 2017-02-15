@@ -461,10 +461,10 @@ class Home extends BaseComponent {
       JPushModule.addReceiveOpenNotificationListener((map) => {
         console.log("Opening notification!", map);
         //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
-        pageNavigator.push({
+        /*pageNavigator.push({
           component: Settings,
           name: "Settings"
-        });
+        });*/
       });
     } else {
       emitter.addListener('ReceiveNotification', (message)=> {
