@@ -11,7 +11,8 @@ import {
   InteractionManager,
   TouchableOpacity,
   ScrollView,
-  Dimensions
+  Dimensions,
+  Image
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import Spinner from '../components/Spinner'
@@ -21,6 +22,7 @@ import MatchUsers from '../pages/MatchUsers'
 import Tinder from '../pages/Tinder'
 import Revel from '../pages/Revel'
 import tmpGlobal from '../utils/TmpVairables'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -36,20 +38,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    flex: 1,
-    marginTop: 20
+    paddingHorizontal: pxToDp(20),
+    flex: 1
   },
-  bottomRow: {
-    marginBottom: 20
+  topRow: {
+    marginTop: pxToDp(20)
   },
   card: {
-    backgroundColor: 'pink',
-    width: width / 3,
-    height: width / 4,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 4
+  },
+  image: {
+    width: pxToDp(354),
+    height: pxToDp(279),
+    borderRadius: 8,
+    borderColor: '#f3f3f3',
+    borderWidth: pxToDp(1),
+
+  },
+  leftImage: {
+    borderLeftWidth: 0
+  },
+  rightImage: {
+    borderRightWidth: 0
   },
   cardText: {
     fontSize: 24,
@@ -154,7 +165,7 @@ class Vicinity extends BaseComponent {
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.viewContainer}>
-            <View style={styles.cardRow}>
+            <View style={[styles.cardRow, styles.topRow]}>
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
@@ -162,7 +173,9 @@ class Vicinity extends BaseComponent {
                     this._goMap()
                   }
                 }}>
-                <Text style={styles.cardText}>{'寻TA'}</Text>
+                <Image
+                  source={require('./img/map.png')}
+                  style={[styles.image, styles.leftImage]}/>
                 {this._renderCannotGoMap()}
               </TouchableOpacity>
               <TouchableOpacity
@@ -170,23 +183,29 @@ class Vicinity extends BaseComponent {
                 onPress={()=> {
                   this._goMatchUsers()
                 }}>
-                <Text style={styles.cardText}>{'匹配'}</Text>
+                <Image
+                  source={require('./img/match.png')}
+                  style={[styles.image, styles.rightImage]}/>
               </TouchableOpacity>
             </View>
-            <View style={[styles.cardRow, styles.bottomRow]}>
+            <View style={styles.cardRow}>
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
                   this._goShake()
                 }}>
-                <Text style={styles.cardText}>{'眼缘'}</Text>
+                <Image
+                  source={require('./img/tinder.png')}
+                  style={[styles.image, styles.leftImage]}/>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.card}
                 onPress={()=> {
                   this._goRevel()
                 }}>
-                <Text style={styles.cardText}>{'随缘'}</Text>
+                <Image
+                  source={require('./img/revel.png')}
+                  style={[styles.image, styles.rightImage]}/>
               </TouchableOpacity>
             </View>
           </View>
