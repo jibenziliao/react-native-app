@@ -87,7 +87,7 @@ class Settings extends BaseComponent {
     toastShort('注销成功');
     this.logoutTimer = setTimeout(()=> {
       //这里用replace,避免跳转登录页后安卓物理返回键监听失效。但这样做的话,app运行期间,每进行一次注销重新登录,路由栈中就会多一个MainContainer的路由。
-      navigator.replace({
+      navigator.resetTo({
         component: Login,
         name: 'Login'
       });

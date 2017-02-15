@@ -187,6 +187,7 @@ class Message extends BaseComponent {
   }
 
   componentWillUnmount() {
+    tmpGlobal.ws = null;
     this.subscription.remove();
     this.startReceiveMsgListener.remove();
     this.reConnectWebSocketListener.remove();
