@@ -144,7 +144,11 @@ class Settings extends BaseComponent {
     dispatch(HomeActions.pushSwitch('', (json)=> {
       this._updateUserInfo()
     }, (error)=> {
-      this._updateUserInfo()
+      this.setState({
+        TurnPushOn: !value
+      },()=>{
+        this._updateUserInfo()
+      });
     }));
   }
 
@@ -192,7 +196,11 @@ class Settings extends BaseComponent {
             </View>
             <Switch
               onValueChange={(value)=> {
-                this._confirmChange(value)
+                this.setState({
+                  MapPrecision:null
+                },()=>{
+                  this._confirmChange(value)
+                });
               }}
               value={this.state.MapPrecision === null}/>
           </View>
@@ -208,7 +216,11 @@ class Settings extends BaseComponent {
             </View>
             <Switch
               onValueChange={(value)=> {
-                this._pushSwitch(value);
+                this.setState({
+                  TurnPushOn: value
+                }, (value)=> {
+                  this._pushSwitch(value);
+                })
               }}
               value={this.state.TurnPushOn}/>
           </View>
