@@ -35,12 +35,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 8,
-    width: width / 18,
-    height: width / 16,
-    borderRadius: width / 36,
+    width: width / 20,
+    height: width / 18,
+    borderRadius: width / 40,
   },
   badgeText: {
-    color: '#fff'
+    color: '#fff',
+    fontSize: 10
   }
 });
 
@@ -89,7 +90,7 @@ class TabBar extends Component {
                   size={tabBarResources[index].size}
                   color={activeTab === index ? '#4CD472' : '#B2B5B1'}/>
                 <Text
-                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1'}}>
+                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1', fontSize: 12}}>
                   {tabBarResources[index].title}
                 </Text>
                 {this.renderBadge(index)}
