@@ -90,7 +90,7 @@ class TabBar extends Component {
                   size={tabBarResources[index].size}
                   color={activeTab === index ? '#4CD472' : '#B2B5B1'}/>
                 <Text
-                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1', fontSize: 12}}>
+                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1', fontSize: 11}}>
                   {tabBarResources[index].title}
                 </Text>
                 {this.renderBadge(index)}

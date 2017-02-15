@@ -27,6 +27,7 @@ import RNPicker from 'react-native-picker'
 import {connect} from 'react-redux'
 import * as FriendFilterActions from '../actions/FriendFilter'
 import tmpGlobal from '../utils/TmpVairables'
+import customTheme from '../themes/MyThemes'
 
 const {width, height}=Dimensions.get('window');
 
@@ -439,7 +440,9 @@ class FriendsFilter extends BaseComponent {
             </View>
           </View>
           <NBButton
+            theme={customTheme}
             block
+            small
             style={{marginVertical: 30}}
             onPress={()=> {
               this.saveFriendFilter(this.state)

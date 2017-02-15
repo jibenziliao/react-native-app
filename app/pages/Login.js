@@ -37,6 +37,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {setDictArr} from '../utils/Dict'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
+import customTheme from '../themes/MyThemes'
 
 const styles = StyleSheet.create({
   loginPage: {
@@ -235,7 +236,7 @@ class Login extends BaseComponent {
     };
     this.setState({
       hasSendCode: false,
-    },()=>{
+    }, ()=> {
       saveUserInfo();
     });
   }
@@ -243,7 +244,7 @@ class Login extends BaseComponent {
   getValidCode(phoneCountry, phone) {
     Keyboard.dismiss();
     this.setState({
-      validCode:''
+      validCode: ''
     });
     this.showToastTimer = setTimeout(()=> {
       if (this._validPhoneNumber(phoneCountry, phone)) {
@@ -505,19 +506,28 @@ class Login extends BaseComponent {
                 returnKeyType={'done'}
                 onChangeText={(validCode)=>this.setState({validCode})}
                 value={this.state.validCode}/>
-              <NBButton
-                block
-                style={{height: 40, marginLeft: 20, width: 120}}
-                onPress={()=> {
-                  this.getValidCode(this.state.phoneCountry, this.state.phone)
-                }}
-                disabled={!this.state.validCodeBtnAccessible}>
-                {this.state.validCodeText}
-              </NBButton>
+                <NBButton
+                  theme={customTheme}
+                  block
+                  small
+                  textStyle={{fontSize: 12}}
+                  style={{
+                    height: 40,
+                    marginLeft: 20,
+                    width: 120
+                  }}
+                  onPress={()=> {
+                    this.getValidCode(this.state.phoneCountry, this.state.phone)
+                  }}
+                  disabled={!this.state.validCodeBtnAccessible}>
+                  {this.state.validCodeText}
+                </NBButton>
             </View>
             <NBButton
+              theme={customTheme}
               block
-              style={{marginTop: 20, height: 40, alignItems: 'center'}}
+              small
+              style={{marginTop: 20, height: 40}}
               onPress={()=>this.login(this.state.validCode)}
               disabled={this._renderLoginBtnStatus()}>
               登录

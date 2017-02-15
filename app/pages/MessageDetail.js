@@ -509,7 +509,7 @@ class MessageDetail extends BaseComponent {
       Text: text
     };
     dispatch(HomeActions.sendSms(data, (json)=> {
-      toastShort('发送成功');
+      toastShort(json.Result.msg);
     }, (error)=> {
     }));
   }

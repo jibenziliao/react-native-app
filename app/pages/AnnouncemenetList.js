@@ -37,6 +37,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
 import MainContainer from '../containers/MainContainer'
+import customTheme from '../themes/MyThemes'
 
 const {height, width} = Dimensions.get('window');
 
@@ -700,7 +701,9 @@ class AnnouncementList extends BaseComponent {
           </View>
           <View>
             <NBButton
+              theme={customTheme}
               primary
+              small
               style={{
                 width: 100,
                 height: 40,

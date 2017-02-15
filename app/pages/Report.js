@@ -24,6 +24,7 @@ import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import * as Storage from '../utils/Storage'
+import customTheme from '../themes/MyThemes'
 
 const styles = StyleSheet.create({
   container: {
@@ -225,7 +226,9 @@ class Report extends BaseComponent {
     return (
       <View style={styles.blockBtn}>
         <NBButton
+          theme={customTheme}
           block
+          small
           style={{marginTop: 20, height: 40, alignItems: 'center'}}
           onPress={()=>this.report()}
           disabled={this.state.reportType === null}>

@@ -46,6 +46,7 @@ import * as VicinityActions from '../actions/Vicinity'
 import JPushModule from 'jpush-react-native'
 import Settings from '../pages/Settings'
 import Refresh from '../components/Refresh'
+import customTheme from '../themes/MyThemes'
 
 const {height, width} = Dimensions.get('window');
 
@@ -820,10 +821,13 @@ class Home extends BaseComponent {
           </View>
           <View>
             <NBButton
+              theme={customTheme}
               primary
+              small
               style={{
                 width: 100,
-                marginLeft: 10
+                marginLeft: 10,
+                height: 40
               }}
               onPress={()=> {
                 this._sendComment()

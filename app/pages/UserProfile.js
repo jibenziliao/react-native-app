@@ -35,6 +35,7 @@ import Spinner from '../components/Spinner'
 import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import FriendsFilter from './FriendsFilter'
+import customTheme from '../themes/MyThemes'
 
 const {width, height}=Dimensions.get('window');
 
@@ -968,7 +969,9 @@ class UserProfile extends BaseComponent {
             {this.state.expandStatus ? this.renderMoreForm() : null}
           </View>
           <NBButton
+            theme={customTheme}
             block
+            small
             style={{marginBottom: 30}}
             onPress={()=> {
               this.goNext(this.state, DatingPurposeSelectCopy)

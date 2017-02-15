@@ -39,6 +39,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import AnnouncementList from '../pages/AnnouncemenetList'
+import customTheme from '../themes/MyThemes'
 
 const {height, width} = Dimensions.get('window');
 
@@ -982,10 +983,13 @@ class AnnouncementDetail extends BaseComponent {
           </View>
           <View>
             <NBButton
+              theme={customTheme}
               primary
+              small
               style={{
                 width: 100,
-                marginLeft: 10
+                marginLeft: 10,
+                height:40
               }}
               onPress={()=> {
                 this._sendComment()

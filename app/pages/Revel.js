@@ -22,6 +22,7 @@ import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton} from 'native-base'
 import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
+import customTheme from '../themes/MyThemes'
 
 const {width, height}=Dimensions.get('window');
 
@@ -160,7 +161,9 @@ class Revel extends BaseComponent {
             }}
           />
           <NBButton
+            theme={customTheme}
             block
+            small
             style={styles.saveBtn}
             onPress={()=>this._saveFloatMsg(this.state.msg)}
             disabled={!this.state.msg}>

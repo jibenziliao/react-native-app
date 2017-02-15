@@ -24,6 +24,7 @@ import * as HomeActions from '../actions/Home'
 import RNPicker from 'react-native-picker'
 import * as FriendFilterActions from '../actions/FriendFilter'
 import {toastShort} from '../utils/ToastUtil'
+import customTheme from '../themes/MyThemes'
 
 const styles = StyleSheet.create({
   container: {
@@ -495,7 +496,9 @@ class EditFriendFilter extends BaseComponent {
               </View>
             </View>
             <NBButton
+              theme={customTheme}
               block
+              small
               style={styles.saveBtn}
               onPress={()=> {
                 this._saveFriendFilter()

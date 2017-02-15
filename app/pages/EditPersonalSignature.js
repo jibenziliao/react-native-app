@@ -25,6 +25,7 @@ import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
 import * as Storage from '../utils/Storage'
 import tmpGlobal from '../utils/TmpVairables'
+import customTheme from '../themes/MyThemes'
 
 const {width, height}=Dimensions.get('window');
 
@@ -153,7 +154,9 @@ class EditPersonalSignature extends BaseComponent {
             }}
           />
           <NBButton
+            theme={customTheme}
             block
+            small
             style={styles.saveBtn}
             onPress={()=>this._saveSignature(this.state.personalSignature)}
             disabled={!this.state.personalSignature}>
