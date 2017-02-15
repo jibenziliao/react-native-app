@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: '#03A9F4',
+    backgroundColor: '#4CD472',
   },
   userInfoContainer: {
     padding: 20,
@@ -37,21 +37,23 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 50,
+    height: 50,
+    borderRadius: 10,
   },
   name: {
     marginHorizontal: 10,
     flexWrap: 'wrap',
-    flex: 1
+    flex: 1,
+    fontSize:16,
+    overflow:'hidden'
   },
   signatureContent: {
     flexWrap: 'nowrap',
     flexDirection: 'row',
   },
   listItemContainer:{
-    backgroundColor:'#c7c7d0'
+    backgroundColor:'#F3F3F3'
   },
   item: {
     fontSize: 14,
@@ -103,10 +105,10 @@ class Menu extends Component {
               onPress={()=> {
                 this.props.goAlbum()
               }}
-              underlayColor={'#b8b8bf'}>
+              underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'picture-o'} size={20}/>
+                  <Icon name={'picture-o'} size={20} color={'#4CD472'}/>
                 </View>
                 <Text style={styles.itemText}>{'相册'}</Text>
               </View>
@@ -117,10 +119,10 @@ class Menu extends Component {
               onPress={()=> {
                 this.props.goUserInfo()
               }}
-              underlayColor={'#b8b8bf'}>
+              underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'address-card-o'} size={20}/>
+                  <Icon name={'address-card-o'} size={20} color={'#4CD472'}/>
                 </View>
                 <Text style={styles.itemText}>{'个人资料'}</Text>
               </View>
@@ -131,10 +133,10 @@ class Menu extends Component {
               onPress={()=> {
                 this.props.goAccount()
               }}
-              underlayColor={'#b8b8bf'}>
+              underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'credit-card'} size={20}/>
+                  <Icon name={'credit-card'} size={20} color={'#4CD472'}/>
                 </View>
                 <Text style={styles.itemText}>{'账户资料'}</Text>
               </View>
@@ -145,10 +147,10 @@ class Menu extends Component {
               onPress={()=> {
                 this.props.goScore()
               }}
-              underlayColor={'#b8b8bf'}>
+              underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'star-o'} size={20}/>
+                  <Icon name={'star-o'} size={20} color={'#4CD472'}/>
                 </View>
                 <Text style={styles.itemText}>{'给好评(送50觅豆)'}</Text>
               </View>
@@ -159,10 +161,10 @@ class Menu extends Component {
               onPress={()=> {
                 this.props.goSettings()
               }}
-              underlayColor={'#b8b8bf'}>
+              underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'wrench'} size={20}/>
+                  <Icon name={'wrench'} size={20} color={'#4CD472'}/>
                 </View>
                 <Text style={styles.itemText}>{'设置'}</Text>
               </View>

@@ -39,6 +39,8 @@ console.log("Device Locale", DeviceInfo.getDeviceLocale()); // e.g en-US
 
 console.log("Device Country", DeviceInfo.getDeviceCountry()); // e.g US
 
+console.log("Device Timezone", DeviceInfo.getTimezone());
+
 tmpGlobal.appInfo = {
   appVersionReadable: DeviceInfo.getReadableVersion(),
   appVersion: DeviceInfo.getVersion(),
