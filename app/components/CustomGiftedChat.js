@@ -68,7 +68,7 @@ class CustomGiftedChat extends React.Component {
     this.onKeyboardDidHide = this.onKeyboardDidHide.bind(this);
     this.onType = this.onType.bind(this);
     this.onSend = this.onSend.bind(this);
-    this.onSendSms=this.onSendSms.bind(this);
+    this.onSendSms = this.onSendSms.bind(this);
     this.getLocale = this.getLocale.bind(this);
 
     this.invertibleScrollViewProps = {
@@ -337,7 +337,7 @@ class CustomGiftedChat extends React.Component {
     }
   }
 
-  onSendSms(messages = [], shouldResetInputToolbar = false){
+  onSendSms(messages = [], shouldResetInputToolbar = false) {
     if (!Array.isArray(messages)) {
       messages = [messages];
     }
@@ -507,6 +507,8 @@ CustomGiftedChat.defaultProps = {
   messages: [],
   onSend: () => {
   },
+  onSendSms: ()=> {
+  },
   loadEarlier: false,
   onLoadEarlier: () => {
   },
@@ -540,6 +542,7 @@ CustomGiftedChat.defaultProps = {
 CustomGiftedChat.propTypes = {
   messages: React.PropTypes.array,
   onSend: React.PropTypes.func,
+  onSendSms: React.PropTypes.func,
   loadEarlier: React.PropTypes.bool,
   onLoadEarlier: React.PropTypes.func,
   locale: React.PropTypes.string,

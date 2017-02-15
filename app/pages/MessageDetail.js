@@ -437,7 +437,7 @@ class MessageDetail extends BaseComponent {
     let sendMsgParams = {
       H: 'chatcore',
       M: 'UserSendMsgToUser',
-      A: [this.state.UserId + '', messages[0].text, tmpId],
+      A: [this.state.UserId + '', messages[0].text],
       I: Math.floor(Math.random() * 11)
     };
 
@@ -550,12 +550,6 @@ class MessageDetail extends BaseComponent {
     console.log(params);
     this._sendSaveRecord(params);
 
-    this.setState((previousState) => {
-      return {
-        messages: GiftedChat.append(previousState.messages, singleMsg),
-      };
-    });
-
     const {dispatch}=this.props;
     let data = {
       UserId: this.state.UserId,
@@ -563,8 +557,16 @@ class MessageDetail extends BaseComponent {
       Text: messages[0].text
     };
     dispatch(HomeActions.sendSms(data, (json)=> {
-      toastShort(json.Result.msg);
-
+      if(!json.Result.code){
+        toastShort(json.Result.msg);
+      }else{
+        toastShort(json.Result.msg);
+        this.setState((previousState) => {
+          return {
+            messages: GiftedChat.append(previousState.messages, singleMsg),
+          };
+        });
+      }
     }, (error)=> {
     }));
   }
