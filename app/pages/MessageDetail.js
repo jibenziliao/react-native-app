@@ -494,7 +494,7 @@ class MessageDetail extends BaseComponent {
   _sendSmsAlert(text) {
     Alert.alert('提示', `发送短信需要收取${this.state.SmsCost}觅豆,确认发送吗?`, [
       {
-        text: '确定', onPress: () => {
+        text: '确认', onPress: () => {
         this.sendSms(text)
       }
       },
