@@ -47,6 +47,7 @@ import JPushModule from 'jpush-react-native'
 import Settings from '../pages/Settings'
 import Refresh from '../components/Refresh'
 import customTheme from '../themes/MyThemes'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -190,11 +191,11 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         top: 64,
-        height: height - 64 - 45.5
+        height: height - 64 - pxToDp(97)
       },
       android: {
         top: 54,
-        height: height - 54 - 50
+        height: height - 54 - pxToDp(97)
       }
     }),
     position: 'absolute',
@@ -513,7 +514,7 @@ class Home extends BaseComponent {
     Animated.timing(
       this.state.viewMarginBottom,
       {
-        toValue: e.endCoordinates.height - (Platform.OS === 'ios' ? 45.5 : 50),
+        toValue: e.endCoordinates.height - pxToDp(97),
         duration: 10,
       }
     ).start();
@@ -991,14 +992,7 @@ class Home extends BaseComponent {
         style={{
           position: 'absolute',
           width: width,
-          ...Platform.select({
-            ios: {
-              height: height - 45.5
-            },
-            android: {
-              height: height - 50
-            }
-          }),
+          height: height - pxToDp(97),
           backgroundColor: 'rgba(40,40,40,0.8)',
         }}
         backButtonClose={true}

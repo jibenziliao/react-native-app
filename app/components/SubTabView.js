@@ -18,6 +18,7 @@ import {
 } from 'react-native-tab-view'
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   indicator: {
-    height: 2,
+    height: pxToDp(4),
     width: width / 2,
     backgroundColor: '#4CD472',
     position: 'absolute',

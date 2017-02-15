@@ -10,8 +10,10 @@ import {
   TouchableOpacity,
   Text,
   Dimensions,
+  Platform
 } from 'react-native'
 import IonIcon from 'react-native-vector-icons/Ionicons'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -26,7 +28,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderTopColor: '#cecece',
-    borderTopWidth: 0.5
+    borderTopWidth: StyleSheet.hairlineWidth,
+    ...Platform.select({
+      ios: {
+        height: pxToDp(97)
+      },
+      android: {
+        height: pxToDp(97)
+      }
+    }),
+    paddingVertical: pxToDp(10),
   },
   badgeContainer: {
     backgroundColor: 'red',
@@ -90,7 +101,7 @@ class TabBar extends Component {
                   size={tabBarResources[index].size}
                   color={activeTab === index ? '#4CD472' : '#B2B5B1'}/>
                 <Text
-                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1', fontSize: 11}}>
+                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1', fontSize: pxToDp(22)}}>
                   {tabBarResources[index].title}
                 </Text>
                 {this.renderBadge(index)}
