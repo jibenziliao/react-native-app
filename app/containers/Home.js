@@ -461,9 +461,24 @@ class Home extends BaseComponent {
         });*/
       });
     } else {
+
+      JPushModule.setupPush();
+
+      let alias = `${tmpGlobal.currentUser.UserId}`;
+
+      JPushModule.setAlias(alias, ()=> {
+        console.log('成功', alias);
+      }, ()=> {
+        console.log('失败');
+      });
+
       emitter.addListener('ReceiveNotification', (message)=> {
         console.log("content: " + JSON.stringify(message));
       });
+
+      emitter.addListener('OpenNotification',(message)=>{
+        console.log("Opening notification!", message);
+      })
     }
   }
 
