@@ -236,7 +236,6 @@ class Message extends BaseComponent {
   _initOldMessage() {
     Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null) {
-
         this.setState({
           messageList: res
         }, ()=> {
@@ -259,6 +258,12 @@ class Message extends BaseComponent {
       tmpGlobal.cookie = res.rkt;
       this._wsTokenHandler();
     })
+  }
+
+  //服务器在澳洲(东11区),返回的时间为服务器时间(2017-02-13 19:35:05),需要转换成本地时间显示并存储
+  _renderMsgTime(str) {
+    let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0]+' GMT+1100 (AESST)';//澳大利亚东部夏令时
+    return dateFormat(new Date(serverTime));
   }
 
   //合并后台推送过来的消息(存缓存时,需要将时间以字符串时间形式存储,不能直接存Date类型,JSON.stringify将Date会转换成字符串)
@@ -474,12 +479,6 @@ class Message extends BaseComponent {
         isSelf: false
       }
     });
-  }
-
-  //服务器在澳洲(东11区),返回的时间为服务器时间(2017-02-13 19:35:05),需要转换成本地时间显示并存储
-  _renderMsgTime(str) {
-    let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0]+' GMT+1100 (AESST)';//澳大利亚东部夏令时
-    return dateFormat(new Date(serverTime));
   }
 
   _renderUnReadCount(data) {

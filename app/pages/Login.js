@@ -95,8 +95,6 @@ let ancestorTarget;
 
 let moveY;
 
-let second = 120;
-
 class Login extends BaseComponent {
 
   constructor(props) {
@@ -111,7 +109,7 @@ class Login extends BaseComponent {
       maxLength: 11,
       validCodeText: '获取验证码',
       tipsText: '使用手机号一键登录',
-      hasSendCode: false
+      hasSendCode: false,
     };
     navigator = this.props.navigator;
     this.login = this.login.bind(this);
@@ -255,7 +253,6 @@ class Login extends BaseComponent {
         const {dispatch} = this.props;
         dispatch(LoginActions.getSmsCode(data, (json)=> {
           this.initDict();
-          this._startCountdown();
         }, (error)=> {
           //不做特殊处理
         }));
@@ -285,8 +282,9 @@ class Login extends BaseComponent {
   //初始化字典
   initDict() {
     const {dispatch} = this.props;
-    dispatch(LoginActions.getDict(null, (json)=> {
+    dispatch(LoginActions.getDict('', (json)=> {
       setDictArr(json.Result);
+      this._startCountdown()
     }, (error)=> {
       //
     }));
@@ -302,28 +300,31 @@ class Login extends BaseComponent {
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
       tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry, phone)}发送了一条验证短信`
+    },()=>{
+      this.backgroundTimer = setInterval(()=> {
+        console.log('开始倒计时');
+        this.setState({validCodeText: `剩余${second - 1}秒`});
+        second -= 1;
+        if (second === 0) {
+          clearInterval(this.backgroundTimer);
+          this.setState({
+            counting: false,
+            validCodeBtnAccessible: true,
+            validCodeText: '获取验证码',
+            tipsText: '使用手机号一键登录',
+          });
+        }
+      }, 1000);
     });
-    this.timer = BackgroundTimer.setInterval(()=> {
-      this.setState({validCodeText: `剩余${second - 1}秒`});
-      second -= 1;
-      if (second === 0) {
-        BackgroundTimer.clearInterval(this.timer);
-        this.setState({
-          counting: false,
-          validCodeBtnAccessible: true,
-          validCodeText: '获取验证码',
-          tipsText: '使用手机号一键登录',
-        });
-      }
-    }, 1000);
   }
 
   componentWillUnmount() {
+    console.log('页面即将销毁');
     if (this.showToastTimer) {
       clearTimeout(this.showToastTimer);
     }
-    if (this.timer) {
-      BackgroundTimer.clearInterval(this.timer);
+    if (this.backgroundTimer) {
+      clearInterval(this.backgroundTimer);
     }
     this.keyboardDidShowListener.remove();
   }
