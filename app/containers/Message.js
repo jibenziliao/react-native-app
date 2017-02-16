@@ -30,6 +30,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import UserInfo from '../pages/UserInfo'
 import {toastLong} from '../utils/ToastUtil'
 import {SwipeListView} from 'react-native-swipe-list-view'
+import {strToDateTime, dateFormat} from '../utils/DateUtil'
 
 const styles = StyleSheet.create({
   container: {
@@ -178,11 +179,18 @@ class Message extends BaseComponent {
     Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
       if (res !== null) {
         this.setState({
-          messageList: res
+          messageList: this.sortByDate(res)
         }, ()=> {
           this._totalUnReadCountHandler()
         });
       }
+    });
+  }
+
+  //页面上展示的消息按照日期排序
+  sortByDate(messages){
+    return messages.sort((b,a)=>{
+      return new Date(a.MsgList[a.MsgList.length-1].SendTime).getTime()-new Date(b.MsgList[b.MsgList.length-1].SendTime).getTime()
     });
   }
 
@@ -308,7 +316,7 @@ class Message extends BaseComponent {
     console.log('合并后的页面消息列表', this.state.messageList);
 
     this.setState({
-      messageList: this.state.messageList
+      messageList: this.sortByDate(this.state.messageList)
     }, ()=> {
       //在setState的回调里开始缓存消息
       console.log('Message页面开始缓存消息');
@@ -468,8 +476,10 @@ class Message extends BaseComponent {
     });
   }
 
+  //服务器在澳洲(东11区),返回的时间为服务器时间(2017-02-13 19:35:05),需要转换成本地时间显示并存储
   _renderMsgTime(str) {
-    return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
+    let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0]+' GMT+1100 (AESST)';//澳大利亚东部夏令时
+    return dateFormat(new Date(serverTime));
   }
 
   _renderUnReadCount(data) {

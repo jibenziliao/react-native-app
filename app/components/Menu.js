@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   listItemContainer:{
-    backgroundColor:'#F3F3F3'
+    backgroundColor:'#E9E9E9'
   },
   item: {
     fontSize: 14,

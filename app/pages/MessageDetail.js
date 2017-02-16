@@ -250,7 +250,8 @@ class MessageDetail extends BaseComponent {
 
   _renderMsgTime(str) {
     if (str.indexOf('T') > -1) {
-      return str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0];
+      let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0]+' GMT+1100 (AESST)';//澳大利亚东部夏令时
+      return dateFormat(new Date(serverTime));
     } else {
       return str;
     }
