@@ -258,8 +258,12 @@ class MessageDetail extends BaseComponent {
 
   _renderMsgTime(str) {
     if (str.indexOf('T') > -1) {
-      let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0] + ' GMT+1100 (AESST)';//澳大利亚东部夏令时
-      return dateFormat(new Date(serverTime));
+      let tmpStr = str;
+      let serverTime = tmpStr.split('T')[0] + ' ' + (tmpStr.split('T')[1]).split('.')[0];
+      let formatServerTime = (strToDateTime(serverTime) + '').split('GMT')[0] + ' GMT+1100 (AESST)';//澳大利亚东部夏令时
+      //console.log('服务器时间', serverTime);
+      //console.log('服务器时间转本地时间', new Date(formatServerTime));
+      return dateFormat(new Date(formatServerTime));
     } else {
       return str;
     }
