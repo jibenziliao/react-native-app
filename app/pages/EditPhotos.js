@@ -183,11 +183,14 @@ class EditPhotos extends BaseComponent {
 
   _userPhotosChanges(data) {
     this.state.userPhotos.push(data);
+
     this.setState({
       uploaded: false,
       changed: true,
       ...this.state.userPhotos,
       CanUploadCountLeft: this.state.CanUploadCountLeft - 1 >= 0 ? this.state.CanUploadCountLeft - 1 : 0
+    },()=>{
+      this._uploadPhotos()
     });
   }
 
