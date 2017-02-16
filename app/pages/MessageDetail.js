@@ -32,6 +32,7 @@ import UserInfo from '../pages/UserInfo'
 import CustomBubble from '../components/CustomBubble'
 import Report from '../pages/Report'
 import {toastShort} from '../utils/ToastUtil'
+import Recharge from '../pages/Recharge'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -555,7 +556,7 @@ class MessageDetail extends BaseComponent {
     };
     dispatch(HomeActions.sendSms(data, (json)=> {
       if (!json.Result.code) {
-        toastShort(json.Result.msg);
+        this._rechargeConfirm(json.Result.msg)
       } else {
         toastShort(json.Result.msg);
         this.setState((previousState) => {
@@ -566,6 +567,23 @@ class MessageDetail extends BaseComponent {
       }
     }, (error)=> {
     }));
+  }
+
+  _rechargeConfirm(str) {
+    Alert.alert('提示', str, [
+      {
+        text: '确定', onPress: () => {
+        navigator.push({
+          component: Recharge,
+          name: 'Recharge'
+        })
+      }
+      },
+      {
+        text: '取消', onPress: () => {
+      }
+      }
+    ]);
   }
 
   renderFooter(props) {
@@ -699,7 +717,7 @@ class MessageDetail extends BaseComponent {
   }
 
   renderBlackTips(flag) {
-    if(!flag){
+    if (!flag) {
       return null;
     }
     return (

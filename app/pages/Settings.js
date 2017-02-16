@@ -76,6 +76,20 @@ class Settings extends BaseComponent {
     };
   }
 
+  _logOutConfirm() {
+    Alert.alert('提示', '确定要注销吗?', [
+      {
+        text: '确定', onPress: () => {
+        this._logOut();
+      }
+      },
+      {
+        text: '取消', onPress: () => {
+      }
+      }
+    ]);
+  }
+
   _logOut() {
     //websocket注销当前用户
     tmpGlobal.ws = null;
@@ -146,7 +160,7 @@ class Settings extends BaseComponent {
     }, (error)=> {
       this.setState({
         TurnPushOn: !value
-      },()=>{
+      }, ()=> {
         this._updateUserInfo()
       });
     }));
@@ -170,7 +184,7 @@ class Settings extends BaseComponent {
         <View>
           <TouchableOpacity
             onPress={()=> {
-              this._logOut()
+              this._logOutConfirm()
             }}
             style={[styles.listItem, styles.topItem]}>
             <View style={styles.itemLeft}>
@@ -197,8 +211,8 @@ class Settings extends BaseComponent {
             <Switch
               onValueChange={(value)=> {
                 this.setState({
-                  MapPrecision:null
-                },()=>{
+                  MapPrecision: null
+                }, ()=> {
                   this._confirmChange(value)
                 });
               }}
