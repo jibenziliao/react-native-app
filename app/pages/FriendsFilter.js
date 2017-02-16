@@ -28,18 +28,11 @@ import {connect} from 'react-redux'
 import * as FriendFilterActions from '../actions/FriendFilter'
 import tmpGlobal from '../utils/TmpVairables'
 import customTheme from '../themes/MyThemes'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 10
-  },
   inputArea: {
     flex: 1,
   },
@@ -408,9 +401,9 @@ class FriendsFilter extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <ScrollView
-          style={styles.scrollView}
+          style={ComponentStyles.scrollView}
           keyboardDismissMode={'none'}
           keyboardShouldPersistTaps={true}>
           <View style={styles.inputArea}>

@@ -16,6 +16,7 @@ import {
 } from 'react-native'
 import {URL_DEV} from '../constants/Constant'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import {CommonStyles, StyleConfig} from '../style'
 
 const window = Dimensions.get('window');
 
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: '#4CD472',
+    backgroundColor: StyleConfig.color_primary
   },
   userInfoContainer: {
     padding: 20,
@@ -45,15 +46,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     flexWrap: 'wrap',
     flex: 1,
-    fontSize:16,
-    overflow:'hidden'
+    fontSize: 16,
+    overflow: 'hidden'
   },
   signatureContent: {
     flexWrap: 'nowrap',
     flexDirection: 'row',
   },
-  listItemContainer:{
-    backgroundColor:'#E9E9E9'
+  listItemContainer: {
+    backgroundColor: '#E9E9E9'
   },
   item: {
     fontSize: 14,
@@ -64,15 +65,15 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height:60
+    height: 60
   },
   iconContainer: {
     width: 60,
     justifyContent: 'center',
     alignItems: 'center'
   },
-  itemText:{
-    fontSize:16
+  itemText: {
+    fontSize: 16
   },
 });
 
@@ -83,7 +84,7 @@ class Menu extends Component {
 
   render() {
     return (
-      <View style={[styles.menu,{width: this.props.openMenuOffset + 20}]}>
+      <View style={[styles.menu, {width: this.props.openMenuOffset + 20}]}>
         <View style={styles.userInfoContainer}>
           <View style={[styles.avatarContainer]}>
             <Image
@@ -96,7 +97,8 @@ class Menu extends Component {
             onPress={()=> {
               this.props.goSignature()
             }}>
-            <Text numberOfLines={1}>{this.props.userInfo.PersonSignal?this.props.userInfo.PersonSignal:'点击编辑个性签名'}</Text>
+            <Text
+              numberOfLines={1}>{this.props.userInfo.PersonSignal ? this.props.userInfo.PersonSignal : '点击编辑个性签名'}</Text>
           </TouchableOpacity>
         </View>
         <ScrollView scrollsToTop={false} style={styles.listItemContainer}>
@@ -108,7 +110,7 @@ class Menu extends Component {
               underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'picture-o'} size={20} color={'#4CD472'}/>
+                  <Icon name={'picture-o'} size={20} color={StyleConfig.color_primary}/>
                 </View>
                 <Text style={styles.itemText}>{'相册'}</Text>
               </View>
@@ -122,7 +124,7 @@ class Menu extends Component {
               underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'address-card-o'} size={20} color={'#4CD472'}/>
+                  <Icon name={'address-card-o'} size={20} color={StyleConfig.color_primary}/>
                 </View>
                 <Text style={styles.itemText}>{'个人资料'}</Text>
               </View>
@@ -136,7 +138,7 @@ class Menu extends Component {
               underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'credit-card'} size={20} color={'#4CD472'}/>
+                  <Icon name={'credit-card'} size={20} color={StyleConfig.color_primary}/>
                 </View>
                 <Text style={styles.itemText}>{'账户资料'}</Text>
               </View>
@@ -150,7 +152,7 @@ class Menu extends Component {
               underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'star-o'} size={20} color={'#4CD472'}/>
+                  <Icon name={'star-o'} size={20} color={StyleConfig.color_primary}/>
                 </View>
                 <Text style={styles.itemText}>{'给好评(送50觅豆)'}</Text>
               </View>
@@ -164,7 +166,7 @@ class Menu extends Component {
               underlayColor={'#FFF'}>
               <View style={styles.itemContainer}>
                 <View style={styles.iconContainer}>
-                  <Icon name={'wrench'} size={20} color={'#4CD472'}/>
+                  <Icon name={'wrench'} size={20} color={StyleConfig.color_primary}/>
                 </View>
                 <Text style={styles.itemText}>{'设置'}</Text>
               </View>

@@ -38,14 +38,11 @@ import * as HomeActions from '../actions/Home'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   announcementArea: {
     margin: 10
   },
@@ -386,7 +383,7 @@ class Addannouncement extends BaseComponent {
 
   renderBody() {
     return (
-      <MenuContext style={styles.container}>
+      <MenuContext style={ComponentStyles.container}>
         <ScrollView
           style={styles.announcementArea}
           keyboardDismissMode={'interactive'}>

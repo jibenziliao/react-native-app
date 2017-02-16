@@ -24,14 +24,11 @@ import TranscationRecordList from '../pages/TranscationRecordList'
 import Recharge from '../pages/Recharge'
 import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
+import {ComponentStyles, CommonStyles, StyleConfig} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   userInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -82,7 +79,7 @@ const styles = StyleSheet.create({
     marginRight: 20
   },
   money: {
-    color: '#4CD472'
+    color: StyleConfig.color_primary
   },
   btnText: {
     fontSize: 20
@@ -198,7 +195,7 @@ class Account extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <ScrollView>
           {this.renderAccountInfo()}
           {this.renderAccountAction()}

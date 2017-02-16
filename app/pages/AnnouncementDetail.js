@@ -40,14 +40,11 @@ import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import customTheme from '../themes/MyThemes'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   listView: {
     flex: 1
   },
@@ -1008,7 +1005,7 @@ class AnnouncementDetail extends BaseComponent {
     return (
       <View
         ref={'root'}
-        style={styles.container}>
+        style={ComponentStyles.container}>
         {this.renderCommentList()}
         <ActionSheet
           ref={(o) => this.ActionSheet = o}

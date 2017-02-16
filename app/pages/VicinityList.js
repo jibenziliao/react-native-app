@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import * as InitialAppActions from '../actions/InitialApp'
 import {connect} from 'react-redux'
-import {componentStyles} from '../style'
+import {ComponentStyles} from '../style'
 import BaseComponent from '../base/BaseComponent'
 
 const styles=StyleSheet.create({

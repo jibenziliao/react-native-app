@@ -8,7 +8,6 @@ import {
   StatusBar,
   View,
   Text,
-  StyleSheet,
   Navigator,
   Platform,
   BackAndroid,
@@ -25,29 +24,9 @@ import * as VicinityActions from '../actions/Vicinity'
 import Spinner from '../components/Spinner'
 import RNPicker from 'react-native-picker'
 import tmpGlobal from '../utils/TmpVairables'
+import {CommonStyles,StyleConfig} from '../style'
 
 let lastClickTime = 0;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  navigator: {
-    flex: 1,
-    backgroundColor: 'white'
-  },
-  errorView: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white'
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16
-  }
-
-});
 
 class App extends Component {
 
@@ -175,7 +154,7 @@ class App extends Component {
       if (!this.state.hasRegistered) {
         return (
           <Navigator
-            style={styles.navigator}
+            style={CommonStyles.flex_1}
             configureScene={this.configureScene}
             renderScene={this.renderScene}
             initialRoute={{
@@ -186,7 +165,7 @@ class App extends Component {
       } else {
         return (
           <Navigator
-            style={styles.navigator}
+            style={CommonStyles.flex_1}
             configureScene={this.configureScene}
             renderScene={this.renderScene}
             initialRoute={{
@@ -213,7 +192,7 @@ class App extends Component {
     return (
       <View style={{flex: 1}}>
         <StatusBar
-          backgroundColor="#4CD472"
+          backgroundColor={StyleConfig.color_primary}
           barStyle="light-content"
         />
         {this.renderNavigator(status)}

@@ -21,12 +21,9 @@ import Login from '../pages/Login'
 import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   topItem: {
     marginTop: 10
   },
@@ -180,7 +177,7 @@ class Settings extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <View>
           <TouchableOpacity
             onPress={()=> {

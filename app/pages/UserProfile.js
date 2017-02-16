@@ -36,22 +36,11 @@ import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import FriendsFilter from './FriendsFilter'
 import customTheme from '../themes/MyThemes'
+import {CommonStyles} from '../style'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
-  scrollView: {
-    flex: 1,
-    paddingHorizontal: 10
-  },
-  needItems: {
-    flex: 1,
-    marginVertical: 10
-  },
   genderRow: {
     flex: 1,
     flexDirection: 'row',
@@ -911,14 +900,14 @@ class UserProfile extends BaseComponent {
     return (
       <View
         ref={'root'}
-        style={styles.container}>
+        style={[CommonStyles.flex_1,CommonStyles.background_second]}>
         <ScrollView
           ref={'scroll'}
-          style={styles.scrollView}
+          style={[CommonStyles.flex_1,CommonStyles.p_x_10]}
           keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
           <View
-            style={styles.needItems}
+            style={[CommonStyles.flex_1,CommonStyles.m_y_10]}
             pointerEvents={'box-none'}
             onStartShouldSetResponderCapture={(e) => {
               ancestorTarget = e.nativeEvent.target;

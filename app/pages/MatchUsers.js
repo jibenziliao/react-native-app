@@ -31,14 +31,11 @@ import UserInfo from '../pages/UserInfo'
 import * as VicinityActions from '../actions/Vicinity'
 import Spinner from '../components/Spinner'
 import EditFriendFilter from '../pages/EditFriendFilter'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   listView: {
     flex: 1
   },
@@ -454,7 +451,7 @@ class MatchUsers extends BaseComponent {
   renderBody() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         {this.renderWarningView(!this.state.GPS)}
         <View style={styles.content}>
           {this.renderListView(ds, this.state.userList)}

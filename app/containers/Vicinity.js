@@ -23,14 +23,11 @@ import Tinder from '../pages/Tinder'
 import Revel from '../pages/Revel'
 import tmpGlobal from '../utils/TmpVairables'
 import pxToDp from '../utils/PxToDp'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   viewContainer: {
     flex: 1
   },
@@ -162,7 +159,7 @@ class Vicinity extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <ScrollView>
           <View style={styles.viewContainer}>
             <View style={[styles.cardRow, styles.topRow]}>

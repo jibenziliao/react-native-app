@@ -19,14 +19,11 @@ import BaseComponent from '../base/BaseComponent'
 import * as HomeActions from '../actions/Home'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import {dateFormat} from '../utils/DateUtil'
+import {ComponentStyles, CommonStyles, StyleConfig} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   listViewContainer: {
     flex: 1
   },
@@ -71,7 +68,7 @@ const styles = StyleSheet.create({
   money: {
     fontSize: 24,
     fontWeight: '200',
-    color: '#4CD472',
+    color: StyleConfig.color_primary,
   },
   balance: {
     flexDirection: 'row',
@@ -249,7 +246,7 @@ class TranscationRecordList extends BaseComponent {
   renderBody() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         {this.renderListView(ds, this.state.recordList)}
       </View>
     )

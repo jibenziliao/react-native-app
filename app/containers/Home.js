@@ -44,21 +44,14 @@ import ActionSheet from 'react-native-actionsheet'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import * as VicinityActions from '../actions/Vicinity'
 import JPushModule from 'jpush-react-native'
-import Settings from '../pages/Settings'
 import Refresh from '../components/Refresh'
 import customTheme from '../themes/MyThemes'
 import pxToDp from '../utils/PxToDp'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
-  commonContainer: {
-    flex: 1
-  },
   gpsTips: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -950,7 +943,7 @@ class Home extends BaseComponent {
     return (
       <View
         ref={'root'}
-        style={[styles.container]}>
+        style={ComponentStyles.container}>
         <SubTabView
           locationTips={()=>this._renderLocationTips(this.state.gpsStatus)}
           index={this.state.tabIndex}

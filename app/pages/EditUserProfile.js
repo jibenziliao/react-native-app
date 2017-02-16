@@ -31,14 +31,11 @@ import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import * as UserProfileActions from '../actions/UserProfile'
 import {toastShort} from '../utils/ToastUtil'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   scrollViewContainer: {
     flex: 1
   },
@@ -659,7 +656,7 @@ class EditUserProfile extends BaseComponent {
       return (
         <View
           ref={'root'}
-          style={styles.container}>
+          style={ComponentStyles.container}>
           <ScrollView
             ref={'scroll'}
             style={styles.scrollViewContainer}

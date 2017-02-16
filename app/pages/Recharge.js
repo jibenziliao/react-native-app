@@ -20,14 +20,11 @@ import {
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import Spinner from '../components/Spinner'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   webView: {
     flex: 1,
     ...Platform.select({
@@ -58,7 +55,7 @@ class Recharge extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <WebView
           javaScriptEnabled={true}
           bounces={false}

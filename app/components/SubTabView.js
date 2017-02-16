@@ -19,6 +19,7 @@ import {
 import MeetList from '../pages/MeetList'
 import AppointmentList from '../pages/AppointmentList'
 import pxToDp from '../utils/PxToDp'
+import {CommonStyles, StyleConfig} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
   indicator: {
     height: pxToDp(4),
     width: width / 2,
-    backgroundColor: '#4CD472',
+    backgroundColor: StyleConfig.color_primary,
     position: 'absolute',
     bottom: 0,
   },
@@ -42,11 +43,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     height: 40,
     zIndex: 0,
-    width:width / 2,
-    borderRightColor:'#F3F3F3',
-    borderRightWidth:0.5
+    width: width / 2,
+    borderRightColor: '#F3F3F3',
+    borderRightWidth: 0.5
   },
-  tabLabel:{
+  tabLabel: {
     backgroundColor: 'transparent',
     color: '#ddd',
     margin: 8,
@@ -54,11 +55,11 @@ const styles = StyleSheet.create({
   customStyle: {
     backgroundColor: '#fff',
   },
-  focusLabel:{
-    color:'#4CD472'
+  focusLabel: {
+    color: StyleConfig.color_primary
   },
-  label:{
-    color:'gray'
+  label: {
+    color: 'gray'
   },
 });
 
@@ -94,9 +95,9 @@ export default class SubTabView extends Component {
     });
   };
 
-  _renderLabel(scene){
-    return(
-      <Text style={[ styles.tabLabel, (scene.focused?styles.focusLabel:styles.label)]}>{scene.route.title}</Text>
+  _renderLabel(scene) {
+    return (
+      <Text style={[styles.tabLabel, (scene.focused ? styles.focusLabel : styles.label)]}>{scene.route.title}</Text>
     );
   }
 
@@ -104,7 +105,7 @@ export default class SubTabView extends Component {
     return <TabBarTop
       scrollEnabled={true}
       tabStyle={styles.tabBar}
-      tabWidth={width/2}
+      tabWidth={width / 2}
       style={styles.customStyle}
       renderLabel={this._renderLabel}
       indicatorStyle={styles.indicator}

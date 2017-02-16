@@ -25,14 +25,11 @@ import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import EditPhotos from '../pages/EditPhotos'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   scrollView: {
     flex: 1
   },
@@ -166,7 +163,7 @@ class Album extends BaseComponent {
   renderBody() {
     if (this.state.photos.length > 0) {
       return (
-        <View style={styles.container}>
+        <View style={ComponentStyles.container}>
           <ScrollView style={styles.scrollView}>
             <View style={styles.albumContainer}>
               {this.renderAlbum(this.state.photos)}
@@ -176,7 +173,7 @@ class Album extends BaseComponent {
       )
     } else {
       return (
-        <View style={styles.container}>
+        <View style={ComponentStyles.container}>
           {this.renderEmptyAlbum()}
         </View>
       )

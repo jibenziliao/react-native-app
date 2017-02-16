@@ -32,14 +32,11 @@ import MessageDetail from '../pages/MessageDetail'
 import tmpGlobal from '../utils/TmpVairables'
 import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   scrollViewContainer: {
     flex: 1,
     paddingHorizontal: 10
@@ -384,7 +381,7 @@ class UserInfo extends BaseComponent {
       return null;
     }else{
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <ScrollView style={styles.scrollViewContainer}>
           <View style={styles.section}>
             <View style={styles.sectionTitle}>

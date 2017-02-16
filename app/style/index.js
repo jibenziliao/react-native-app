@@ -18,6 +18,7 @@ const {height, width} = Dimensions.get('window');
 export const StyleConfig = {
 
   color_primary: '#4CD472',
+  color_second: '#F3F3F3',
   color_danger: '#d9534f',
   color_warning: '#f0ad4e',
   color_success: '#5cb85c',
@@ -190,6 +191,10 @@ export const CommonStyles = StyleSheet.create({
     color: StyleConfig.color_primary
   },
 
+  text_second: {
+    color: StyleConfig.color_second
+  },
+
   text_danger: {
     color: StyleConfig.color_danger
   },
@@ -227,6 +232,13 @@ export const CommonStyles = StyleSheet.create({
   },
 
   //background
+  background_primary: {
+    backgroundColor: StyleConfig.color_primary
+  },
+
+  background_second: {
+    backgroundColor: StyleConfig.color_second
+  },
 
   background_white: {
     backgroundColor: StyleConfig.color_white
@@ -526,18 +538,13 @@ export const CommonStyles = StyleSheet.create({
 // component styles
 // ===============================================
 
-export const componentStyles = StyleSheet.create({
+export const ComponentStyles = StyleSheet.create({
   container: {
-    ...Platform.select({
-      ios: {
-        paddingTop: 64
-      },
-      android: {
-        paddingTop: 54
-      }
-    }),
-    backgroundColor: '#ebebeb',
-    paddingHorizontal: 10,
     flex: 1,
+    backgroundColor: StyleConfig.color_second
+  },
+  scrollView:{
+    flex: 1,
+    paddingHorizontal: 10
   },
 });

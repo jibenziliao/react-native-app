@@ -15,12 +15,9 @@ import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import Recharge from '../pages/Recharge'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   scrollView: {
     flex: 1,
   },
@@ -45,7 +42,7 @@ class Settlement extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <ScrollView style={styles.scrollView}>
 
         </ScrollView>

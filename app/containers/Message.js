@@ -31,12 +31,9 @@ import UserInfo from '../pages/UserInfo'
 import {toastLong} from '../utils/ToastUtil'
 import {SwipeListView} from 'react-native-swipe-list-view'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   listView: {
     flex: 1
   },
@@ -632,7 +629,7 @@ class Message extends BaseComponent {
   renderBody() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         {this.renderListView(ds, this.state.messageList)}
       </View>
     )

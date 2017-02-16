@@ -25,12 +25,9 @@ import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import * as Storage from '../utils/Storage'
 import customTheme from '../themes/MyThemes'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   scrollView: {
     flex: 1
   },
@@ -240,7 +237,7 @@ class Report extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={ComponentStyles.container}>
         <ScrollView style={styles.scrollView}>
           <Text style={styles.tipsText}>{'请告诉我们你想举报该用户的理由'}</Text>
           {this.renderReportList(this.state.reportArr)}

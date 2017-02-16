@@ -25,12 +25,9 @@ import RNPicker from 'react-native-picker'
 import * as FriendFilterActions from '../actions/FriendFilter'
 import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   friendInfo: {
     backgroundColor: '#fff',
     paddingHorizontal: 10,
@@ -467,7 +464,7 @@ class EditFriendFilter extends BaseComponent {
       return null
     } else {
       return (
-        <View style={styles.container}>
+        <View style={ComponentStyles.container}>
           <ScrollView style={styles.scrollViewContainer}>
             <View style={styles.friendInfo}>
               <View style={[styles.listItem]}>

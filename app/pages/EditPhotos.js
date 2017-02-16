@@ -32,12 +32,9 @@ import PhotoViewer from '../components/PhotoViewer'
 import * as PhotoActions from '../actions/Photo'
 import Spinner from '../components/Spinner'
 import tmpGlobal from '../utils/TmpVairables'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   scrollViewContainer: {
     flex: 1
   },
@@ -308,7 +305,7 @@ class EditPhotos extends BaseComponent {
       return null
     } else {
       return (
-        <MenuContext style={styles.container}>
+        <MenuContext style={ComponentStyles.container}>
           <ScrollView
             style={styles.scrollViewContainer}>
             {this._renderTips()}

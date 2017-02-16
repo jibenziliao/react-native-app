@@ -25,7 +25,7 @@ import DeviceInfo from 'react-native-device-info'
 import * as InitialAppActions from '../actions/InitialApp'
 import * as LoginActions from '../actions/Login'
 import UserProfile from './UserProfile'
-import BackgroundTimer from 'react-native-background-timer'
+import {CommonStyles} from '../style'
 import {Button as NBButton} from 'native-base'
 import Menu, {
   MenuContext,
@@ -40,23 +40,6 @@ import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
 
 const styles = StyleSheet.create({
-  loginPage: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: '#F3F3F3'
-  },
-  flex_1: {
-    flex: 1
-  },
-  tipsArea: {
-    flexDirection: 'row',
-    marginVertical: 20
-  },
-  tips: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 20
-  },
   picker: {
     width: 100,
     height: 40
@@ -400,8 +383,8 @@ class Login extends BaseComponent {
 
   renderTips() {
     return (
-      <View style={styles.tipsArea}>
-        <Text style={styles.tips}>{this.state.tipsText}</Text>
+      <View style={[CommonStyles.flexRow,CommonStyles.m_y_20]}>
+        <Text style={[CommonStyles.text_center,CommonStyles.font_lg,CommonStyles.flex_1]}>{this.state.tipsText}</Text>
       </View>
     )
   }
@@ -464,7 +447,7 @@ class Login extends BaseComponent {
         style={{flex: 1}}>
         <ScrollView
           ref={'scroll'}
-          style={styles.loginPage}
+          style={[CommonStyles.p_a_10,CommonStyles.flex_1,CommonStyles.background_second]}
           keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
           <View

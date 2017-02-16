@@ -27,14 +27,11 @@ import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
 import Settings from '../pages/Settings'
 import * as Storage from '../utils/Storage'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   avatarArea: {
     alignItems: 'center',
     paddingTop: 10,
@@ -232,7 +229,7 @@ class Mine extends BaseComponent {
   renderBody() {
     if (this.state.loadUserInfo) {
       return (
-        <View style={styles.container}>
+        <View style={ComponentStyles.container}>
           <ScrollView>
             <View style={styles.avatarArea}>
               <Image

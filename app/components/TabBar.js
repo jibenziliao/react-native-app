@@ -14,6 +14,7 @@ import {
 } from 'react-native'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import pxToDp from '../utils/PxToDp'
+import {CommonStyles,StyleConfig} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
@@ -99,9 +100,9 @@ class TabBar extends Component {
                 <IonIcon
                   name={tabBarResources[index].name}
                   size={tabBarResources[index].size}
-                  color={activeTab === index ? '#4CD472' : '#B2B5B1'}/>
+                  color={activeTab === index ? StyleConfig.color_primary : '#B2B5B1'}/>
                 <Text
-                  style={{color: activeTab === index ? '#4CD472' : '#B2B5B1', fontSize: pxToDp(22)}}>
+                  style={{color: activeTab === index ? StyleConfig.color_primary : '#B2B5B1', fontSize: pxToDp(22)}}>
                   {tabBarResources[index].title}
                 </Text>
                 {this.renderBadge(index)}

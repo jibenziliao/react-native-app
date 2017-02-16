@@ -14,12 +14,13 @@ import {
   Platform
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import {ComponentStyles,CommonStyles,StyleConfig} from '../style'
 
 const {width, height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   navigationBar: {
-    backgroundColor: '#4CD472',
+    backgroundColor: StyleConfig.color_primary,
     ...Platform.select({
       ios: {
         height: 64
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     }),
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#4CD472',
+    borderBottomColor: StyleConfig.color_primary,
     flexDirection: 'row'
   },
   navigationBarTitleContainer: {

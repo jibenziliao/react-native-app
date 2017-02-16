@@ -38,14 +38,11 @@ import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
 import MainContainer from '../containers/MainContainer'
 import customTheme from '../themes/MyThemes'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3'
-  },
   listView: {
     flex: 1
   },
@@ -727,7 +724,7 @@ class AnnouncementList extends BaseComponent {
     return (
       <View
         ref={'root'}
-        style={styles.container}>
+        style={ComponentStyles.container}>
         <View style={styles.content}>
           {this.renderListView(ds, this.state.postList)}
         </View>

@@ -26,13 +26,12 @@ import {toastShort} from '../utils/ToastUtil'
 import * as Storage from '../utils/Storage'
 import tmpGlobal from '../utils/TmpVairables'
 import customTheme from '../themes/MyThemes'
+import {ComponentStyles,CommonStyles} from '../style'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F3F3F3',
     padding: 10
   },
   scrollView: {
@@ -137,7 +136,7 @@ class EditPersonalSignature extends BaseComponent {
 
   renderBody() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container,ComponentStyles.container]}>
         <ScrollView
           style={styles.scrollView}
           keyboardDismissMode={'interactive'}
