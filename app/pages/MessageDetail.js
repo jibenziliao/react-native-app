@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   InteractionManager,
   Keyboard,
-  Alert
+  Alert,
+  Platform
 } from 'react-native'
 import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
@@ -57,14 +58,20 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   tipsContainer: {
-    alignItems: 'center',
-    margin: 40,
-    justifyContent: 'center',
-    marginTop: 5,
-    backgroundColor: 'gray',
-    borderRadius: 4,
+    position: 'absolute',
+    backgroundColor: 'rgba(12,12,12,0.5)',
+    ...Platform.select({
+      ios: {
+        top: 84
+      },
+      android: {
+        top: 74
+      }
+    }),
+    marginHorizontal: 40,
     paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingVertical: 5,
+    borderRadius: 4
   },
   tipsText: {
     color: '#fff',
@@ -250,7 +257,7 @@ class MessageDetail extends BaseComponent {
 
   _renderMsgTime(str) {
     if (str.indexOf('T') > -1) {
-      let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0]+' GMT+1100 (AESST)';//澳大利亚东部夏令时
+      let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0] + ' GMT+1100 (AESST)';//澳大利亚东部夏令时
       return dateFormat(new Date(serverTime));
     } else {
       return str;
@@ -348,20 +355,9 @@ class MessageDetail extends BaseComponent {
     DeviceEventEmitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
   }
 
+  //暂不支持加载历史记录功能
   renderLoadEarlier() {
-    return (
-      <View style={styles.tipsContainer}>
-        <Text style={styles.tipsText}>
-          {'你已拉黑对方,将不会收到对方的消息,'}
-          <Text
-            style={styles.clickTipsText}
-            onPress={()=> {
-              this._addOrRemoveBlackList()
-            }}>{'解除黑名单'}</Text>
-          {'后可恢复正常聊天'}
-        </Text>
-      </View>
-    )
+    return null;
   }
 
   onLoadEarlier() {
@@ -558,9 +554,9 @@ class MessageDetail extends BaseComponent {
       Text: messages[0].text
     };
     dispatch(HomeActions.sendSms(data, (json)=> {
-      if(!json.Result.code){
+      if (!json.Result.code) {
         toastShort(json.Result.msg);
-      }else{
+      } else {
         toastShort(json.Result.msg);
         this.setState((previousState) => {
           return {
@@ -599,7 +595,7 @@ class MessageDetail extends BaseComponent {
           <TouchableOpacity
             style={[styles.container, this.props.containerStyle]}
             onPress={() => {
-              props.onSendSms({text: props.text.trim()},true);
+              props.onSendSms({text: props.text.trim()}, true);
             }}>
             <Text style={[styles.text, props.textStyle]}>{'发短信'}</Text>
           </TouchableOpacity>
@@ -702,6 +698,25 @@ class MessageDetail extends BaseComponent {
     return routes[routes.length - 2].name;
   }
 
+  renderBlackTips(flag) {
+    if(!flag){
+      return null;
+    }
+    return (
+      <View style={styles.tipsContainer}>
+        <Text style={styles.tipsText}>
+          {'你已拉黑对方,将不会收到对方的消息,'}
+          <Text
+            style={styles.clickTipsText}
+            onPress={()=> {
+              this._addOrRemoveBlackList()
+            }}>{'解除黑名单'}</Text>
+          {'后可恢复正常聊天'}
+        </Text>
+      </View>
+    )
+  }
+
   renderBody() {
     return (
       <View style={{flex: 1}}>
@@ -714,7 +729,7 @@ class MessageDetail extends BaseComponent {
             this.onSendSms(message)
           }}
           renderLoadEarlier={this.renderLoadEarlier}
-          loadEarlier={this.state.isInBlackList}
+          loadEarlier={this.state.loadEarlier}
           onLoadEarlier={this.onLoadEarlier}
           isLoadingEarlier={this.state.isLoadingEarlier}
           user={{
@@ -742,6 +757,7 @@ class MessageDetail extends BaseComponent {
           destructiveButtonIndex={DESTRUCTIVE_INDEX}
           onPress={this._actionSheetPress.bind(this)}
         />
+        {this.renderBlackTips(this.state.isInBlackList)}
       </View>
     )
   }
