@@ -188,9 +188,9 @@ class Message extends BaseComponent {
   }
 
   //页面上展示的消息按照日期排序
-  sortByDate(messages){
-    return messages.sort((b,a)=>{
-      return new Date(a.MsgList[a.MsgList.length-1].SendTime).getTime()-new Date(b.MsgList[b.MsgList.length-1].SendTime).getTime()
+  sortByDate(messages) {
+    return messages.sort((b, a)=> {
+      return new Date(a.MsgList[a.MsgList.length - 1].SendTime).getTime() - new Date(b.MsgList[b.MsgList.length - 1].SendTime).getTime()
     });
   }
 
@@ -260,10 +260,14 @@ class Message extends BaseComponent {
     })
   }
 
-  //服务器在澳洲(东11区),返回的时间为服务器时间(2017-02-13 19:35:05),需要转换成本地时间显示并存储
+  //服务器在澳洲(东11区),返回的时间为服务器时间(2017-02-13 19:35:05),需要转换成本地时间显示并存储(注:new Date()隐式转换对格式有要求,'2017-02-13 19:35:05'格式在React-Native中不支持,显示Invalid Date)
   _renderMsgTime(str) {
-    let serverTime = str.split('T')[0] + ' ' + (str.split('T')[1]).split('.')[0]+' GMT+1100 (AESST)';//澳大利亚东部夏令时
-    return dateFormat(new Date(serverTime));
+    let tmpStr = str;
+    let serverTime = tmpStr.split('T')[0] + ' ' + (tmpStr.split('T')[1]).split('.')[0];
+    let formatServerTime = (strToDateTime(serverTime) + '').split('GMT')[0] + ' GMT+1100 (AESST)';//澳大利亚东部夏令时
+    //console.log('服务器时间', serverTime);
+    //console.log('服务器时间转本地时间', new Date(formatServerTime));
+    return dateFormat(new Date(formatServerTime));
   }
 
   //合并后台推送过来的消息(存缓存时,需要将时间以字符串时间形式存储,不能直接存Date类型,JSON.stringify将Date会转换成字符串)
@@ -291,8 +295,8 @@ class Message extends BaseComponent {
       }
     }
     let objCopy = JSON.parse(JSON.stringify(newMsgList));
-    console.log(newMsgList);
-    console.log(objCopy);
+    console.log('处理后的备份消息', newMsgList);
+    console.log('处理后的消息', objCopy);
     let index = 0;
     for (let i = 0; i < this.state.messageList.length; i++) {
       for (let j = 0; j < objCopy.length; j++) {

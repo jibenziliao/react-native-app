@@ -302,7 +302,7 @@ class Login extends BaseComponent {
       tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry, phone)}发送了一条验证短信`
     },()=>{
       this.backgroundTimer = setInterval(()=> {
-        console.log('开始倒计时');
+        //console.log('开始倒计时');
         this.setState({validCodeText: `剩余${second - 1}秒`});
         second -= 1;
         if (second === 0) {
@@ -319,7 +319,7 @@ class Login extends BaseComponent {
   }
 
   componentWillUnmount() {
-    console.log('页面即将销毁');
+    //console.log('页面即将销毁');
     if (this.showToastTimer) {
       clearTimeout(this.showToastTimer);
     }
