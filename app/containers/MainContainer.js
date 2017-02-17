@@ -32,6 +32,7 @@ import Album from '../pages/Album'
 import Account from '../pages/Account'
 import {URL_DEV} from '../constants/Constant'
 import {toastShort} from '../utils/ToastUtil'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -58,10 +59,10 @@ const styles = StyleSheet.create({
 
 //tabBar的icon图标和文字标题
 const TAB_BAR_RESOURCES = [
-  {name: 'ios-home-outline', size: 26, title: '广场'},
-  {name: 'ios-people-outline', size: 26, title: '交友'},
-  {name: 'ios-chatbubbles-outline', size: 25, title: '消息'},
-  {name: 'ios-contact-outline', size: 26, title: '我的'}
+  {name: 'ios-home-outline', size: pxToDp(26), title: '广场'},
+  {name: 'ios-people-outline', size: pxToDp(26), title: '交友'},
+  {name: 'ios-chatbubbles-outline', size: pxToDp(26), title: '消息'},
+  {name: 'ios-contact-outline', size: pxToDp(26), title: '我的'}
 ];
 
 let emitter;

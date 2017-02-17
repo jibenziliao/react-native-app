@@ -47,7 +47,7 @@ import JPushModule from 'jpush-react-native'
 import Refresh from '../components/Refresh'
 import customTheme from '../themes/MyThemes'
 import pxToDp from '../utils/PxToDp'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
@@ -456,9 +456,9 @@ class Home extends BaseComponent {
         console.log("Opening notification!", map);
         //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
         /*pageNavigator.push({
-          component: Settings,
-          name: "Settings"
-        });*/
+         component: Settings,
+         name: "Settings"
+         });*/
       });
     } else {
 
@@ -472,17 +472,22 @@ class Home extends BaseComponent {
         console.log('失败');
       });
 
-      JPushModule.setBadge(0,(value)=>{
+      JPushModule.setBadge(0, (value)=> {
         console.log(value);
+      });
+
+      emitter.addListener('OpenNotification', (message)=> {
+        console.log("Opening notification!", message);
       });
 
       emitter.addListener('ReceiveNotification', (message)=> {
         console.log("content: " + JSON.stringify(message));
+        console.log('具体消息内容: ',message.aps.alert);
+        JPushModule.setBadge(message.aps.badge, (value)=> {
+          console.log(value ? '成功' : '失败');
+        });
       });
 
-      emitter.addListener('OpenNotification',(message)=>{
-        console.log("Opening notification!", message);
-      })
     }
   }
 
