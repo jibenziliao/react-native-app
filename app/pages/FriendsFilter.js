@@ -135,6 +135,9 @@ class FriendsFilter extends BaseComponent {
 
   //保存交友信息
   saveFriendFilter(data) {
+    RNPicker.isPickerShow((status)=> {
+      if (status) RNPicker.hide()
+    });
     const {dispatch}=this.props;
     dispatch(FriendFilterActions.saveFriendFilter(data, (json)=> {
       tmpGlobal.currentUser = json.Result;
