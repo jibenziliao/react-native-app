@@ -46,15 +46,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    top: 4,
-    right: 8,
-    width: width / 20,
-    height: width / 18,
-    borderRadius: width / 40,
+    top: pxToDp(8),
+    right: pxToDp(16),
+    borderRadius: pxToDp(17),
+    paddingHorizontal:pxToDp(4),
+    ...Platform.select({
+      ios:{
+        paddingTop:pxToDp(4),
+        paddingBottom:pxToDp(6),
+      },
+      android:{
+        paddingVertical:pxToDp(4)
+      }
+    })
   },
   badgeText: {
     color: '#fff',
-    fontSize: 10
+    fontSize: pxToDp(18),
+    flexDirection: 'row',
+    width: pxToDp(36),
+    textAlign:'center'
   }
 });
 
@@ -68,14 +79,16 @@ class TabBar extends Component {
   }
 
   _badgeCountHandler(value) {
-    return parseInt(value) > 99 ? '99+' : parseInt(value);
+    return parseInt(value) > 99 ? '99+' : value;
   }
 
   renderBadge(index) {
     if (this.props.unReadCount > 0 && index === 2) {
       return (
         <View style={styles.badgeContainer}>
-          <Text style={styles.badgeText}>{this._badgeCountHandler(this.props.unReadCount)}</Text>
+          <Text style={styles.badgeText}>
+            {this._badgeCountHandler(this.props.unReadCount)}
+          </Text>
         </View>
       )
     } else {
