@@ -8,6 +8,7 @@ import {
   Dimensions,
   Platform
 } from 'react-native';
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -546,5 +547,16 @@ export const ComponentStyles = StyleSheet.create({
   scrollView:{
     flex: 1,
     paddingHorizontal: 10
+  },
+  //针对native-base中button内文字在iOS平台不垂直居中的问题
+  btnText: {
+    ...Platform.select({
+      ios: {
+        lineHeight: pxToDp(32),
+        fontSize: pxToDp(28),
+        paddingTop: pxToDp(4)
+      },
+      android: {}
+    })
   },
 });

@@ -28,7 +28,8 @@ import {connect} from 'react-redux'
 import * as FriendFilterActions from '../actions/FriendFilter'
 import tmpGlobal from '../utils/TmpVairables'
 import customTheme from '../themes/MyThemes'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
 
@@ -43,14 +44,14 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   inputLabel: {
-    width: 100
+    width: pxToDp(200)
   },
   pickerItem: {
     flex: 1,
     flexDirection: 'row',
-    height: 40,
+    height: pxToDp(80),
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   pickerTextView: {
     flex: 1
@@ -59,11 +60,11 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center'
   },
   datingFilterArea: {
-    marginTop: 30
+    marginTop: pxToDp(60)
   },
   datingFilterTitle: {
-    fontSize: 18,
-    marginBottom: 10
+    fontSize: pxToDp(36),
+    marginBottom: pxToDp(20)
   },
   datingFilter: {
     borderTopWidth: 1,
@@ -71,11 +72,11 @@ const styles = StyleSheet.create({
   },
   datingPurposeLabel: {
     flexDirection: 'row',
-    height: 40,
+    height: pxToDp(80),
     alignItems: 'center'
   },
   listItem: {
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   checkBoxView: {
     flexDirection: 'row',
@@ -84,15 +85,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   checkBoxItem: {
-    width: (width - 30) / 2,
-    height: 40
+    width: (width - pxToDp(60)) / 2,
+    height: pxToDp(80)
   },
   checkBoxLabel: {
-    marginLeft: 10,
+    marginLeft: pxToDp(20),
     flexDirection: 'row',
     flex: 1,
     flexWrap: 'nowrap'
-  }
+  },
+  completeBtn: {
+    marginVertical: pxToDp(60),
+  },
 });
 
 const tmpGenderArr = ['不限', '男', '女'];
@@ -435,8 +439,8 @@ class FriendsFilter extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            small
-            style={{marginVertical: 30}}
+            textStyle={CommonStyles.btnText}
+            style={styles.completeBtn}
             onPress={()=> {
               this.saveFriendFilter(this.state)
             }}>

@@ -150,16 +150,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'nowrap'
   },
-  btnText: {
-    ...Platform.select({
-      ios: {
-        lineHeight: pxToDp(32),
-        fontSize: pxToDp(28),
-        paddingTop: pxToDp(4)
-      },
-      android: {}
-    })
-  },
 });
 
 let navigator;
@@ -966,7 +956,7 @@ class UserProfile extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            textStyle={styles.btnText}
+            textStyle={CommonStyles.btnText}
             style={styles.nextBtn}
             onPress={()=> {
               this.goNext(this.state, DatingPurposeSelectCopy)

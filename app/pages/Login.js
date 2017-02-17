@@ -39,6 +39,7 @@ import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
 import pxToDp from '../utils/PxToDp'
+import {ComponentStyles, CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
   picker: {
@@ -90,16 +91,6 @@ const styles = StyleSheet.create({
   },
   validCodeBtn: {
     marginLeft: pxToDp(40),
-  },
-  btnText: {
-    ...Platform.select({
-      ios: {
-        lineHeight: pxToDp(32),
-        fontSize: pxToDp(28),
-        paddingTop: pxToDp(4)
-      },
-      android: {}
-    })
   },
   loginBtn: {
     marginTop: pxToDp(80),
@@ -522,7 +513,7 @@ class Login extends BaseComponent {
               <NBButton
                 theme={customTheme}
                 block
-                textStyle={styles.btnText}
+                textStyle={CommonStyles.btnText}
                 style={[styles.validCodeBtn, styles.inputHeight, styles.menuOptions]}
                 onPress={()=> {
                   this.getValidCode(this.state.phoneCountry, this.state.phone)
@@ -534,7 +525,7 @@ class Login extends BaseComponent {
             <NBButton
               theme={customTheme}
               block
-              textStyle={styles.btnText}
+              textStyle={CommonStyles.btnText}
               style={[styles.loginBtn, styles.inputHeight]}
               onPress={()=>this.login(this.state.validCode)}
               disabled={this._renderLoginBtnStatus()}>
