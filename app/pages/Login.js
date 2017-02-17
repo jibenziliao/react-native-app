@@ -495,7 +495,7 @@ class Login extends BaseComponent {
               <TextInput
                 multiline={false}
                 keyboardType={'numeric'}
-                style={styles.input}
+                style={[styles.input, styles.inputHeight]}
                 underlineColorAndroid={'transparent'}
                 placeholder={'请输入验证码'}
                 maxLength={6}

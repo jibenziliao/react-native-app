@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     overflow: 'hidden',
-    fontSize: pxToDp(28)
+    fontSize: pxToDp(30)
   },
   badgeContainer: {
     width: pxToDp(120),
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   msgContent: {
     overflow: 'hidden',
     flex: 1,
-    fontSize: pxToDp(24),
+    fontSize: pxToDp(26),
     color: '#666'
   },
   tips: {
