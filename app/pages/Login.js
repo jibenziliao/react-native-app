@@ -25,7 +25,6 @@ import DeviceInfo from 'react-native-device-info'
 import * as InitialAppActions from '../actions/InitialApp'
 import * as LoginActions from '../actions/Login'
 import UserProfile from './UserProfile'
-import {CommonStyles} from '../style'
 import {Button as NBButton} from 'native-base'
 import Menu, {
   MenuContext,
@@ -513,7 +512,7 @@ class Login extends BaseComponent {
               <NBButton
                 theme={customTheme}
                 block
-                textStyle={CommonStyles.btnText}
+                textStyle={ComponentStyles.btnText}
                 style={[styles.validCodeBtn, styles.inputHeight, styles.menuOptions]}
                 onPress={()=> {
                   this.getValidCode(this.state.phoneCountry, this.state.phone)
@@ -525,7 +524,7 @@ class Login extends BaseComponent {
             <NBButton
               theme={customTheme}
               block
-              textStyle={CommonStyles.btnText}
+              textStyle={ComponentStyles.btnText}
               style={[styles.loginBtn, styles.inputHeight]}
               onPress={()=>this.login(this.state.validCode)}
               disabled={this._renderLoginBtnStatus()}>

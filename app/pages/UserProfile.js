@@ -36,7 +36,7 @@ import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import FriendsFilter from './FriendsFilter'
 import customTheme from '../themes/MyThemes'
-import {CommonStyles} from '../style'
+import {CommonStyles,ComponentStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
@@ -956,7 +956,7 @@ class UserProfile extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            textStyle={CommonStyles.btnText}
+            textStyle={ComponentStyles.btnText}
             style={styles.nextBtn}
             onPress={()=> {
               this.goNext(this.state, DatingPurposeSelectCopy)

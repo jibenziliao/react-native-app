@@ -27,12 +27,13 @@ import * as Storage from '../utils/Storage'
 import tmpGlobal from '../utils/TmpVairables'
 import customTheme from '../themes/MyThemes'
 import {ComponentStyles,CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10
+    padding: pxToDp(20)
   },
   scrollView: {
     flex: 1
@@ -40,17 +41,17 @@ const styles = StyleSheet.create({
   signatureContent: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    height: width / 3,
+    height: pxToDp(400),
     backgroundColor: '#FFF',
     textAlign: 'left',
     textAlignVertical: 'top',
-    paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingHorizontal: pxToDp(20),
+    paddingVertical: pxToDp(10),
+    fontSize:pxToDp(32)
   },
   saveBtn: {
-    marginTop: 20,
-    height: 40,
-    alignItems: 'center'
+    marginTop: pxToDp(40),
+    height: pxToDp(80)
   }
 });
 
@@ -155,7 +156,7 @@ class EditPersonalSignature extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            small
+            textStyle={ComponentStyles.btnText}
             style={styles.saveBtn}
             onPress={()=>this._saveSignature(this.state.personalSignature)}
             disabled={!this.state.personalSignature}>

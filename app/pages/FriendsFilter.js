@@ -439,7 +439,7 @@ class FriendsFilter extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            textStyle={CommonStyles.btnText}
+            textStyle={ComponentStyles.btnText}
             style={styles.completeBtn}
             onPress={()=> {
               this.saveFriendFilter(this.state)
