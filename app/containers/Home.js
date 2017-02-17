@@ -472,6 +472,10 @@ class Home extends BaseComponent {
         console.log('失败');
       });
 
+      JPushModule.setBadge(0,(value)=>{
+        console.log(value);
+      });
+
       emitter.addListener('ReceiveNotification', (message)=> {
         console.log("content: " + JSON.stringify(message));
       });

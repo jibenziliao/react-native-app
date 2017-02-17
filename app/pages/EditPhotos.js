@@ -166,11 +166,12 @@ class EditPhotos extends BaseComponent {
 
   }
 
+  //暂时去掉右上角的保存按钮
   getNavigationBarProps() {
     return {
       title: '编辑相册',
-      hideRightButton: false,
-      rightTitle: '保存'
+      //hideRightButton: false,
+      //rightTitle: '保存'
     };
   }
 

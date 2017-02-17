@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import pxToDp from '../utils/PxToDp'
-import {CommonStyles,StyleConfig} from '../style'
+import {CommonStyles, StyleConfig} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
@@ -66,11 +66,15 @@ class TabBar extends Component {
     }
   }
 
+  _badgeCountHandler(value) {
+    return parseInt(value) > 99 ? '99+' : parseInt(value);
+  }
+
   renderBadge(index) {
     if (this.props.unReadCount > 0 && index === 2) {
       return (
         <View style={styles.badgeContainer}>
-          <Text style={styles.badgeText}>{this.props.unReadCount}</Text>
+          <Text style={styles.badgeText}>{this._badgeCountHandler(this.props.unReadCount)}</Text>
         </View>
       )
     } else {
