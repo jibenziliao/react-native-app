@@ -31,31 +31,38 @@ import UserInfo from '../pages/UserInfo'
 import {toastLong} from '../utils/ToastUtil'
 import {SwipeListView} from 'react-native-swipe-list-view'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const styles = StyleSheet.create({
   listView: {
     flex: 1
   },
   cardLast: {
-    marginBottom: 10
+    marginBottom: pxToDp(20)
   },
   cardItem: {
-    padding: 10,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#cec5c5'
+    height: pxToDp(130),
+    borderBottomColor:'#cecece'
   },
   avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 4,
-    marginRight: 10
+    width: pxToDp(80),
+    height: pxToDp(80),
+    borderRadius: pxToDp(8),
+    margin: pxToDp(25)
   },
   cardContent: {
     flex: 1,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    paddingVertical: pxToDp(25),
+    borderBottomColor: '#cecece',
+    paddingRight: pxToDp(25),
+  },
+  timeText: {
+    fontSize: pxToDp(20),
+    color: '#999'
   },
   cardRow: {
     flexDirection: 'row',
@@ -63,40 +70,43 @@ const styles = StyleSheet.create({
   },
   cardText: {
     flexWrap: 'nowrap',
-    flex: 1
+    flex: 1,
+    textAlignVertical: 'center'
   },
   nameText: {
     overflow: 'hidden',
+    fontSize: pxToDp(28)
   },
   badgeContainer: {
-    width: 60,
+    width: pxToDp(120),
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row'
   },
   badge: {
     backgroundColor: 'red',
-    borderRadius: 10,
+    borderRadius: pxToDp(20),
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 2
+    paddingHorizontal: pxToDp(10),
   },
   badgeText: {
-    color: '#fff'
+    color: '#fff',
+    fontSize: pxToDp(24)
   },
   msgContent: {
     overflow: 'hidden',
     flex: 1,
-    paddingVertical: 2
+    fontSize: pxToDp(24),
+    color: '#666'
   },
   tips: {
     flexDirection: 'row',
-    margin: 40,
+    margin: pxToDp(80),
     justifyContent: 'center'
   },
   tipsText: {
-    fontSize: 20,
+    fontSize: pxToDp(40),
   },
   hiddenRow: {
     backgroundColor: 'red',
@@ -106,12 +116,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deleteBtn: {
-    width: 75,
+    width: pxToDp(120),
     justifyContent: 'center',
     alignItems: 'center'
   },
   deleteBtnText: {
-    fontSize: 20,
+    fontSize: pxToDp(32),
     color: '#fff',
     textAlign: 'center'
   }
@@ -539,7 +549,11 @@ class Message extends BaseComponent {
     });
   }
 
-  renderRowData(rowData) {
+  _bottomItem(rowID, value) {
+    return parseInt(rowID) === this.state.messageList.length - 1 ? (value === 1 ? 0 : StyleSheet.hairlineWidth) : (value === 0 ? 0 : StyleSheet.hairlineWidth);
+  }
+
+  renderRowData(rowData, sectionID, rowID) {
     return (
       <TouchableOpacity
         onPress={()=> {
@@ -551,18 +565,19 @@ class Message extends BaseComponent {
         }}
         activeOpacity={1}
         key={rowData.SenderId}
-        style={styles.cardItem}>
+        style={[styles.cardItem, {borderBottomWidth: this._bottomItem(rowID, 0)}]}>
         <Image
           style={styles.avatar}
           source={{uri: URL_DEV + rowData.SenderAvatar}}/>
-        <View style={styles.cardContent}>
+        <View style={[styles.cardContent, {borderBottomWidth: this._bottomItem(rowID, 1)}]}>
           <View style={styles.cardRow}>
             <Text
               numberOfLines={1}
               style={[styles.cardText, styles.nameText]}>
               {rowData.SenderNickname}
             </Text>
-            <Text style={{paddingHorizontal: 2, marginLeft: 2}}>
+            <Text
+              style={[styles.timeText]}>
               {rowData.MsgList[rowData.MsgList.length - 1].SendTime}
             </Text>
           </View>
@@ -610,7 +625,7 @@ class Message extends BaseComponent {
             </TouchableHighlight>
           )}
           disableRightSwipe={true}
-          rightOpenValue={-75}
+          rightOpenValue={-pxToDp(120)}
           enableEmptySections={true}
           onEndReachedThreshold={10}
           initialListSize={10}
