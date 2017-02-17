@@ -25,20 +25,21 @@ import RNPicker from 'react-native-picker'
 import * as FriendFilterActions from '../actions/FriendFilter'
 import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const styles = StyleSheet.create({
   friendInfo: {
     backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    marginTop: 10
+    paddingHorizontal: pxToDp(20),
+    marginTop: pxToDp(20)
   },
   scrollViewContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: pxToDp(20),
     flex: 1
   },
   inputLabel: {
-    width: 100
+    width: pxToDp(200)
   },
   topItem: {
     borderTopWidth: 1,
@@ -57,14 +58,14 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   saveBtn: {
-    marginVertical: 30
+    marginVertical: pxToDp(60)
   },
   pickerItem: {
     flex: 1,
     flexDirection: 'row',
-    height: 40,
+    height: pxToDp(80),
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   pickerTextView: {
     flex: 1
@@ -75,9 +76,9 @@ const styles = StyleSheet.create({
   emotionStatusIOS: {
     flex: 1,
     flexDirection: 'row',
-    height: 40,
+    height: pxToDp(80),
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   emotionStatusIOSView: {
     flex: 1,
@@ -495,7 +496,7 @@ class EditFriendFilter extends BaseComponent {
             <NBButton
               theme={customTheme}
               block
-              small
+              textStyle={ComponentStyles.btnText}
               style={styles.saveBtn}
               onPress={()=> {
                 this._saveFriendFilter()
