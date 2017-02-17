@@ -14,7 +14,8 @@ import {
   DeviceEventEmitter,
   Dimensions,
   ScrollView,
-  TouchableHighlight
+  TouchableHighlight,
+  Platform
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -27,23 +28,55 @@ import * as HomeActions from '../actions/Home'
 import tmpGlobal from '../utils/TmpVairables'
 import Settings from '../pages/Settings'
 import * as Storage from '../utils/Storage'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles, StyleConfig} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   avatarArea: {
     alignItems: 'center',
-    paddingTop: 10,
     paddingBottom: 10,
-    borderBottomWidth: 0.5,
-    borderColor: 'gray'
+    ...Platform.select({
+      ios: {
+        height: pxToDp(500) - 64
+      },
+      android: {
+        height: pxToDp(500) - 54
+      }
+    }),
   },
   userAvatar: {
-    height: width / 3,
-    width: width / 3,
-    borderRadius: width / 6,
+    height: pxToDp(182),
+    width: pxToDp(182),
+    borderRadius: pxToDp(40),
     marginBottom: 20
+  },
+  genderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: pxToDp(20)
+  },
+  ageText: {
+    color: '#fff',
+    fontSize: pxToDp(28),
+    marginLeft: pxToDp(20)
+  },
+  signatureContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: pxToDp(10),
+    paddingHorizontal: pxToDp(60)
+  },
+  signatureText: {
+    color: '#fff',
+    fontSize: pxToDp(32),
+    marginRight: pxToDp(20),
+    flexWrap: 'nowrap',
+    overflow: 'hidden',
+    paddingBottom: pxToDp(8)
   },
   avatarText: {
     color: '#fff',
@@ -68,14 +101,16 @@ const styles = StyleSheet.create({
   signatureItem: {
     paddingVertical: 10
   },
-  signatureText: {
-    paddingLeft: 20,
-    paddingRight: 10
-  },
+
   touchableItem: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    height: pxToDp(100),
+    marginBottom: pxToDp(10),
+    borderBottomColor: '#cecece',
+    borderBottomWidth: StyleSheet.hairlineWidth
   },
   itemRow: {
     flex: 1,
@@ -87,6 +122,9 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  itemText: {
+    fontSize: pxToDp(32)
   },
   listItemIcon: {
     width: 50,
@@ -100,7 +138,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  itemIcon: {}
 });
 
 let navigator;
@@ -121,11 +158,8 @@ class Mine extends BaseComponent {
 
   getNavigationBarProps() {
     return {
-      title: '我的',
-      leftIcon: {
-        name: 'bars',
-        size: 26
-      }
+      title: `${tmpGlobal.currentUser.Nickname}`,
+      hideLeftButton: true
     };
   }
 
@@ -226,84 +260,94 @@ class Mine extends BaseComponent {
     }
   }
 
+  renderGender() {
+    return (
+      <View style={styles.genderRow}>
+        <Icon
+          color={this.state.Gender ? '#1496ea' : 'pink'}
+          name={this.state.Gender ? 'mars-stroke' : 'venus'}
+          size={pxToDp(40)}/>
+        <Text style={styles.ageText}>{'年龄:'}{this.state.Age}</Text>
+      </View>
+    )
+  }
+
+  renderSignatureContainer() {
+    return (
+      <TouchableHighlight
+        onPress={()=> {
+          this._editSignature(this.state.PersonSignal)
+        }}
+        underlayColor={'rgba(141,226,145,0.5)'}>
+        <View style={styles.signatureContainer}>
+          <Text
+            style={styles.signatureText}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
+          <Icon name={'edit'} size={pxToDp(40)} color={'#fff'}/>
+        </View>
+      </TouchableHighlight>
+    )
+  }
+
   renderBody() {
     if (this.state.loadUserInfo) {
       return (
         <View style={ComponentStyles.container}>
           <ScrollView>
-            <View style={styles.avatarArea}>
+            <View style={[styles.avatarArea, CommonStyles.background_primary]}>
               <Image
                 style={styles.userAvatar}
                 source={{uri: URL_DEV + this.state.PhotoUrl}}/>
-              <Text>{this.state.Nickname}</Text>
-              <View style={[styles.userAvatarLabel, this._renderGenderStyle(this.state.Gender)]}>
-                <Icon
-                  style={styles.avatarText}
-                  name={this.state.Gender ? 'mars-stroke' : 'venus'}
-                  size={14}/>
-                <Text style={styles.avatarText}>{this.state.Age}</Text>
-                {this._renderLocation(this.state.Location)}
+              {this.renderGender()}
+              {this.renderSignatureContainer()}
+            </View>
+            <TouchableHighlight
+              onPress={()=> {
+                this._editMyDetail(this.state)
+              }}
+              underlayColor={'#b8b8bf'}
+              style={styles.touchableItem}>
+              <View style={styles.itemRow}>
+                <View style={styles.listItemLeft}>
+                  <View style={styles.iconBox}>
+                    <Icon
+                      name={'list-alt'}
+                      size={pxToDp(36)}
+                      color={StyleConfig.color_primary}/>
+                  </View>
+                  <Text style={styles.itemText}>{'详细资料'}</Text>
+                </View>
+                <View style={styles.listItemIcon}>
+                  <Icon
+                    name={'angle-right'}
+                    size={pxToDp(40)}
+                    color={'#b4b4b4'}/>
+                </View>
               </View>
-            </View>
-            <View style={[styles.listItem, styles.signatureItem]}>
-              <Text
-                numberOfLines={2}
-                style={[styles.listItemLeft, styles.signatureText]}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
-              <TouchableOpacity
-                onPress={()=> {
-                  this._editSignature(this.state.PersonSignal)
-                }}
-                style={styles.listItemIcon}
-                activeOpacity={0.5}>
-                <Icon name={'edit'} size={20}/>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.listItem}>
-              <TouchableHighlight
-                onPress={()=> {
-                  this._editMyDetail(this.state)
-                }}
-                underlayColor={'#b8b8bf'}
-                style={styles.touchableItem}>
-                <View style={styles.itemRow}>
-                  <View style={styles.listItemLeft}>
-                    <View style={styles.iconBox}>
-                      <Icon
-                        style={styles.itemIcon}
-                        name={'list-alt'}
-                        size={18}/>
-                    </View>
-                    <Text>{'详细资料'}</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={()=> {
+                this._goSettings()
+              }}
+              underlayColor={'#b8b8bf'}
+              style={styles.touchableItem}>
+              <View style={styles.itemRow}>
+                <View style={styles.listItemLeft}>
+                  <View style={styles.iconBox}>
+                    <Icon
+                      name={'gear'}
+                      size={pxToDp(36)}
+                      color={StyleConfig.color_primary}/>
                   </View>
-                  <View style={styles.listItemIcon}>
-                    <Icon name={'angle-right'} size={20}/>
-                  </View>
+                  <Text style={styles.itemText}>{'设置'}</Text>
                 </View>
-              </TouchableHighlight>
-            </View>
-            <View style={styles.listItem}>
-              <TouchableHighlight
-                onPress={()=> {
-                  this._goSettings()
-                }}
-                underlayColor={'#b8b8bf'}
-                style={styles.touchableItem}>
-                <View style={styles.itemRow}>
-                  <View style={styles.listItemLeft}>
-                    <View style={styles.iconBox}>
-                      <Icon
-                        style={styles.itemIcon}
-                        name={'gear'}
-                        size={18}/>
-                    </View>
-                    <Text>{'设置'}</Text>
-                  </View>
-                  <View style={styles.listItemIcon}>
-                    <Icon name={'angle-right'} size={20}/>
-                  </View>
+                <View style={styles.listItemIcon}>
+                  <Icon
+                    name={'angle-right'}
+                    size={pxToDp(40)}
+                    color={'#b4b4b4'}/>
                 </View>
-              </TouchableHighlight>
-            </View>
+              </View>
+            </TouchableHighlight>
           </ScrollView>
         </View>
       )

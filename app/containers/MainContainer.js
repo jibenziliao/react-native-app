@@ -59,10 +59,10 @@ const styles = StyleSheet.create({
 
 //tabBar的icon图标和文字标题
 const TAB_BAR_RESOURCES = [
-  {name: 'ios-home-outline', size: pxToDp(26), title: '广场'},
-  {name: 'ios-people-outline', size: pxToDp(26), title: '交友'},
-  {name: 'ios-chatbubbles-outline', size: pxToDp(26), title: '消息'},
-  {name: 'ios-contact-outline', size: pxToDp(26), title: '我的'}
+  {name: 'ios-home-outline', size: pxToDp(46), title: '广场'},
+  {name: 'ios-people-outline', size: pxToDp(46), title: '交友'},
+  {name: 'ios-chatbubbles-outline', size: pxToDp(46), title: '消息'},
+  {name: 'ios-contact-outline', size: pxToDp(46), title: '我的'}
 ];
 
 let emitter;

@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
         height: pxToDp(97)
       }
     }),
-    paddingVertical: pxToDp(10),
+    paddingTop: pxToDp(6),
+    paddingBottom: pxToDp(10)
   },
   badgeContainer: {
     backgroundColor: 'red',
