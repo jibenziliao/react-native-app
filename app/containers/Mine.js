@@ -82,26 +82,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginHorizontal: 5
   },
-  userAvatarLabel: {
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10
+  itemContainer: {
+    flex: 1,
+    backgroundColor: StyleConfig.color_second,
   },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 0.5,
-    borderColor: 'gray',
-    paddingVertical: 0.5,
-    flex: 1
-  },
-  signatureItem: {
-    paddingVertical: 10
-  },
-
   touchableItem: {
     flex: 1,
     flexDirection: 'row',
@@ -111,6 +95,9 @@ const styles = StyleSheet.create({
     marginBottom: pxToDp(10),
     borderBottomColor: '#cecece',
     borderBottomWidth: StyleSheet.hairlineWidth
+  },
+  itemBottom:{
+    marginBottom:0
   },
   itemRow: {
     flex: 1,
@@ -292,7 +279,8 @@ class Mine extends BaseComponent {
     if (this.state.loadUserInfo) {
       return (
         <View style={ComponentStyles.container}>
-          <ScrollView>
+          <ScrollView
+            bounces={false}>
             <View style={[styles.avatarArea, CommonStyles.background_primary]}>
               <Image
                 style={styles.userAvatar}
@@ -300,54 +288,56 @@ class Mine extends BaseComponent {
               {this.renderGender()}
               {this.renderSignatureContainer()}
             </View>
-            <TouchableHighlight
-              onPress={()=> {
-                this._editMyDetail(this.state)
-              }}
-              underlayColor={'#b8b8bf'}
-              style={styles.touchableItem}>
-              <View style={styles.itemRow}>
-                <View style={styles.listItemLeft}>
-                  <View style={styles.iconBox}>
-                    <Icon
-                      name={'list-alt'}
-                      size={pxToDp(36)}
-                      color={StyleConfig.color_primary}/>
+            <View style={styles.itemContainer}>
+              <TouchableHighlight
+                onPress={()=> {
+                  this._editMyDetail(this.state)
+                }}
+                underlayColor={'#b8b8bf'}
+                style={styles.touchableItem}>
+                <View style={styles.itemRow}>
+                  <View style={styles.listItemLeft}>
+                    <View style={styles.iconBox}>
+                      <Icon
+                        name={'list-alt'}
+                        size={pxToDp(36)}
+                        color={StyleConfig.color_primary}/>
+                    </View>
+                    <Text style={styles.itemText}>{'详细资料'}</Text>
                   </View>
-                  <Text style={styles.itemText}>{'详细资料'}</Text>
-                </View>
-                <View style={styles.listItemIcon}>
-                  <Icon
-                    name={'angle-right'}
-                    size={pxToDp(40)}
-                    color={'#b4b4b4'}/>
-                </View>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              onPress={()=> {
-                this._goSettings()
-              }}
-              underlayColor={'#b8b8bf'}
-              style={styles.touchableItem}>
-              <View style={styles.itemRow}>
-                <View style={styles.listItemLeft}>
-                  <View style={styles.iconBox}>
+                  <View style={styles.listItemIcon}>
                     <Icon
-                      name={'gear'}
-                      size={pxToDp(36)}
-                      color={StyleConfig.color_primary}/>
+                      name={'angle-right'}
+                      size={pxToDp(40)}
+                      color={'#b4b4b4'}/>
                   </View>
-                  <Text style={styles.itemText}>{'设置'}</Text>
                 </View>
-                <View style={styles.listItemIcon}>
-                  <Icon
-                    name={'angle-right'}
-                    size={pxToDp(40)}
-                    color={'#b4b4b4'}/>
+              </TouchableHighlight>
+              <TouchableHighlight
+                onPress={()=> {
+                  this._goSettings()
+                }}
+                underlayColor={'#b8b8bf'}
+                style={[styles.touchableItem,styles.itemBottom]}>
+                <View style={styles.itemRow}>
+                  <View style={styles.listItemLeft}>
+                    <View style={styles.iconBox}>
+                      <Icon
+                        name={'gear'}
+                        size={pxToDp(36)}
+                        color={StyleConfig.color_primary}/>
+                    </View>
+                    <Text style={styles.itemText}>{'设置'}</Text>
+                  </View>
+                  <View style={styles.listItemIcon}>
+                    <Icon
+                      name={'angle-right'}
+                      size={pxToDp(40)}
+                      color={'#b4b4b4'}/>
+                  </View>
                 </View>
-              </View>
-            </TouchableHighlight>
+              </TouchableHighlight>
+            </View>
           </ScrollView>
         </View>
       )
