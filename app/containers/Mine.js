@@ -293,7 +293,7 @@ class Mine extends BaseComponent {
                 onPress={()=> {
                   this._editMyDetail(this.state)
                 }}
-                underlayColor={'#b8b8bf'}
+                underlayColor={'#E9E9E9'}
                 style={styles.touchableItem}>
                 <View style={styles.itemRow}>
                   <View style={styles.listItemLeft}>
@@ -317,7 +317,7 @@ class Mine extends BaseComponent {
                 onPress={()=> {
                   this._goSettings()
                 }}
-                underlayColor={'#b8b8bf'}
+                underlayColor={'#E9E9E9'}
                 style={[styles.touchableItem,styles.itemBottom]}>
                 <View style={styles.itemRow}>
                   <View style={styles.listItemLeft}>

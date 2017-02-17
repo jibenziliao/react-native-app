@@ -208,7 +208,7 @@ class App extends Component {
       return sceneAnimation;
     }
     //默认(gestures设为{}或null用来禁用安卓从屏幕左侧滑动返回)
-    return {...Navigator.SceneConfigs.FloatFromRight, gestures: null}
+    return {...Navigator.SceneConfigs.PushFromRight, gestures: null}
   }
 
   renderScene(route, navigator) {

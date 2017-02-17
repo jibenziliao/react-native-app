@@ -145,7 +145,8 @@ class Report extends BaseComponent {
     dispatch(HomeActions.report(data, (json)=> {
       if (this.state.addToBackList) {
         dispatch(HomeActions.putToBlackList(data, (json)=> {
-          this._deleteRecordRow(this.state.UserId);
+          //暂时取消拉黑后删除聊天记录功能。
+          //this._deleteRecordRow(this.state.UserId);
           toastShort('举报成功');
           let routes = navigator.getCurrentRoutes();
           this.reportTimer = setTimeout(()=> {

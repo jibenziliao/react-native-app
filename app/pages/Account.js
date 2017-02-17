@@ -165,7 +165,7 @@ class Account extends BaseComponent {
       <View style={styles.btnRow}>
         <TouchableHighlight
           style={[styles.btnContainer, styles.btnLeft]}
-          underlayColor={'#b8b8bf'}
+          underlayColor={'#E9E9E9'}
           onPress={()=> {
             this._goRecharge()
           }}>
@@ -178,7 +178,7 @@ class Account extends BaseComponent {
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.btnContainer}
-          underlayColor={'#b8b8bf'}
+          underlayColor={'#E9E9E9'}
           onPress={()=> {
             this._goTransRecord()
           }}>
