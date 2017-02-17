@@ -271,6 +271,7 @@ class Tinder extends BaseComponent {
     let params = {
       MsgContent: '[眼缘]Hi,你好!',
       MsgId: Math.round(Math.random() * 1000000),
+      MsgType: 2,//打招呼类型是2
       SendTime: dateFormat(new Date()),
       HasSend: true,
       _id: Math.round(Math.random() * 1000000),
