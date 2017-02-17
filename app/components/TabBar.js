@@ -49,16 +49,7 @@ const styles = StyleSheet.create({
     top: pxToDp(8),
     right: pxToDp(16),
     borderRadius: pxToDp(17),
-    paddingHorizontal:pxToDp(4),
-    ...Platform.select({
-      ios:{
-        paddingTop:pxToDp(4),
-        paddingBottom:pxToDp(6),
-      },
-      android:{
-        paddingVertical:pxToDp(4)
-      }
-    })
+    padding:pxToDp(4),
   },
   badgeText: {
     color: '#fff',

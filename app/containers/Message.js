@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     paddingRight: pxToDp(25),
   },
   timeText: {
-    fontSize: pxToDp(20),
+    fontSize: pxToDp(22),
     color: '#999'
   },
   cardRow: {
