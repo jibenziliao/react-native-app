@@ -268,6 +268,7 @@ class Mine extends BaseComponent {
         underlayColor={'rgba(141,226,145,0.5)'}>
         <View style={styles.signatureContainer}>
           <Text
+            numberOfLines={1}
             style={styles.signatureText}>{this.state.PersonSignal ? this.state.PersonSignal : '请点击右侧按钮编辑你的个性签名'}</Text>
           <Icon name={'edit'} size={pxToDp(40)} color={'#fff'}/>
         </View>

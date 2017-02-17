@@ -38,36 +38,72 @@ import {setDictArr} from '../utils/Dict'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
+import pxToDp from '../utils/PxToDp'
 
 const styles = StyleSheet.create({
   picker: {
-    width: 100,
-    height: 40
+    width: pxToDp(240),
+    height: pxToDp(80),
+    backgroundColor: '#DADADA',
+  },
+  mRightRadius: {
+    marginRight: pxToDp(40),
+    borderRadius: pxToDp(8)
+  },
+  inputHeight: {
+    height: pxToDp(80)
   },
   pickerView: {
     backgroundColor: '#DADADA',
-    marginRight: 10,
-    paddingLeft: 10,
-    borderRadius: 4,
-    height: 40
+    marginRight: pxToDp(20),
+    paddingLeft: pxToDp(20),
+    borderRadius: pxToDp(8),
+    height: pxToDp(80)
+  },
+  menuTrigger: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: pxToDp(20),
+    width: pxToDp(240)
+  },
+  menuIcon: {
+    marginRight: pxToDp(20)
+  },
+  menuOptions: {
+    width: pxToDp(240)
   },
   inputItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 40,
-    marginBottom: 20
+    marginBottom: pxToDp(40)
   },
   label: {
-    width: 60
+    width: pxToDp(120)
   },
   input: {
     backgroundColor: '#DADADA',
     flex: 1,
-    paddingLeft: 10,
-    borderRadius: 4,
+    paddingLeft: pxToDp(20),
+    borderRadius: pxToDp(8),
     borderColor: '#444',
-    height: 40
-  }
+  },
+  validCodeBtn: {
+    marginLeft: pxToDp(40),
+  },
+  btnText: {
+    ...Platform.select({
+      ios: {
+        lineHeight: pxToDp(32),
+        fontSize: pxToDp(28),
+        paddingTop: pxToDp(4)
+      },
+      android: {}
+    })
+  },
+  loginBtn: {
+    marginTop: pxToDp(80),
+  },
 });
 
 let navigator;
@@ -283,7 +319,7 @@ class Login extends BaseComponent {
       validCodeBtnAccessible: false,
       validCodeText: `剩余${second}秒`,
       tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry, phone)}发送了一条验证短信`
-    },()=>{
+    }, ()=> {
       this.backgroundTimer = setInterval(()=> {
         //console.log('开始倒计时');
         this.setState({validCodeText: `剩余${second - 1}秒`});
@@ -383,15 +419,15 @@ class Login extends BaseComponent {
 
   renderTips() {
     return (
-      <View style={[CommonStyles.flexRow,CommonStyles.m_y_20]}>
-        <Text style={[CommonStyles.text_center,CommonStyles.font_lg,CommonStyles.flex_1]}>{this.state.tipsText}</Text>
+      <View style={[CommonStyles.flexRow, CommonStyles.m_y_20]}>
+        <Text style={[CommonStyles.text_center, CommonStyles.font_lg, CommonStyles.flex_1]}>{this.state.tipsText}</Text>
       </View>
     )
   }
 
   renderPicker() {
     return (
-      <View style={{width: 120, height: 40, backgroundColor: '#DADADA', marginRight: 20, borderRadius: 4}}>
+      <View style={[styles.picker, styles.mRightRadius, styles.inputHeight]}>
         {this.renderPickerIOS()}
       </View>
     )
@@ -414,20 +450,13 @@ class Login extends BaseComponent {
           this.renderCountry(value + '')
         }}>
         <MenuTrigger>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            height: 40,
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            width: 120
-          }}>
+          <View style={[styles.menuTrigger, styles.inputHeight]}>
             <Text>{this._renderCountry() + '+'}{this.state.phoneCountry}</Text>
-            <Icon name="angle-down" size={16} style={{marginRight: 10}}/>
+            <Icon name="angle-down" size={pxToDp(32)} style={styles.menuIcon}/>
           </View>
         </MenuTrigger>
         <MenuOptions
-          optionsContainerStyle={{width: 120}}>
+          optionsContainerStyle={styles.menuOptions}>
           <MenuOption value={86} text='(中国)+86'/>
           <MenuOption value={64} text="(新西兰)+64"/>
           <MenuOption value={61} text="(澳洲)+61"/>
@@ -444,14 +473,14 @@ class Login extends BaseComponent {
     return (
       <MenuContext
         ref={'root'}
-        style={{flex: 1}}>
+        style={CommonStyles.flex_1}>
         <ScrollView
           ref={'scroll'}
-          style={[CommonStyles.p_a_10,CommonStyles.flex_1,CommonStyles.background_second]}
+          style={[CommonStyles.p_a_10, CommonStyles.flex_1, CommonStyles.background_second]}
           keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
           <View
-            style={{flex: 1}}
+            style={CommonStyles.flex_1}
             onStartShouldSetResponderCapture={(e) => {
               ancestorTarget = e.nativeEvent.target;
               if (ancestorTarget !== findNodeHandle(this.refs[refTarget])) {
@@ -459,10 +488,10 @@ class Login extends BaseComponent {
               }
             }}>
             {this.renderTips()}
-            <View style={styles.inputItem}>
+            <View style={[styles.inputItem, styles.inputHeight]}>
               {this.renderPicker()}
               <TextInput
-                style={styles.input}
+                style={[styles.input, styles.inputHeight]}
                 keyboardType={'numeric'}
                 underlineColorAndroid={'transparent'}
                 placeholder={'请输入手机号'}
@@ -490,28 +519,23 @@ class Login extends BaseComponent {
                 returnKeyType={'done'}
                 onChangeText={(validCode)=>this.setState({validCode})}
                 value={this.state.validCode}/>
-                <NBButton
-                  theme={customTheme}
-                  block
-                  small
-                  textStyle={{fontSize: 12}}
-                  style={{
-                    height: 40,
-                    marginLeft: 20,
-                    width: 120
-                  }}
-                  onPress={()=> {
-                    this.getValidCode(this.state.phoneCountry, this.state.phone)
-                  }}
-                  disabled={!this.state.validCodeBtnAccessible}>
-                  {this.state.validCodeText}
-                </NBButton>
+              <NBButton
+                theme={customTheme}
+                block
+                textStyle={styles.btnText}
+                style={[styles.validCodeBtn, styles.inputHeight, styles.menuOptions]}
+                onPress={()=> {
+                  this.getValidCode(this.state.phoneCountry, this.state.phone)
+                }}
+                disabled={!this.state.validCodeBtnAccessible}>
+                {this.state.validCodeText}
+              </NBButton>
             </View>
             <NBButton
               theme={customTheme}
               block
-              small
-              style={{marginTop: 20, height: 40}}
+              textStyle={styles.btnText}
+              style={[styles.loginBtn, styles.inputHeight]}
               onPress={()=>this.login(this.state.validCode)}
               disabled={this._renderLoginBtnStatus()}>
               登录

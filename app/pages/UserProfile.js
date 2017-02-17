@@ -37,31 +37,35 @@ import tmpGlobal from '../utils/TmpVairables'
 import FriendsFilter from './FriendsFilter'
 import customTheme from '../themes/MyThemes'
 import {CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  inputHeight: {
+    height: pxToDp(80),
+  },
   genderRow: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    height: 40
+  },
+  paddingH_20: {
+    paddingHorizontal: pxToDp(20)
   },
   genderRadioGroup: {
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 10
   },
   genderLabel: {
-    marginLeft: 10
+    marginLeft: pxToDp(20)
   },
   genderTips: {
     flexDirection: 'row',
     textAlign: 'center',
-    marginVertical: 10
+    marginVertical: pxToDp(20)
   },
   inputRow: {
     flexDirection: 'row',
@@ -70,22 +74,20 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   inputLabel: {
-    width: 100
+    width: pxToDp(160)
   },
   rightLabel: {
-    width: 80,
-    paddingLeft: 10,
+    width: pxToDp(160),
+    paddingLeft: pxToDp(20),
     textAlignVertical: 'center'
   },
-  input: {
-    height: 40,
-    paddingLeft: 10,
+  fullInput: {
+    height: pxToDp(80),
+    paddingLeft: pxToDp(20),
     textAlignVertical: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    fontSize: 13.5
-  },
-  fullInput: {
+    fontSize: pxToDp(28),
     flex: 1
   },
   expandTips: {
@@ -97,21 +99,21 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    height: 40,
+    height: pxToDp(80),
     justifyContent: 'center'
   },
   expandText: {
-    marginRight: 10
+    marginRight: pxToDp(20)
   },
   nextBtn: {
-    marginBottom: 30
+    marginBottom: pxToDp(60)
   },
   emotionStatusIOS: {
     flex: 1,
     flexDirection: 'row',
-    height: 40,
+    height: pxToDp(80),
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   emotionStatusIOSView: {
     flex: 1,
@@ -122,21 +124,15 @@ const styles = StyleSheet.create({
   emotionStatusIOSText: {
     textAlignVertical: 'center',
     color: '#000',
-    fontSize: 13.5
-  },
-  modalCenter: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 300,
-    width: 400
+    fontSize: pxToDp(28)
   },
   datingPurposeLabel: {
     flexDirection: 'row',
-    height: 40,
+    height: pxToDp(80),
     alignItems: 'center'
   },
   listItem: {
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   checkBoxView: {
     flexDirection: 'row',
@@ -145,15 +141,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   checkBoxItem: {
-    width: (width - 30) / 2,
-    height: 40
+    width: (width - pxToDp(60)) / 2,
+    height: pxToDp(80)
   },
   checkBoxLabel: {
-    marginLeft: 10,
+    marginLeft: pxToDp(20),
     flexDirection: 'row',
     flex: 1,
     flexWrap: 'nowrap'
-  }
+  },
+  btnText: {
+    ...Platform.select({
+      ios: {
+        lineHeight: pxToDp(32),
+        fontSize: pxToDp(28),
+        paddingTop: pxToDp(4)
+      },
+      android: {}
+    })
+  },
 });
 
 let navigator;
@@ -199,7 +205,7 @@ class UserProfile extends BaseComponent {
       ],
       habitDrink: false,
       habitSmoke: false,
-      contact:'',
+      contact: '',
       expandText: '点击展开更多(选填)',
       expandStatus: false,
       expandIconName: 'angle-double-down',
@@ -403,7 +409,7 @@ class UserProfile extends BaseComponent {
 
   renderGenders(arr) {
     return (
-      <View style={styles.genderRow}>
+      <View style={[styles.genderRow, styles.inputHeight, styles.paddingH_20]}>
         {arr.map((gender, index)=>this.renderGenderItem(gender, index))}
       </View>
     )
@@ -411,7 +417,7 @@ class UserProfile extends BaseComponent {
 
   renderHabitDrink(arr) {
     return (
-      <View style={styles.genderRow}>
+      <View style={[styles.genderRow, styles.inputHeight, styles.paddingH_20]}>
         {arr.map((habit, index)=>this.renderHabitDrinkItem(habit, index))}
       </View>
     )
@@ -419,7 +425,7 @@ class UserProfile extends BaseComponent {
 
   renderHabitSmoke(arr) {
     return (
-      <View style={styles.genderRow}>
+      <View style={[styles.genderRow, styles.inputHeight, styles.paddingH_20]}>
         {arr.map((habit, index)=>this.renderHabitSmokeItem(habit, index))}
       </View>
     )
@@ -434,8 +440,8 @@ class UserProfile extends BaseComponent {
         key={index}
         activeOpacity={0.5}
         underlayColor="rgba(247,245,245,0.7)">
-        <View style={styles.genderRadioGroup}>
-          <Icon name={habit.iconName} size={24}/>
+        <View style={[styles.genderRadioGroup, styles.paddingH_20]}>
+          <Icon name={habit.iconName} size={pxToDp(48)}/>
           <Text style={styles.genderLabel}>{habit.text}</Text>
         </View>
       </TouchableHighlight>
@@ -451,8 +457,8 @@ class UserProfile extends BaseComponent {
         key={index}
         activeOpacity={0.5}
         underlayColor="rgba(247,245,245,0.7)">
-        <View style={styles.genderRadioGroup}>
-          <Icon name={habit.iconName} size={24}/>
+        <View style={[styles.genderRadioGroup, styles.paddingH_20]}>
+          <Icon name={habit.iconName} size={pxToDp(48)}/>
           <Text style={styles.genderLabel}>{habit.text}</Text>
         </View>
       </TouchableHighlight>
@@ -498,8 +504,8 @@ class UserProfile extends BaseComponent {
         key={index}
         activeOpacity={0.5}
         underlayColor="rgba(247,245,245,0.7)">
-        <View style={styles.genderRadioGroup}>
-          <Icon name={gender.iconName} size={24}/>
+        <View style={[styles.genderRadioGroup, styles.paddingH_20]}>
+          <Icon name={gender.iconName} size={pxToDp(48)}/>
           <Text style={styles.genderLabel}>{gender.text}</Text>
         </View>
       </TouchableHighlight>
@@ -772,7 +778,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'所在地'}</Text>
           <TextInput
-            style={[styles.input, styles.fullInput]}
+            style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
               this._hidePicker('Location')
@@ -794,7 +800,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'家乡'}</Text>
           <TextInput
-            style={[styles.input, styles.fullInput]}
+            style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
               this._hidePicker('Hometown')
@@ -816,7 +822,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'民族'}</Text>
           <TextInput
-            style={[styles.input, styles.fullInput]}
+            style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
               this._hidePicker('Ethnicity')
@@ -842,7 +848,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'联系方式'}</Text>
           <TextInput
-            style={[styles.input, styles.fullInput]}
+            style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
               this._hidePicker('Contact')
@@ -859,7 +865,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'兴趣爱好'}</Text>
           <TextInput
-            style={[styles.input, styles.fullInput]}
+            style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
               this._hidePicker('Hobby')
@@ -877,7 +883,7 @@ class UserProfile extends BaseComponent {
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'自我评价'}</Text>
           <TextInput
-            style={[styles.input, styles.fullInput]}
+            style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
             onFocus={()=> {
               this._hidePicker('SelfEvaluation')
@@ -900,14 +906,14 @@ class UserProfile extends BaseComponent {
     return (
       <View
         ref={'root'}
-        style={[CommonStyles.flex_1,CommonStyles.background_second]}>
+        style={[CommonStyles.flex_1, CommonStyles.background_second]}>
         <ScrollView
           ref={'scroll'}
-          style={[CommonStyles.flex_1,CommonStyles.p_x_10]}
+          style={[CommonStyles.flex_1, CommonStyles.p_x_10]}
           keyboardDismissMode={'interactive'}
           keyboardShouldPersistTaps={true}>
           <View
-            style={[CommonStyles.flex_1,CommonStyles.m_y_10]}
+            style={[CommonStyles.flex_1, CommonStyles.m_y_10]}
             pointerEvents={'box-none'}
             onStartShouldSetResponderCapture={(e) => {
               ancestorTarget = e.nativeEvent.target;
@@ -918,7 +924,7 @@ class UserProfile extends BaseComponent {
             <View style={styles.inputRow}>
               <Text style={styles.inputLabel}>{'昵称'}</Text>
               <TextInput
-                style={[styles.input, styles.fullInput]}
+                style={[styles.fullInput]}
                 underlineColorAndroid={'transparent'}
                 onFocus={()=> {
                   this._hidePicker('Nickname')
@@ -960,8 +966,8 @@ class UserProfile extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            small
-            style={{marginBottom: 30}}
+            textStyle={styles.btnText}
+            style={styles.nextBtn}
             onPress={()=> {
               this.goNext(this.state, DatingPurposeSelectCopy)
             }}>
