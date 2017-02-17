@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,0,0.7)',
-    padding: 10
+    padding: pxToDp(20)
   },
   tipsContent: {
     flex: 1,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   tipsText: {
-    fontSize: 12,
+    fontSize: pxToDp(24),
     textAlign: 'center',
     flex: 1,
     flexWrap: 'wrap'
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   contentTitle: {
-    margin: 10
+    margin: pxToDp(20)
   },
   content: {
     flex: 1
@@ -83,21 +83,21 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFF',
     flex: 1,
-    marginTop: 10,
-    marginHorizontal: 10,
-    paddingVertical: 10,
-    borderRadius: 4
+    marginTop: pxToDp(20),
+    marginHorizontal: pxToDp(20),
+    paddingVertical: pxToDp(20),
+    borderRadius: pxToDp(8)
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   avatarImg: {
-    width: width / 9,
-    height: width / 9,
-    marginRight: 10,
-    borderRadius: 8
+    width: pxToDp(80),
+    height: pxToDp(80),
+    marginRight: pxToDp(20),
+    borderRadius: pxToDp(16)
   },
   userInfo: {
     justifyContent: 'space-between',
@@ -110,18 +110,18 @@ const styles = StyleSheet.create({
   userInfoLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: pxToDp(20),
     backgroundColor: 'pink',
     borderWidth: 1,
     borderColor: 'pink',
-    paddingHorizontal: 6
+    paddingHorizontal: pxToDp(12)
   },
   userInfoIcon: {
-    marginRight: 4,
+    marginRight: pxToDp(8),
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 10,
+    fontSize: pxToDp(20),
     color: '#FFF'
   },
   nameTextContainer: {
@@ -135,50 +135,49 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap'
   },
   timeText: {
-    fontSize: 12,
+    fontSize: pxToDp(24),
     justifyContent: 'center'
   },
   moodView: {
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   moodText: {
-    fontSize: 16,
+    fontSize: pxToDp(32),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal: 10,
-    marginBottom: 10
+    paddingHorizontal: pxToDp(20),
+    marginBottom: pxToDp(20)
   },
   postImage: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    //paddingVertical: 5,
     justifyContent: 'flex-start',
-    paddingLeft: 10
+    paddingLeft: pxToDp(20)
   },
   cardBtn: {
-    marginTop: 10,
-    marginRight: 20
+    marginTop: pxToDp(20),
+    marginRight: pxToDp(40)
   },
   moreImgLabel: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: pxToDp(8),
+    right: pxToDp(8),
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
     justifyContent: 'flex-end',
-    paddingHorizontal: 2
+    paddingHorizontal: pxToDp(4)
   },
   moreImgIcon: {},
   moreImgText: {
-    fontSize: 10,
-    marginLeft: 4
+    fontSize: pxToDp(20),
+    marginLeft: pxToDp(8)
   },
   singleImgContainer: {
-    marginBottom: 10,
-    marginRight: 10
+    marginBottom: pxToDp(20),
+    marginRight: pxToDp(20)
   },
   refreshScreen: {
     ...Platform.select({
@@ -199,11 +198,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   refreshBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 4,
+    paddingHorizontal: pxToDp(20),
+    paddingVertical: pxToDp(10),
+    borderRadius: pxToDp(8),
     borderColor: 'gray',
     borderWidth: 1
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    padding: pxToDp(20),
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F3F3F3',
+  },
+  commentInput: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: pxToDp(8),
+    paddingHorizontal: pxToDp(20),
+    flexWrap: 'wrap',
+    height: pxToDp(80)
+  },
+  sendBtn: {
+    width: pxToDp(200),
+    marginLeft: pxToDp(20),
+    height: pxToDp(80)
+  },
+  closeBtn: {
+    position: 'absolute',
+    left: pxToDp(40),
+    ...Platform.select({
+      ios: {
+        top: pxToDp(30)
+      },
+      android: {
+        top: pxToDp(20)
+      }
+    }),
   },
 });
 
@@ -482,7 +513,7 @@ class Home extends BaseComponent {
 
       emitter.addListener('ReceiveNotification', (message)=> {
         console.log("content: " + JSON.stringify(message));
-        console.log('具体消息内容: ',message.aps.alert);
+        console.log('具体消息内容: ', message.aps.alert);
         JPushModule.setBadge(message.aps.badge, (value)=> {
           console.log(value ? '成功' : '失败');
         });
@@ -804,49 +835,26 @@ class Home extends BaseComponent {
     if (this.state.showCommentInput) {
       return (
         <Animated.View
-          style={{
-            flexDirection: 'row',
-            padding: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#F3F3F3',
+          style={[styles.commentContainer, {
             marginBottom: this.state.viewMarginBottom
-          }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: 1
-          }}>
-            <TextInput
-              ref={'comment'}
-              multiline={true}
-              style={[{
-                flex: 1,
-                backgroundColor: '#fff',
-                borderRadius: 4,
-                paddingHorizontal: 10,
-                flexWrap: 'wrap',
-                height: 40
-              }, {
-                height: Math.max(40, this.state.commentInputHeight)
-              }]}
-              underlineColorAndroid={'transparent'}
-              placeholder={'请输入回复'}
-              maxLength={50}
-              onChange={this._handleInputHeight}
-              value={this.state.comment}/>
-          </View>
+          }]}>
+          <TextInput
+            ref={'comment'}
+            multiline={true}
+            style={[styles.commentInput, {
+              height: Math.max(pxToDp(80), this.state.commentInputHeight)
+            }]}
+            underlineColorAndroid={'transparent'}
+            placeholder={'请输入回复'}
+            maxLength={50}
+            onChange={this._handleInputHeight}
+            value={this.state.comment}/>
           <View>
             <NBButton
               theme={customTheme}
               primary
-              small
-              style={{
-                width: 100,
-                marginLeft: 10,
-                height: 40
-              }}
+              textStyle={ComponentStyles.btnText}
+              style={styles.sendBtn}
               onPress={()=> {
                 this._sendComment()
               }}>
@@ -1024,30 +1032,14 @@ class Home extends BaseComponent {
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            left: 20,
-            ...Platform.select({
-              ios: {
-                top: 15
-              },
-              android: {
-                top: 10
-              }
-            }),
-          }}
+          style={[styles.closeBtn]}
           onPress={()=> {
             this._closeImgModal()
           }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-            <IonIcon
-              name={'ios-close-outline'}
-              size={44} color={'#fff'}
-              style={{fontWeight: '100'}}/>
-          </View>
+          <IonIcon
+            name={'ios-close-outline'}
+            size={pxToDp(88)} color={'#fff'}
+            style={{fontWeight: '100'}}/>
         </TouchableOpacity>
       </ModalBox>
     )
