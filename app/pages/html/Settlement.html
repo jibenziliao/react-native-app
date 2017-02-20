@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+    <title>充值觅豆</title>
+    <link rel="stylesheet" type="text/css" href="./iconfont.css">
+    <style type="text/css" rel="stylesheet">
+        * {
+            moz-user-select: -moz-none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -o-user-select: none;
+            -khtml-user-select: none;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            background-color: #eee
+        }
+
+        html {
+            font-size: 62.5%
+        }
+
+        body {
+            font-size: 1.4rem;
+            font-family: "Lantinghei SC", "Open Sans", Arial, "Hiragino Sans GB", "Microsoft YaHei", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", SimSun, sans-serif
+        }
+
+        /** 清除内外边距 **/
+        body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
+        dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
+        pre, /* text formatting elements 文本格式元素 */
+        form, fieldset, legend, button, input, textarea, /* form elements 表单元素 */
+        th, td /* table elements 表格元素 */ {
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            font-size: 1.4rem;
+            padding:0.6rem 1.4rem;
+        }
+
+        .currency-group {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .currency-item{
+            flex:1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding:0.8rem 0;
+            border-right: 1px solid #cecece;
+        }
+
+        .currency-item:active{
+            background-color: #aaaaaa;
+        }
+
+        .currency-item i{
+            font-size: 2rem;
+            margin-right: 0.4rem;
+            color: #4CD472;
+        }
+
+        .trade-group {
+            background-color: #fff;
+        }
+
+        .trade-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height:2rem;
+            border-bottom: 1px solid #cecece;
+            padding:0.8rem 1.4rem;
+        }
+
+        .trade-item i{
+            font-size: 2.4rem;
+            color: #4CD472;
+        }
+
+        .trade-item:active{
+            background-color: #aaaaaa;
+        }
+
+        .pay {
+
+        }
+
+        .pay-group {
+            background-color: #fff;
+        }
+
+        .pay-item {
+            display: flex;
+            padding:0.8rem 1.4rem;
+        }
+
+        .pay-item:active {
+            background-color: #aaaaaa;
+        }
+
+        .pay-item img {
+            height: 4rem;
+            width: 4rem;
+        }
+
+        .pay-item i{
+            line-height: 4rem;
+            font-size: 2.4rem;
+            color: #4CD472;
+        }
+
+        .pay-type{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            margin-left: 0.8rem;
+        }
+
+        .pay-type .title{
+            font-size: 1.6rem;
+        }
+
+        .pay-type .description{
+            font-size: 1rem;
+        }
+
+        .total {
+            display: flex;
+            justify-content: space-between;
+            height:4rem;
+            align-items: center;
+            padding:0.8rem 1.4rem;
+            background-color: #fff;
+            margin-top: 0.6rem;
+        }
+
+        .amount{
+            font-size: 1.8rem;
+            color: #4CD472;
+        }
+
+        .pay-btn{
+            position: fixed;
+            bottom:0;
+            width:100%;
+            height:4rem;
+            justify-content: center;
+            align-items: center;
+            background-color: #4CD472;
+            text-align: center;
+            line-height: 4rem;
+            color: #fff;
+        }
+
+        .pay-btn:active{
+            background-color: #0BB20C;
+        }
+    </style>
+</head>
+<body>
+<div class="currency">
+    <p>请选择货币类型</p>
+    <div class="currency-group">
+        <a class="currency-item">
+            <i class="iconfont icon-yuanxingweixuanzhong"></i>
+            <span>美元($)</span>
+        </a>
+        <a class="currency-item">
+            <i class="iconfont icon-yuanxingxuanzhongfill"></i>
+            <span>人民币(&yen;)</span>
+        </a>
+    </div>
+</div>
+<div class="trade">
+    <p>请选择交易类型</p>
+    <div class="trade-group">
+        <a class="trade-item">
+            <span>5元购买<span>50</span>觅豆</span>
+            <i class="iconfont icon-yuanxingweixuanzhong"></i>
+        </a>
+        <a class="trade-item">
+            <span>5元购买50觅豆</span>
+            <i class="iconfont icon-yuanxingweixuanzhong"></i>
+        </a>
+        <a class="trade-item">
+            <span>5元购买50觅豆</span>
+            <i class="iconfont icon-yuanxingweixuanzhong"></i>
+        </a>
+        <a class="trade-item">
+            <span>5元购买50觅豆</span>
+            <i class="iconfont icon-yuanxingweixuanzhong"></i>
+        </a>
+        <a class="trade-item">
+            <span>5元购买50觅豆</span>
+            <i class="iconfont icon-yuanxingxuanzhongfill"></i>
+        </a>
+    </div>
+</div>
+<div class="pay">
+    <p>请选择支付类型</p>
+    <div class="pay-group">
+        <a class="pay-item">
+            <img src="../img/alipaylogo.png" alt="支付宝">
+            <div class="pay-type">
+                <span class="title">支付宝</span>
+                <span class="description">数亿用户都在用,安全可托付</span>
+            </div>
+            <i class="iconfont icon-yuanxingxuanzhongfill"></i>
+        </a>
+    </div>
+</div>
+<div class="total">
+    <span>支付总计</span>
+    <div class="money">
+        <span>&yen;</span>
+        <span class="amount">50</span>
+    </div>
+</div>
+<a class="pay-btn">
+   立即支付
+</a>
+<script type="text/javascript">
+    window.onresize = function () {
+        var e = 320,
+                t = document.documentElement.clientWidth;
+        document.getElementsByTagName("html")[0].style.fontSize = t / e * 62.5 + "%";
+    };
+    window.onresize();
+    document.body.addEventListener("touchmove",
+            function (e) {
+                e.preventDefault()
+            });
+</script>
+</body>
+</html>
