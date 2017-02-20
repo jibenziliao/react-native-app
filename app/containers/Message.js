@@ -85,14 +85,14 @@ const styles = StyleSheet.create({
   },
   badge: {
     backgroundColor: 'red',
-    borderRadius: pxToDp(20),
+    borderRadius: pxToDp(16),
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: pxToDp(10),
   },
   badgeText: {
     color: '#fff',
-    fontSize: pxToDp(24)
+    fontSize: pxToDp(24),
   },
   msgContent: {
     overflow: 'hidden',
@@ -492,6 +492,10 @@ class Message extends BaseComponent {
     });
   }
 
+  _badgeCountHandler(value) {
+    return parseInt(value) > 99 ? '99+' : value;
+  }
+
   _renderUnReadCount(data) {
     let tmpArr = data.filter((item)=> {
       return item.HasSend === false;
@@ -501,7 +505,7 @@ class Message extends BaseComponent {
         <View style={styles.badgeContainer}>
           <View style={styles.badge}>
             <Text style={[styles.cardText, styles.badgeText]}>
-              {tmpArr.length}
+              {this._badgeCountHandler(tmpArr.length)}
             </Text>
           </View>
         </View>
