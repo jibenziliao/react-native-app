@@ -314,11 +314,7 @@ class AppointmentList extends Component {
               numberOfLines={2}>
               {rowData.PostContent}
             </Text>
-            <View
-              style={styles.postImage}
-              onPress={() => {
-                this._openImgModal(rowData.PicList)
-              }}>
+            <View style={styles.postImage}>
               {this.renderPostImage(rowData.PicList)}
             </View>
           </View>

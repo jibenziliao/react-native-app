@@ -40,7 +40,8 @@ import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import AnnouncementList from '../pages/AnnouncemenetList'
 import customTheme from '../themes/MyThemes'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -51,15 +52,15 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFF',
     flex: 1,
-    marginTop: 10,
-    marginBottom: 5,
-    marginHorizontal: 10,
-    paddingVertical: 10
+    marginTop: pxToDp(20),
+    marginBottom: pxToDp(10),
+    marginHorizontal: pxToDp(20),
+    paddingVertical: pxToDp(20)
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   cardLeft: {
     flexDirection: 'row',
@@ -69,10 +70,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   avatarImg: {
-    width: width / 9,
-    height: width / 9,
-    marginRight: 10,
-    borderRadius: 8
+    width: pxToDp(80),
+    height: pxToDp(80),
+    marginRight: pxToDp(20),
+    borderRadius: pxToDp(16)
   },
   userInfo: {
     justifyContent: 'space-between',
@@ -85,21 +86,21 @@ const styles = StyleSheet.create({
   userInfoLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: pxToDp(20),
     backgroundColor: 'pink',
     borderWidth: 1,
     borderColor: 'pink',
-    paddingHorizontal: 6
+    paddingHorizontal: pxToDp(12)
   },
   commentName: {
-    marginLeft: 10
+    marginLeft: pxToDp(20)
   },
   userInfoIcon: {
     marginRight: 4,
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 10,
+    fontSize: pxToDp(20),
     color: '#FFF'
   },
   nameTextContainer: {
@@ -113,64 +114,84 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap'
   },
   timeText: {
-    fontSize: 12,
+    fontSize: pxToDp(24),
     justifyContent: 'center'
   },
   moodView: {
-    marginVertical: 20
+    marginVertical: pxToDp(20)
   },
   postImage: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    paddingLeft: 10
+    paddingLeft: pxToDp(20)
+  },
+  singleImgContainer: {
+    marginBottom: pxToDp(20),
+    marginRight: pxToDp(20)
   },
   moodText: {
-    fontSize: 16,
+    fontSize: pxToDp(32),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20),
+    marginBottom: pxToDp(20)
   },
   goreBtn: {
     color: '#4CD472'
   },
   cardBtn: {
-    marginTop: 10,
-    marginRight: 20
+    marginTop: pxToDp(20),
+    marginRight: pxToDp(40)
   },
   commentCard: {
-    padding: 10,
-    marginBottom: 5,
+    padding: pxToDp(20),
+    marginBottom: pxToDp(10),
     backgroundColor: '#fff',
-    borderRadius: 4,
+    borderRadius: pxToDp(8),
     borderColor: '#fff',
     flexDirection: 'row',
-    marginHorizontal: 10
+    marginHorizontal: pxToDp(20)
   },
   commentImg: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
-    borderRadius: 6
+    width: pxToDp(60),
+    height: pxToDp(60),
+    marginRight: pxToDp(20),
+    borderRadius: pxToDp(12)
   },
   commentArea: {
     flex: 1
   },
   commentContent: {
-    marginVertical: 10
+    marginVertical: pxToDp(20)
   },
   partyOptionsContainer: {
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   partyOptionsRow: {
     flexDirection: 'row',
     alignItems: 'center'
   },
   partyLabel: {
-    width: width / 3
-  }
+    width: pxToDp(240)
+  },
+  closeBtn: {
+    position: 'absolute',
+    left: pxToDp(40),
+    ...Platform.select({
+      ios: {
+        top: pxToDp(40)
+      },
+      android: {
+        top: pxToDp(20)
+      }
+    }),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: pxToDp(40)
+  },
 });
 
 let lastCount;
@@ -230,7 +251,7 @@ class AnnouncementDetail extends BaseComponent {
     if (this.state.isSelf) {
       return {
         name: 'ellipsis-v',
-        size: 24
+        size: pxToDp(48)
       }
     } else {
       return null;
@@ -242,10 +263,10 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   componentDidMount() {
-    this._attentionListener = emitter.addListener('hasAttention', ()=> {
+    this._attentionListener = emitter.addListener('hasAttention', () => {
       this._onRefresh()
     });
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._getAnnouncementDetail();
     });
 
@@ -283,7 +304,7 @@ class AnnouncementDetail extends BaseComponent {
     };
   }
 
-  onLeftPressed(){
+  onLeftPressed() {
     let routes = navigator.getCurrentRoutes();
     //console.log(routes,navigator);
     navigator.pop();
@@ -307,14 +328,14 @@ class AnnouncementDetail extends BaseComponent {
       PostId: this.state.Id
     };
     if (index === 2) {
-      dispatch(HomeActions.deleteAnnouncement(data, (json)=> {
+      dispatch(HomeActions.deleteAnnouncement(data, (json) => {
         deleteFlag = true;
         toastShort('删除成功');
-        this.deleteTimer = setTimeout(()=> {
+        this.deleteTimer = setTimeout(() => {
           navigator.pop();
           emitter.emit('announcementHasDelete', {message: '公告被删除', data: this.state.PostType - 1});
         }, 1000);
-      }, (error)=> {
+      }, (error) => {
       }));
     } else if (index === 1) {
       this._canPost(this.state.PostType);
@@ -327,7 +348,7 @@ class AnnouncementDetail extends BaseComponent {
     let data = {
       postType: int
     };
-    dispatch(HomeActions.newPost(data, (json)=> {
+    dispatch(HomeActions.newPost(data, (json) => {
       if (json.Result.CanPost) {
         navigator.push({
           component: Addannouncement,
@@ -340,14 +361,14 @@ class AnnouncementDetail extends BaseComponent {
       } else {
         this._newPostAlert(int);
       }
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
   //前往我的历史公告列表(包含聚会和约会)(需要检查路由栈中是否有历史公告列表页面,有则跳转到路由栈中的页面,避免循环跳转)
   _goAnnouncementList() {
     let routes = navigator.getCurrentRoutes();
-    let index = routes.findIndex((item)=> {
+    let index = routes.findIndex((item) => {
       return item.name === 'AnnouncementList'
     });
     if (index === -1) {
@@ -384,10 +405,10 @@ class AnnouncementDetail extends BaseComponent {
     let data = {
       attentionUserId: this.state.PosterInfo.UserId
     };
-    dispatch(HomeActions.attention(data, (json)=> {
+    dispatch(HomeActions.attention(data, (json) => {
       emitter.emit('hasAttention', '已关注/取消关注对方');
       //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
-    }, (error)=> {
+    }, (error) => {
     }))
   }
 
@@ -449,12 +470,12 @@ class AnnouncementDetail extends BaseComponent {
       postId: id,
       isLike: true
     };
-    dispatch(HomeActions.like(data, (json)=> {
+    dispatch(HomeActions.like(data, (json) => {
       this.setState({
         AmILikeIt: this.state.AmILikeIt,
         LikeCount: this.state.LikeCount
       });
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -479,16 +500,16 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.comment(data, (json)=> {
-      dispatch(HomeActions.getCommentList(params, (json)=> {
+    dispatch(HomeActions.comment(data, (json) => {
+      dispatch(HomeActions.getCommentList(params, (json) => {
         emitter.emit('announcementHasComment', {message: '公告被评论', data: this.state.PostType - 1});
         this.setState({
           CommentCount: this.state.CommentCount,
           commentList: json.Result//评论成功后,需要重新渲染页面,以显示最新的评论
         });
-      }, (error)=> {
+      }, (error) => {
       }))
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -516,8 +537,8 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.getAnnouncementDetailQuiet(data, (json)=> {
-      dispatch(HomeActions.getCommentListQuiet(params, (result)=> {
+    dispatch(HomeActions.getAnnouncementDetailQuiet(data, (json) => {
+      dispatch(HomeActions.getCommentListQuiet(params, (result) => {
         this.setState({
           comment: '',
           commentUser: '',
@@ -531,10 +552,10 @@ class AnnouncementDetail extends BaseComponent {
           commentList: result.Result,
           isSelf: this.state.isSelf
         });
-      }, (error)=> {
+      }, (error) => {
         this.setState({refreshing: false});
       }));
-    }, (error)=> {
+    }, (error) => {
       this.setState({refreshing: false});
     }));
   }
@@ -551,8 +572,8 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.getAnnouncementDetail(data, (json)=> {
-      dispatch(HomeActions.getCommentList(params, (result)=> {
+    dispatch(HomeActions.getAnnouncementDetail(data, (json) => {
+      dispatch(HomeActions.getCommentList(params, (result) => {
         this.setState({
           forCommentId: null,
           refreshing: false,
@@ -566,10 +587,10 @@ class AnnouncementDetail extends BaseComponent {
         if (Platform.OS === 'android') {
           emitter.emit('announcementHasRead', {message: '公告已阅读', data: this.state.PostType - 1});
         }
-      }, (error)=> {
+      }, (error) => {
         this.setState({refreshing: false});
       }));
-    }, (error)=> {
+    }, (error) => {
       this.setState({refreshing: false});
     }));
   }
@@ -585,7 +606,7 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.getCommentList(params, (json)=> {
+    dispatch(HomeActions.getCommentList(params, (json) => {
       lastCount = json.Result.length;
       this.state.commentList = this.state.commentList.concat(json.Result);
       this.setState({
@@ -593,7 +614,7 @@ class AnnouncementDetail extends BaseComponent {
         refreshing: false,
         loadingMore: false
       })
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -615,9 +636,9 @@ class AnnouncementDetail extends BaseComponent {
     let data = {
       PostId: this.state.Id
     };
-    dispatch(HomeActions.gore(data, (json)=> {
+    dispatch(HomeActions.gore(data, (json) => {
       toastShort('置顶成功');
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -628,7 +649,7 @@ class AnnouncementDetail extends BaseComponent {
         <TouchableOpacity
           activeOpacity={0.5}
           style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}
-          onPress={()=> {
+          onPress={() => {
             this._goreAlert()
           }}>
           <Text style={styles.goreBtn}>{'顶一下'}</Text>
@@ -652,7 +673,7 @@ class AnnouncementDetail extends BaseComponent {
 
   //渲染聚会人数
   renderNumberOfPeople(data) {
-    let index = DICT.numberOfPeople.findIndex((item)=> {
+    let index = DICT.numberOfPeople.findIndex((item) => {
       return item.Key === data;
     });
     return (
@@ -662,7 +683,7 @@ class AnnouncementDetail extends BaseComponent {
 
   //渲染聚会费用
   renderCostText(data) {
-    let index = DICT.cost.findIndex((item)=> {
+    let index = DICT.cost.findIndex((item) => {
       return item.Key === data;
     });
     return (
@@ -670,31 +691,38 @@ class AnnouncementDetail extends BaseComponent {
     );
   }
 
+  _marginBottomHandler() {
+    if (this.state.PostType === 1) {
+      return {marginBottom: pxToDp(20)}
+    } else {
+      return {marginBottom: 0}
+    }
+  }
+
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
-      let imageWidth = 0;
-      if (arr.length % 3 === 0) {
-        imageWidth = (width - 60) / 3;
-      } else if (arr.length === 2) {
-        imageWidth = (width - 50) / 2;
-      } else {
-        imageWidth = (width - 60) / 3;
-      }
-      return arr.map((item, index)=> {
+      let imageWidth = pxToDp(210);
+      return arr.map((item, index) => {
         return (
-          <Image
-            key={index}
-            onLoadEnd={()=> {
-              this.setState({imgLoading: false})
+          <TouchableOpacity
+            onPress={() => {
+              this._openImgModal(arr, index)
             }}
-            style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}
-            source={{uri: URL_DEV + '/' + item}}>
-            {this.state.imgLoading ?
-              <Image
-                source={require('./img/imgLoading.gif')}
-                style={{width: imageWidth, height: imageWidth, marginBottom: 10, marginRight: 10}}/> : null}
-          </Image>
+            key={index}
+            style={styles.singleImgContainer}>
+            <Image
+              onLoadEnd={() => {
+                this.setState({imgLoading: false})
+              }}
+              style={{width: imageWidth, height: imageWidth}}
+              source={{uri: URL_DEV + '/' + item}}>
+              {this.state.imgLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={{width: imageWidth, height: imageWidth}}/> : null}
+            </Image>
+          </TouchableOpacity>
         )
       })
     } else {
@@ -709,11 +737,11 @@ class AnnouncementDetail extends BaseComponent {
         style={styles.commentCard}>
         <View style={styles.cardLeft}>
           <TouchableOpacity
-            onPress={()=> {
+            onPress={() => {
               this._goUserInfo(rowData.CommentUserInfo)
             }}>
             <Image
-              onLoadEnd={()=> {
+              onLoadEnd={() => {
                 this.setState({avatarLoading: false})
               }}
               source={{uri: URL_DEV + rowData.CommentUserInfo.PrimaryPhotoFilename}}
@@ -734,7 +762,7 @@ class AnnouncementDetail extends BaseComponent {
                   style={[styles.userInfoLabel, styles.commentName, this._renderGenderStyle(rowData.CommentUserInfo.Gender)]}>
                   <Icon
                     name={rowData.CommentUserInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={12}
+                    size={pxToDp(24)}
                     style={styles.userInfoIcon}/>
                   <Text style={styles.userInfoText}>{rowData.CommentUserInfo.Age}{'岁'}</Text>
                 </View>
@@ -742,7 +770,7 @@ class AnnouncementDetail extends BaseComponent {
             </View>
             <View>
               <TouchableOpacity
-                onPress={()=> {
+                onPress={() => {
                   this._showCommentInput(rowData.Id, rowData);
                 }}
                 style={styles.commentContent}>
@@ -787,7 +815,7 @@ class AnnouncementDetail extends BaseComponent {
       <View style={styles.card}>
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={()=> {
+          onPress={() => {
             this._goUserInfo(this.state.PosterInfo);
           }}>
           <View style={styles.cardRow}>
@@ -805,7 +833,7 @@ class AnnouncementDetail extends BaseComponent {
                 <View style={[styles.userInfoLabel, this._renderGenderStyle(this.state.PosterInfo.Gender)]}>
                   <Icon
                     name={this.state.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                    size={10}
+                    size={pxToDp(20)}
                     style={styles.userInfoIcon}/>
                   <Text style={styles.userInfoText}>{this.state.PosterInfo.Age}{'岁'}</Text>
                 </View>
@@ -814,14 +842,10 @@ class AnnouncementDetail extends BaseComponent {
           </View>
         </TouchableOpacity>
         <View style={styles.moodView}>
-          <Text style={styles.moodText}>{this.state.PostContent}</Text>
-          <TouchableOpacity
-            style={styles.postImage}
-            onPress={()=> {
-              this._openImgModal(this.state.PicList)
-            }}>
+          <Text style={[styles.moodText, this._marginBottomHandler()]}>{this.state.PostContent}</Text>
+          <View style={styles.postImage}>
             {this.renderPostImage(this.state.PicList)}
-          </TouchableOpacity>
+          </View>
           {this.renderPartyOptions(this.state.PostType)}
         </View>
         <View style={styles.cardRow}>
@@ -835,20 +859,25 @@ class AnnouncementDetail extends BaseComponent {
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.cardBtn}
-            onPress={()=> {
+            onPress={() => {
               this._doLike(this.state.Id, this.state.AmILikeIt)
             }}>
-            <Icon name={this.state.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
+            <Icon
+              name={this.state.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'}
+              size={pxToDp(40)}
+              color={'#1496ea'}/>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.cardBtn}
-            onPress={()=> {
+            onPress={() => {
               this._showCommentInput(this.state.Id, null)
             }}>
-            <Icon name="comments-o" size={20}/>
+            <Icon
+              name="comments-o"
+              size={pxToDp(40)}/>
           </TouchableOpacity>
-          <View style={{flex: 1, marginTop: 10, flexDirection: 'row', justifyContent: 'flex-end'}}>
+          <View style={{flex: 1, marginTop: pxToDp(20), flexDirection: 'row', justifyContent: 'flex-end'}}>
             <Text>{'公告到期时间:'}{this._expirationDate(this.state.ExpirationDate)}</Text>
           </View>
         </View>
@@ -856,14 +885,15 @@ class AnnouncementDetail extends BaseComponent {
     )
   }
 
-  _openImgModal(arr) {
+  _openImgModal(arr, index) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
       tmpArr.push(URL_DEV + '/' + arr[i]);
     }
     this.setState({
-      imgList: tmpArr
-    }, ()=> {
+      imgList: tmpArr,
+      showIndex: index
+    }, () => {
       this.refs.modalFullScreen.open();
     });
   }
@@ -897,7 +927,7 @@ class AnnouncementDetail extends BaseComponent {
             onRefresh={this._onRefresh.bind(this)}
           />
         }
-        onScroll={()=> {
+        onScroll={() => {
           this._closeCommentInput()
         }}
         style={styles.listView}
@@ -933,7 +963,7 @@ class AnnouncementDetail extends BaseComponent {
   _handleInputHeight(event) {
     this.setState({
       comment: event.nativeEvent.text,
-      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, 80)
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, pxToDp(160))
     })
   }
 
@@ -943,52 +973,44 @@ class AnnouncementDetail extends BaseComponent {
         <Animated.View
           style={{
             flexDirection: 'row',
-            padding: 10,
+            padding: pxToDp(20),
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#F3F3F3',
             marginBottom: this.state.viewMarginBottom
           }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: 1
-          }}>
             <TextInput
               ref={'comment'}
               multiline={true}
               style={[{
-                height: 40,
+                height: pxToDp(80),
                 flex: 1,
                 backgroundColor: '#fff',
-                borderRadius: 4,
-                paddingHorizontal: 10
+                borderRadius: pxToDp(8),
+                paddingHorizontal: pxToDp(20)
               }, {
-                height: Math.max(40, this.state.commentInputHeight)
+                height: Math.max(pxToDp(80), this.state.commentInputHeight)
               }]}
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
               maxLength={50}
-              onBlur={()=> {
+              onBlur={() => {
                 this._resetScrollTo()
               }}
-              onChange={(event)=> {
+              onChange={(event) => {
                 this._handleInputHeight(event)
               }}
               value={this.state.comment}/>
-          </View>
           <View>
             <NBButton
               theme={customTheme}
               primary
-              small
               style={{
-                width: 100,
-                marginLeft: 10,
-                height:40
+                width: pxToDp(200),
+                marginLeft: pxToDp(20),
+                height: pxToDp(80)
               }}
-              onPress={()=> {
+              onPress={() => {
                 this._sendComment()
               }}>
               发送
@@ -1036,34 +1058,22 @@ class AnnouncementDetail extends BaseComponent {
         onClosingState={this.onClosingState}>
         <PhotoScaleViewer
           index={this.state.showIndex}
-          pressHandle={()=> {
+          pressHandle={() => {
             console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            left: 20,
-            ...Platform.select({
-              ios: {
-                top: 15
-              },
-              android: {
-                top: 10
-              }
-            })
-          }}
-          onPress={()=> {
+          style={styles.closeBtn}
+          onPress={() => {
             this._closeImgModal()
           }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
+          <IonIcon
+            name={'ios-close-outline'}
+            size={pxToDp(88)}
+            color={'#fff'}
+            style={{
               fontWeight: '100'
             }}/>
-          </View>
         </TouchableOpacity>
       </ModalBox>
     )
@@ -1071,7 +1081,7 @@ class AnnouncementDetail extends BaseComponent {
 
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
