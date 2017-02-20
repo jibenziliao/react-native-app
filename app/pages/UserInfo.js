@@ -33,35 +33,36 @@ import tmpGlobal from '../utils/TmpVairables'
 import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import {ComponentStyles,CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
     flex: 1,
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   photoContainer: {
     flexDirection: 'row',
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   photos: {
-    width: 100,
-    height: 100,
-    marginRight: 10
+    width: pxToDp(210),
+    height: pxToDp(210),
+    marginRight: pxToDp(20)
   },
   userAvatar: {
-    height: width / 9,
-    width: width / 9,
-    marginRight: 10,
-    borderRadius: 4
+    height: pxToDp(80),
+    width: pxToDp(80),
+    marginRight: pxToDp(20),
+    borderRadius: pxToDp(8)
   },
   userInfoItem: {
     flexDirection: 'row',
-    paddingVertical: 5
+    paddingVertical: pxToDp(10)
   },
   itemLeft: {
-    width: 100
+    width: pxToDp(200)
   },
   itemRight: {
     flex: 1
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   bottomBtn: {
     flex: 1,
-    height: 40,
+    height: pxToDp(80),
     borderRadius: 0
   },
   attention: {
@@ -80,26 +81,26 @@ const styles = StyleSheet.create({
   },
   section: {
     backgroundColor: '#fff',
-    borderRadius: 4,
-    padding: 10,
-    marginTop: 10
+    borderRadius: pxToDp(8),
+    padding: pxToDp(20),
+    marginTop: pxToDp(20)
   },
   sectionTitle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#cec5c5',
-    paddingBottom: 10
+    paddingBottom: pxToDp(20)
   },
   sectionTitleText: {
-    fontSize: 16
+    fontSize: pxToDp(32)
   },
   sectionContent: {
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   bottomSection: {
-    marginBottom: 10
+    marginBottom: pxToDp(20)
   },
   announcementCard: {
     flexDirection: 'row',
@@ -110,15 +111,30 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   editText: {
-    marginLeft: 5
+    marginLeft: pxToDp(10)
   },
   textBtnContainer: {
-    paddingVertical: 5,
-    paddingHorizontal: 10
+    paddingVertical: pxToDp(10),
+    paddingHorizontal: pxToDp(20)
   },
   textBtn: {
     color: '#4CD472'
-  }
+  },
+  closeBtn: {
+    position: 'absolute',
+    left: pxToDp(40),
+    ...Platform.select({
+      ios: {
+        top: pxToDp(40)
+      },
+      android: {
+        top: pxToDp(20)
+      }
+    }),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal:pxToDp(40)
+  },
 });
 
 let navigator;
@@ -136,7 +152,6 @@ class UserInfo extends BaseComponent {
       loading:true
     };
     navigator = this.props.navigator;
-    console.log(this.props.route.params);
   }
 
   getNavigationBarProps() {
@@ -246,8 +261,12 @@ class UserInfo extends BaseComponent {
     if (arr.length > 0) {
       return arr.map((item, index)=> {
         return (
-          <Image
+          <TouchableOpacity
             key={index}
+            onPress={()=> {
+              this._openImgModal(arr,index)
+          }}>
+          <Image
             onLoadEnd={()=> {
               this.setState({imgLoading: false})
             }}
@@ -259,6 +278,7 @@ class UserInfo extends BaseComponent {
                 source={require('./img/imgLoading.gif')}
                 style={styles.photos}/> : null}
           </Image>
+          </TouchableOpacity>
         )
       })
     } else {
@@ -320,7 +340,7 @@ class UserInfo extends BaseComponent {
           style={styles.editIconBtn}>
           <Icon
             name={'edit'}
-            size={20}/>
+            size={pxToDp(40)}/>
           <Text style={styles.editText}>{'编辑'}</Text>
         </TouchableOpacity>
       )
@@ -360,13 +380,14 @@ class UserInfo extends BaseComponent {
     })
   }
 
-  _openImgModal(arr) {
+  _openImgModal(arr,index) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
       tmpArr.push(URL_DEV + arr[i].PhotoUrl);
     }
     this.setState({
-      imgList: tmpArr
+      imgList: tmpArr,
+      showIndex:index
     }, ()=> {
       this.refs.modalFullScreen.open();
     });
@@ -393,13 +414,9 @@ class UserInfo extends BaseComponent {
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={true}>
-              <TouchableOpacity
-                style={styles.photoContainer}
-                onPress={()=> {
-                  this._openImgModal(this.state.userPhotos)
-                }}>
+              <View style={styles.photoContainer}>
                 {this._renderPhotos(this.state.userPhotos)}
-              </TouchableOpacity>
+              </View>
             </ScrollView>
           </View>
           <View style={styles.section}>
@@ -486,18 +503,7 @@ class UserInfo extends BaseComponent {
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            left: 20,
-            ...Platform.select({
-              ios: {
-                top: 15
-              },
-              android: {
-                top: 10
-              }
-            }),
-          }}
+          style={styles.closeBtn}
           onPress={()=> {
             this._closeImgModal()
           }}>

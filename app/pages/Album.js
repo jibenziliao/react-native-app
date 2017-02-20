@@ -26,6 +26,7 @@ import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import EditPhotos from '../pages/EditPhotos'
 import {ComponentStyles,CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -34,15 +35,15 @@ const styles = StyleSheet.create({
     flex: 1
   },
   singleImgContainer: {
-    marginTop: 10,
-    marginRight: 10
+    marginTop: pxToDp(20),
+    marginRight: pxToDp(20)
   },
   albumContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
-    paddingLeft: 10
+    paddingLeft: pxToDp(20)
   },
   tipsArea: {
     flex: 1,
@@ -50,9 +51,24 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   tipsText: {
-    fontSize: 20,
-    paddingHorizontal: 20,
+    fontSize: pxToDp(40),
+    paddingHorizontal: pxToDp(20),
     textAlign: 'center'
+  },
+  closeBtn: {
+    position: 'absolute',
+    left: pxToDp(40),
+    ...Platform.select({
+      ios: {
+        top: pxToDp(40)
+      },
+      android: {
+        top: pxToDp(20)
+      }
+    }),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal:pxToDp(40)
   },
 });
 
@@ -66,7 +82,8 @@ class Album extends BaseComponent {
     this.state = {
       photos: [],
       imgLoading: true,
-      imgList: []
+      imgList: [],
+      showIndex:0
     };
     navigator = this.props.navigator;
     emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
@@ -110,13 +127,14 @@ class Album extends BaseComponent {
     }));
   }
 
-  _openImgModal(arr) {
+  _openImgModal(arr,index) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
       tmpArr.push(URL_DEV + arr[i].PhotoUrl);
     }
     this.setState({
-      imgList: tmpArr
+      imgList: tmpArr,
+      showIndex:index
     }, ()=> {
       this.refs.modalFullScreen.open();
     });
@@ -133,18 +151,18 @@ class Album extends BaseComponent {
           key={index}
           style={styles.singleImgContainer}
           onPress={()=> {
-            this._openImgModal(arr)
+            this._openImgModal(arr,index)
           }}>
           <Image
             onLoadEnd={()=> {
               this.setState({imgLoading: false})
             }}
-            style={{width: (width - 40) / 3, height: (width - 40) / 3}}
+            style={{width: (width - pxToDp(80)) / 3, height: (width - pxToDp(80)) / 3}}
             source={{uri: URL_DEV + item.PhotoUrl}}>
             {this.state.imgLoading ?
               <Image
                 source={require('./img/imgLoading.gif')}
-                style={{width: (width - 40) / 3, height: (width - 40) / 3}}/> : null}
+                style={{width: (width - pxToDp(80)) / 3, height: (width - pxToDp(80)) / 3}}/> : null}
           </Image>
         </TouchableOpacity>
       )
@@ -208,32 +226,17 @@ class Album extends BaseComponent {
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            left: 20,
-            ...Platform.select({
-              ios: {
-                top: 15
-              },
-              android: {
-                top: 10
-              }
-            }),
-          }}
+          style={styles.closeBtn}
           onPress={()=> {
             this._closeImgModal()
           }}>
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
             <IonIcon
               name={'ios-close-outline'}
-              size={44} color={'#fff'}
+              size={pxToDp(88)}
+              color={'#fff'}
               style={{
                 fontWeight: '100'
               }}/>
-          </View>
         </TouchableOpacity>
       </ModalBox>
     )
