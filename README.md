@@ -1,7 +1,7 @@
 # qingyuanjie
 
 ```bash
-git clone https://github.com/jibenziliao/reac-native-app.git
+git clone https://github.com/jibenziliao/react-native-app.git
 ```
 
 ```bash
