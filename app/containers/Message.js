@@ -41,6 +41,10 @@ const styles = StyleSheet.create({
   cardLast: {
     marginBottom: pxToDp(20)
   },
+  card:{
+    backgroundColor: '#FFF',
+    flex: 1,
+  },
   cardItem: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -51,7 +55,9 @@ const styles = StyleSheet.create({
     width: pxToDp(80),
     height: pxToDp(80),
     borderRadius: pxToDp(8),
-    margin: pxToDp(25)
+    margin: pxToDp(25),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor:'#cecece'
   },
   cardContent: {
     flex: 1,
@@ -559,7 +565,7 @@ class Message extends BaseComponent {
 
   renderRowData(rowData, sectionID, rowID) {
     return (
-      <TouchableOpacity
+      <TouchableHighlight
         onPress={()=> {
           if (!rowIsOpen) {
             this._goChat(rowData)
@@ -567,9 +573,9 @@ class Message extends BaseComponent {
             this.refs.swipeListView.safeCloseOpenRow()
           }
         }}
-        activeOpacity={1}
         key={rowData.SenderId}
-        style={[styles.cardItem, {borderBottomWidth: this._bottomItem(rowID, 0)}]}>
+        style={styles.card}>
+        <View style={[styles.cardItem, {borderBottomWidth: this._bottomItem(rowID, 0)}]}>
         <Image
           style={styles.avatar}
           source={{uri: URL_DEV + rowData.SenderAvatar}}/>
@@ -594,7 +600,8 @@ class Message extends BaseComponent {
             {this._renderUnReadCount(rowData.MsgList)}
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
+      </TouchableHighlight>
     )
   }
 
