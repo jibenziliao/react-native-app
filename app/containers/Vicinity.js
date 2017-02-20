@@ -23,7 +23,7 @@ import Tinder from '../pages/Tinder'
 import Revel from '../pages/Revel'
 import tmpGlobal from '../utils/TmpVairables'
 import pxToDp from '../utils/PxToDp'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
 
 const {height, width} = Dimensions.get('window');
 
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   image: {
     width: pxToDp(354),
     height: pxToDp(279),
-    borderRadius: 8,
+    borderRadius: pxToDp(16),
     borderColor: '#f3f3f3',
     borderWidth: pxToDp(1),
 
@@ -60,20 +60,20 @@ const styles = StyleSheet.create({
     borderRightWidth: 0
   },
   cardText: {
-    fontSize: 24,
+    fontSize: pxToDp(48),
     color: '#fff'
   },
   warningContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: pxToDp(20),
     position: 'absolute',
     left: 0,
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    width: width / 3,
+    width: pxToDp(354),
   },
   warningText: {
-    fontSize: 10
+    fontSize: pxToDp(20)
   },
 });
 
@@ -107,7 +107,7 @@ class Vicinity extends BaseComponent {
       title: '交友',
       leftIcon: {
         name: 'bars',
-        size: 26
+        size: pxToDp(36)
       }
     };
   }
@@ -165,7 +165,7 @@ class Vicinity extends BaseComponent {
             <View style={[styles.cardRow, styles.topRow]}>
               <TouchableOpacity
                 style={styles.card}
-                onPress={()=> {
+                onPress={() => {
                   if (tmpGlobal.currentUser.MapPrecision !== null) {
                     this._goMap()
                   }
@@ -177,7 +177,7 @@ class Vicinity extends BaseComponent {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.card}
-                onPress={()=> {
+                onPress={() => {
                   this._goMatchUsers()
                 }}>
                 <Image
@@ -188,7 +188,7 @@ class Vicinity extends BaseComponent {
             <View style={styles.cardRow}>
               <TouchableOpacity
                 style={styles.card}
-                onPress={()=> {
+                onPress={() => {
                   this._goShake()
                 }}>
                 <Image
@@ -197,7 +197,7 @@ class Vicinity extends BaseComponent {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.card}
-                onPress={()=> {
+                onPress={() => {
                   this._goRevel()
                 }}>
                 <Image

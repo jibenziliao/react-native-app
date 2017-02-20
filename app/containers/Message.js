@@ -159,7 +159,7 @@ class Message extends BaseComponent {
       title: '消息',
       leftIcon: {
         name: 'bars',
-        size: 26
+        size: pxToDp(36)
       }
     };
   }

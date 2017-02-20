@@ -580,11 +580,12 @@ class Home extends BaseComponent {
       title: '广场',
       hideRightButton: false,
       rightIcon: {
-        name: 'plus'
+        name: 'plus',
+        size:pxToDp(36)
       },
       leftIcon: {
         name: 'bars',
-        size: 26
+        size: pxToDp(36)
       }
     };
   }
