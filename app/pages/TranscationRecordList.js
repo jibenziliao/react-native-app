@@ -20,6 +20,7 @@ import * as HomeActions from '../actions/Home'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import {dateFormat} from '../utils/DateUtil'
 import {ComponentStyles, CommonStyles, StyleConfig} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -29,13 +30,13 @@ const styles = StyleSheet.create({
   },
   listView: {
     borderBottomColor: '#F3F3F3',
-    borderBottomWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   listItemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 10,
+    padding: pxToDp(20),
     backgroundColor: '#fff'
   },
   notes: {
@@ -43,30 +44,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   balanceContainer: {
-    width: width / 5,
+    width: pxToDp(180),
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   recordText: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: pxToDp(36),
+    marginBottom: pxToDp(20),
     fontWeight: '200',
     flexWrap: 'nowrap',
     overflow: 'hidden'
   },
   recordTime: {
-    fontSize: 14
+    fontSize: pxToDp(28)
   },
   tradeAmount: {
-    fontSize: 14,
-    marginBottom: 10
+    fontSize: pxToDp(28),
+    marginBottom: pxToDp(20)
   },
   moneyLabel: {
-    fontSize: 14,
-    paddingBottom: 3
+    fontSize: pxToDp(28),
+    paddingBottom: pxToDp(10)
   },
   money: {
-    fontSize: 24,
+    fontSize: pxToDp(48),
     fontWeight: '200',
     color: StyleConfig.color_primary,
   },
@@ -173,11 +174,8 @@ class TranscationRecordList extends BaseComponent {
 
   renderRowData(rowData) {
     return (
-      <TouchableOpacity
+      <View
         key={rowData.Id}
-        onPress={()=> {
-          console.log('123');
-        }}
         style={styles.listView}>
         <View style={styles.listItemContainer}>
           <View style={styles.notes}>
@@ -193,7 +191,7 @@ class TranscationRecordList extends BaseComponent {
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     )
   }
 

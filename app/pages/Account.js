@@ -25,6 +25,7 @@ import Recharge from '../pages/Recharge'
 import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import {ComponentStyles, CommonStyles, StyleConfig} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -36,20 +37,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   btnRow: {
-    marginTop: 20,
+    marginTop: pxToDp(40),
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#fff',
     alignItems: 'center'
   },
   avatarContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10
+    paddingHorizontal: pxToDp(40),
+    paddingVertical: pxToDp(20)
   },
   avatar: {
-    width: width / 6,
-    height: width / 6,
-    borderRadius: width / 12
+    width: pxToDp(120),
+    height: pxToDp(120),
+    borderRadius: pxToDp(60)
   },
   userInfo: {
     flex: 1,
@@ -57,32 +58,32 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontWeight: '400',
-    fontSize: 18
+    fontSize: pxToDp(36)
   },
   btnContainer: {
     flex: 1
   },
   btnLeft: {
-    borderRightWidth: 0.5,
+    borderRightWidth: StyleSheet.hairlineWidth,
     borderRightColor: '#F3F3F3'
   },
   btn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 20,
+    paddingVertical: pxToDp(40),
     flex: 1
   },
   iconBox: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 20
+    marginRight: pxToDp(40)
   },
   money: {
     color: StyleConfig.color_primary
   },
   btnText: {
-    fontSize: 20
+    fontSize: pxToDp(40)
   }
 });
 
@@ -171,7 +172,10 @@ class Account extends BaseComponent {
           }}>
           <View style={styles.btn}>
             <View style={styles.iconBox}>
-              <Icon name={'usd'} size={24} color={'#4CD472'}/>
+              <Icon
+                name={'usd'}
+                size={pxToDp(48)}
+                color={'#4CD472'}/>
             </View>
             <Text style={styles.btnText}>{'充值'}</Text>
           </View>
@@ -184,7 +188,10 @@ class Account extends BaseComponent {
           }}>
           <View style={styles.btn}>
             <View style={styles.iconBox}>
-              <Icon name={'history'} size={24} color={'#e29e40'}/>
+              <Icon
+                name={'history'}
+                size={pxToDp(48)}
+                color={'#e29e40'}/>
             </View>
             <Text style={styles.btnText}>{'交易记录'}</Text>
           </View>
