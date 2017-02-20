@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
     <title>充值觅豆</title>
-    <link rel="stylesheet" type="text/css" href="./iconfont.css">
+    <link rel="stylesheet" type="text/css" href="assets/iconfont.css">
     <style type="text/css" rel="stylesheet">
         * {
             moz-user-select: -moz-none;
@@ -41,14 +41,15 @@
         dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
         pre, /* text formatting elements 文本格式元素 */
         form, fieldset, legend, button, input, textarea, /* form elements 表单元素 */
-        th, td /* table elements 表格元素 */ {
+        th, td /* table elements 表格元素 */
+        {
             margin: 0;
             padding: 0;
         }
 
         p {
             font-size: 1.4rem;
-            padding:0.6rem 1.4rem;
+            padding: 0.6rem 1.4rem;
         }
 
         .currency-group {
@@ -57,20 +58,20 @@
             background-color: #fff;
         }
 
-        .currency-item{
-            flex:1;
+        .currency-item {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding:0.8rem 0;
-            border-right: 1px solid #cecece;
+            padding: 0.8rem 0;
+            border-right: 1px solid #E9E9E9;
         }
 
-        .currency-item:active{
-            background-color: #aaaaaa;
+        .currency-item:active {
+            background-color: #E9E9E9;
         }
 
-        .currency-item i{
+        .currency-item i {
             font-size: 2rem;
             margin-right: 0.4rem;
             color: #4CD472;
@@ -84,18 +85,18 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height:2rem;
-            border-bottom: 1px solid #cecece;
-            padding:0.8rem 1.4rem;
+            height: 2rem;
+            border-bottom: 1px solid #E9E9E9;
+            padding: 0.8rem 1.4rem;
         }
 
-        .trade-item i{
+        .trade-item i {
             font-size: 2.4rem;
             color: #4CD472;
         }
 
-        .trade-item:active{
-            background-color: #aaaaaa;
+        .trade-item:active {
+            background-color: #E9E9E9;
         }
 
         .pay {
@@ -108,11 +109,11 @@
 
         .pay-item {
             display: flex;
-            padding:0.8rem 1.4rem;
+            padding: 0.8rem 1.4rem;
         }
 
         .pay-item:active {
-            background-color: #aaaaaa;
+            background-color: #E9E9E9;
         }
 
         .pay-item img {
@@ -120,13 +121,13 @@
             width: 4rem;
         }
 
-        .pay-item i{
+        .pay-item i {
             line-height: 4rem;
             font-size: 2.4rem;
             color: #4CD472;
         }
 
-        .pay-type{
+        .pay-type {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -134,34 +135,34 @@
             margin-left: 0.8rem;
         }
 
-        .pay-type .title{
+        .pay-type .title {
             font-size: 1.6rem;
         }
 
-        .pay-type .description{
+        .pay-type .description {
             font-size: 1rem;
         }
 
         .total {
             display: flex;
             justify-content: space-between;
-            height:4rem;
+            height: 4rem;
             align-items: center;
-            padding:0.8rem 1.4rem;
+            padding: 0.8rem 1.4rem;
             background-color: #fff;
             margin-top: 0.6rem;
         }
 
-        .amount{
+        .amount {
             font-size: 1.8rem;
             color: #4CD472;
         }
 
-        .pay-btn{
+        .pay-btn {
             position: fixed;
-            bottom:0;
-            width:100%;
-            height:4rem;
+            bottom: 0;
+            width: 100%;
+            height: 4rem;
             justify-content: center;
             align-items: center;
             background-color: #4CD472;
@@ -170,7 +171,7 @@
             color: #fff;
         }
 
-        .pay-btn:active{
+        .pay-btn:active {
             background-color: #0BB20C;
         }
     </style>
@@ -218,7 +219,7 @@
     <p>请选择支付类型</p>
     <div class="pay-group">
         <a class="pay-item">
-            <img src="../img/alipaylogo.png" alt="支付宝">
+            <img src="assets/alipaylogo.png" alt="支付宝">
             <div class="pay-type">
                 <span class="title">支付宝</span>
                 <span class="description">数亿用户都在用,安全可托付</span>
@@ -235,7 +236,7 @@
     </div>
 </div>
 <a class="pay-btn">
-   立即支付
+    立即支付
 </a>
 <script type="text/javascript">
     window.onresize = function () {
