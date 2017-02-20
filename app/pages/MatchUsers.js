@@ -31,7 +31,8 @@ import UserInfo from '../pages/UserInfo'
 import * as VicinityActions from '../actions/Vicinity'
 import Spinner from '../components/Spinner'
 import EditFriendFilter from '../pages/EditFriendFilter'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,0,0.7)',
-    padding: 10
+    padding: pxToDp(20)
   },
   tipsContent: {
     flex: 1,
@@ -56,72 +57,80 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   tipsText: {
-    fontSize: 12,
+    fontSize: pxToDp(24),
     textAlign: 'center',
     flex: 1,
-    flexWrap:'wrap'
+    flexWrap: 'wrap'
   },
   viewContainer: {
-    marginTop: 10,
-    paddingHorizontal: 10
+    marginTop: pxToDp(20),
+    paddingHorizontal: pxToDp(20)
   },
   card: {
     backgroundColor: '#FFF',
     flex: 1,
-    paddingVertical: 10,
-    borderBottomColor: '#cec5c5',
-    borderBottomWidth: 1,
-    paddingHorizontal: 10
   },
   userInfoContent: {
     flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1
+    backgroundColor: '#fff',
+    height: pxToDp(130),
+    borderBottomColor: '#cecece'
   },
   userAvatar: {
-    borderRadius: width / 12,
-    width: width / 6,
-    height: width / 6,
-    marginRight: 10
+    width: pxToDp(80),
+    height: pxToDp(80),
+    borderRadius: pxToDp(8),
+    margin: pxToDp(25),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor:'#cecece'
+  },
+  labelContainer: {
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   userInfoLabel: {
-    paddingHorizontal: 6,
+    paddingHorizontal: pxToDp(12),
     backgroundColor: 'pink',
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
-    borderWidth: 1,
+    borderRadius: pxToDp(20),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'pink',
-    marginLeft: 10
+    marginLeft: pxToDp(20)
   },
   userInfoIcon: {
-    marginRight: 4,
+    marginRight: pxToDp(8),
     color: '#FFF',
-    fontSize: 10
+    fontSize: pxToDp(20)
   },
   userInfoText: {
-    fontSize: 14,
+    fontSize: pxToDp(20),
     color: '#FFF'
   },
   userInfo: {
-    flex: 1
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingVertical: pxToDp(25),
+    borderBottomColor: '#cecece',
+    paddingRight: pxToDp(25),
   },
   itemRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1
+  },
+  nameTextContainer: {
+    flex: 1,
+    alignItems: 'flex-start',
+    flexDirection: 'row'
   },
   nameText: {
-    flexWrap: 'nowrap',
     overflow: 'hidden',
-    flex: 1
+    fontSize: pxToDp(30),
   },
-  userSignature: {
-    marginTop: 10,
-    flex: 1
-  },
-  signatureContent: {
-    flex: 1
+  signatureText: {
+    overflow: 'hidden',
+    fontSize: pxToDp(26),
+    color: '#666',
+    textAlignVertical: 'bottom'
   }
 });
 
@@ -148,22 +157,22 @@ class MatchUsers extends BaseComponent {
   }
 
   componentDidMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       if (tmpGlobal.currentLocation.Lat === 0 && tmpGlobal.currentLocation.Lng === 0) {
-        this.setState({GPS: false},()=>{
+        this.setState({GPS: false}, () => {
           this._getMatchUserList();
         });
-      }else{
+      } else {
         this._getMatchUserList();
       }
     });
 
-    this.friendFilterListener = emitter.addListener('friendFilterChanged', ()=> {
+    this.friendFilterListener = emitter.addListener('friendFilterChanged', () => {
       this._getMatchUserList();
     });
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.friendFilterListener.remove();
   }
 
@@ -175,10 +184,10 @@ class MatchUsers extends BaseComponent {
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize
     };
-    dispatch(HomeActions.getMatchUsers(data, (json)=> {
+    dispatch(HomeActions.getMatchUsers(data, (json) => {
       lastCount = json.Result.length;
       this.setState({userList: json.Result});
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -190,7 +199,7 @@ class MatchUsers extends BaseComponent {
     };
   }
 
-  onRightPressed(){
+  onRightPressed() {
     pageNavigator.push({
       component: EditFriendFilter,
       name: 'EditFriendFilter'
@@ -305,13 +314,13 @@ class MatchUsers extends BaseComponent {
       lat: tmpGlobal.currentLocation.Lat,
       lng: tmpGlobal.currentLocation.Lng
     };
-    dispatch(HomeActions.getMatchUsersQuiet(data, (json)=> {
+    dispatch(HomeActions.getMatchUsersQuiet(data, (json) => {
       lastCount = json.Result.length;
       this.setState({
         userList: json.Result,
         refreshing: false
       })
-    }, (error)=> {
+    }, (error) => {
       this.setState({refreshing: false})
     }));
   }
@@ -327,7 +336,7 @@ class MatchUsers extends BaseComponent {
       lat: tmpGlobal.currentLocation.Lat,
       lng: tmpGlobal.currentLocation.Lng
     };
-    dispatch(HomeActions.getMatchUsers(data, (json)=> {
+    dispatch(HomeActions.getMatchUsers(data, (json) => {
       lastCount = json.Result.length;
       this.state.userList = this.state.userList.concat(json.Result);
       this.setState({
@@ -335,7 +344,7 @@ class MatchUsers extends BaseComponent {
         refreshing: false,
         loadingMore: false
       })
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -359,7 +368,7 @@ class MatchUsers extends BaseComponent {
     if (data) {
       return (
         <TouchableHighlight
-          onPress={()=> {
+          onPress={() => {
             this.refreshPage()
           }}
           underlayColor={'rgba(214,214,14,0.7)'}
@@ -383,40 +392,45 @@ class MatchUsers extends BaseComponent {
     }
   }
 
-  renderRowData(rowData) {
+  _bottomItem(rowID, value) {
+    return parseInt(rowID) === this.state.userList.length - 1 ? (value === 1 ? 0 : StyleSheet.hairlineWidth) : (value === 0 ? 0 : StyleSheet.hairlineWidth);
+  }
+
+  renderRowData(rowData, sectionID, rowID) {
     return (
-      <View key={rowData.UserId}
-            style={styles.card}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={()=> {
-            this._goUserInfo(rowData)
-          }}
-          style={styles.userInfoContent}>
+      <TouchableHighlight
+        key={rowData.UserId}
+        onPress={() => {
+          this._goUserInfo(rowData)
+        }}
+        style={styles.card}>
+        <View style={[styles.userInfoContent, {borderBottomWidth: this._bottomItem(rowID, 0)}]}>
           <Image
             style={styles.userAvatar}
             source={{uri: URL_DEV + rowData.PrimaryPhotoFilename}}/>
-          <View style={styles.userInfo}>
+          <View style={[styles.userInfo, {borderBottomWidth: this._bottomItem(rowID, 1)}]}>
             <View style={styles.itemRow}>
-              <Text
-                numberOfLines={1}
-                style={styles.nameText}>{rowData.Nickname}</Text>
-              <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.Gender)]}>
-                <Icon
-                  name={rowData.Gender ? 'mars-stroke' : 'venus'}
-                  size={10}
-                  style={styles.userInfoIcon}/>
-                <Text style={styles.userInfoIcon}>{rowData.Age}</Text>
+              <View style={styles.nameTextContainer}>
+                <Text
+                  numberOfLines={1}
+                  style={styles.nameText}>{rowData.Nickname}</Text>
+              </View>
+              <View style={styles.labelContainer}>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.Gender)]}>
+                  <Icon
+                    name={rowData.Gender ? 'mars-stroke' : 'venus'}
+                    size={pxToDp(22)}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{rowData.Age}</Text>
+                </View>
               </View>
             </View>
-            <View style={[styles.itemRow, styles.userSignature]}>
-              <Text
-                numberOfLines={2}
-                style={styles.signatureContent}>{rowData.PersonSignal ? rowData.PersonSignal : '这家伙很懒,什么也没留下'}</Text>
-            </View>
+            <Text
+              numberOfLines={1}
+              style={styles.signatureText}>{rowData.PersonSignal ? rowData.PersonSignal : '这家伙很懒,什么也没留下'}</Text>
           </View>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableHighlight>
     )
   }
 
@@ -469,7 +483,7 @@ class MatchUsers extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
