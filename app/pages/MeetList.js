@@ -24,6 +24,8 @@ import {
 import {URL_DEV} from '../constants/Constant'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import LoadMoreFooter from '../components/LoadMoreFooter'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
@@ -34,21 +36,23 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFF',
     flex: 1,
-    marginTop: 10,
-    marginHorizontal: 10,
-    paddingVertical: 10,
-    borderRadius: 4
+    marginTop: pxToDp(20),
+    marginHorizontal: pxToDp(20),
+    borderRadius: pxToDp(8)
+  },
+  cardContainer: {
+    paddingVertical: pxToDp(20)
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   avatarImg: {
-    width: width / 9,
-    height: width / 9,
-    marginRight: 10,
-    borderRadius: 8
+    width: pxToDp(80),
+    height: pxToDp(80),
+    marginRight: pxToDp(20),
+    borderRadius: pxToDp(16)
   },
   userInfo: {
     justifyContent: 'space-between',
@@ -61,18 +65,18 @@ const styles = StyleSheet.create({
   userInfoLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: pxToDp(20),
     backgroundColor: 'pink',
     borderWidth: 1,
     borderColor: 'pink',
-    paddingHorizontal: 6
+    paddingHorizontal: pxToDp(12)
   },
   userInfoIcon: {
-    marginRight: 4,
+    marginRight: pxToDp(8),
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 10,
+    fontSize: pxToDp(20),
     color: '#FFF'
   },
   nameTextContainer: {
@@ -86,50 +90,48 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap'
   },
   timeText: {
-    fontSize: 12,
+    fontSize: pxToDp(24),
     justifyContent: 'center'
   },
   moodView: {
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   moodText: {
-    fontSize: 16,
+    fontSize: pxToDp(32),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal: 10,
-    marginBottom: 10
+    paddingHorizontal: pxToDp(20),
+    marginBottom: pxToDp(20)
   },
   postImage: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    //paddingVertical: 5,
     justifyContent: 'flex-start',
-    paddingLeft: 10
+    paddingLeft: pxToDp(20)
   },
   cardBtn: {
-    marginTop: 10,
-    marginRight: 20
+    marginTop: pxToDp(20),
+    marginRight: pxToDp(40)
   },
   moreImgLabel: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: pxToDp(8),
+    right: pxToDp(8),
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
     justifyContent: 'flex-end',
-    paddingHorizontal: 2
+    paddingHorizontal: pxToDp(4)
   },
-  moreImgIcon: {},
   moreImgText: {
-    fontSize: 10,
-    marginLeft: 4
+    fontSize: pxToDp(20),
+    marginLeft: pxToDp(8)
   },
   singleImgContainer: {
-    marginBottom: 10,
-    marginRight: 10
+    marginBottom: pxToDp(20),
+    marginRight: pxToDp(20)
   },
 
 });
@@ -207,7 +209,7 @@ class MeetList extends Component {
     if (arr.length > 3 && index === 2) {
       return (
         <View style={styles.moreImgLabel}>
-          <Icon name={'picture-o'} size={10} style={styles.moreImgIcon}/>
+          <Icon name={'picture-o'} size={pxToDp(20)}/>
           <Text style={styles.moreImgText}>{arr.length}</Text>
         </View>
       )
@@ -218,28 +220,21 @@ class MeetList extends Component {
 
   renderPostImage(arr) {
     if (arr.length !== 0) {
-      let imageWidth = 0;
-      if (arr.length % 3 === 0) {
-        imageWidth = (width - 60) / 3;
-      } else if (arr.length === 2) {
-        imageWidth = (width - 50) / 2;
-      } else {
-        imageWidth = (width - 60) / 3;
-      }
+      let imageWidth = pxToDp(210);
       let arrCopy = JSON.parse(JSON.stringify(arr));
       if (arr.length > 3) {
         arrCopy.splice(3, arr.length - 3);
       }
-      return arrCopy.map((item, index)=> {
+      return arrCopy.map((item, index) => {
         return (
           <TouchableOpacity
             key={index}
             style={styles.singleImgContainer}
-            onPress={()=> {
-              this._openImgModal(arr)
+            onPress={() => {
+              this._openImgModal(arr, index)
             }}>
             <Image
-              onLoadEnd={()=> {
+              onLoadEnd={() => {
                 this.setState({imgLoading: false})
               }}
               style={{width: imageWidth, height: imageWidth}}
@@ -266,89 +261,96 @@ class MeetList extends Component {
     this.props._doLike(id, isLike);
   }
 
-  _openImgModal(arr) {
-    this.props._openImgModal(arr);
+  _openImgModal(arr, index) {
+    this.props._openImgModal(arr, index);
   }
 
   renderRowData(rowData) {
     return (
-      <TouchableOpacity
-        onPress={()=> {
+      <TouchableHighlight
+        onPress={() => {
           this._goAnnouncementDetail(rowData)
         }}
         key={rowData.PosterInfo.UserId}
         style={styles.card}>
-        <View style={styles.cardRow}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={()=> {
-              this._goUserInfo(rowData.PosterInfo)
-            }}>
-            <Image
-              onLoadEnd={()=> {
-                this.setState({avatarLoading: false})
-              }}
-              source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-              style={styles.avatarImg}>
-              {this.state.avatarLoading ?
-                <Image
-                  source={require('./img/imgLoading.gif')}
-                  style={styles.avatarImg}/> : null}
-            </Image>
-          </TouchableOpacity>
-          <View style={styles.userInfo}>
-            <View style={styles.nameTextContainer}>
-              <Text
-                numberOfLines={1}
-                style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
-              <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
-            </View>
-            <View style={styles.userInfoLabelContainer}>
-              <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                <Icon
-                  name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                  size={10}
-                  style={styles.userInfoIcon}/>
-                <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
+        <View style={[CommonStyles.flex_1, CommonStyles.background_white, styles.cardContainer]}>
+          <View style={styles.cardRow}>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                this._goUserInfo(rowData.PosterInfo)
+              }}>
+              <Image
+                onLoadEnd={() => {
+                  this.setState({avatarLoading: false})
+                }}
+                source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
+                style={styles.avatarImg}>
+                {this.state.avatarLoading ?
+                  <Image
+                    source={require('./img/imgLoading.gif')}
+                    style={styles.avatarImg}/> : null}
+              </Image>
+            </TouchableOpacity>
+            <View style={styles.userInfo}>
+              <View style={styles.nameTextContainer}>
+                <Text
+                  numberOfLines={1}
+                  style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
+                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
+              </View>
+              <View style={styles.userInfoLabelContainer}>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                  <Icon
+                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                    size={10}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-        <View style={styles.moodView}>
-          <Text
-            style={styles.moodText}
-            numberOfLines={2}>
-            {rowData.PostContent}
-          </Text>
-          <View style={styles.postImage}>
-            {this.renderPostImage(rowData.PicList)}
+          <View style={styles.moodView}>
+            <Text
+              style={styles.moodText}
+              numberOfLines={2}>
+              {rowData.PostContent}
+            </Text>
+            <View style={styles.postImage}>
+              {this.renderPostImage(rowData.PicList)}
+            </View>
+          </View>
+          <View style={styles.cardRow}>
+            <Text>{rowData.Distance}{'·'}</Text>
+            <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
+            <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
+            <Text>{rowData.ViewCount}{'阅读'}</Text>
+          </View>
+          <View style={styles.cardRow}>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.cardBtn}
+              onPress={() => {
+                this._doLike(rowData.Id, rowData.AmILikeIt)
+              }}>
+              <Icon
+                name={rowData.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'}
+                size={pxToDp(40)}
+                color={'#1496ea'}/>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.cardBtn}
+              onPress={() => {
+                this._showCommentInput(rowData.Id)
+              }}>
+              <Icon
+                name="comments-o"
+                size={pxToDp(40)}/>
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.cardRow}>
-          <Text>{rowData.Distance}{'·'}</Text>
-          <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
-          <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
-          <Text>{rowData.ViewCount}{'阅读'}</Text>
-        </View>
-        <View style={styles.cardRow}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.cardBtn}
-            onPress={()=> {
-              this._doLike(rowData.Id, rowData.AmILikeIt)
-            }}>
-            <Icon name={rowData.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.cardBtn}
-            onPress={()=> {
-              this._showCommentInput(rowData.Id)
-            }}>
-            <Icon name="comments-o" size={20}/>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
+      </TouchableHighlight>
     )
   }
 
@@ -365,7 +367,7 @@ class MeetList extends Component {
               onRefresh={this._onRefresh.bind(this)}
             />
           }
-          onScroll={()=> {
+          onScroll={() => {
             canLoadMore = true;
             this._closeCommentInput()
           }}

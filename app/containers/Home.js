@@ -229,12 +229,15 @@ const styles = StyleSheet.create({
     left: pxToDp(40),
     ...Platform.select({
       ios: {
-        top: pxToDp(30)
+        top: pxToDp(40)
       },
       android: {
         top: pxToDp(20)
       }
     }),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal:pxToDp(40)
   },
 });
 
@@ -287,7 +290,7 @@ class Home extends BaseComponent {
   }
 
   componentWillMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._getAnnouncementList();
     });
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
@@ -302,7 +305,7 @@ class Home extends BaseComponent {
       ...tmpGlobal.currentLocation,
       postType: 1
     };
-    dispatch(HomeActions.getPostList(data, (json)=> {
+    dispatch(HomeActions.getPostList(data, (json) => {
       lastCount = json.Result.length;
       let params = {
         pageSize: this.state.appointmentPageSize,
@@ -311,27 +314,27 @@ class Home extends BaseComponent {
         postType: 2
       };
       //获取约会列表
-      dispatch(HomeActions.getPostList(params, (json2)=> {
+      dispatch(HomeActions.getPostList(params, (json2) => {
         appointmentCount = json2.Result.length;
         this.setState({
           postList: json.Result,
           appointmentList: json2.Result,
           needRefresh: false
         });
-      }, (error2)=> {
+      }, (error2) => {
         this.setState({
           needRefresh: true
-        }, ()=> {
-          this._commonRefresh = ()=> {
+        }, () => {
+          this._commonRefresh = () => {
             this._getAnnouncementList();
           }
         });
       }));
-    }, (error)=> {
+    }, (error) => {
       this.setState({
         needRefresh: true
-      }, ()=> {
-        this._commonRefresh = ()=> {
+      }, () => {
+        this._commonRefresh = () => {
           this._getAnnouncementList();
         }
       });
@@ -355,7 +358,7 @@ class Home extends BaseComponent {
       postType: this.state.tabIndex + 1
     };
 
-    dispatch(HomeActions.getPostList(data, (json)=> {
+    dispatch(HomeActions.getPostList(data, (json) => {
       if (this.state.tabIndex === 0) {
         lastCount = json.Result.length;
         this.state.postList = this.state.postList.concat(json.Result);
@@ -373,7 +376,7 @@ class Home extends BaseComponent {
           appointmentLoadingMore: false,
         })
       }
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -398,7 +401,7 @@ class Home extends BaseComponent {
       ...tmpGlobal.currentLocation,
       postType: this.state.tabIndex + 1
     };
-    dispatch(HomeActions.getPostListQuiet(data, (json)=> {
+    dispatch(HomeActions.getPostListQuiet(data, (json) => {
       if (this.state.tabIndex === 0) {
         lastCount = json.Result.length;
         this.setState({
@@ -414,11 +417,11 @@ class Home extends BaseComponent {
           needRefresh: false,
         });
       }
-    }, (error)=> {
+    }, (error) => {
       this.setState({
         needRefresh: true
-      }, ()=> {
-        this._commonRefresh = ()=> {
+      }, () => {
+        this._commonRefresh = () => {
           this._getAnnouncementList();
         }
       });
@@ -435,23 +438,23 @@ class Home extends BaseComponent {
   }
 
   componentDidMount() {
-    this.hasReadListener = emitter.addListener('announcementHasRead', (data)=> {
-      InteractionManager.runAfterInteractions(()=> {
+    this.hasReadListener = emitter.addListener('announcementHasRead', (data) => {
+      InteractionManager.runAfterInteractions(() => {
         this._changeSubTab(data.data);
       });
     });
-    this.hasDeleteListener = emitter.addListener('announcementHasDelete', (data)=> {
-      InteractionManager.runAfterInteractions(()=> {
+    this.hasDeleteListener = emitter.addListener('announcementHasDelete', (data) => {
+      InteractionManager.runAfterInteractions(() => {
         this._changeSubTab(data.data);
       });
     });
-    this.publishListener = emitter.addListener('announcementHasPublish', (data)=> {
-      InteractionManager.runAfterInteractions(()=> {
+    this.publishListener = emitter.addListener('announcementHasPublish', (data) => {
+      InteractionManager.runAfterInteractions(() => {
         this._changeSubTab(data.data);
       });
     });
-    this.commentListener = emitter.addListener('announcementHasComment', (data)=> {
-      InteractionManager.runAfterInteractions(()=> {
+    this.commentListener = emitter.addListener('announcementHasComment', (data) => {
+      InteractionManager.runAfterInteractions(() => {
         this._changeSubTab(data.data);
       });
     });
@@ -460,15 +463,15 @@ class Home extends BaseComponent {
 
       JPushModule.initPush();
 
-      JPushModule.getRegistrationID((id)=> {
+      JPushModule.getRegistrationID((id) => {
         console.log(id);
       });
 
       let alias = `${tmpGlobal.currentUser.UserId}`;
 
-      JPushModule.setAlias(alias, ()=> {
+      JPushModule.setAlias(alias, () => {
         console.log('成功', alias);
-      }, ()=> {
+      }, () => {
         console.log('失败');
       });
 
@@ -497,24 +500,24 @@ class Home extends BaseComponent {
 
       let alias = `${tmpGlobal.currentUser.UserId}`;
 
-      JPushModule.setAlias(alias, ()=> {
+      JPushModule.setAlias(alias, () => {
         console.log('成功', alias);
-      }, ()=> {
+      }, () => {
         console.log('失败');
       });
 
-      JPushModule.setBadge(0, (value)=> {
+      JPushModule.setBadge(0, (value) => {
         console.log(value);
       });
 
-      emitter.addListener('OpenNotification', (message)=> {
+      emitter.addListener('OpenNotification', (message) => {
         console.log("Opening notification!", message);
       });
 
-      emitter.addListener('ReceiveNotification', (message)=> {
+      emitter.addListener('ReceiveNotification', (message) => {
         console.log("content: " + JSON.stringify(message));
         console.log('具体消息内容: ', message.aps.alert);
-        JPushModule.setBadge(message.aps.badge, (value)=> {
+        JPushModule.setBadge(message.aps.badge, (value) => {
           console.log(value ? '成功' : '失败');
         });
       });
@@ -523,7 +526,7 @@ class Home extends BaseComponent {
   }
 
   _changeSubTab(index) {
-    this.setState({tabIndex: index}, ()=> {
+    this.setState({tabIndex: index}, () => {
       this._onRefresh();
     });
   }
@@ -610,7 +613,7 @@ class Home extends BaseComponent {
     let data = {
       postType: int
     };
-    dispatch(HomeActions.newPost(data, (json)=> {
+    dispatch(HomeActions.newPost(data, (json) => {
       if (json.Result.CanPost) {
         pageNavigator.push({
           component: Addannouncement,
@@ -623,7 +626,7 @@ class Home extends BaseComponent {
       } else {
         this._newPostAlert(int);
       }
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -671,11 +674,11 @@ class Home extends BaseComponent {
   _doLike(id, isLike) {
     this._closeCommentInput();
     const {dispatch}=this.props;
-    let index = this.state.postList.findIndex((item)=> {
+    let index = this.state.postList.findIndex((item) => {
       return item.Id === id;
     });
 
-    let appointmentIndex = this.state.appointmentList.findIndex((item)=> {
+    let appointmentIndex = this.state.appointmentList.findIndex((item) => {
       return item.Id === id;
     });
     if (this.state.tabIndex === 0) {
@@ -700,7 +703,7 @@ class Home extends BaseComponent {
       postId: id,
       isLike: true
     };
-    dispatch(HomeActions.like(data, (json)=> {
+    dispatch(HomeActions.like(data, (json) => {
       if (this.state.tabIndex === 0) {
         this.setState({
           postList: [
@@ -715,7 +718,7 @@ class Home extends BaseComponent {
         });
       }
 
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -749,14 +752,15 @@ class Home extends BaseComponent {
     });
   }
 
-  _openImgModal(arr) {
+  _openImgModal(arr, index) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
       tmpArr.push(URL_DEV + '/' + arr[i]);
     }
     this.setState({
-      imgList: tmpArr
-    }, ()=> {
+      imgList: tmpArr,
+      showIndex: index,
+    }, () => {
       this.refs.modalFullScreen.open();
     });
   }
@@ -765,7 +769,7 @@ class Home extends BaseComponent {
     this.refs.modalFullScreen.close();
   }
 
-  _commonRefresh = ()=> {
+  _commonRefresh = () => {
     //调用时,重新绑定事件
   };
 
@@ -783,18 +787,18 @@ class Home extends BaseComponent {
     this._closeCommentInput();
 
     if (this.state.tabIndex === 0) {
-      let index = this.state.postList.findIndex((item)=> {
+      let index = this.state.postList.findIndex((item) => {
         return item.Id === commentId;
       });
       this.state.postList[index].CommentCount += 1;
     } else {
-      let index = this.state.appointmentList.findIndex((item)=> {
+      let index = this.state.appointmentList.findIndex((item) => {
         return item.Id === commentId;
       });
       this.state.appointmentList[index].CommentCount += 1;
     }
 
-    dispatch(HomeActions.comment(data, (json)=> {
+    dispatch(HomeActions.comment(data, (json) => {
       toastShort('评论成功');
       if (this.state.tabIndex === 0) {
         this.setState({
@@ -809,7 +813,7 @@ class Home extends BaseComponent {
           ]
         });
       }
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -855,7 +859,7 @@ class Home extends BaseComponent {
               primary
               textStyle={ComponentStyles.btnText}
               style={styles.sendBtn}
-              onPress={()=> {
+              onPress={() => {
                 this._sendComment()
               }}>
               发送
@@ -882,7 +886,7 @@ class Home extends BaseComponent {
     } else {
       return (
         <TouchableHighlight
-          onPress={()=> {
+          onPress={() => {
             this.refreshPage()
           }}
           underlayColor={'rgba(214,214,14,0.7)'}
@@ -927,7 +931,7 @@ class Home extends BaseComponent {
     this.setState({
       pending: false,
       gpsStatus: true
-    }, ()=> {
+    }, () => {
       this._onRefresh();
       this._savePosition(position.coords.latitude, position.coords.longitude);
     });
@@ -977,7 +981,7 @@ class Home extends BaseComponent {
         ref={'root'}
         style={ComponentStyles.container}>
         <SubTabView
-          locationTips={()=>this._renderLocationTips(this.state.gpsStatus)}
+          locationTips={() => this._renderLocationTips(this.state.gpsStatus)}
           index={this.state.tabIndex}
           tabIndex={this._handleChangeTab.bind(this)}
           _goUserInfo={this._goUserInfo.bind(this)}
@@ -1027,18 +1031,19 @@ class Home extends BaseComponent {
         onClosingState={this.onClosingState}>
         <PhotoScaleViewer
           index={this.state.showIndex}
-          pressHandle={()=> {
+          pressHandle={() => {
             console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
           style={[styles.closeBtn]}
-          onPress={()=> {
+          onPress={() => {
             this._closeImgModal()
           }}>
           <IonIcon
             name={'ios-close-outline'}
-            size={pxToDp(88)} color={'#fff'}
+            size={pxToDp(88)}
+            color={'#fff'}
             style={{fontWeight: '100'}}/>
         </TouchableOpacity>
       </ModalBox>
@@ -1050,7 +1055,7 @@ class Home extends BaseComponent {
       return (
         <Refresh
           text={'点击重试'}
-          refresh={()=> {
+          refresh={() => {
             this._commonRefresh()
           }}
         />
@@ -1069,7 +1074,7 @@ class Home extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state,
     pendingStatus: state.InitialApp.pending

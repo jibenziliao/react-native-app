@@ -90,7 +90,9 @@ class Menu extends Component {
             <Image
               style={styles.avatar}
               source={{uri: URL_DEV + this.props.userInfo.PhotoUrl}}/>
-            <Text style={styles.name}>{this.props.userInfo.Nickname}</Text>
+            <Text
+              numberOfLines={1}
+              style={styles.name}>{this.props.userInfo.Nickname}</Text>
           </View>
           <TouchableOpacity
             style={styles.signatureContent}

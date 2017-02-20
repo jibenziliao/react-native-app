@@ -17,6 +17,8 @@ import {
 } from 'react-native'
 import PhotoView from 'react-native-photo-view'
 import Swiper from 'react-native-swiper'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {width, height} = Dimensions.get('window');
 
@@ -47,25 +49,26 @@ const renderPagination = (index, total, context) => {
       justifyContent: 'center',
       alignItems: 'center',
       ...Platform.select({
-        ios:{
-          top:25,
+        ios: {
+          top: pxToDp(40),
         },
-        android:{
-          top: 15,
+        android: {
+          top: pxToDp(30),
         }
       }),
       left: 0,
-      right: 0
+      right: 0,
+      paddingVertical: pxToDp(20)
     }}>
       <View style={{
-        borderRadius: 7,
+        borderRadius: pxToDp(14),
         backgroundColor: 'rgba(255,255,255,.15)',
-        padding: 3,
-        paddingHorizontal: 7
+        padding: pxToDp(6),
+        paddingHorizontal: pxToDp(14)
       }}>
         <Text style={{
           color: '#fff',
-          fontSize: 14
+          fontSize: pxToDp(28)
         }}>{index + 1} / {total}</Text>
       </View>
     </View>
