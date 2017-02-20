@@ -60,7 +60,7 @@ class Recharge extends BaseComponent {
           javaScriptEnabled={true}
           bounces={false}
           style={styles.webView}
-          source={require('./html/Settlement.html')}
+          source={{uri:'http://120.26.162.192/Settlement.html'}}
         />
       </View>
     )
