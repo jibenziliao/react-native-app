@@ -15,6 +15,7 @@ import {
   ListView,
   TextInput,
   TouchableOpacity,
+  TouchableHighlight,
   Dimensions,
   Platform,
   Keyboard,
@@ -38,7 +39,9 @@ import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import ModalBox from 'react-native-modalbox'
 import MainContainer from '../containers/MainContainer'
 import customTheme from '../themes/MyThemes'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
+import CacheableImage from 'react-native-cacheable-image'
 
 const {height, width} = Dimensions.get('window');
 
@@ -47,7 +50,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   contentTitle: {
-    margin: 10
+    margin: pxToDp(20)
   },
   content: {
     flex: 1
@@ -55,14 +58,16 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFF',
     flex: 1,
-    marginTop: 10,
-    marginHorizontal: 10,
-    paddingVertical: 10
+    marginTop: pxToDp(20),
+    marginHorizontal: pxToDp(20),
+  },
+  cardContainer: {
+    paddingVertical: pxToDp(20)
   },
   cardRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingHorizontal: 10
+    paddingHorizontal: pxToDp(20)
   },
   cardLeft: {
     flexDirection: 'row',
@@ -72,10 +77,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   avatarImg: {
-    width: width / 9,
-    height: width / 9,
-    marginRight: 10,
-    borderRadius: 8
+    width: pxToDp(80),
+    height: pxToDp(80),
+    marginRight: pxToDp(20),
+    borderRadius: pxToDp(16)
   },
   userInfo: {
     justifyContent: 'space-between',
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap'
   },
   timeText: {
-    fontSize: 12,
+    fontSize: pxToDp(24),
     justifyContent: 'center'
   },
   userInfoLabelContainer: {
@@ -102,62 +107,69 @@ const styles = StyleSheet.create({
   userInfoLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: pxToDp(20),
     backgroundColor: 'pink',
     borderWidth: 1,
     borderColor: 'pink',
-    paddingHorizontal: 6
+    paddingHorizontal: pxToDp(12)
   },
   userInfoIcon: {
-    marginRight: 4,
+    marginRight: pxToDp(8),
     color: '#FFF'
   },
   userInfoText: {
-    fontSize: 10,
+    fontSize: pxToDp(20),
     color: '#FFF'
   },
   moodView: {
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   moodText: {
-    fontSize: 16,
+    fontSize: pxToDp(32),
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    paddingHorizontal: 10,
-    marginBottom: 10
+    paddingHorizontal: pxToDp(20),
+    marginBottom: pxToDp(20)
   },
   postImage: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    //paddingVertical: 5,
     justifyContent: 'flex-start',
-    paddingLeft: 10
+    paddingLeft: pxToDp(20)
   },
   cardBtn: {
-    marginTop: 10,
-    marginRight: 20
+    marginTop: pxToDp(20),
+    marginRight: pxToDp(40)
   },
   moreImgLabel: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: pxToDp(8),
+    right: pxToDp(8),
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
     justifyContent: 'flex-end',
-    paddingHorizontal: 2
+    paddingHorizontal: pxToDp(4)
   },
   moreImgIcon: {},
   moreImgText: {
-    fontSize: 10,
-    marginLeft: 4
+    fontSize: pxToDp(20),
+    marginLeft: pxToDp(8)
   },
   singleImgContainer: {
-    marginBottom: 10,
-    marginRight: 10
-  }
+    marginBottom: pxToDp(20),
+    marginRight: pxToDp(20)
+  },
+  closeBtn: {
+    position: 'absolute',
+    left: pxToDp(40),
+    top: pxToDp(40),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: pxToDp(40)
+  },
 });
 
 let navigator;
@@ -181,13 +193,13 @@ class AnnouncementList extends BaseComponent {
       showCommentInput: false,
       ...this.props.route.params,
       postList: [],
-      imgLoading: true,
+      imgLoading: false,
       avatarLoading: true,
       showIndex: 0,
       imgList: [],
       commentInputHeight: 0
     };
-    console.log(this.props.route.params);
+    //console.log(this.props.route.params);
     this.onBackAndroid = this.onBackAndroid.bind(this);
   }
 
@@ -196,22 +208,22 @@ class AnnouncementList extends BaseComponent {
   }
 
   componentDidMount() {
-    this.hasReadListener = emitter.addListener('announcementHasRead', (data)=> {
-      InteractionManager.runAfterInteractions(()=> {
-        this._onRefresh();
-      });
-    });
-    this.commentListener = emitter.addListener('announcementHasComment', (data)=> {
-      InteractionManager.runAfterInteractions(()=> {
-        this._onRefresh();
-      });
-    });
-    this.hasDeleteListener = emitter.addListener('announcementHasDelete', (data)=> {
+    this.hasReadListener = emitter.addListener('announcementHasRead', (data) => {
       InteractionManager.runAfterInteractions(() => {
         this._onRefresh();
       });
     });
-    InteractionManager.runAfterInteractions(()=> {
+    this.commentListener = emitter.addListener('announcementHasComment', (data) => {
+      InteractionManager.runAfterInteractions(() => {
+        this._onRefresh();
+      });
+    });
+    this.hasDeleteListener = emitter.addListener('announcementHasDelete', (data) => {
+      InteractionManager.runAfterInteractions(() => {
+        this._onRefresh();
+      });
+    });
+    InteractionManager.runAfterInteractions(() => {
       this._getAllAnnouncementList();
     });
     if (Platform.OS === 'android') {
@@ -270,13 +282,13 @@ class AnnouncementList extends BaseComponent {
       ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
-    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
+    dispatch(HomeActions.getAllAnnouncement(data, (json) => {
       lastCount = json.Result.length;
       this.setState({
         postList: json.Result,
         refreshing: false
       })
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -305,7 +317,7 @@ class AnnouncementList extends BaseComponent {
       ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
-    dispatch(HomeActions.getAllAnnouncement(data, (json)=> {
+    dispatch(HomeActions.getAllAnnouncement(data, (json) => {
       lastCount = json.Result.length;
       this.state.postList = this.state.postList.concat(json.Result);
       this.setState({
@@ -313,7 +325,7 @@ class AnnouncementList extends BaseComponent {
         refreshing: false,
         loadingMore: false
       })
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -328,13 +340,13 @@ class AnnouncementList extends BaseComponent {
       ...tmpGlobal.currentLocation,
       postOrderTyp: 3
     };
-    dispatch(HomeActions.getAllAnnouncementQuiet(data, (json)=> {
+    dispatch(HomeActions.getAllAnnouncementQuiet(data, (json) => {
       lastCount = json.Result.length;
       this.setState({
         postList: json.Result,
         refreshing: false
       })
-    }, (error)=> {
+    }, (error) => {
       this.setState({refreshing: false});
     }));
   }
@@ -358,7 +370,7 @@ class AnnouncementList extends BaseComponent {
   _doLike(id, isLike) {
     this._closeCommentInput();
     const {dispatch}=this.props;
-    let index = this.state.postList.findIndex((item)=> {
+    let index = this.state.postList.findIndex((item) => {
       return item.Id === id;
     });
     if (isLike === null) {
@@ -373,13 +385,13 @@ class AnnouncementList extends BaseComponent {
       postId: id,
       isLike: true
     };
-    dispatch(HomeActions.like(data, (json)=> {
+    dispatch(HomeActions.like(data, (json) => {
       this.setState({
         postList: [
           ...this.state.postList
         ]
       });
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -424,7 +436,9 @@ class AnnouncementList extends BaseComponent {
     if (arr.length > 3 && index === 2) {
       return (
         <View style={styles.moreImgLabel}>
-          <Icon name={'picture-o'} size={10} style={styles.moreImgIcon}/>
+          <Icon
+            name={'picture-o'}
+            size={pxToDp(20)}/>
           <Text style={styles.moreImgText}>{arr.length}</Text>
         </View>
       )
@@ -436,27 +450,20 @@ class AnnouncementList extends BaseComponent {
   //渲染公告中的图片
   renderPostImage(arr) {
     if (arr.length !== 0) {
-      let imageWidth = 0;
-      if (arr.length % 3 === 0) {
-        imageWidth = (width - 60) / 3;
-      } else if (arr.length === 2) {
-        imageWidth = (width - 50) / 2;
-      } else {
-        imageWidth = (width - 60) / 3;
-      }
+      let imageWidth = pxToDp(210);
       let arrCopy = JSON.parse(JSON.stringify(arr));
       if (arr.length > 3) {
         arrCopy.splice(3, arr.length - 3);
       }
-      return arrCopy.map((item, index)=> {
+      return arrCopy.map((item, index) => {
         return (
           <TouchableOpacity
-            onPress={()=> {
+            onPress={() => {
               this._openImgModal(arr)
             }}
             key={index} style={styles.singleImgContainer}>
-            <Image
-              onLoadEnd={()=> {
+            <CacheableImage
+              onLoadEnd={() => {
                 this.setState({imgLoading: false})
               }}
               style={{width: imageWidth, height: imageWidth}}
@@ -465,7 +472,7 @@ class AnnouncementList extends BaseComponent {
                 <Image
                   source={require('./img/imgLoading.gif')}
                   style={{width: imageWidth, height: imageWidth}}/> : null}
-            </Image>
+            </CacheableImage>
             {this._renderMoreImgLabel(arr, index)}
           </TouchableOpacity>
         )
@@ -477,78 +484,85 @@ class AnnouncementList extends BaseComponent {
 
   renderRowData(rowData) {
     return (
-      <TouchableOpacity
-        onPress={()=> {
+      <TouchableHighlight
+        onPress={() => {
           this._goAnnouncementDetail(rowData)
         }}
         key={rowData.PosterInfo.UserId}
         style={styles.card}>
-        <View style={styles.cardRow}>
-          <Image
-            onLoadEnd={()=> {
-              this.setState({avatarLoading: false})
-            }}
-            source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
-            style={styles.avatarImg}>
-            {this.state.avatarLoading ?
-              <Image
-                source={require('./img/imgLoading.gif')}
-                style={styles.avatarImg}/> : null}
-          </Image>
-          <View style={styles.userInfo}>
-            <View style={styles.nameTextContainer}>
-              <Text
-                numberOfLines={1}
-                style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
-              <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
+        <View style={[CommonStyles.flex_1, CommonStyles.background_white, styles.cardContainer]}>
+          <View style={styles.cardRow}>
+            <Image
+              onLoadEnd={() => {
+                this.setState({avatarLoading: false})
+              }}
+              source={{uri: URL_DEV + rowData.PosterInfo.PrimaryPhotoFilename}}
+              style={styles.avatarImg}>
+              {this.state.avatarLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={styles.avatarImg}/> : null}
+            </Image>
+            <View style={styles.userInfo}>
+              <View style={styles.nameTextContainer}>
+                <Text
+                  numberOfLines={1}
+                  style={styles.nameText}>{rowData.PosterInfo.Nickname}</Text>
+                <Text style={styles.timeText}>{rowData.CreateTimeDescription}</Text>
 
-            </View>
-            <View style={styles.userInfoLabelContainer}>
-              <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
-                <Icon
-                  name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
-                  size={10}
-                  style={styles.userInfoIcon}/>
-                <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
+              </View>
+              <View style={styles.userInfoLabelContainer}>
+                <View style={[styles.userInfoLabel, this._renderGenderStyle(rowData.PosterInfo.Gender)]}>
+                  <Icon
+                    name={rowData.PosterInfo.Gender ? 'mars-stroke' : 'venus'}
+                    size={pxToDp(20)}
+                    style={styles.userInfoIcon}/>
+                  <Text style={styles.userInfoText}>{rowData.PosterInfo.Age}{'岁'}</Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-        <View style={styles.moodView}>
-          <Text
-            style={styles.moodText}
-            numberOfLines={3}>
-            {rowData.PostContent}
-          </Text>
-          <View style={styles.postImage}>
-            {this.renderPostImage(rowData.PicList)}
+          <View style={styles.moodView}>
+            <Text
+              style={styles.moodText}
+              numberOfLines={3}>
+              {rowData.PostContent}
+            </Text>
+            <View style={styles.postImage}>
+              {this.renderPostImage(rowData.PicList)}
+            </View>
+          </View>
+          <View style={styles.cardRow}>
+            <Text>{rowData.Distance}{'·'}</Text>
+            <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
+            <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
+            <Text>{rowData.ViewCount}{'阅读'}</Text>
+          </View>
+          <View style={styles.cardRow}>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.cardBtn}
+              onPress={() => {
+                this._doLike(rowData.Id, rowData.AmILikeIt)
+              }}>
+              <Icon
+                name={rowData.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'}
+                size={pxToDp(40)}
+                color={'#1496ea'}/>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.cardBtn}
+              onPress={() => {
+                this._showCommentInput(rowData.Id)
+              }}>
+              <Icon
+                name="comments-o"
+                size={pxToDp(40)}/>
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.cardRow}>
-          <Text>{rowData.Distance}{'·'}</Text>
-          <Text>{rowData.LikeCount}{'赞'}{'·'}</Text>
-          <Text>{rowData.CommentCount}{'评论'}{'·'}</Text>
-          <Text>{rowData.ViewCount}{'阅读'}</Text>
-        </View>
-        <View style={styles.cardRow}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.cardBtn}
-            onPress={()=> {
-              this._doLike(rowData.Id, rowData.AmILikeIt)
-            }}>
-            <Icon name={rowData.AmILikeIt === null ? 'thumbs-o-up' : 'thumbs-up'} size={20} color={'#1496ea'}/>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.cardBtn}
-            onPress={()=> {
-              this._showCommentInput(rowData.Id)
-            }}>
-            <Icon name="comments-o" size={20}/>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
+      </TouchableHighlight>
     )
   }
 
@@ -559,7 +573,7 @@ class AnnouncementList extends BaseComponent {
     }
     this.setState({
       imgList: tmpArr
-    }, ()=> {
+    }, () => {
       this.refs.modalFullScreen.open();
     });
   }
@@ -578,7 +592,7 @@ class AnnouncementList extends BaseComponent {
               onRefresh={this._onRefresh.bind(this)}
             />
           }
-          onScroll={()=> {
+          onScroll={() => {
             this._closeCommentInput()
           }}
           style={styles.listView}
@@ -621,18 +635,18 @@ class AnnouncementList extends BaseComponent {
     //关闭评论输入框,并情况评论框内容
     this._closeCommentInput();
 
-    let index = this.state.postList.findIndex((item)=> {
+    let index = this.state.postList.findIndex((item) => {
       return item.Id === commentId;
     });
     this.state.postList[index].CommentCount += 1;
 
-    dispatch(HomeActions.comment(data, (json)=> {
+    dispatch(HomeActions.comment(data, (json) => {
       this.setState({
         postList: [
           ...this.state.postList
         ]
       });
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -650,7 +664,7 @@ class AnnouncementList extends BaseComponent {
   _handleInputHeight(event) {
     this.setState({
       comment: event.nativeEvent.text,
-      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, 80)
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, pxToDp(160))
     })
   }
 
@@ -660,7 +674,7 @@ class AnnouncementList extends BaseComponent {
         <Animated.View
           style={{
             flexDirection: 'row',
-            padding: 10,
+            padding: pxToDp(20),
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#F3F3F3',
@@ -687,13 +701,13 @@ class AnnouncementList extends BaseComponent {
               underlineColorAndroid={'transparent'}
               placeholder={'请输入回复'}
               maxLength={50}
-              onBlur={()=> {
+              onBlur={() => {
                 this._resetScrollTo()
               }}
-              onChange={(event)=> {
+              onChange={(event) => {
                 this._handleInputHeight(event)
               }}
-              onChangeText={(comment)=>this.setState({comment})}
+              onChangeText={(comment) => this.setState({comment})}
               value={this.state.comment}/>
           </View>
           <View>
@@ -702,11 +716,11 @@ class AnnouncementList extends BaseComponent {
               primary
               small
               style={{
-                width: 100,
-                height: 40,
-                marginLeft: 10
+                width: pxToDp(200),
+                height: pxToDp(80),
+                marginLeft: pxToDp(20)
               }}
-              onPress={()=> {
+              onPress={() => {
                 this._sendComment()
               }}>
               发送
@@ -749,33 +763,26 @@ class AnnouncementList extends BaseComponent {
         onClosingState={this.onClosingState}>
         <PhotoScaleViewer
           index={this.state.showIndex}
-          pressHandle={()=> {
+          pressHandle={() => {
             console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            left: 20,
-            ...Platform.select({
-              ios: {
-                top: 15
-              },
-              android: {
-                top: 10
-              }
-            }),
-          }}
-          onPress={()=> {
+          style={[styles.closeBtn]}
+          onPress={() => {
             this._closeImgModal()
           }}>
           <View style={{
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-            <IonIcon name={'ios-close-outline'} size={44} color={'#fff'} style={{
-              fontWeight: '100'
-            }}/>
+            <IonIcon
+              name={'ios-close-outline'}
+              size={pxToDp(88)}
+              color={'#fff'}
+              style={{
+                fontWeight: '100'
+              }}/>
           </View>
         </TouchableOpacity>
       </ModalBox>
@@ -792,7 +799,7 @@ class AnnouncementList extends BaseComponent {
 
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
