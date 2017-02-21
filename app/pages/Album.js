@@ -27,7 +27,6 @@ import IonIcon from 'react-native-vector-icons/Ionicons'
 import EditPhotos from '../pages/EditPhotos'
 import {ComponentStyles,CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
-import CacheableImage from 'react-native-cacheable-image'
 
 const {height, width} = Dimensions.get('window');
 
@@ -75,7 +74,7 @@ class Album extends BaseComponent {
     super(props);
     this.state = {
       photos: [],
-      imgLoading: false,
+      imgLoading: true,
       imgList: [],
       showIndex:0
     };
@@ -147,13 +146,9 @@ class Album extends BaseComponent {
           onPress={()=> {
             this._openImgModal(arr,index)
           }}>
-          <CacheableImage
+          <Image
             onLoadEnd={()=> {
               this.setState({imgLoading: false})
-            }}
-            activityIndicatorProps={{
-              style: {width: (width - pxToDp(80)) / 3, height: (width - pxToDp(80)) / 3},
-              size: 'large'
             }}
             style={{width: (width - pxToDp(80)) / 3, height: (width - pxToDp(80)) / 3}}
             source={{uri: URL_DEV + item.PhotoUrl}}>
@@ -161,7 +156,7 @@ class Album extends BaseComponent {
               <Image
                 source={require('./img/imgLoading.gif')}
                 style={{width: (width - pxToDp(80)) / 3, height: (width - pxToDp(80)) / 3}}/> : null}
-          </CacheableImage>
+          </Image>
         </TouchableOpacity>
       )
     })
