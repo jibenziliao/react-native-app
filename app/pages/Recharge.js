@@ -53,6 +53,8 @@ class Recharge extends BaseComponent {
     };
   }
 
+  //http://120.26.162.192/Settlement.html
+  //require('./html/Settlement.html')
   renderBody() {
     return (
       <View style={ComponentStyles.container}>

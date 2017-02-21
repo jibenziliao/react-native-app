@@ -235,20 +235,113 @@
         <span class="amount">50</span>
     </div>
 </div>
-<a class="pay-btn">
+<a class="pay-btn" onclick="pay()">
     立即支付
 </a>
 <script type="text/javascript">
-    window.onresize = function () {
-        var e = 320,
-                t = document.documentElement.clientWidth;
-        document.getElementsByTagName("html")[0].style.fontSize = t / e * 62.5 + "%";
+  var globalTmp = {};
+  window.onresize = function () {
+    var e = 320,
+      t = document.documentElement.clientWidth;
+    document.getElementsByTagName("html")[0].style.fontSize = t / e * 62.5 + "%";
+  };
+  window.onresize();
+  document.body.addEventListener("touchmove",
+    function (e) {
+      e.preventDefault()
+    });
+  function loadXMLDoc() {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {
+      //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+      xmlhttp = new XMLHttpRequest();
+    } else {
+      console.error('您的浏览器不支持');
+    }
+    xmlhttp.onreadystatechange = function () {
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        console.log(JSON.parse(xmlhttp.responseText));
+        initHtml(JSON.parse(xmlhttp.responseText));
+      }
     };
-    window.onresize();
-    document.body.addEventListener("touchmove",
-            function (e) {
-                e.preventDefault()
-            });
+    xmlhttp.open("POST", "http://nrb-stage.azurewebsites.net/mobile/recharge", true);
+    xmlhttp.send();
+  }
+
+  loadXMLDoc();
+
+  function initHtml(data) {
+    initCurrentTypeHtml(data);
+    initTradeType(data);
+  }
+
+  function initCurrentTypeHtml(data) {
+    var initTarget = document.getElementsByClassName('currency-group');
+//    console.log(initTarget);
+    var tagCurrency = '';
+    var arr = JSON.stringify(data).replace(/"/g, '*').replace(/:/g, '&');
+//    console.log(arr);
+
+    for (var i = 0; i < data.length; i++) {
+      tagCurrency += '<a class="currency-item" id="CurrencyType_' + data[i].CurrencyType + '" onclick="chooseCurrencyType(event)" data-value="' + data[i].CurrencyType + '" data-index="' + i + '" data-arr="' + arr + '"><i class="iconfont icon-yuanxingweixuanzhong"></i><span>' + data[i].TypeName + '</span></a>';
+      initTarget[0].innerHTML = tagCurrency;
+    }
+
+    document.getElementById('CurrencyType_' + data[0].CurrencyType).click();
+    globalTmp.currencyType = data[0].CurrencyType;
+  }
+
+  function chooseCurrencyType(e) {
+    var tagA = e.target.nodeName === 'A' ? e.target : e.target.parentElement;
+    var id = e.target.nodeName === 'A' ? e.target.id : e.target.parentElement.id;
+//    console.log(id);
+
+    for (var i = 0; i < tagA.parentElement.children.length; i++) {
+      tagA.parentElement.children[i].children[0].className = 'iconfont icon-yuanxingweixuanzhong';
+    }
+    tagA.children[0].className = 'iconfont icon-yuanxingxuanzhongfill';
+    globalTmp.currencyType = tagA.getAttribute('data-value');
+    globalTmp.currencyIndex = parseInt(tagA.getAttribute('data-index'));
+//    console.log(tagA.getAttribute('data-arr'));
+    var arr = tagA.getAttribute('data-arr').replace(/\*/g, '"').replace(/&/g, ':');
+//    console.log(arr);
+    initTradeType(JSON.parse(arr));
+  }
+
+  function initTradeType(data) {
+    var initTarget = document.getElementsByClassName('trade-group');
+//    console.log(initTarget);
+    var tagTrade = '';
+    var repeatArr = data[globalTmp.currencyIndex].List;
+    for (var i = 0; i < repeatArr.length; i++) {
+      tagTrade += '<a class="trade-item" id="TradeType_' + repeatArr[i].Id + '" onclick="chooseTradeType(event)" data-value="' + repeatArr[i].RateAmount + '" data-index="' + i + '" data-payAmount="' + repeatArr[i].Amount + '"><span>' + repeatArr[i].Amount + '元购买<span>' + repeatArr[i].RateAmount + '</span>觅豆</span><i class="iconfont icon-yuanxingweixuanzhong"></i></a>';
+      initTarget[0].innerHTML = tagTrade;
+    }
+    document.getElementById('TradeType_' + repeatArr[0].Id).click();
+  }
+
+  function chooseTradeType(e) {
+    var tagA = e.target.nodeName === 'A' ? e.target : e.target.parentElement;
+//    console.log(e);
+    for (var i = 0; i < tagA.parentElement.children.length; i++) {
+      tagA.parentElement.children[i].children[1].className = 'iconfont icon-yuanxingweixuanzhong';
+    }
+    tagA.children[1].className = 'iconfont icon-yuanxingxuanzhongfill';
+    globalTmp.tradeType = tagA.getAttribute('data-value');
+    globalTmp.tradeIndex = parseInt(tagA.getAttribute('data-index'));
+    globalTmp.tradePayAmount = parseFloat(tagA.getAttribute('data-payAmount'));
+    initTotal();
+  }
+
+  function pay() {
+    console.log(globalTmp);
+  }
+
+  function initTotal() {
+    var tag = document.getElementsByClassName('amount')[0];
+    tag.innerHTML = globalTmp.tradePayAmount;
+  }
+
 </script>
 </body>
 </html>
