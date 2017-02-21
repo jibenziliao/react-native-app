@@ -44,6 +44,7 @@
 		9BD8FA73C0514E9D8343A00F /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DFD3DA9236624231880524E1 /* libRNImagePicker.a */; };
 		A0980D36F59E4CA1BED661E7 /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EAFD7046BCF442AB252E7FE /* libRNDeviceInfo.a */; };
 		A2685F610A354698B692628A /* libRNBackgroundTimer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB7B582F9D3646E48633CF30 /* libRNBackgroundTimer.a */; };
+		A3633C1A970F4CDEA4B8B39D /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D5148AE3F9C44ED90FF061C /* libRNFS.a */; };
 		A586F3EB7F894B58B3FE7BEA /* Skia.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28D9C96D987E41B2B5AD1036 /* Skia.ttf */; };
 		ADA4B88DAE8046BD9F81C60E /* SF-UI-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3BB744A830204F2B802F9C66 /* SF-UI-Text-Regular.otf */; };
 		BBA78E60787D257688B58DAC /* Pods_qingyuanjieTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34889C31B378CB61F37E1196 /* Pods_qingyuanjieTests.framework */; };
@@ -287,6 +288,13 @@
 			remoteGlobalIDString = 11FA5C511C4A1296003AC2EE;
 			remoteInfo = AirMaps;
 		};
+		FDE069AD1E5BF3D300263C67 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 733173B204E34ED1B0A286F0 /* RNFS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F12AFB9B1ADAF8F800E0535D;
+			remoteInfo = RNFS;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -318,6 +326,7 @@
 		28DD94B2DEDA47BABD47BCF4 /* RNCookieManagerIOS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNCookieManagerIOS.xcodeproj; path = "../node_modules/react-native-cookies/RNCookieManagerIOS.xcodeproj"; sourceTree = "<group>"; };
 		2A312F82C91545DE9003F1A1 /* Roboto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto.ttf; path = "../node_modules/native-base/Fonts/Roboto.ttf"; sourceTree = "<group>"; };
 		2B6C207454CB77FDCC3BE2C4 /* Pods-qingyuanjieTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-qingyuanjieTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-qingyuanjieTests/Pods-qingyuanjieTests.release.xcconfig"; sourceTree = "<group>"; };
+		2D5148AE3F9C44ED90FF061C /* libRNFS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFS.a; sourceTree = "<group>"; };
 		2EC3FC037EE04B229BCEED29 /* RCTBEEPickerManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTBEEPickerManager.xcodeproj; path = "../node_modules/react-native-picker/ios/RCTBEEPickerManager.xcodeproj"; sourceTree = "<group>"; };
 		34889C31B378CB61F37E1196 /* Pods_qingyuanjieTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_qingyuanjieTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		388745F0212745E297136629 /* libRNCookieManagerIOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCookieManagerIOS.a; sourceTree = "<group>"; };
@@ -327,6 +336,7 @@
 		4D311ECF3DBB52DD999D408F /* Pods-qingyuanjieTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-qingyuanjieTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-qingyuanjieTests/Pods-qingyuanjieTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4EAFD7046BCF442AB252E7FE /* libRNDeviceInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNDeviceInfo.a; sourceTree = "<group>"; };
 		4ECAAA6F9AE14009A7A964E4 /* Comic Sans MS.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Comic Sans MS.ttf"; path = "../node_modules/native-base/Fonts/Comic Sans MS.ttf"; sourceTree = "<group>"; };
+		733173B204E34ED1B0A286F0 /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		776F3C885DB74EB797B44FEA /* Georgia.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Georgia.ttf; path = "../node_modules/native-base/Fonts/Georgia.ttf"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		79A8D30E1D534CF3A1615FD6 /* Microsoft Sans Serif.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Microsoft Sans Serif.ttf"; path = "../node_modules/native-base/Fonts/Microsoft Sans Serif.ttf"; sourceTree = "<group>"; };
@@ -462,6 +472,7 @@
 				63187A9E271DFD8B99E9A59C /* Pods_qingyuanjie.framework in Frameworks */,
 				FD6E73A11E0188D9006F60F1 /* libRCTAnimation.a in Frameworks */,
 				89ADECEF42DC4B38A7F7D629 /* libRCTJPushModule.a in Frameworks */,
+				A3633C1A970F4CDEA4B8B39D /* libRNFS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -619,6 +630,7 @@
 				2EC3FC037EE04B229BCEED29 /* RCTBEEPickerManager.xcodeproj */,
 				4106DC533BE547DCB1E35179 /* RNVectorIcons.xcodeproj */,
 				CCFE586EF59C4F62AE6A1A3E /* RCTJPushModule.xcodeproj */,
+				733173B204E34ED1B0A286F0 /* RNFS.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -847,6 +859,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		FDE069911E5BF3D300263C67 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FDE069AE1E5BF3D300263C67 /* libRNFS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -997,6 +1017,10 @@
 				{
 					ProductGroup = FD6E733F1E018453006F60F1 /* Products */;
 					ProjectRef = F9374EB32168499E86AAEB38 /* RNDeviceInfo.xcodeproj */;
+				},
+				{
+					ProductGroup = FDE069911E5BF3D300263C67 /* Products */;
+					ProjectRef = 733173B204E34ED1B0A286F0 /* RNFS.xcodeproj */;
 				},
 				{
 					ProductGroup = FD6E73351E018453006F60F1 /* Products */;
@@ -1203,6 +1227,13 @@
 			fileType = archive.ar;
 			path = libAirMaps.a;
 			remoteRef = FDBEEA971E1B691600BF9D2E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FDE069AE1E5BF3D300263C67 /* libRNFS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFS.a;
+			remoteRef = FDE069AD1E5BF3D300263C67 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1441,6 +1472,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/情缘结.app/情缘结";
@@ -1457,6 +1489,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1498,6 +1531,7 @@
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-fs/**",
 				);
 				INFOPLIST_FILE = qingyuanjie/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -1561,6 +1595,7 @@
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-fs/**",
 				);
 				INFOPLIST_FILE = qingyuanjie/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
@@ -1648,6 +1683,7 @@
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-fs/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1699,6 +1735,7 @@
 					"$(SRCROOT)/../node_modules/react-native-picker/ios/RCTBEEPickerManager",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/jpush-react-native/ios/RCTJPushModule/RCTJPushModule",
+					"$(SRCROOT)/../node_modules/react-native-fs/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;

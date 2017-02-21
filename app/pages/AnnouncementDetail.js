@@ -42,6 +42,7 @@ import AnnouncementList from '../pages/AnnouncemenetList'
 import customTheme from '../themes/MyThemes'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
+import CacheableImage from 'react-native-cacheable-image'
 
 const {height, width} = Dimensions.get('window');
 
@@ -180,14 +181,7 @@ const styles = StyleSheet.create({
   closeBtn: {
     position: 'absolute',
     left: pxToDp(40),
-    ...Platform.select({
-      ios: {
-        top: pxToDp(40)
-      },
-      android: {
-        top: pxToDp(20)
-      }
-    }),
+    top: pxToDp(40),
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: pxToDp(40)
@@ -234,7 +228,7 @@ class AnnouncementDetail extends BaseComponent {
       pageSize: 10,
       viewMarginBottom: new Animated.Value(0),
       showCommentInput: false,
-      imgLoading: true,
+      imgLoading: false,
       avatarLoading: true,
       showIndex: 0,
       imgList: [],
@@ -711,9 +705,13 @@ class AnnouncementDetail extends BaseComponent {
             }}
             key={index}
             style={styles.singleImgContainer}>
-            <Image
+            <CacheableImage
               onLoadEnd={() => {
                 this.setState({imgLoading: false})
+              }}
+              activityIndicatorProps={{
+                style: {width: imageWidth, height: imageWidth},
+                size: 'large'
               }}
               style={{width: imageWidth, height: imageWidth}}
               source={{uri: URL_DEV + '/' + item}}>
@@ -721,7 +719,7 @@ class AnnouncementDetail extends BaseComponent {
                 <Image
                   source={require('./img/imgLoading.gif')}
                   style={{width: imageWidth, height: imageWidth}}/> : null}
-            </Image>
+            </CacheableImage>
           </TouchableOpacity>
         )
       })

@@ -123,14 +123,7 @@ const styles = StyleSheet.create({
   closeBtn: {
     position: 'absolute',
     left: pxToDp(40),
-    ...Platform.select({
-      ios: {
-        top: pxToDp(40)
-      },
-      android: {
-        top: pxToDp(20)
-      }
-    }),
+    top: pxToDp(40),
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal:pxToDp(40)
