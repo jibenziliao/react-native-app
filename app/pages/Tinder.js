@@ -280,10 +280,11 @@ class Tinder extends BaseComponent {
       user: {
         _id: tmpGlobal.currentUser.UserId,
         name: tmpGlobal.currentUser.Nickname,
-        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
       },
     };
-    console.log(params);
+    //console.log(params);
 
     let sendMsgParams = {
       H: 'chatcore',

@@ -668,6 +668,7 @@ class MessageDetail extends BaseComponent {
     };
     if (index === 1) {
       dispatch(HomeActions.attention(data, (json)=> {
+        this._attention(json.Result?'':'取消');
         DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
       }, (error)=> {
       }));
@@ -682,6 +683,38 @@ class MessageDetail extends BaseComponent {
     } else if (index === 3) {
       this._addOrRemoveBlackList();
     }
+  }
+
+  _attention(str){
+    let singleMsg = {
+      MsgContent: `[关注]我${str}关注了你`,
+      MsgId: Math.round(Math.random() * 1000000),
+      MsgType: 3,//3代表关注/取消关注
+      SendTime: dateFormat(new Date()),
+      HasSend: true,
+      _id: Math.round(Math.random() * 1000000),
+      text: `[关注]我${str}关注了你`,
+      createdAt: dateFormat(new Date()),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+    this.setState((previousState) => {
+      return {
+        messages: GiftedChat.append(previousState.messages, singleMsg),
+      };
+    });
+
+    let sendMsgParams = {
+      H: 'chatcore',
+      M: 'UserSendMsgToUser',
+      A: [this.state.UserId + '', `[关注]我${str}关注了你`],
+      I: Math.floor(Math.random() * 11)
+    };
+    tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
   }
 
   _addOrRemoveBlackList() {
