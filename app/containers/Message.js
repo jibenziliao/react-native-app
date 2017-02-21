@@ -188,15 +188,10 @@ class Message extends BaseComponent {
   //MessageDetail页面更新缓存后或拉黑时,删除消息记录,这个页面需要监听,并被动更新
   _cacheMessageListener(data) {
     console.log('Message页面成功监听到MessageDetail页面缓存成功的信号||消息缓存变更');
-    console.log(data);
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
-      if (res !== null) {
-        this.setState({
-          messageList: this.sortByDate(res)
-        }, ()=> {
-          this._totalUnReadCountHandler()
-        });
-      }
+    this.setState({
+      messageList: this.sortByDate(data.data)
+    }, ()=> {
+      this._totalUnReadCountHandler()
     });
   }
 
