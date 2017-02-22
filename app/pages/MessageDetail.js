@@ -706,14 +706,14 @@ class MessageDetail extends BaseComponent {
 
     //单条发送的消息存入缓存中时,需要将日期转成字符串存储
     let params = {
-      MsgContent: messages[0].text,
+      MsgContent: `[关注]我${str}关注了你`,
       MsgId: tmpId,
       MsgType: 1,//1代表用户之间的普通聊天消息
-      SendTime: dateFormat(messages[0].createdAt),
+      SendTime: dateFormat(new Date()),
       HasSend: true,
       _id: tmpId,
-      text: messages[0].text,
-      createdAt: dateFormat(messages[0].createdAt),
+      text: `[关注]我${str}关注了你`,
+      createdAt: dateFormat(new Date()),
       user: {
         _id: tmpGlobal.currentUser.UserId,
         name: tmpGlobal.currentUser.Nickname,
