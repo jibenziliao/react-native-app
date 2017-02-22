@@ -44,16 +44,16 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     textAlign: 'center'
   },
-  noCardContainer:{
-    flex:1,
-    alignItems:'center',
-    justifyContent:'center'
+  noCardContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   noCard: {
     flexWrap: 'wrap',
     textAlign: 'center',
     fontSize: 16,
-    alignItems:'center'
+    alignItems: 'center'
   },
   card: {
     alignItems: 'flex-start',
@@ -153,7 +153,7 @@ class Card extends Component {
   render() {
     return (
       <TouchableOpacity
-        onPress={()=> {
+        onPress={() => {
           this._goUserInfo()
         }}
         style={styles.card}>
@@ -185,7 +185,7 @@ class NoMoreCards extends Component {
     return (
       <TouchableOpacity
         style={styles.noMoreCards}
-        onPress={()=> {
+        onPress={() => {
           //this.props.refresh()
         }}>
         <Text>没有更多卡片了,请明天再试</Text>
@@ -218,7 +218,7 @@ class Tinder extends BaseComponent {
   }
 
   componentDidMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._getRandomUserList();
     });
   }
@@ -229,18 +229,18 @@ class Tinder extends BaseComponent {
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize
     };
-    dispatch(HomeActions.getRandomUsers(data, (json)=> {
+    dispatch(HomeActions.getRandomUsers(data, (json) => {
       lastCount = json.Result.length;
-      dispatch(HomeActions.getRandomUsers(data, (res)=> {
+      dispatch(HomeActions.getRandomUsers(data, (res) => {
         this.setState({
           cards: json.Result.concat(res.Result)
         });
-      }, (error)=> {
+      }, (error) => {
         this.setState({
           cards: json.Result
         });
       }));
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -256,13 +256,13 @@ class Tinder extends BaseComponent {
       pageIndex: 1,
       pageSize: this.state.pageSize
     };
-    dispatch(HomeActions.getMatchUsers(data, (json)=> {
+    dispatch(HomeActions.getMatchUsers(data, (json) => {
       lastCount = json.Result.length;
       this.setState({
         cards: json.Result,
         refresh: true
       });
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -293,7 +293,7 @@ class Tinder extends BaseComponent {
       I: Math.floor(Math.random() * 11)
     };
     //打招呼之前,检查webSocket是否成功初始化
-    if (tmpGlobal.webSocketInitState) {
+    if (tmpGlobal.ws.readyState === 1) {
       this._sendSaveRecord(params, card);
       tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
     }
@@ -308,9 +308,9 @@ class Tinder extends BaseComponent {
       SenderNickname: card.Nickname,
       MsgList: [data]
     };
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
       if (res !== null && res.length > 0) {
-        let index = res.findIndex((item)=> {
+        let index = res.findIndex((item) => {
           return item.SenderId === card.UserId
         });
         if (index > -1) {
@@ -319,11 +319,11 @@ class Tinder extends BaseComponent {
           res.push(allMsg);
         }
         console.log('发送时更新消息缓存数据', res, data);
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(() => {
           DeviceEventEmitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
         });
       }
@@ -333,13 +333,13 @@ class Tinder extends BaseComponent {
   //打招呼
   handleYup(card) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.canSayHey({UserId: card.UserId}, (json)=> {
+    dispatch(HomeActions.canSayHey({UserId: card.UserId}, (json) => {
       if (json.Result) {
         this._greet(card);
       } else {
         toastShort(json.Message);
       }
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -362,13 +362,13 @@ class Tinder extends BaseComponent {
         pageSize: this.state.pageSize,
         pageIndex: this.state.pageIndex
       };
-      dispatch(HomeActions.getRandomUsersQuiet(data, (json)=> {
+      dispatch(HomeActions.getRandomUsersQuiet(data, (json) => {
         lastCount = json.Result.length;
         this.setState({
           cards: this.state.cards.concat(json.Result)
         });
         console.log(`Adding ${json.Result.length} more cards`);
-      }, (error)=> {
+      }, (error) => {
         //toastShort(error.Message);
       }));
     }
@@ -423,7 +423,7 @@ class Tinder extends BaseComponent {
             cards={this.state.cards}
             loop={false}
             renderCard={(cardData) => <Card {...cardData}{...this.props} />}
-            renderNoMoreCards={() => <NoMoreCards refresh={()=> {
+            renderNoMoreCards={() => <NoMoreCards refresh={() => {
               this._refresh()
             }}/>}
             containerStyle={styles.cardContainer}
@@ -441,7 +441,7 @@ class Tinder extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }

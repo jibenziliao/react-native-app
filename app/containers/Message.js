@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   cardLast: {
     marginBottom: pxToDp(20)
   },
-  card:{
+  card: {
     backgroundColor: '#FFF',
     flex: 1,
   },
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     height: pxToDp(130),
-    borderBottomColor:'#cecece'
+    borderBottomColor: '#cecece'
   },
   avatar: {
     width: pxToDp(80),
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: pxToDp(8),
     margin: pxToDp(25),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor:'#cecece'
+    borderColor: '#cecece'
   },
   cardContent: {
     flex: 1,
@@ -163,17 +163,17 @@ class Message extends BaseComponent {
 
   componentDidMount() {
     console.log('Message页面加载完成');
-    this.subscription = DeviceEventEmitter.addListener('MessageCached', (data)=> {
+    this.subscription = DeviceEventEmitter.addListener('MessageCached', (data) => {
       this._cacheMessageListener(data)
     });
-    this.startReceiveMsgListener = DeviceEventEmitter.addListener('ReceiveMsg', (data)=> {
+    this.startReceiveMsgListener = DeviceEventEmitter.addListener('ReceiveMsg', (data) => {
       this._wsResetOnMessageListener();
     });
-    this.reConnectWebSocketListener = DeviceEventEmitter.addListener('reConnectWebSocket', (data)=> {
+    this.reConnectWebSocketListener = DeviceEventEmitter.addListener('reConnectWebSocket', (data) => {
       reconnectCount = 0;//在聊天页面重连时,重置重连次数
       this._wsTokenHandler();
     });
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._initOldMessage();
     })
   }
@@ -183,14 +183,14 @@ class Message extends BaseComponent {
     console.log('Message页面成功监听到MessageDetail页面缓存成功的信号||消息缓存变更');
     this.setState({
       messageList: this.sortByDate(data.data)
-    }, ()=> {
+    }, () => {
       this._totalUnReadCountHandler()
     });
   }
 
   //页面上展示的消息按照日期排序
   sortByDate(messages) {
-    return messages.sort((b, a)=> {
+    return messages.sort((b, a) => {
       return new Date(a.MsgList[a.MsgList.length - 1].SendTime).getTime() - new Date(b.MsgList[b.MsgList.length - 1].SendTime).getTime()
     });
   }
@@ -210,7 +210,7 @@ class Message extends BaseComponent {
 
   //消息标为已读(更改本地状态)
   _markAsRead(SenderId) {
-    let index = this.state.messageList.findIndex((item)=> {
+    let index = this.state.messageList.findIndex((item) => {
       return item.SenderId === SenderId;
     });
     for (let j = 0; j < this.state.messageList[index].MsgList.length; j++) {
@@ -218,9 +218,9 @@ class Message extends BaseComponent {
     }
     this.setState({
       messageList: this.state.messageList
-    }, ()=> {
+    }, () => {
       //更新缓存中相关消息记录为已读状态
-      Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+      Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
         for (let i = 0; i < res.length; i++) {
           for (let j = 0; j < res[i].MsgList.length; j++) {
             if (res[i].SenderId === SenderId) {
@@ -235,11 +235,11 @@ class Message extends BaseComponent {
   }
 
   _initOldMessage() {
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
       if (res !== null) {
         this.setState({
           messageList: res
-        }, ()=> {
+        }, () => {
           this._totalUnReadCountHandler()
         });
       }
@@ -327,7 +327,7 @@ class Message extends BaseComponent {
 
     this.setState({
       messageList: this.sortByDate(this.state.messageList)
-    }, ()=> {
+    }, () => {
       //在setState的回调里开始缓存消息
       console.log('Message页面开始缓存消息');
       console.log(this.state.messageList);
@@ -344,13 +344,13 @@ class Message extends BaseComponent {
     //console.log(getUrl);
     fetch(getUrl, {
       method: 'POST'
-    }).then((response)=> {
+    }).then((response) => {
       return response.json()
-    }).then((json)=> {
+    }).then((json) => {
       let wsUrl = `${URL_WS_DEV}/chat/signalr/hubs/signalr/connect?transport=webSockets&clientProtocol=1.5&connectionToken=${encodeURIComponent(json.ConnectionToken)}&connectionData=${encodeURIComponent(JSON.stringify([{'name': 'ChatCore'}]))}`;
       this._wsInitHandler(wsUrl);
-    }).catch((e)=> {
-      if (typeof(e) == "object" && Object.prototype.toString.call(e).toLowerCase() == "[object object]" && !e.length) {
+    }).catch((e) => {
+      if (typeof(e) === "object" && Object.prototype.toString.call(e).toLowerCase() === "[object object]" && !e.length) {
         console.log(e);
       } else {
         console.log(e + '');
@@ -368,7 +368,7 @@ class Message extends BaseComponent {
     tmpGlobal.ws = null;
     tmpGlobal.ws = new WebSocket(wsUrl);
 
-    tmpGlobal.ws.onopen = ()=> {
+    tmpGlobal.ws.onopen = () => {
       if (tmpGlobal.ws.readyState === 1) {
         this._wsLoginHandler();
         this._wsOpenReceiveHandler();
@@ -414,7 +414,7 @@ class Message extends BaseComponent {
 
   //原生webSocket连接登录,登录时请求离线消息(传的LastMsgId默认为0)
   _wsLoginHandler() {
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res) => {
       let loginParams = {
         H: 'chatcore',
         M: 'Login',
@@ -424,7 +424,7 @@ class Message extends BaseComponent {
       tmpGlobal.ws.send(JSON.stringify(loginParams));
       console.log(loginParams);
       console.log('ws登录成功');
-    }).catch((error)=> {
+    }).catch((error) => {
       console.log(error);
     });
   }
@@ -435,11 +435,11 @@ class Message extends BaseComponent {
     //连接成功后,将初始化webSocket连接的方法赋值给全局变量
     tmpGlobal._wsTokenHandler = this._wsTokenHandler;
     if (obj.hasOwnProperty('M')) {
-      let index = obj.M.findIndex((item)=> {
+      let index = obj.M.findIndex((item) => {
         return item.M === 'GetNewMsg'
       });
       if (index > -1) {
-        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
+        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res) => {
           if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId > parseInt(res || 0)) {
             //缓存最后一条消息Id
             Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
@@ -455,6 +455,8 @@ class Message extends BaseComponent {
       }
     } else {
       //console.log(obj);
+      //方案一：这里可以缓存服务器当前时间，下次发消息时，检查缓存中的时间和当前时间间隔，超过一定时间，则主动判定为websocket连接断开，主动重连。但只有发消息时，才知道websocket连接已断开，收不到别人的消息时，APP是无法知道websocket连接已断开的。
+      //方案二：这里使用心跳包，定时向后台发送随机消息，服务器返回消息后重置，超时则认为websocket连接断开。react-native app切入后台后，setTimeout和setInterval事件会暂停，web版的定时器无法正常工作，需要寻找原生替代解决方案。
     }
   }
 
@@ -491,7 +493,7 @@ class Message extends BaseComponent {
   }
 
   _renderUnReadCount(data) {
-    let tmpArr = data.filter((item)=> {
+    let tmpArr = data.filter((item) => {
       return item.HasSend === false;
     });
     if (tmpArr.length > 0) {
@@ -518,7 +520,7 @@ class Message extends BaseComponent {
     let arr = this.state.messageList;
     let count = 0;
     for (let i = 0; i < arr.length; i++) {
-      count += arr[i].MsgList.filter((item)=> {
+      count += arr[i].MsgList.filter((item) => {
         return item.HasSend === false;
       }).length;
     }
@@ -530,14 +532,14 @@ class Message extends BaseComponent {
     this.refs.swipeListView.safeCloseOpenRow();
     let newData = [...this.state.messageList];
     newData.splice(secId, 1);
-    this.setState({messageList: newData}, ()=> {
+    this.setState({messageList: newData}, () => {
       this._totalUnReadCountHandler();
     });
   }
 
   _deleteRecordRow(data) {
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
-      let index = res.findIndex((item)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
+      let index = res.findIndex((item) => {
         return data.SenderId === item.SenderId;
       });
       if (index !== -1) {
@@ -554,7 +556,7 @@ class Message extends BaseComponent {
   renderRowData(rowData, sectionID, rowID) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           if (!rowIsOpen) {
             this._goChat(rowData)
           } else {
@@ -564,31 +566,31 @@ class Message extends BaseComponent {
         key={rowData.SenderId}
         style={styles.card}>
         <View style={[styles.cardItem, {borderBottomWidth: this._bottomItem(rowID, 0)}]}>
-        <Image
-          style={styles.avatar}
-          source={{uri: URL_DEV + rowData.SenderAvatar}}/>
-        <View style={[styles.cardContent, {borderBottomWidth: this._bottomItem(rowID, 1)}]}>
-          <View style={styles.cardRow}>
-            <Text
-              numberOfLines={1}
-              style={[styles.cardText, styles.nameText]}>
-              {rowData.SenderNickname}
-            </Text>
-            <Text
-              style={[styles.timeText]}>
-              {rowData.MsgList[rowData.MsgList.length - 1].SendTime}
-            </Text>
-          </View>
-          <View style={styles.cardRow}>
-            <Text
-              style={[styles.cardText, styles.msgContent]}
-              numberOfLines={1}>
-              {this._renderLastMsgContent(rowData)}
-            </Text>
-            {this._renderUnReadCount(rowData.MsgList)}
+          <Image
+            style={styles.avatar}
+            source={{uri: URL_DEV + rowData.SenderAvatar}}/>
+          <View style={[styles.cardContent, {borderBottomWidth: this._bottomItem(rowID, 1)}]}>
+            <View style={styles.cardRow}>
+              <Text
+                numberOfLines={1}
+                style={[styles.cardText, styles.nameText]}>
+                {rowData.SenderNickname}
+              </Text>
+              <Text
+                style={[styles.timeText]}>
+                {rowData.MsgList[rowData.MsgList.length - 1].SendTime}
+              </Text>
+            </View>
+            <View style={styles.cardRow}>
+              <Text
+                style={[styles.cardText, styles.msgContent]}
+                numberOfLines={1}>
+                {this._renderLastMsgContent(rowData)}
+              </Text>
+              {this._renderUnReadCount(rowData.MsgList)}
+            </View>
           </View>
         </View>
-      </View>
       </TouchableHighlight>
     )
   }
@@ -603,10 +605,10 @@ class Message extends BaseComponent {
           renderRow={
             this.renderRowData.bind(this)
           }
-          onRowClose={()=> {
+          onRowClose={() => {
             rowIsOpen = false
           }}
-          onRowOpen={()=> {
+          onRowOpen={() => {
             rowIsOpen = true
           }}
           closeOnScroll={true}
@@ -614,7 +616,7 @@ class Message extends BaseComponent {
           recalculateHiddenLayout={true}
           renderHiddenRow={ (data, rowId, secId, rowMap) => (
             <TouchableHighlight
-              onPress={(_)=> {
+              onPress={(_) => {
                 this.deleteRow(data, secId)
               }}
               style={styles.hiddenRow}>
@@ -645,7 +647,7 @@ class Message extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }

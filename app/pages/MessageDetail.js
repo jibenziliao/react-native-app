@@ -375,7 +375,7 @@ class MessageDetail extends BaseComponent {
 
   //发送消息之前,检查webSocket是否成功初始化
   _checkBeforeSend(message) {
-    if (tmpGlobal.webSocketInitState) {
+    if (tmpGlobal.ws.readyState === 1) {
       this.onSend(message);
     } else {
       Alert.alert('提示', '您的网络异常,点击重试', [
@@ -751,7 +751,7 @@ class MessageDetail extends BaseComponent {
       A: [this.state.UserId + '', `[关注]我${str}关注了你`],
       I: Math.floor(Math.random() * 11)
     };
-    if (tmpGlobal.webSocketInitState) {
+    if (tmpGlobal.ws.readyState === 1) {
       this._sendSaveRecord(params);
       tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
     }

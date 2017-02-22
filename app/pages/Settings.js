@@ -88,7 +88,9 @@ class Settings extends BaseComponent {
   }
 
   _logOut() {
-    //websocket注销当前用户
+    //https://developer.mozilla.org/zh-CN/docs/Web/API/CloseEvent
+    //websocket注销时关闭
+    //tmpGlobal.ws.close();
     tmpGlobal.ws = null;
     tmpGlobal.currentUser = null;
     tmpGlobal.cookie = null;
