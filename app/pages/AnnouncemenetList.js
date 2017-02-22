@@ -467,6 +467,10 @@ class AnnouncementList extends BaseComponent {
               onLoadEnd={() => {
                 this.setState({imgLoading: false})
               }}
+              activityIndicatorProps={{
+                style: {width: imageWidth, height: imageWidth},
+                size: 'large'
+              }}
               style={{width: imageWidth, height: imageWidth}}
               source={{uri: URL_DEV + '/' + item}}>
               {this.state.imgLoading ?

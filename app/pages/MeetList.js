@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     borderRadius: pxToDp(8)
   },
   cardContainer: {
-    paddingVertical: pxToDp(20)
+    paddingVertical: pxToDp(20),
+    borderRadius: pxToDp(8)
   },
   cardRow: {
     flexDirection: 'row',
