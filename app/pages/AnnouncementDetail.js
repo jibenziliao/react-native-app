@@ -777,7 +777,7 @@ class AnnouncementDetail extends BaseComponent {
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
               <Text>{rowData.CommentUserInfo.Distance}</Text>
-              <Text>{this._createTime(rowData.CreateTime)}</Text>
+              <Text>{rowData.CreateTimeDescription}</Text>
             </View>
           </View>
         </View>

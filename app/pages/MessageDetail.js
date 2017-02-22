@@ -223,7 +223,7 @@ class MessageDetail extends BaseComponent {
       console.log(newMsg);
       console.log('MessageDetail页面收到了新消息');
       for (let i = 0; i < resMsg.MsgList.length; i++) {
-        this.onReceive(resMsg.MsgList[i]);
+        this._margeMessage(resMsg.MsgList[i]);
       }
     }
   }
@@ -294,6 +294,7 @@ class MessageDetail extends BaseComponent {
         };
       }
     }
+
     dataCopy = JSON.parse(JSON.stringify(newMsgList));
     console.log('待缓存的数据', dataCopy);
     Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
@@ -301,6 +302,9 @@ class MessageDetail extends BaseComponent {
         for (let i = 0; i < res.length; i++) {
           for (let j = 0; j < dataCopy.length; j++) {
             if (res[i].SenderId === dataCopy[j].SenderId) {
+              //若用户头像、昵称有更新,则更新缓存中的头像和昵称
+              res[i].SenderNickname = dataCopy[j].SenderNickname;
+              res[i].SenderAvatar = dataCopy[j].SenderAvatar;
               res[i].MsgList = res[i].MsgList.concat(dataCopy[j].MsgList);
               dataCopy.splice(j, 1);
               break;
@@ -444,6 +448,19 @@ class MessageDetail extends BaseComponent {
     };
 
     tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+  }
+
+  //在聊天页面接收消息，若对方更新了头像或昵称，则需要更新页面上的头像和昵称（更新缓存单独进行）
+  _margeMessage(data) {
+    for (let i = 0; i < this.state.messages.length; i++) {
+      this.state.messages[i].user.avatar = URL_DEV + data.user.avatar;
+      this.state.messages[i].user.name = data.user.name;
+    }
+    this.setState({
+      messages: this.state.messages
+    }, () => {
+      this.onReceive(data)
+    });
   }
 
   onReceive(data) {
@@ -708,7 +725,7 @@ class MessageDetail extends BaseComponent {
     let params = {
       MsgContent: `[关注]我${str}关注了你`,
       MsgId: tmpId,
-      MsgType: 1,//1代表用户之间的普通聊天消息
+      MsgType: 3,//3代表关注/取消关注
       SendTime: dateFormat(new Date()),
       HasSend: true,
       _id: tmpId,
