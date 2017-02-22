@@ -33,6 +33,7 @@ import {SwipeListView} from 'react-native-swipe-list-view'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
+import EmptyView from '../components/EmptyView'
 
 const styles = StyleSheet.create({
   listView: {
@@ -105,14 +106,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: pxToDp(26),
     color: '#666'
-  },
-  tips: {
-    flexDirection: 'row',
-    margin: pxToDp(80),
-    justifyContent: 'center'
-  },
-  tipsText: {
-    fontSize: pxToDp(40),
   },
   hiddenRow: {
     backgroundColor: 'red',
@@ -638,13 +631,8 @@ class Message extends BaseComponent {
           pageSize={10}/>
       )
     } else {
-      return (
-        <View style={styles.tips}>
-          <Text style={styles.tipsText}>{'暂无消息'}</Text>
-        </View>
-      )
+      return <EmptyView/>
     }
-
   }
 
   renderBody() {

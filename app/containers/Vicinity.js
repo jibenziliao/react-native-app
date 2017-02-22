@@ -10,6 +10,7 @@ import {
   View,
   InteractionManager,
   TouchableOpacity,
+  TouchableHighlight,
   ScrollView,
   Dimensions,
   Image
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
   card: {
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: pxToDp(16)
   },
   image: {
     width: pxToDp(354),
@@ -51,7 +53,6 @@ const styles = StyleSheet.create({
     borderRadius: pxToDp(16),
     borderColor: '#f3f3f3',
     borderWidth: pxToDp(1),
-
   },
   leftImage: {
     borderLeftWidth: 0
@@ -163,19 +164,21 @@ class Vicinity extends BaseComponent {
         <ScrollView>
           <View style={styles.viewContainer}>
             <View style={[styles.cardRow, styles.topRow]}>
-              <TouchableOpacity
+              <TouchableHighlight
                 style={styles.card}
                 onPress={() => {
                   if (tmpGlobal.currentUser.MapPrecision !== null) {
                     this._goMap()
                   }
                 }}>
+                <View style={[styles.card,CommonStyles.background_white]}>
                 <Image
                   source={require('./img/map.png')}
                   style={[styles.image, styles.leftImage]}/>
                 {this._renderCannotGoMap()}
-              </TouchableOpacity>
-              <TouchableOpacity
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
                 style={styles.card}
                 onPress={() => {
                   this._goMatchUsers()
@@ -183,10 +186,10 @@ class Vicinity extends BaseComponent {
                 <Image
                   source={require('./img/match.png')}
                   style={[styles.image, styles.rightImage]}/>
-              </TouchableOpacity>
+              </TouchableHighlight>
             </View>
             <View style={styles.cardRow}>
-              <TouchableOpacity
+              <TouchableHighlight
                 style={styles.card}
                 onPress={() => {
                   this._goShake()
@@ -194,8 +197,8 @@ class Vicinity extends BaseComponent {
                 <Image
                   source={require('./img/tinder.png')}
                   style={[styles.image, styles.leftImage]}/>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </TouchableHighlight>
+              <TouchableHighlight
                 style={styles.card}
                 onPress={() => {
                   this._goRevel()
@@ -203,7 +206,7 @@ class Vicinity extends BaseComponent {
                 <Image
                   source={require('./img/revel.png')}
                   style={[styles.image, styles.rightImage]}/>
-              </TouchableOpacity>
+              </TouchableHighlight>
             </View>
           </View>
         </ScrollView>

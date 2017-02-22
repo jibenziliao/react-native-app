@@ -90,6 +90,7 @@ class TranscationRecordList extends BaseComponent {
       pageSize: 20,
       refreshing: false,
       loadingMore: false,
+      recordList:[]
     };
   }
 
