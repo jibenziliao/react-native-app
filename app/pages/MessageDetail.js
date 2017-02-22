@@ -739,8 +739,6 @@ class MessageDetail extends BaseComponent {
       },
     };
 
-
-
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, singleMsg),

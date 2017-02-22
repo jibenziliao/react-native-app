@@ -33,6 +33,7 @@ import Spinner from '../components/Spinner'
 import EditFriendFilter from '../pages/EditFriendFilter'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
+import EmptyView from '../components/EmptyView'
 
 const {height, width} = Dimensions.get('window');
 
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     borderRadius: pxToDp(8),
     margin: pxToDp(25),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor:'#cecece'
+    borderColor: '#cecece'
   },
   labelContainer: {
     alignItems: 'center',
@@ -435,7 +436,7 @@ class MatchUsers extends BaseComponent {
   }
 
   renderListView(ds, userList) {
-    if (userList) {
+    if (userList.length > 0) {
       return (
         <ListView
           refreshControl={
@@ -457,7 +458,7 @@ class MatchUsers extends BaseComponent {
           pageSize={this.state.pageSize}/>
       )
     } else {
-      return null
+      return <EmptyView/>
     }
 
   }

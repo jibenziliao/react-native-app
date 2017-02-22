@@ -96,6 +96,7 @@ const tmpPhotoOnlyArr = ['不限', '是', '否'];
 const tmpDistanceArr = ['50km以内', '不限'];
 
 let navigator;
+let saveFlag = false;
 
 class EditFriendFilter extends BaseComponent {
 
@@ -116,7 +117,7 @@ class EditFriendFilter extends BaseComponent {
   }
 
   _saveFriendFilter() {
-    RNPicker.isPickerShow((status)=> {
+    RNPicker.isPickerShow((status) => {
       if (status) RNPicker.hide()
     });
     const {dispatch}=this.props;
@@ -131,18 +132,18 @@ class EditFriendFilter extends BaseComponent {
       WeightMax: this.state.WeightMax,
       MatchDistance: this.state.MatchDistance
     };
-    dispatch(FriendFilterActions.editFriendFilter(data, (json)=> {
-      DeviceEventEmitter.emit('friendFilterChanged', '编辑交友信息成功');
+    dispatch(FriendFilterActions.editFriendFilter(data, (json) => {
+      saveFlag = true;
       toastShort('保存成功!');
-      this.saveTimer = setTimeout(()=> {
+      this.saveTimer = setTimeout(() => {
         navigator.pop();
       }, 1000)
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
   componentWillMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._initDatingFilter();
     })
   }
@@ -163,7 +164,7 @@ class EditFriendFilter extends BaseComponent {
 
   _backAlert() {
     //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
-    RNPicker.isPickerShow((status)=> {
+    RNPicker.isPickerShow((status) => {
       if (status) RNPicker.hide()
     });
     if (this.state.hasChanged) {
@@ -190,11 +191,14 @@ class EditFriendFilter extends BaseComponent {
     if (Platform.OS === 'android') {
       BackAndroid.removeEventListener('hardwareBackPress', this.onBackAndroid);
     }
+    if (saveFlag) {
+      DeviceEventEmitter.emit('friendFilterChanged', '编辑交友信息成功');
+    }
   }
 
   _initDatingFilter() {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getDatingFilter('', (json)=> {
+    dispatch(HomeActions.getDatingFilter('', (json) => {
       this.setState({
         ...json.Result,
         ageRangeText: this._handleRange(json.Result.AgeMin, json.Result.AgeMax, '岁'),
@@ -205,7 +209,7 @@ class EditFriendFilter extends BaseComponent {
         loading: false,
         matchDistanceText: json.Result.MatchDistance === 50000 ? '50km以内' : '不限'
       })
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -288,7 +292,7 @@ class EditFriendFilter extends BaseComponent {
   _renderDoublePicker(text, title, minValue, maxValue, _createData) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this._showDoublePicker(_createData, text, title, minValue, maxValue);
         }}
         style={styles.pickerItem}
@@ -328,7 +332,7 @@ class EditFriendFilter extends BaseComponent {
   _renderSinglePicker(text, title, value, _createData) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this._showSinglePicker(_createData, text, title, value);
         }}
         style={styles.pickerItem}
@@ -498,7 +502,7 @@ class EditFriendFilter extends BaseComponent {
               block
               textStyle={ComponentStyles.btnText}
               style={styles.saveBtn}
-              onPress={()=> {
+              onPress={() => {
                 this._saveFriendFilter()
               }}>
               保存
@@ -511,7 +515,7 @@ class EditFriendFilter extends BaseComponent {
 
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }

@@ -42,6 +42,7 @@ import customTheme from '../themes/MyThemes'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 import CacheableImage from 'react-native-cacheable-image'
+import EmptyView from '../components/EmptyView'
 
 const {height, width} = Dimensions.get('window');
 
@@ -583,7 +584,7 @@ class AnnouncementList extends BaseComponent {
   }
 
   renderListView(ds, postList) {
-    if (postList) {
+    if (postList.length>0) {
       return (
         <ListView
           refreshControl={
@@ -612,7 +613,7 @@ class AnnouncementList extends BaseComponent {
           pageSize={this.state.pageSize}/>
       )
     } else {
-      return null
+      return <EmptyView/>
     }
   }
 

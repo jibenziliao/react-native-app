@@ -27,6 +27,7 @@ import LoadMoreFooter from '../components/LoadMoreFooter'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 import CacheableImage from 'react-native-cacheable-image'
+import EmptyView from '../components/EmptyView'
 
 const {height, width} = Dimensions.get('window');
 
@@ -360,9 +361,8 @@ class AppointmentList extends Component {
   render() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     if (this.props.appointmentList.length === 0) {
-      return null;
+      return <EmptyView/>
     } else {
-
       return (
         <ListView
           refreshControl={

@@ -21,6 +21,7 @@ import LoadMoreFooter from '../components/LoadMoreFooter'
 import {dateFormat} from '../utils/DateUtil'
 import {ComponentStyles, CommonStyles, StyleConfig} from '../style'
 import pxToDp from '../utils/PxToDp'
+import EmptyView from '../components/EmptyView'
 
 const {height, width} = Dimensions.get('window');
 
@@ -99,7 +100,7 @@ class TranscationRecordList extends BaseComponent {
   }
 
   componentDidMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._getTransRecord();
     });
   }
@@ -110,13 +111,13 @@ class TranscationRecordList extends BaseComponent {
       pageIndex: 1,
       pageSize: this.state.pageSize,
     };
-    dispatch(HomeActions.getTransRecord(data, (json)=> {
+    dispatch(HomeActions.getTransRecord(data, (json) => {
       lastCount = json.Result.length;
       this.setState({
         refreshing: false,
         recordList: json.Result
       })
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -141,7 +142,7 @@ class TranscationRecordList extends BaseComponent {
       pageIndex: this.state.pageIndex,
       pageSize: this.state.pageSize
     };
-    dispatch(HomeActions.getTransRecord(data, (json)=> {
+    dispatch(HomeActions.getTransRecord(data, (json) => {
       lastCount = json.Result.length;
       this.state.recordList = this.state.recordList.concat(json.Result);
       this.setState({
@@ -149,7 +150,7 @@ class TranscationRecordList extends BaseComponent {
         refreshing: false,
         loadingMore: false
       })
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -161,13 +162,13 @@ class TranscationRecordList extends BaseComponent {
       pageIndex: 1,
       pageSize: this.state.pageSize,
     };
-    dispatch(HomeActions.getTransRecordQuiet(data, (json)=> {
+    dispatch(HomeActions.getTransRecordQuiet(data, (json) => {
       lastCount = json.Result.length;
       this.setState({
         recordList: json.Result,
         refreshing: false
       })
-    }, (error)=> {
+    }, (error) => {
       this.setState({refreshing: false});
     }));
   }
@@ -211,7 +212,7 @@ class TranscationRecordList extends BaseComponent {
   }
 
   renderListView(ds, recordList) {
-    if (recordList) {
+    if (recordList.length>0) {
       return (
         <ListView
           refreshControl={
@@ -237,7 +238,7 @@ class TranscationRecordList extends BaseComponent {
           pageSize={this.state.pageSize}/>
       )
     } else {
-      return null
+      return <EmptyView/>
     }
   }
 
@@ -251,7 +252,7 @@ class TranscationRecordList extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state,
   }

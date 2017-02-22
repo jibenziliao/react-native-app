@@ -659,12 +659,6 @@ class AnnouncementDetail extends BaseComponent {
     return data.split("T")[0];
   }
 
-  //处理回复日期
-  _createTime(data) {
-    let tmpTime = data.split('T')[1];
-    return data.split('T')[0] + ' ' + tmpTime.split('.')[0];
-  }
-
   //渲染聚会人数
   renderNumberOfPeople(data) {
     let index = DICT.numberOfPeople.findIndex((item) => {
