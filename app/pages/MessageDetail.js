@@ -122,12 +122,12 @@ class MessageDetail extends BaseComponent {
   }
 
   _initOldMessage() {
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
       if (res !== null && this._getChatRecord(res) && this._getChatRecord(res).MsgList.length > 0) {
         console.log('MessageDetail加载缓存', res);
         this.setState({
           messages: this._getChatRecord(res).MsgList.reverse()
-        }, ()=> {
+        }, () => {
           this._getNewMsg();
         });
       } else {
@@ -140,13 +140,13 @@ class MessageDetail extends BaseComponent {
 
   //从缓存中找出当前用户与聊天对象用户之间的聊天记录
   _getChatRecord(data) {
-    return data.find((item)=> {
+    return data.find((item) => {
       return item.SenderId === this.state.UserId
     });
   }
 
   componentWillMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._getUserInfo();
     });
   }
@@ -154,10 +154,10 @@ class MessageDetail extends BaseComponent {
   componentDidMount() {
     this.setState({
       destroyed: false
-    }, ()=> {
+    }, () => {
       this._initOldMessage();
     });
-    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
+    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', () => {
       this._getUserInfo()
     });
   }
@@ -168,23 +168,23 @@ class MessageDetail extends BaseComponent {
       UserId: this.state.UserId,
       ...this.state.myLocation
     };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getSettings('', (result)=> {
+    dispatch(HomeActions.getUserInfo(params, (json) => {
+      dispatch(HomeActions.getSettings('', (result) => {
         this.setState({
           SmsCost: result.Result.SmsCost,
           AmIFollowedHim: json.Result.AmIFollowedHim,
           targetUser: json.Result,
           isInBlackList: json.Result.IsBlackUser
         });
-      }, (error)=> {
+      }, (error) => {
       }));
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
   _getNewMsg() {
     //进入MessageDetail页面后,ws.onmessage监听器被重新绑定了事件,故离开此页面之前要发布广播,重置ws.onmessage监听器。
-    tmpGlobal.ws.onmessage = (e)=> {
+    tmpGlobal.ws.onmessage = (e) => {
       this._wsNewMsgHandler(JSON.parse(e.data));
     };
   }
@@ -193,11 +193,11 @@ class MessageDetail extends BaseComponent {
   _wsNewMsgHandler(obj) {
     if (obj.hasOwnProperty('M')) {
       console.log(obj);
-      let index = obj.M.findIndex((item)=> {
+      let index = obj.M.findIndex((item) => {
         return item.M === 'GetNewMsg'
       });
       if (index > -1) {
-        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res)=> {
+        Storage.getItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`).then((res) => {
           if (obj.M[0].A[0].LastMsgId && obj.M[0].A[0].LastMsgId > parseInt(res || 0)) {
             //缓存最后一条消息Id
             Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`, obj.M[0].A[0].LastMsgId);
@@ -251,7 +251,7 @@ class MessageDetail extends BaseComponent {
         };
       }
     }
-    return newMsgList.find((item)=> {
+    return newMsgList.find((item) => {
       return item.SenderId === id;
     });
   }
@@ -296,7 +296,7 @@ class MessageDetail extends BaseComponent {
     }
     dataCopy = JSON.parse(JSON.stringify(newMsgList));
     console.log('待缓存的数据', dataCopy);
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
       if (res !== null && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
           for (let j = 0; j < dataCopy.length; j++) {
@@ -310,12 +310,12 @@ class MessageDetail extends BaseComponent {
         console.log('需要和缓存记录拼接的消息', dataCopy);
         res = res.concat(dataCopy);
         console.log('已有缓存时,待缓存的数据', res);
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
         //没有历史记录,且服务器第一次推送消息
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, dataCopy).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, dataCopy).then(() => {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       }
@@ -331,9 +331,9 @@ class MessageDetail extends BaseComponent {
       SenderNickname: this.state.Nickname,
       MsgList: [data]
     };
-    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res)=> {
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
       if (res !== null && res.length > 0) {
-        let index = res.findIndex((item)=> {
+        let index = res.findIndex((item) => {
           return item.SenderId === this.state.UserId
         });
         if (index > -1) {
@@ -342,11 +342,11 @@ class MessageDetail extends BaseComponent {
           res.push(allMsg);
         }
         console.log('发送时更新消息缓存数据', res, data);
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
           DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
-        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(()=> {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(() => {
           DeviceEventEmitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
         });
       }
@@ -391,11 +391,11 @@ class MessageDetail extends BaseComponent {
   //发消息的同时,将消息缓存在本地
   onSend(messages) {
     Keyboard.dismiss();
-    console.log(messages);
+    //console.log(messages);
     let tmpId = Math.round(Math.random() * 1000000);
     let singleMsg = {
       MsgContent: messages[0].text,
-      MsgId: Math.round(Math.random() * 1000000),
+      MsgId: tmpId,
       MsgType: 1,//1代表用户之间的普通聊天消息
       SendTime: messages[0].createdAt,
       HasSend: true,
@@ -413,7 +413,7 @@ class MessageDetail extends BaseComponent {
     //单条发送的消息存入缓存中时,需要将日期转成字符串存储
     let params = {
       MsgContent: messages[0].text,
-      MsgId: Math.round(Math.random() * 1000000),
+      MsgId: tmpId,
       MsgType: 1,//1代表用户之间的普通聊天消息
       SendTime: dateFormat(messages[0].createdAt),
       HasSend: true,
@@ -427,7 +427,7 @@ class MessageDetail extends BaseComponent {
         myUserId: tmpGlobal.currentUser.UserId
       },
     };
-    console.log(params);
+    //console.log(params);
     this._sendSaveRecord(params);
 
     this.setState((previousState) => {
@@ -558,7 +558,7 @@ class MessageDetail extends BaseComponent {
       SmsCost: 1,
       Text: messages[0].text
     };
-    dispatch(HomeActions.sendSms(data, (json)=> {
+    dispatch(HomeActions.sendSms(data, (json) => {
       if (!json.Result.code) {
         this._rechargeConfirm(json.Result.msg)
       } else {
@@ -569,7 +569,7 @@ class MessageDetail extends BaseComponent {
           };
         });
       }
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -667,10 +667,10 @@ class MessageDetail extends BaseComponent {
       attentionUserId: this.state.UserId
     };
     if (index === 1) {
-      dispatch(HomeActions.attention(data, (json)=> {
-        this._attention(json.Result?'':'取消');
+      dispatch(HomeActions.attention(data, (json) => {
+        this._attention(json.Result ? '' : '取消');
         DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
-      }, (error)=> {
+      }, (error) => {
       }));
     } else if (index === 2) {
       navigator.push({
@@ -685,16 +685,17 @@ class MessageDetail extends BaseComponent {
     }
   }
 
-  _attention(str){
+  _attention(str) {
+    let tmpId = Math.round(Math.random() * 1000000);
     let singleMsg = {
       MsgContent: `[关注]我${str}关注了你`,
-      MsgId: Math.round(Math.random() * 1000000),
+      MsgId: tmpId,
       MsgType: 3,//3代表关注/取消关注
-      SendTime: dateFormat(new Date()),
+      SendTime: new Date(),
       HasSend: true,
-      _id: Math.round(Math.random() * 1000000),
+      _id: tmpId,
       text: `[关注]我${str}关注了你`,
-      createdAt: dateFormat(new Date()),
+      createdAt: new Date(),
       user: {
         _id: tmpGlobal.currentUser.UserId,
         name: tmpGlobal.currentUser.Nickname,
@@ -702,6 +703,27 @@ class MessageDetail extends BaseComponent {
         myUserId: tmpGlobal.currentUser.UserId
       },
     };
+
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params = {
+      MsgContent: messages[0].text,
+      MsgId: tmpId,
+      MsgType: 1,//1代表用户之间的普通聊天消息
+      SendTime: dateFormat(messages[0].createdAt),
+      HasSend: true,
+      _id: tmpId,
+      text: messages[0].text,
+      createdAt: dateFormat(messages[0].createdAt),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+
+    this._sendSaveRecord(params);
+
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, singleMsg),
@@ -722,7 +744,7 @@ class MessageDetail extends BaseComponent {
     let data = {
       ForUserId: this.state.UserId
     };
-    dispatch(HomeActions.putToBlackList(data, (json)=> {
+    dispatch(HomeActions.putToBlackList(data, (json) => {
       toastShort(this.state.isInBlackList ? '解除拉黑成功' : '拉黑成功');
       this._getUserInfo();
     }));
@@ -763,7 +785,7 @@ class MessageDetail extends BaseComponent {
           {'你已拉黑对方,将不会收到对方的消息,'}
           <Text
             style={styles.clickTipsText}
-            onPress={()=> {
+            onPress={() => {
               this._addOrRemoveBlackList()
             }}>{'解除黑名单'}</Text>
           {'后可恢复正常聊天'}
@@ -777,10 +799,10 @@ class MessageDetail extends BaseComponent {
       <View style={{flex: 1}}>
         <CustomGiftedChat
           messages={this.state.messages}
-          onSend={(message)=> {
+          onSend={(message) => {
             this._checkBeforeSend(message)
           }}
-          onSendSms={(message)=> {
+          onSendSms={(message) => {
             this.onSendSms(message)
           }}
           renderLoadEarlier={this.renderLoadEarlier}
@@ -823,7 +845,7 @@ MessageDetail.childContextTypes = {
   getLocale: React.PropTypes.string.isRequired
 };
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
