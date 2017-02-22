@@ -739,7 +739,7 @@ class MessageDetail extends BaseComponent {
       },
     };
 
-    this._sendSaveRecord(params);
+
 
     this.setState((previousState) => {
       return {
@@ -753,7 +753,10 @@ class MessageDetail extends BaseComponent {
       A: [this.state.UserId + '', `[关注]我${str}关注了你`],
       I: Math.floor(Math.random() * 11)
     };
-    tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    if (tmpGlobal.webSocketInitState) {
+      this._sendSaveRecord(params);
+      tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    }
   }
 
   _addOrRemoveBlackList() {
