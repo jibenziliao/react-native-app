@@ -15,7 +15,8 @@ import {
   Platform,
   TouchableHighlight,
   Keyboard,
-  findNodeHandle
+  findNodeHandle,
+  AppState
 } from 'react-native'
 import * as Storage from '../utils/Storage'
 import BaseComponent from '../base/BaseComponent'
@@ -104,6 +105,8 @@ let ancestorTarget;
 
 let moveY;
 
+let tmpDate;
+
 class Login extends BaseComponent {
 
   constructor(props) {
@@ -120,6 +123,7 @@ class Login extends BaseComponent {
       tipsText: '使用手机号一键登录',
       hasSendCode: false,
     };
+    this._handleAppStateChange = this._handleAppStateChange.bind(this);
     navigator = this.props.navigator;
     this.login = this.login.bind(this);
   }
@@ -140,15 +144,26 @@ class Login extends BaseComponent {
     };
 
     const {dispatch}= this.props;
-    Storage.getItem('hasInit').then((response)=> {
+    Storage.getItem('hasInit').then((response) => {
       if (!response) {
-        dispatch(InitialAppActions.initDevice(data, (json)=> {
+        dispatch(InitialAppActions.initDevice(data, (json) => {
           Storage.setItem('hasInit', true);
-        }, (json)=> {
+        }, (json) => {
           //不需要做特殊处理
         }));
       }
     });
+  }
+
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange(appState) {
+    if (tmpDate && appState === 'active') {
+      clearInterval(this.backgroundTimer);
+      this._startCountdown();
+    }
   }
 
   getNavigationBarProps() {
@@ -206,10 +221,10 @@ class Login extends BaseComponent {
     Keyboard.dismiss();
     const {dispatch} = this.props;
     dispatch(LoginActions.validSmsCode(data,
-      (json)=> {
+      (json) => {
         this.loginSuccess(json);
       },
-      (error)=> {
+      (error) => {
         //不需要做特殊处理
       }
     ));
@@ -220,7 +235,7 @@ class Login extends BaseComponent {
     tmpGlobal.currentUser = json.Result;
     console.log('登录成功后,保存用户信息到全局变量', tmpGlobal.currentUser);
 
-    let saveUserInfo = async()=> {
+    let saveUserInfo = async() => {
       try {
         await Storage.setItem('userInfo', json.Result);
         if (json.Result.IsFullyRegistered === false) {
@@ -243,7 +258,7 @@ class Login extends BaseComponent {
     };
     this.setState({
       hasSendCode: false,
-    }, ()=> {
+    }, () => {
       saveUserInfo();
     });
   }
@@ -253,16 +268,16 @@ class Login extends BaseComponent {
     this.setState({
       validCode: ''
     });
-    this.showToastTimer = setTimeout(()=> {
+    this.showToastTimer = setTimeout(() => {
       if (this._validPhoneNumber(phoneCountry, phone)) {
         const data = {
           Country: phoneCountry,
           Mobile: this._handleSubmitPhone(phoneCountry, phone)
         };
         const {dispatch} = this.props;
-        dispatch(LoginActions.getSmsCode(data, (json)=> {
+        dispatch(LoginActions.getSmsCode(data, (json) => {
           this.initDict();
-        }, (error)=> {
+        }, (error) => {
           //不做特殊处理
         }));
       }
@@ -291,30 +306,34 @@ class Login extends BaseComponent {
   //初始化字典
   initDict() {
     const {dispatch} = this.props;
-    dispatch(LoginActions.getDict('', (json)=> {
+    dispatch(LoginActions.getDict('', (json) => {
       setDictArr(json.Result);
+      tmpDate = new Date();
+      tmpDate.setMinutes(tmpDate.getMinutes() + 2);
       this._startCountdown()
-    }, (error)=> {
+    }, (error) => {
       //
     }));
   }
 
   _startCountdown() {
-    let second = 120;
     let phone = this.state.phone;
     let phoneCountry = this.state.phoneCountry;
+    let lastSecond = Math.round((tmpDate.getTime() - new Date().getTime()) / 1000);
+
     this.setState({
       counting: true,
       hasSendCode: true,
       validCodeBtnAccessible: false,
-      validCodeText: `剩余${second}秒`,
+      validCodeText: `剩余${lastSecond}秒`,
       tipsText: `我们已经给你的手机号码+${phoneCountry}-${this._handleSubmitPhone(phoneCountry, phone)}发送了一条验证短信`
-    }, ()=> {
-      this.backgroundTimer = setInterval(()=> {
+    }, () => {
+      this.backgroundTimer = setInterval(() => {
         //console.log('开始倒计时');
-        this.setState({validCodeText: `剩余${second - 1}秒`});
-        second -= 1;
-        if (second === 0) {
+        lastSecond = Math.round((tmpDate.getTime() - new Date().getTime()) / 1000);
+        this.setState({validCodeText: `剩余${lastSecond}秒`});
+        if (lastSecond === 0) {
+          tmpDate = null;
           clearInterval(this.backgroundTimer);
           this.setState({
             counting: false,
@@ -346,7 +365,7 @@ class Login extends BaseComponent {
   _inputMeasure(e) {
     moveY = 0;
     if (Platform.OS === 'ios') {
-      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
+      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height) => {
         //console.log(x, y, width, height);
         //height为input框高度,64为iOS导航栏高度
         moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
@@ -354,7 +373,7 @@ class Login extends BaseComponent {
         if (moveY > 0) {
           this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
         }
-      }, (error)=> {
+      }, (error) => {
         console.log(error);
       });
     }
@@ -500,21 +519,21 @@ class Login extends BaseComponent {
                 placeholder={'请输入验证码'}
                 maxLength={6}
                 ref={'validCode'}
-                onFocus={()=> {
+                onFocus={() => {
                   refTarget = 'validCode'
                 }}
-                onBlur={()=> {
+                onBlur={() => {
                   this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
                 }}
                 returnKeyType={'done'}
-                onChangeText={(validCode)=>this.setState({validCode})}
+                onChangeText={(validCode) => this.setState({validCode})}
                 value={this.state.validCode}/>
               <NBButton
                 theme={customTheme}
                 block
                 textStyle={ComponentStyles.btnText}
                 style={[styles.validCodeBtn, styles.inputHeight, styles.menuOptions]}
-                onPress={()=> {
+                onPress={() => {
                   this.getValidCode(this.state.phoneCountry, this.state.phone)
                 }}
                 disabled={!this.state.validCodeBtnAccessible}>
@@ -526,7 +545,7 @@ class Login extends BaseComponent {
               block
               textStyle={ComponentStyles.btnText}
               style={[styles.loginBtn, styles.inputHeight]}
-              onPress={()=>this.login(this.state.validCode)}
+              onPress={() => this.login(this.state.validCode)}
               disabled={this._renderLoginBtnStatus()}>
               登录
             </NBButton>
@@ -537,7 +556,7 @@ class Login extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
