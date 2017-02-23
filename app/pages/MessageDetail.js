@@ -128,7 +128,7 @@ class MessageDetail extends BaseComponent {
       if (res !== null && this._getChatRecord(res) && this._getChatRecord(res).MsgList.length > 0) {
         console.log('MessageDetail加载缓存', res);
         this.setState({
-          messages: this._getChatRecord(res).MsgList.reverse()
+          messages: this._updateAvatar(this._getChatRecord(res).MsgList.reverse())
         }, () => {
           this._getNewMsg();
         });
@@ -347,6 +347,7 @@ class MessageDetail extends BaseComponent {
         } else {
           res.push(allMsg);
         }
+        res = this._updateAvatar(res);
         console.log('发送时更新消息缓存数据', res, data);
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
           emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
@@ -433,14 +434,14 @@ class MessageDetail extends BaseComponent {
         myUserId: tmpGlobal.currentUser.UserId
       },
     };
-    console.log(params);
+    //console.log(params);
     this._sendSaveRecord(params);
 
     this.setState((previousState) => {
       return {
         messages: GiftedChat.append(previousState.messages, singleMsg),
       };
-    });
+    }, this.setState({messages: this._updateAvatar(this.state.messages)}));
 
     let sendMsgParams = {
       H: 'chatcore',
@@ -586,7 +587,7 @@ class MessageDetail extends BaseComponent {
           return {
             messages: GiftedChat.append(previousState.messages, singleMsg),
           };
-        });
+        },this.setState({messages: this._updateAvatar(this.state.messages)}));
       }
     }, (error) => {
     }));
@@ -687,7 +688,7 @@ class MessageDetail extends BaseComponent {
     };
     if (index === 1) {
       dispatch(HomeActions.attention(data, (json) => {
-        if(json.Result){
+        if (json.Result) {
           this._attention(json.Result ? '' : '取消');//取消关注暂时不发消息
         }
         emitter.emit('hasAttention', '已关注/取消关注对方');
@@ -759,6 +760,16 @@ class MessageDetail extends BaseComponent {
       this._sendSaveRecord(params);
       tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
     }
+  }
+
+  //发送消息时，更改本地缓存中的当前用户的头像(如果用户改了头像的话)
+  _updateAvatar(data) {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].user._id === data[i].user.myUserId) {
+        data[i].user.avatar = URL_DEV + tmpGlobal.currentUser.PhotoUrl
+      }
+    }
+    return data;
   }
 
   _addOrRemoveBlackList() {
