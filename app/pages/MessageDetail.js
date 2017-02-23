@@ -687,7 +687,9 @@ class MessageDetail extends BaseComponent {
     };
     if (index === 1) {
       dispatch(HomeActions.attention(data, (json) => {
-        this._attention(json.Result ? '' : '取消');
+        if(json.Result){
+          this._attention(json.Result ? '' : '取消');//取消关注暂时不发消息
+        }
         emitter.emit('hasAttention', '已关注/取消关注对方');
       }, (error) => {
       }));
@@ -707,13 +709,13 @@ class MessageDetail extends BaseComponent {
   _attention(str) {
     let tmpId = Math.round(Math.random() * 1000000);
     let singleMsg = {
-      MsgContent: `[关注]我${str}关注了你`,
+      MsgContent: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
       MsgId: tmpId,
       MsgType: 3,//3代表关注/取消关注
       SendTime: new Date(),
       HasSend: true,
       _id: tmpId,
-      text: `[关注]我${str}关注了你`,
+      text: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
       createdAt: new Date(),
       user: {
         _id: tmpGlobal.currentUser.UserId,
@@ -725,13 +727,13 @@ class MessageDetail extends BaseComponent {
 
     //单条发送的消息存入缓存中时,需要将日期转成字符串存储
     let params = {
-      MsgContent: `[关注]我${str}关注了你`,
+      MsgContent: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
       MsgId: tmpId,
       MsgType: 3,//3代表关注/取消关注
       SendTime: dateFormat(new Date()),
       HasSend: true,
       _id: tmpId,
-      text: `[关注]我${str}关注了你`,
+      text: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
       createdAt: dateFormat(new Date()),
       user: {
         _id: tmpGlobal.currentUser.UserId,
