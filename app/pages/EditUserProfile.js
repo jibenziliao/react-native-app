@@ -342,8 +342,8 @@ class EditUserProfile extends BaseComponent {
     if (this.state.Nickname == '') {
       toastShort('请填写昵称');
       return false;
-    } else if (this.state.Nickname.split('').length < 3) {
-      toastShort('昵称长度不能小于3位');
+    } else if (this.state.Nickname.split('').length < 1) {
+      toastShort('昵称长度不能小于1位');
       return false;
     } else if (!nickNameReg.test(this.state.Nickname)) {
       toastShort('昵称只能为英文、数字、汉字');
