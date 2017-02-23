@@ -226,7 +226,7 @@ class Report extends BaseComponent {
         <NBButton
           theme={customTheme}
           block
-          small
+          textStyle={ComponentStyles.btnText}
           style={{marginTop: 20, height: 40, alignItems: 'center'}}
           onPress={()=>this.report()}
           disabled={this.state.reportType === null}>

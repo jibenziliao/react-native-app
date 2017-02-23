@@ -544,7 +544,7 @@ export const ComponentStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: StyleConfig.color_second
   },
-  scrollView:{
+  scrollView: {
     flex: 1,
     paddingHorizontal: 10
   },
@@ -557,6 +557,18 @@ export const ComponentStyles = StyleSheet.create({
         paddingTop: pxToDp(4)
       },
       android: {}
-    })
+    }),
   },
+  //native-base button的textStyle属性不支持数组多样式叠加，故这里将button中文字样式整合
+  btnTextDark: {
+    ...Platform.select({
+      ios: {
+        lineHeight: pxToDp(32),
+        fontSize: pxToDp(28),
+        paddingTop: pxToDp(4)
+      },
+      android: {}
+    }),
+    color: StyleConfig.color_dark
+  }
 });

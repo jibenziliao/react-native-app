@@ -32,7 +32,7 @@ import MessageDetail from '../pages/MessageDetail'
 import tmpGlobal from '../utils/TmpVairables'
 import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
@@ -74,10 +74,11 @@ const styles = StyleSheet.create({
   bottomBtn: {
     flex: 1,
     height: pxToDp(80),
-    borderRadius: 0
+    borderRadius: 0,
+    backgroundColor: '#fff'
   },
-  attention: {
-    backgroundColor: '#FF9933'
+  btnIcon:{
+    color:'#000'
   },
   section: {
     backgroundColor: '#fff',
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     top: pxToDp(40),
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal:pxToDp(40)
+    paddingHorizontal: pxToDp(40)
   },
 });
 
@@ -142,7 +143,7 @@ class UserInfo extends BaseComponent {
       imgList: [],
       imgLoading: true,
       avatarLoading: true,
-      loading:true
+      loading: true
     };
     navigator = this.props.navigator;
   }
@@ -153,26 +154,26 @@ class UserInfo extends BaseComponent {
     };
   }
 
-  componentWillMount(){
-    InteractionManager.runAfterInteractions(()=> {
+  componentWillMount() {
+    InteractionManager.runAfterInteractions(() => {
       this._getUserInfo();
     });
   }
 
   componentDidMount() {
-    this.subscription = DeviceEventEmitter.addListener('photoChanged', ()=> {
+    this.subscription = DeviceEventEmitter.addListener('photoChanged', () => {
       this._getUserInfo()
     });
-    this.userProfileListener = DeviceEventEmitter.addListener('userInfoChanged', ()=> {
+    this.userProfileListener = DeviceEventEmitter.addListener('userInfoChanged', () => {
       this._getUserInfo()
     });
-    this.friendFilterListener = DeviceEventEmitter.addListener('friendFilterChanged', ()=> {
+    this.friendFilterListener = DeviceEventEmitter.addListener('friendFilterChanged', () => {
       this._getUserInfo()
     });
-    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data)=> {
+    this.signatureListener = DeviceEventEmitter.addListener('signatureChanged', (data) => {
       this._updateSignature(data)
     });
-    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', ()=> {
+    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', () => {
       this._getUserInfo()
     });
   }
@@ -191,16 +192,16 @@ class UserInfo extends BaseComponent {
       UserId: this.state.UserId,
       ...tmpGlobal.currentLocation
     };
-    dispatch(HomeActions.getUserInfo(params, (json)=> {
-      dispatch(HomeActions.getUserPhotos({UserId: this.state.UserId}, (result)=> {
+    dispatch(HomeActions.getUserInfo(params, (json) => {
+      dispatch(HomeActions.getUserPhotos({UserId: this.state.UserId}, (result) => {
         this.setState({
           ...json.Result,
           userPhotos: result.Result.PhotoList,
-          loading:false
+          loading: false
         });
-      }, (error)=> {
+      }, (error) => {
       }))
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -242,35 +243,35 @@ class UserInfo extends BaseComponent {
     let params = {
       attentionUserId: id
     };
-    dispatch(HomeActions.attention(params, (json)=> {
+    dispatch(HomeActions.attention(params, (json) => {
       DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
       //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
   //渲染用户的相册
   _renderPhotos(arr) {
     if (arr.length > 0) {
-      return arr.map((item, index)=> {
+      return arr.map((item, index) => {
         return (
           <TouchableOpacity
             key={index}
-            onPress={()=> {
-              this._openImgModal(arr,index)
-          }}>
-          <Image
-            onLoadEnd={()=> {
-              this.setState({imgLoading: false})
-            }}
-            style={styles.photos}
-            source={{uri: URL_DEV + item.PhotoUrl}}>
-            {this.state.imgLoading ?
-              <Image
-                key={index}
-                source={require('./img/imgLoading.gif')}
-                style={styles.photos}/> : null}
-          </Image>
+            onPress={() => {
+              this._openImgModal(arr, index)
+            }}>
+            <Image
+              onLoadEnd={() => {
+                this.setState({imgLoading: false})
+              }}
+              style={styles.photos}
+              source={{uri: URL_DEV + item.PhotoUrl}}>
+              {this.state.imgLoading ?
+                <Image
+                  key={index}
+                  source={require('./img/imgLoading.gif')}
+                  style={styles.photos}/> : null}
+            </Image>
           </TouchableOpacity>
         )
       })
@@ -281,7 +282,7 @@ class UserInfo extends BaseComponent {
 
   //渲染用户的个人信息
   _renderUserInfo(data) {
-    return data.map((item, index)=> {
+    return data.map((item, index) => {
       return (
         <View
           key={index}
@@ -300,21 +301,40 @@ class UserInfo extends BaseComponent {
         <View style={styles.bottomBtnGroup}>
           <NBButton
             block
+            iconLeft
+            textStyle={ComponentStyles.btnTextDark}
             style={[styles.bottomBtn]}
-            onPress={()=> {
+            onPress={() => {
               this._chatWithUser()
             }}>
-            <NBIcon name={'ios-chatbubbles-outline'}/>
+            <NBIcon
+              name={'ios-chatbubbles-outline'}
+              style={styles.btnIcon}/>
             对话
           </NBButton>
           <NBButton
             block
-            style={[styles.bottomBtn, styles.attention]}
-            onPress={()=> {
+            textStyle={ComponentStyles.btnTextDark}
+            style={[styles.bottomBtn]}
+            onPress={() => {
               this._attention(this.state.UserId)
             }}>
-            <NBIcon name={'ios-heart-outline'}/>
+            <NBIcon
+              name={'ios-heart-outline'}
+              style={styles.btnIcon}/>
             {this.state.AmIFollowedHim ? '取消关注' : '关注'}
+          </NBButton>
+          <NBButton
+            block
+            textStyle={ComponentStyles.btnTextDark}
+            style={[styles.bottomBtn]}
+            onPress={() => {
+              this._chatWithUser()
+            }}>
+            <NBIcon
+              name={'ios-chatbubbles-outline'}
+              style={styles.btnIcon}/>
+            对话
           </NBButton>
         </View>
       )
@@ -327,7 +347,7 @@ class UserInfo extends BaseComponent {
     if (this.state.isSelf) {
       return (
         <TouchableOpacity
-          onPress={()=> {
+          onPress={() => {
             linkFn()
           }}
           style={styles.editIconBtn}>
@@ -373,15 +393,15 @@ class UserInfo extends BaseComponent {
     })
   }
 
-  _openImgModal(arr,index) {
+  _openImgModal(arr, index) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
       tmpArr.push(URL_DEV + arr[i].PhotoUrl);
     }
     this.setState({
       imgList: tmpArr,
-      showIndex:index
-    }, ()=> {
+      showIndex: index
+    }, () => {
       this.refs.modalFullScreen.open();
     });
   }
@@ -391,88 +411,89 @@ class UserInfo extends BaseComponent {
   }
 
   renderBody() {
-    if(this.state.loading){
+    if (this.state.loading) {
       return null;
-    }else{
-    return (
-      <View style={ComponentStyles.container}>
-        <ScrollView style={styles.scrollViewContainer}>
-          <View style={styles.section}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>{'个人相册'}</Text>
-              {this._renderEditLink(()=> {
-                this._editMyPhotos()
-              })}
-            </View>
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={true}>
-              <View style={styles.photoContainer}>
-                {this._renderPhotos(this.state.userPhotos)}
+    } else {
+      return (
+        <View style={ComponentStyles.container}>
+          <ScrollView style={styles.scrollViewContainer}>
+            <View style={styles.section}>
+              <View style={styles.sectionTitle}>
+                <Text style={styles.sectionTitleText}>{'个人相册'}</Text>
+                {this._renderEditLink(() => {
+                  this._editMyPhotos()
+                })}
               </View>
-            </ScrollView>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>{'个性签名'}</Text>
-              {this._renderEditLink(()=> {
-                this._editMySignature()
-              })}
+              <ScrollView
+                horizontal={true}
+                showsHorizontalScrollIndicator={true}>
+                <View style={styles.photoContainer}>
+                  {this._renderPhotos(this.state.userPhotos)}
+                </View>
+              </ScrollView>
             </View>
-            <Text
-              style={styles.sectionContent}>{this.state.PersonSignal ? this.state.PersonSignal : '这家伙很懒,没有留下任何签名'}</Text>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>{'历史聚会/约会消息'}</Text>
+            <View style={styles.section}>
+              <View style={styles.sectionTitle}>
+                <Text style={styles.sectionTitleText}>{'个性签名'}</Text>
+                {this._renderEditLink(() => {
+                  this._editMySignature()
+                })}
+              </View>
+              <Text
+                style={styles.sectionContent}>{this.state.PersonSignal ? this.state.PersonSignal : '这家伙很懒,没有留下任何签名'}</Text>
             </View>
-            <View style={[styles.sectionContent, styles.announcementCard]}>
-              <Image
-                onLoadEnd={()=> {
-                  this.setState({avatarLoading: false})
-                }}
-                style={styles.userAvatar}
-                source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}>
-                {this.state.avatarLoading ?
-                  <Image
-                    source={require('./img/imgLoading.gif')}
-                    style={styles.userAvatar}/> : null}
-              </Image>
-              <TouchableOpacity
-                onPress={()=> {
-                  this._goHistoryAnnouncementList()
-                }}
-                style={styles.textBtnContainer}>
-                <Text style={styles.textBtn}>{'查看历史聚会/约会消息'}</Text>
-              </TouchableOpacity>
+            <View style={styles.section}>
+              <View style={styles.sectionTitle}>
+                <Text style={styles.sectionTitleText}>{'历史聚会/约会消息'}</Text>
+              </View>
+              <View style={[styles.sectionContent, styles.announcementCard]}>
+                <Image
+                  onLoadEnd={() => {
+                    this.setState({avatarLoading: false})
+                  }}
+                  style={styles.userAvatar}
+                  source={{uri: URL_DEV + this.state.PrimaryPhotoFilename}}>
+                  {this.state.avatarLoading ?
+                    <Image
+                      source={require('./img/imgLoading.gif')}
+                      style={styles.userAvatar}/> : null}
+                </Image>
+                <TouchableOpacity
+                  onPress={() => {
+                    this._goHistoryAnnouncementList()
+                  }}
+                  style={styles.textBtnContainer}>
+                  <Text style={styles.textBtn}>{'查看历史聚会/约会消息'}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <View style={styles.section}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>{'个人信息'}</Text>
-              {this._renderEditLink(()=> {
-                this._editMyProfile()
-              })}
+            <View style={styles.section}>
+              <View style={styles.sectionTitle}>
+                <Text style={styles.sectionTitleText}>{'个人信息'}</Text>
+                {this._renderEditLink(() => {
+                  this._editMyProfile()
+                })}
+              </View>
+              <View style={[styles.sectionContent]}>
+                {this._renderUserInfo(this.state.BasicInfo)}
+              </View>
             </View>
-            <View style={[styles.sectionContent]}>
-              {this._renderUserInfo(this.state.BasicInfo)}
+            <View style={[styles.section, styles.bottomSection]}>
+              <View style={styles.sectionTitle}>
+                <Text style={styles.sectionTitleText}>{'交友信息'}</Text>
+                {this._renderEditLink(() => {
+                  this._editMyDatingFilter()
+                })}
+              </View>
+              <View style={[styles.sectionContent]}>
+                {this._renderUserInfo(this.state.DataFilter)}
+              </View>
             </View>
-          </View>
-          <View style={[styles.section, styles.bottomSection]}>
-            <View style={styles.sectionTitle}>
-              <Text style={styles.sectionTitleText}>{'交友信息'}</Text>
-              {this._renderEditLink(()=> {
-                this._editMyDatingFilter()
-              })}
-            </View>
-            <View style={[styles.sectionContent]}>
-              {this._renderUserInfo(this.state.DataFilter)}
-            </View>
-          </View>
-        </ScrollView>
-        {this._renderButtonGroup()}
-      </View>
-    )}
+          </ScrollView>
+          {this._renderButtonGroup()}
+        </View>
+      )
+    }
   }
 
   renderModal() {
@@ -491,13 +512,13 @@ class UserInfo extends BaseComponent {
         onClosingState={this.onClosingState}>
         <PhotoScaleViewer
           index={this.state.showIndex}
-          pressHandle={()=> {
+          pressHandle={() => {
             console.log('你点击了图片,此方法必须要有,否则不能切换下一张图片')
           }}
           imgList={this.state.imgList}/>
         <TouchableOpacity
           style={styles.closeBtn}
-          onPress={()=> {
+          onPress={() => {
             this._closeImgModal()
           }}>
           <View style={{
@@ -515,7 +536,7 @@ class UserInfo extends BaseComponent {
 
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
