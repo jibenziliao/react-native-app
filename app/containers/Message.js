@@ -456,7 +456,7 @@ class Message extends BaseComponent {
     } else {
       //console.log(obj);
       //方案一：这里可以缓存服务器当前时间，下次发消息时，检查缓存中的时间和当前时间间隔，超过一定时间，则主动判定为websocket连接断开，主动重连。但只有发消息时，才知道websocket连接已断开，收不到别人的消息时，APP是无法知道websocket连接已断开的。
-      //方案二：这里使用心跳包，定时向后台发送随机消息，服务器返回消息后重置，超时则认为websocket连接断开。react-native app切入后台后，setTimeout和setInterval事件会暂停，web版的定时器无法正常工作，需要寻找原生替代解决方案。
+      //方案二：这里使用心跳包，定时向后台发送随机消息，服务器返回消息后重置，超时则认为websocket连接断开。react-native app切入后台后，setTimeout和setInterval事件会暂停，web版的定时器无法正常工作，需要寻找原生替代解决方案。(单纯的websocket在断网状态下是不会触发onerror()和onclose()方法的。jquery.signalR.js第1173行有pingServer方法，可以检测当前与websocket服务器连通状态)
     }
   }
 
