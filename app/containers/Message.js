@@ -190,10 +190,10 @@ class Message extends BaseComponent {
     });
   }
 
-  //页面上展示的消息按照日期排序
+  //页面上展示的消息按照日期排序(注:new Date()隐式转换对格式有要求,'2017-02-13 19:35:05'格式在React-Native中不支持,显示Invalid Date)
   sortByDate(messages) {
     return messages.sort((b, a) => {
-      return new Date(a.MsgList[a.MsgList.length - 1].SendTime).getTime() - new Date(b.MsgList[b.MsgList.length - 1].SendTime).getTime()
+      return new Date(strToDateTime(a.MsgList[a.MsgList.length - 1].SendTime)).getTime() - new Date(strToDateTime(b.MsgList[b.MsgList.length - 1].SendTime)).getTime()
     });
   }
 

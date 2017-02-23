@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   DeviceEventEmitter,
+  NativeAppEventEmitter,
   TouchableOpacity,
   InteractionManager,
   Keyboard,
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
 let navigator;
+let emitter;
 
 class MessageDetail extends BaseComponent {
 
@@ -106,7 +108,7 @@ class MessageDetail extends BaseComponent {
       SmsCost: 50//默认50觅豆发一条短信
     };
     navigator = this.props.navigator;
-
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
     this.onSend = this.onSend.bind(this);
     this.onSendSms = this.onSendSms.bind(this);
     this.onReceive = this.onReceive.bind(this);
@@ -157,7 +159,7 @@ class MessageDetail extends BaseComponent {
     }, () => {
       this._initOldMessage();
     });
-    this._attentionListener = DeviceEventEmitter.addListener('hasAttention', () => {
+    this._attentionListener = emitter.addListener('hasAttention', () => {
       this._getUserInfo()
     });
   }
@@ -315,12 +317,12 @@ class MessageDetail extends BaseComponent {
         res = res.concat(dataCopy);
         console.log('已有缓存时,待缓存的数据', res);
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
-          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+          emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
         //没有历史记录,且服务器第一次推送消息
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, dataCopy).then(() => {
-          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+          emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       }
     });
@@ -347,11 +349,11 @@ class MessageDetail extends BaseComponent {
         }
         console.log('发送时更新消息缓存数据', res, data);
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
-          DeviceEventEmitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+          emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
         });
       } else {
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(() => {
-          DeviceEventEmitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
+          emitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
         });
       }
     });
@@ -361,7 +363,7 @@ class MessageDetail extends BaseComponent {
   componentWillUnmount() {
     this.state.destroyed = true;
     this._attentionListener.remove();
-    DeviceEventEmitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
+    emitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
   }
 
   //暂不支持加载历史记录功能
@@ -381,7 +383,7 @@ class MessageDetail extends BaseComponent {
       Alert.alert('提示', '您的网络异常,点击重试', [
         {
           text: '确定', onPress: () => {
-          DeviceEventEmitter.emit('reConnectWebSocket', {data: true, message: '在聊天页面重新连接webSocket'});
+          emitter.emit('reConnectWebSocket', {data: true, message: '在聊天页面重新连接webSocket'});
         }
         },
         {
@@ -431,7 +433,7 @@ class MessageDetail extends BaseComponent {
         myUserId: tmpGlobal.currentUser.UserId
       },
     };
-    //console.log(params);
+    console.log(params);
     this._sendSaveRecord(params);
 
     this.setState((previousState) => {
@@ -686,7 +688,7 @@ class MessageDetail extends BaseComponent {
     if (index === 1) {
       dispatch(HomeActions.attention(data, (json) => {
         this._attention(json.Result ? '' : '取消');
-        DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
+        emitter.emit('hasAttention', '已关注/取消关注对方');
       }, (error) => {
       }));
     } else if (index === 2) {
