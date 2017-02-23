@@ -14,7 +14,8 @@ let tmpGlobal = {
   webSocketConnectCount: 0,//webSocket连接次数
   ws:null,
   _wsTokenHandler:null,
-  appInfo:null
+  appInfo:null,
+  _wsCloseManual:false,//用户手动关闭webSocket连接，不需要重连（适用于注销）
 };
 
 export default tmpGlobal

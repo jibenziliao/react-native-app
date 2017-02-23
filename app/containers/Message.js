@@ -24,7 +24,7 @@ import BaseComponent from '../base/BaseComponent'
 import {connect} from 'react-redux'
 import MessageDetail from '../pages/MessageDetail'
 import * as Storage from '../utils/Storage'
-import {URL_DEV, URL_TOKEN_DEV, URL_WS_DEV} from '../constants/Constant'
+import {URL_DEV, URL_TOKEN_DEV, URL_WS_DEV, URL_WS_PING_DEV} from '../constants/Constant'
 import CookieManager from 'react-native-cookies'
 import tmpGlobal from '../utils/TmpVairables'
 import UserInfo from '../pages/UserInfo'
@@ -34,6 +34,7 @@ import {strToDateTime, dateFormat} from '../utils/DateUtil'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 import EmptyView from '../components/EmptyView'
+import BackgroundTimer from 'react-native-background-timer'
 
 const styles = StyleSheet.create({
   listView: {
@@ -145,6 +146,7 @@ class Message extends BaseComponent {
     navigator = this.props.navigator;
     tmpGlobal._wsTokenHandler = this._wsTokenHandler.bind(this);
     emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
+
   }
 
   getNavigationBarProps() {
@@ -197,9 +199,13 @@ class Message extends BaseComponent {
 
   componentWillUnmount() {
     tmpGlobal.ws = null;
+    tmpGlobal._wsCloseManual = true; //用户注销，不需要重连webSocket
     this.subscription.remove();
     this.startReceiveMsgListener.remove();
     this.reConnectWebSocketListener.remove();
+    if (this.heartCheck && this.heartCheck.timeoutObj) {
+      BackgroundTimer.clearTimeout(this.heartCheck.timeoutObj);
+    }
   }
 
   //每次收到新的消息,缓存消息列表(前面已经包装过,这里不需要再次处理,直接存缓存就好了)
@@ -386,8 +392,10 @@ class Message extends BaseComponent {
       console.log(e.code, e.reason);
       tmpGlobal.webSocketInitState = false;
       reconnectCount += 1;
-      if (reconnectCount <= 5) {
+      if (reconnectCount <= 5 && !tmpGlobal._wsCloseManual) {
         this._wsTokenHandler();//报错后重新初始化webSocket连接
+      } else if (tmpGlobal._wsCloseManual) {
+        //用户注销do nothing
       } else {
         toastLong('聊天功能初始化失败');
       }
@@ -457,6 +465,48 @@ class Message extends BaseComponent {
       //console.log(obj);
       //方案一：这里可以缓存服务器当前时间，下次发消息时，检查缓存中的时间和当前时间间隔，超过一定时间，则主动判定为websocket连接断开，主动重连。但只有发消息时，才知道websocket连接已断开，收不到别人的消息时，APP是无法知道websocket连接已断开的。
       //方案二：这里使用心跳包，定时向后台发送随机消息，服务器返回消息后重置，超时则认为websocket连接断开。react-native app切入后台后，setTimeout和setInterval事件会暂停，web版的定时器无法正常工作，需要寻找原生替代解决方案。(单纯的websocket在断网状态下是不会触发onerror()和onclose()方法的。jquery.signalR.js第1173行有pingServer方法，可以检测当前与websocket服务器连通状态)
+      //心跳检测
+      this.heartCheck().start();
+    }
+  }
+
+  heartCheck() {
+    let _this=this;
+    return {
+      timeout: 5000,//50s
+      timeoutObj: null,
+      reset: function () {
+        BackgroundTimer.clearTimeout(this.timeoutObj);
+        this.start();
+      },
+      start: function () {
+        this.timeoutObj = BackgroundTimer.setTimeout(()=> {
+          fetch(URL_WS_PING_DEV, {
+            method: 'POST'
+          }).then((response) => {
+            return response.json()
+          }).then((json) => {
+            if (json.Response === 'pong') {
+              //console.log('与webSocket服务器连接正常');
+              //console.log(this,_this);
+              this.reset();
+            } else {
+              console.log('与webSocket服务器连接异常');
+              //与websocket服务器的连接断开,手动关闭websocket连接
+              tmpGlobal._wsCloseManual = false;
+              //tmpGlobal.ws.close();
+              tmpGlobal.ws=null;
+              _this._wsTokenHandler()
+            }
+          }).catch((e)=>{
+            console.log(e);
+            console.log('与webSocket服务器连接异常');
+            tmpGlobal._wsCloseManual = false;
+            tmpGlobal.ws=null;
+            _this._wsTokenHandler()
+          });
+        }, this.timeout)
+      }
     }
   }
 

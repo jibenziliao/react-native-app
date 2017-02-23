@@ -7,6 +7,8 @@ export const URL_DEV = 'http://nrb-stage.azurewebsites.net/mobile';
 
 export const URL_TOKEN_DEV = 'http://nrb-stage.azurewebsites.net/mobile/signalr/hubs';
 
+export const URL_WS_PING_DEV='http://nrb-stage.azurewebsites.net/chat/signalr/ping';
+
 export const URL_WS_DEV = 'ws://nrb-stage.azurewebsites.net/mobile/signalr/hubs';
 
 export const TIME_OUT = 10000;

@@ -21,7 +21,7 @@ import Login from '../pages/Login'
 import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
 
 const styles = StyleSheet.create({
   topItem: {
@@ -89,8 +89,9 @@ class Settings extends BaseComponent {
 
   _logOut() {
     //https://developer.mozilla.org/zh-CN/docs/Web/API/CloseEvent
-    //websocket注销时关闭
-    //tmpGlobal.ws.close();
+    //websocket注销时手动关闭，不需要重连
+    tmpGlobal._wsCloseManual = true;
+    tmpGlobal.ws.close();
     tmpGlobal.ws = null;
     tmpGlobal.currentUser = null;
     tmpGlobal.cookie = null;
@@ -98,7 +99,7 @@ class Settings extends BaseComponent {
     Storage.removeItem('userInfo');
     Storage.removeItem('hasInit');
     toastShort('注销成功');
-    this.logoutTimer = setTimeout(()=> {
+    this.logoutTimer = setTimeout(() => {
       //这里用replace,避免跳转登录页后安卓物理返回键监听失效。但这样做的话,app运行期间,每进行一次注销重新登录,路由栈中就会多一个MainContainer的路由。
       navigator.resetTo({
         component: Login,
@@ -115,9 +116,9 @@ class Settings extends BaseComponent {
 
   _updateMapPrecisionQuiet(data) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.setMapPrecisionQuiet({MapPrecision: data}, (json)=> {
+    dispatch(HomeActions.setMapPrecisionQuiet({MapPrecision: data}, (json) => {
       DeviceEventEmitter.emit('userInfoChanged', '成功开启隐身');
-    }, (error)=> {
+    }, (error) => {
 
     }));
   }
@@ -130,7 +131,7 @@ class Settings extends BaseComponent {
           text: '确定', onPress: () => {
           this.setState({
             MapPrecision: null
-          }, ()=> {
+          }, () => {
             this._updateMapPrecisionQuiet(this.state.MapPrecision);
           });
         }
@@ -146,7 +147,7 @@ class Settings extends BaseComponent {
     } else {
       this.setState({
         MapPrecision: 1000
-      }, ()=> {
+      }, () => {
         this._updateMapPrecisionQuiet(this.state.MapPrecision);
       });
     }
@@ -154,12 +155,12 @@ class Settings extends BaseComponent {
 
   _pushSwitch(value) {
     const {dispatch}=this.props;
-    dispatch(HomeActions.pushSwitch('', (json)=> {
+    dispatch(HomeActions.pushSwitch('', (json) => {
       this._updateUserInfo()
-    }, (error)=> {
+    }, (error) => {
       this.setState({
         TurnPushOn: !value
-      }, ()=> {
+      }, () => {
         this._updateUserInfo()
       });
     }));
@@ -167,13 +168,13 @@ class Settings extends BaseComponent {
 
   _updateUserInfo() {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
+    dispatch(HomeActions.getCurrentUserProfile('', (json) => {
       Storage.setItem('userInfo', json.Result);
       tmpGlobal.currentUser = json.Result;
       this.setState({
         TurnPushOn: tmpGlobal.currentUser.TurnPushOn
       });
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -182,7 +183,7 @@ class Settings extends BaseComponent {
       <View style={ComponentStyles.container}>
         <View>
           <TouchableOpacity
-            onPress={()=> {
+            onPress={() => {
               this._logOutConfirm()
             }}
             style={[styles.listItem, styles.topItem]}>
@@ -208,10 +209,10 @@ class Settings extends BaseComponent {
               <Text style={styles.itemText}>{'隐身'}</Text>
             </View>
             <Switch
-              onValueChange={(value)=> {
+              onValueChange={(value) => {
                 this.setState({
                   MapPrecision: null
-                }, ()=> {
+                }, () => {
                   this._confirmChange(value)
                 });
               }}
@@ -228,10 +229,10 @@ class Settings extends BaseComponent {
               <Text style={styles.itemText}>{'新消息通知'}</Text>
             </View>
             <Switch
-              onValueChange={(value)=> {
+              onValueChange={(value) => {
                 this.setState({
                   TurnPushOn: value
-                }, (value)=> {
+                }, (value) => {
                   this._pushSwitch(value);
                 })
               }}
@@ -255,7 +256,7 @@ class Settings extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
