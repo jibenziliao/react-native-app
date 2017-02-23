@@ -21,6 +21,7 @@ import {connect} from 'react-redux'
 import BaseComponent from '../base/BaseComponent'
 import Spinner from '../components/Spinner'
 import {ComponentStyles,CommonStyles} from '../style'
+import {URL_RECHARGE} from '../constants/Constant'
 
 const {height, width} = Dimensions.get('window');
 
@@ -62,7 +63,7 @@ class Recharge extends BaseComponent {
           javaScriptEnabled={true}
           bounces={false}
           style={styles.webView}
-          source={{uri:'http://120.26.162.192/Settlement.html'}}
+          source={{uri:`${URL_RECHARGE}`}}
         />
       </View>
     )

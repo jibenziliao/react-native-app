@@ -332,7 +332,7 @@ class Login extends BaseComponent {
         //console.log('开始倒计时');
         lastSecond = Math.round((tmpDate.getTime() - new Date().getTime()) / 1000);
         this.setState({validCodeText: `剩余${lastSecond}秒`});
-        if (lastSecond === 0) {
+        if (lastSecond <= 0) {
           tmpDate = null;
           clearInterval(this.backgroundTimer);
           this.setState({
