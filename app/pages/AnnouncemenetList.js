@@ -41,7 +41,6 @@ import MainContainer from '../containers/MainContainer'
 import customTheme from '../themes/MyThemes'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
-import CacheableImage from 'react-native-cacheable-image'
 import EmptyView from '../components/EmptyView'
 
 const {height, width} = Dimensions.get('window');

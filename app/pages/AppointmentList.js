@@ -26,7 +26,6 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import LoadMoreFooter from '../components/LoadMoreFooter'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
-import CacheableImage from 'react-native-cacheable-image'
 import EmptyView from '../components/EmptyView'
 
 const {height, width} = Dimensions.get('window');
@@ -144,7 +143,7 @@ class AppointmentList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      imgLoading: false,
+      imgLoading: true,
       avatarLoading: true,
       ...this.props
     };
@@ -234,13 +233,9 @@ class AppointmentList extends Component {
             }}
             key={index}
             style={styles.singleImgContainer}>
-            <CacheableImage
+            <Image
               onLoadEnd={() => {
                 this.setState({imgLoading: false})
-              }}
-              activityIndicatorProps={{
-                style: {width: imageWidth, height: imageWidth},
-                size: 'large'
               }}
               style={{width: imageWidth, height: imageWidth}}
               source={{uri: URL_DEV + '/' + item}}>
@@ -248,7 +243,7 @@ class AppointmentList extends Component {
                 <Image
                   source={require('./img/imgLoading.gif')}
                   style={{width: imageWidth, height: imageWidth}}/> : null}
-            </CacheableImage>
+            </Image>
             {this._renderMoreImgLabel(arr, index)}
           </TouchableOpacity>
         )

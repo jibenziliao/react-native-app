@@ -137,7 +137,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-fs')
     compile project(':jpush-react-native')
     compile project(':react-native-photo-view')
     compile project(':react-native-cookies')
