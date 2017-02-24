@@ -13,6 +13,7 @@ import {
   Dimensions,
   TouchableOpacity,
   DeviceEventEmitter,
+  NativeAppEventEmitter,
   Platform,
   InteractionManager
 } from 'react-native'
@@ -34,6 +35,7 @@ import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
+import {strToDateTime, dateFormat} from '../utils/DateUtil'
 
 const {width, height}=Dimensions.get('window');
 
@@ -129,6 +131,7 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
+let emitter;
 
 class UserInfo extends BaseComponent {
 
@@ -143,6 +146,7 @@ class UserInfo extends BaseComponent {
       loading: true
     };
     navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
   getNavigationBarProps() {
@@ -241,10 +245,78 @@ class UserInfo extends BaseComponent {
       attentionUserId: id
     };
     dispatch(HomeActions.attention(params, (json) => {
+      if(json.Result){
+        this._sendAttentionMsg(json.Result ? '' : '取消');//取消关注暂时不发消息
+      }
       DeviceEventEmitter.emit('hasAttention', '已关注/取消关注对方');
-      //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
     }, (error) => {
     }));
+  }
+
+  _sendAttentionMsg(str){
+    let tmpId = Math.round(Math.random() * 1000000);
+
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params = {
+      MsgContent: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
+      MsgId: tmpId,
+      MsgType: 3,//3代表关注/取消关注
+      SendTime: dateFormat(new Date()),
+      HasSend: true,
+      _id: tmpId,
+      text: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
+      createdAt: dateFormat(new Date()),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+
+    let sendMsgParams = {
+      H: 'chatcore',
+      M: 'UserSendMsgToUser',
+      A: [this.state.UserId + '', `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`],
+      I: Math.floor(Math.random() * 11)
+    };
+
+    if (tmpGlobal.ws.readyState === 1) {
+      this._sendSaveRecord(params);
+      tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    }
+  }
+
+  //发送时缓存(同时需要发布订阅,供Message页面监听)
+  _sendSaveRecord(data) {
+    //跟当前用户没有聊天记录
+    let allMsg = {
+      SenderAvatar: this.state.PrimaryPhotoFilename,
+      SenderId: this.state.UserId,
+      SenderNickname: this.state.Nickname,
+      MsgList: [data]
+    };
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
+      if (res !== null && res.length > 0) {
+        let index = res.findIndex((item) => {
+          return item.SenderId === this.state.UserId
+        });
+        if (index > -1) {
+          res[index].MsgList.push(data);
+        } else {
+          res.push(allMsg);
+        }
+        res = this._updateAvatar(res);
+        console.log('发送时更新消息缓存数据', res, data);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
+          emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
+      } else {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(() => {
+          emitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
+        });
+      }
+    });
   }
 
   //渲染用户的相册
