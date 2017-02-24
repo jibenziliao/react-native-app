@@ -386,3 +386,12 @@ export function getSettings(data, resolve, reject) {
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function getGifts(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch('/gift/list', data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}

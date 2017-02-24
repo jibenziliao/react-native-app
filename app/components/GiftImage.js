@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   touchableItem: {
     width: width / 3,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#cecece'
+    borderColor: '#f0f0f0'
   },
   gift: {
     flex: 1,
@@ -54,9 +54,16 @@ class GiftImage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: false
+      selected: this.props.selected
     };
-    console.log(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.selected !== nextProps.selected) {
+      this.setState({
+        selected: nextProps.selected
+      })
+    }
   }
 
   renderSelectIcon() {
@@ -75,7 +82,7 @@ class GiftImage extends Component {
 
   renderBackgroundColor() {
     return {
-      backgroundColor: this.state.selected ? '#dfa' : '#fff'
+      backgroundColor: this.state.selected ? '#FAFAFA' : '#fff'
     }
   }
 
@@ -86,17 +93,17 @@ class GiftImage extends Component {
           this.setState({
             selected: true
           }, () => {
-            this.props.onPress(this.props.id)
+            this.props.press(this.props.id)
           })
         }}
-        underlayColor={'#cecece'}>
+        underlayColor={'#FAFAFA'}>
         <View style={[styles.touchableItem, this.renderBackgroundColor()]}>
           <View style={styles.gift}>
             <Image
               style={styles.image}
-              source={require('./img/imgLoading.gif')}/>
-            <Text style={styles.giftName}>{'蛋糕'}</Text>
-            <Text style={styles.price}>{'19觅豆'}</Text>
+              source={{uri: this.props.imageUri}}/>
+            <Text style={styles.giftName}>{this.props.name}</Text>
+            <Text style={styles.price}>{this.props.type === 1 ? '免费' : `${this.props.price}觅豆`}</Text>
           </View>
           {this.renderSelectIcon()}
         </View>
@@ -106,3 +113,17 @@ class GiftImage extends Component {
 }
 
 export default GiftImage
+
+GiftImage.propTypes = {
+  name: React.PropTypes.string.isRequired,
+  id: React.PropTypes.number.isRequired,
+  price: React.PropTypes.number.isRequired,
+  type: React.PropTypes.number.isRequired,
+  imageUri: React.PropTypes.string.isRequired,
+  press: React.PropTypes.func.isRequired,
+  selected: React.PropTypes.bool.isRequired,
+};
+
+GiftImage.defaultProps = {
+  selected: false
+};

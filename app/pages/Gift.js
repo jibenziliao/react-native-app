@@ -18,28 +18,17 @@ import {
 import {connect} from 'react-redux'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastLong} from '../utils/ToastUtil'
+import * as HomeActions from '../actions/Home'
 import {ComponentStyles, CommonStyles} from '../style'
-import {URL_DEV} from '../constants/Constant'
+import {URL_DEV, URL_ADMIN_IMG_DEV} from '../constants/Constant'
 import pxToDp from '../utils/PxToDp'
 import BaseComponent from '../base/BaseComponent'
 import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import GiftImage from '../components/GiftImage'
+import EmptyView from '../components/EmptyView'
+import Recharge from '../pages/Recharge'
 
 const {width, height}=Dimensions.get('window');
-
-let giftArr = [
-  {id: 0, name: 'apple', price: 10},
-  {id: 1, name: 'apple', price: 10},
-  {id: 2, name: 'apple', price: 10},
-  {id: 3, name: 'apple', price: 10},
-  {id: 4, name: 'apple', price: 10},
-  {id: 5, name: 'apple', price: 10},
-  {id: 6, name: 'apple', price: 10},
-  {id: 7, name: 'apple', price: 10},
-  {id: 8, name: 'apple', price: 10},
-  {id: 9, name: 'apple', price: 10},
-  {id: 10, name: 'apple', price: 10}
-];
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
@@ -75,15 +64,18 @@ const styles = StyleSheet.create({
   }
 });
 
+let navigator;
+
 class Gift extends BaseComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.route.params
+      ...this.props.route.params,
+      giftArr: [],
+      selectedGift: null
     };
-
-    console.log(giftArr);
+    navigator = this.props.navigator;
   }
 
   getNavigationBarProps() {
@@ -93,11 +85,69 @@ class Gift extends BaseComponent {
   }
 
   componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this._getGiftList();
+    });
+  }
 
+  _getGiftList() {
+    const {dispatch}=this.props;
+    dispatch(HomeActions.getGifts('', (json) => {
+      this._renderGiftHandler(json.Result);
+    }, (error) => {
+    }));
+  }
+
+  _renderGiftHandler(data) {
+    let tmpArr = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].IsValid) {
+        data[i].selected = false;
+        tmpArr.push(data[i]);
+      }
+    }
+    this.setState({
+      giftArr: tmpArr
+    });
   }
 
   _sendGift() {
-    console.log('送礼物');
+    if (!this.state.selectedGift) {
+      this._alert('你还没有选择礼物，请先选择礼物', () => {
+      }, false);
+    } else if (!this._canSendGift(this.state.selectedGift.Amount)) {
+      this._alert('你的觅豆不足，请充值', () => {
+        this._goRecharge()
+      }, true)
+    } else {
+      //送礼物
+      console.log('送礼物');
+    }
+  }
+
+  _goRecharge() {
+    navigator.push({
+      component: Recharge,
+      name: 'Recharge'
+    });
+  }
+
+  _alert(str, callback, twoBtn) {
+    Alert.alert('提示', str, [
+      {
+        text: '确定', onPress: () => {
+        callback()
+      }
+      },
+      twoBtn ? {
+          text: '取消', onPress: () => {
+          }
+        } : null
+    ]);
+  }
+
+  _canSendGift(data) {
+    return tmpGlobal.currentUser.UserBalance > data
   }
 
   renderUserInfo() {
@@ -115,32 +165,47 @@ class Gift extends BaseComponent {
     return (
       <ScrollView style={styles.scrollViewContainer}>
         <View style={styles.giftContainer}>
-          {this.renderGiftImage()}
+          {this.renderGiftImage(this.state.giftArr)}
         </View>
       </ScrollView>
     )
   }
 
-  renderGiftImage() {
-    let tmpArr = [];
-    for (let i = 0; i < 30; i++) {
-      tmpArr.push({id: i, name: 'apple', price: 10})
+  renderGiftImage(data) {
+    if (data && data.length > 0) {
+      return data.map((item) => {
+        return (
+          <GiftImage
+            key={item.Id}
+            press={(id) => {
+              this._selectItem(id)
+            }}
+            name={item.Name}
+            id={item.Id}
+            type={item.GiftType}
+            price={item.Amount}
+            selected={item.selected}
+            imageUri={URL_ADMIN_IMG_DEV + item.GiftImg}/>
+        )
+      });
+    } else {
+      return <EmptyView/>
     }
-
-    return tmpArr.map((item) => {
-      return (
-        <GiftImage
-          key={item.id}
-          onPress={(item) => {
-            this._selectItem(item)
-          }}
-          {...item}/>
-      )
-    })
   }
 
-  _selectItem(item) {
-    console.log(item);
+  _selectItem(data) {
+    for (let i = 0; i < this.state.giftArr.length; i++) {
+      this.state.giftArr[i].selected = false;
+    }
+    let index = this.state.giftArr.findIndex((item) => {
+      return data === item.Id;
+    });
+
+    this.state.giftArr[index].selected = true;
+    this.setState({
+      giftArr: this.state.giftArr,
+      selectedGift: this.state.giftArr[index]
+    });
   }
 
   renderSendBtn() {
