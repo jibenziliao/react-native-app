@@ -36,6 +36,7 @@ import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import Gift from '../pages/Gift'
 
 const {width, height}=Dimensions.get('window');
 
@@ -319,6 +320,18 @@ class UserInfo extends BaseComponent {
     });
   }
 
+  _goSendGift(){
+    navigator.push({
+      component:Gift,
+      name:'Gift',
+      params:{
+        UserId:this.state.UserId,
+        Nickname:this.state.Nickname,
+        PrimaryPhotoFilename:this.state.PrimaryPhotoFilename
+      }
+    });
+  }
+
   //渲染用户的相册
   _renderPhotos(arr) {
     if (arr.length > 0) {
@@ -374,12 +387,12 @@ class UserInfo extends BaseComponent {
             textStyle={ComponentStyles.btnTextDark}
             style={[styles.bottomBtn]}
             onPress={() => {
-              this._chatWithUser()
+              this._goSendGift()
             }}>
             <NBIcon
               name={'ios-chatbubbles-outline'}
               style={styles.btnIcon}/>
-            对话
+            送礼物
           </NBButton>
           <NBButton
             block
