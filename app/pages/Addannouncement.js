@@ -39,83 +39,83 @@ import AnnouncementList from '../pages/AnnouncemenetList'
 import tmpGlobal from '../utils/TmpVairables'
 import {toastShort} from '../utils/ToastUtil'
 import {ComponentStyles,CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {height, width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   announcementArea: {
-    margin: 10
+    margin: pxToDp(20)
   },
   postContent: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    height: width / 3,
+    height: pxToDp(400),
     backgroundColor: '#FFF',
     textAlign: 'left',
     textAlignVertical: 'top',
-    paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingHorizontal: pxToDp(20),
+    paddingVertical: pxToDp(10)
   },
   scrollViewHorizontal: {
     flex: 1,
     backgroundColor: '#FFF',
-    marginTop: 10,
-    paddingVertical: 10
+    marginTop: pxToDp(20),
+    paddingVertical: pxToDp(20)
   },
   takePhotoBtn: {
-    height: 80,
-    width: 80,
+    height: pxToDp(160),
+    width: pxToDp(160),
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'gray',
-    borderRadius: 4,
-    marginHorizontal: 10
+    borderRadius: pxToDp(8),
+    marginHorizontal: pxToDp(20)
   },
   image: {
-    height: 80,
-    width: 80,
-    borderRadius: 4
+    height: pxToDp(160),
+    width: pxToDp(160),
+    borderRadius: pxToDp(8)
   },
   deleteImgBtn: {
     position: 'absolute',
     right: 0,
     top: 0,
     backgroundColor: '#fff',
-    borderRadius: 20,
-    height: 20,
-    width: 20,
+    borderRadius: pxToDp(40),
+    height: pxToDp(40),
+    width: pxToDp(40),
     justifyContent: 'center',
     alignItems: 'center',
   },
   selectLabel: {
-    width: width / 3
+    width: pxToDp(400)
   },
   days: {
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 10,
-    marginTop: 10
+    paddingLeft: pxToDp(20),
+    marginTop: pxToDp(20)
   },
   pickerView: {
-    marginRight: 10,
-    paddingLeft: 10,
-    borderRadius: 4,
-    height: 40
+    marginRight: pxToDp(20),
+    paddingLeft: pxToDp(20),
+    borderRadius: pxToDp(8),
+    height: pxToDp(80)
   },
   picker: {
-    width: 160,
-    height: 40
+    width: pxToDp(300),
+    height: pxToDp(80)
   },
   tips: {
-    padding: 10,
+    padding: pxToDp(20),
     backgroundColor: '#fff',
-    marginTop: 10
+    marginTop: pxToDp(20)
   },
   link: {
-    color: 'blue',
-    marginTop: 10
+    marginTop: pxToDp(20)
   }
 });
 
@@ -258,7 +258,7 @@ class Addannouncement extends BaseComponent {
       return (
         <View
           key={index}
-          style={{width: 80, height: 80, marginRight: 10}}>
+          style={{width: pxToDp(160), height: pxToDp(160), marginRight: pxToDp(20)}}>
           <Image
             source={{uri: item.uri}}
             style={styles.image}/>
@@ -267,7 +267,9 @@ class Addannouncement extends BaseComponent {
               this._deletePhoto(item.id)
             }}
             style={styles.deleteImgBtn}>
-            <Icon name={"times"} size={20}/>
+            <Icon
+              name={"times"}
+              size={pxToDp(40)}/>
           </TouchableOpacity>
         </View>
       )
@@ -277,7 +279,7 @@ class Addannouncement extends BaseComponent {
   _renderPicker(arr, str, callBack) {
     if (Platform.OS == 'ios') {
       return (
-        <View style={{width: 80, height: 40, marginRight: 20, borderRadius: 4}}>
+        <View style={{width: pxToDp(160), height: pxToDp(80), marginRight: pxToDp(40), borderRadius: pxToDp(8)}}>
           {this._renderPickerIOS(arr, str, callBack)}
         </View>
       )
@@ -324,16 +326,19 @@ class Addannouncement extends BaseComponent {
           <View style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            height: 40,
+            height: pxToDp(80),
             alignItems: 'center',
-            paddingHorizontal: 10
+            paddingHorizontal: pxToDp(20)
           }}>
             <Text>{this.renderPickerIOSLabel(arr, str)}</Text>
-            <Icon name="angle-down" size={16} style={{marginRight: 10}}/>
+            <Icon
+              name="angle-down"
+              size={pxToDp(32)}
+              style={{marginRight: pxToDp(20)}}/>
           </View>
         </MenuTrigger>
         <MenuOptions
-          optionsContainerStyle={{width: 80}}>
+          optionsContainerStyle={{width: pxToDp(160)}}>
           {this.renderMenuOption(arr)}
         </MenuOptions>
       </Menu>
@@ -408,7 +413,9 @@ class Addannouncement extends BaseComponent {
                   this._initImagePicker()
                 }}
                 style={styles.takePhotoBtn}>
-                <Icon name={'picture-o'} size={30}/>
+                <Icon
+                  name={'picture-o'}
+                  size={pxToDp(60)}/>
                 <Text>{'图片'}</Text>
               </TouchableOpacity>
               {this._renderImg(this.state.imageArr)}
@@ -425,7 +432,7 @@ class Addannouncement extends BaseComponent {
               onPress={()=> {
                 this._goAnnouncementList()
               }}
-              style={styles.link}>{'查看历史聚会/约会消息'}</Text>
+              style={[styles.link,CommonStyles.text_primary]}>{'查看历史聚会/约会消息'}</Text>
           </View>
         </ScrollView>
       </MenuContext>

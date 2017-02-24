@@ -118,9 +118,6 @@ const styles = StyleSheet.create({
     paddingVertical: pxToDp(10),
     paddingHorizontal: pxToDp(20)
   },
-  textBtn: {
-    color: '#4CD472'
-  },
   closeBtn: {
     position: 'absolute',
     left: pxToDp(40),
@@ -463,7 +460,7 @@ class UserInfo extends BaseComponent {
                     this._goHistoryAnnouncementList()
                   }}
                   style={styles.textBtnContainer}>
-                  <Text style={styles.textBtn}>{'查看历史聚会/约会消息'}</Text>
+                  <Text style={CommonStyles.text_primary}>{'查看历史聚会/约会消息'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
