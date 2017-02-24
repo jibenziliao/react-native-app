@@ -290,7 +290,7 @@ class Gift extends BaseComponent {
           this._sendGift()
         }}>
         <NBIcon
-          name={'ios-chatbubbles-outline'}
+          name={'ios-archive-outline'}
           style={styles.btnIcon}/>
         送礼物
       </NBButton>

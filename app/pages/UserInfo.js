@@ -78,7 +78,9 @@ const styles = StyleSheet.create({
     flex: 1,
     height: pxToDp(80),
     borderRadius: 0,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderWidth:StyleSheet.hairlineWidth,
+    borderColor:'#cecece'
   },
   btnIcon:{
     color:'#000'
@@ -390,7 +392,7 @@ class UserInfo extends BaseComponent {
               this._goSendGift()
             }}>
             <NBIcon
-              name={'ios-chatbubbles-outline'}
+              name={'ios-archive-outline'}
               style={styles.btnIcon}/>
             送礼物
           </NBButton>
