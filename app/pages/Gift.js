@@ -20,7 +20,6 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import tmpGlobal from '../utils/TmpVairables'
-import {toastLong} from '../utils/ToastUtil'
 import * as HomeActions from '../actions/Home'
 import {ComponentStyles, CommonStyles} from '../style'
 import {URL_DEV, URL_ADMIN_IMG_DEV} from '../constants/Constant'
@@ -30,7 +29,7 @@ import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import GiftImage from '../components/GiftImage'
 import EmptyView from '../components/EmptyView'
 import Recharge from '../pages/Recharge'
-import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import {dateFormat} from '../utils/DateUtil'
 
 const {width, height}=Dimensions.get('window');
 

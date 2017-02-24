@@ -35,7 +35,7 @@ import ModalBox from 'react-native-modalbox'
 import PhotoScaleViewer from '../components/PhotoScaleViewer'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
-import {strToDateTime, dateFormat} from '../utils/DateUtil'
+import {dateFormat} from '../utils/DateUtil'
 import Gift from '../pages/Gift'
 
 const {width, height}=Dimensions.get('window');

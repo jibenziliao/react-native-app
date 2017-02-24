@@ -54,7 +54,8 @@ class GiftImage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: this.props.selected
+      selected: this.props.selected,
+      imgLoading: true
     };
   }
 
@@ -101,7 +102,15 @@ class GiftImage extends Component {
           <View style={styles.gift}>
             <Image
               style={styles.image}
-              source={{uri: this.props.imageUri}}/>
+              onLoadEnd={() => {
+                this.setState({imgLoading: false})
+              }}
+              source={{uri: this.props.imageUri}}>
+              {this.state.imgLoading ?
+                <Image
+                  source={require('./img/imgLoading.gif')}
+                  style={styles.image}/> : null}
+            </Image>
             <Text style={styles.giftName}>{this.props.name}</Text>
             <Text style={styles.price}>{this.props.type === 1 ? '免费' : `${this.props.price}觅豆`}</Text>
           </View>
