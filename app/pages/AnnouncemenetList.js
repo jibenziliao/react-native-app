@@ -193,7 +193,7 @@ class AnnouncementList extends BaseComponent {
       showCommentInput: false,
       ...this.props.route.params,
       postList: [],
-      imgLoading: false,
+      imgLoading: true,
       avatarLoading: true,
       showIndex: 0,
       imgList: [],
@@ -459,16 +459,12 @@ class AnnouncementList extends BaseComponent {
         return (
           <TouchableOpacity
             onPress={() => {
-              this._openImgModal(arr)
+              this._openImgModal(arr,index)
             }}
             key={index} style={styles.singleImgContainer}>
-            <CacheableImage
+            <Image
               onLoadEnd={() => {
                 this.setState({imgLoading: false})
-              }}
-              activityIndicatorProps={{
-                style: {width: imageWidth, height: imageWidth},
-                size: 'large'
               }}
               style={{width: imageWidth, height: imageWidth}}
               source={{uri: URL_DEV + '/' + item}}>
@@ -476,7 +472,7 @@ class AnnouncementList extends BaseComponent {
                 <Image
                   source={require('./img/imgLoading.gif')}
                   style={{width: imageWidth, height: imageWidth}}/> : null}
-            </CacheableImage>
+            </Image>
             {this._renderMoreImgLabel(arr, index)}
           </TouchableOpacity>
         )
@@ -570,13 +566,14 @@ class AnnouncementList extends BaseComponent {
     )
   }
 
-  _openImgModal(arr) {
+  _openImgModal(arr,index) {
     let tmpArr = [];
     for (let i = 0; i < arr.length; i++) {
       tmpArr.push(URL_DEV + '/' + arr[i]);
     }
     this.setState({
-      imgList: tmpArr
+      imgList: tmpArr,
+      showIndex:index
     }, () => {
       this.refs.modalFullScreen.open();
     });
