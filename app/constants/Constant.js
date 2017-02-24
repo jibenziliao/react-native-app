@@ -13,6 +13,8 @@ export const URL_WS_DEV = 'ws://nrb-stage.azurewebsites.net/mobile/signalr/hubs'
 
 export const URL_RECHARGE = 'http://120.26.162.192/Settlement.html';
 
+export const URL_RECHARGE_DESKTOP = 'http://120.26.162.192/Settlement.html';
+
 export const TIME_OUT = 10000;
 
 export const LOCATION_TIME_OUT = 10000;
