@@ -21,6 +21,7 @@ import {
 import {connect} from 'react-redux'
 import tmpGlobal from '../utils/TmpVairables'
 import * as HomeActions from '../actions/Home'
+import * as Storage from '../utils/Storage'
 import {ComponentStyles, CommonStyles} from '../style'
 import {URL_DEV, URL_ADMIN_IMG_DEV} from '../constants/Constant'
 import pxToDp from '../utils/PxToDp'
@@ -190,7 +191,9 @@ class Gift extends BaseComponent {
         } else {
           res.push(allMsg);
         }
-        res = this._updateAvatar(res);
+        for (let i = 0; i < res.length; i++) {
+          res[i].MsgList = this._updateAvatar(res[i].MsgList)
+        }
         console.log('发送时更新消息缓存数据', res, data);
         Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
           emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
@@ -201,6 +204,16 @@ class Gift extends BaseComponent {
         });
       }
     });
+  }
+
+  //发送消息时，更改本地缓存中的当前用户的头像(如果用户改了头像的话)
+  _updateAvatar(data) {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].user._id === data[i].user.myUserId) {
+        data[i].user.avatar = URL_DEV + tmpGlobal.currentUser.PhotoUrl
+      }
+    }
+    return data;
   }
 
   _alert(str, callback, twoBtn) {
