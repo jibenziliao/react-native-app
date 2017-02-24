@@ -824,7 +824,7 @@ class Home extends BaseComponent {
   _handleInputHeight(event) {
     this.setState({
       comment: event.nativeEvent.text,
-      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, 80)
+      commentInputHeight: Math.min(event.nativeEvent.contentSize.height, pxToDp(160))
     })
   }
 

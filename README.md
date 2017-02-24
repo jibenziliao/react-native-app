@@ -12,6 +12,8 @@ npm install
 react-native link
 ```
 
+![Alt text](./img/home.gif)
+
 ### 说明
 
 1. react-native版本是0.38.0,不要轻易升级react-native版本。0.39.0、0.39.1、0.39.2在iOS平台跟cocoapods不太兼容,编译各种报错。本人对原生不是很熟悉,所以退而求其次,使用react-native@0.38.0
