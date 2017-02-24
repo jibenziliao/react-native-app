@@ -13,7 +13,10 @@ import {
   ScrollView,
   InteractionManager,
   Alert,
-  Dimensions
+  Dimensions,
+  NativeAppEventEmitter,
+  DeviceEventEmitter,
+  Platform
 } from 'react-native'
 import {connect} from 'react-redux'
 import tmpGlobal from '../utils/TmpVairables'
@@ -27,6 +30,7 @@ import {Button as NBButton, Icon as NBIcon} from 'native-base'
 import GiftImage from '../components/GiftImage'
 import EmptyView from '../components/EmptyView'
 import Recharge from '../pages/Recharge'
+import {strToDateTime, dateFormat} from '../utils/DateUtil'
 
 const {width, height}=Dimensions.get('window');
 
@@ -65,6 +69,7 @@ const styles = StyleSheet.create({
 });
 
 let navigator;
+let emitter;
 
 class Gift extends BaseComponent {
 
@@ -76,6 +81,7 @@ class Gift extends BaseComponent {
       selectedGift: null
     };
     navigator = this.props.navigator;
+    emitter = Platform.OS === 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
   }
 
   getNavigationBarProps() {
@@ -122,6 +128,7 @@ class Gift extends BaseComponent {
     } else {
       //送礼物
       console.log('送礼物');
+      this._sendGiftMsg(this.state.selectedGift.Name);
     }
   }
 
@@ -129,6 +136,71 @@ class Gift extends BaseComponent {
     navigator.push({
       component: Recharge,
       name: 'Recharge'
+    });
+  }
+
+  _sendGiftMsg(str) {
+    let tmpId = Math.round(Math.random() * 1000000);
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params = {
+      MsgContent: `[礼物]你已成功赠送${str}给${this.state.Nickname}。`,
+      MsgId: tmpId,
+      MsgType: 5,//5代表送礼物/接收礼物
+      SendTime: dateFormat(new Date()),
+      HasSend: true,
+      _id: tmpId,
+      text: `[礼物]你已成功赠送${str}给${this.state.Nickname}。`,
+      createdAt: dateFormat(new Date()),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+
+    let sendMsgParams = {
+      H: 'chatcore',
+      M: 'UserSendMsgToUser',
+      A: [this.state.UserId + '', `[礼物]${tmpGlobal.currentUser.Nickname}赠送${str}给你，快去礼物中心看看吧`],
+      I: Math.floor(Math.random() * 11)
+    };
+
+    if (tmpGlobal.ws.readyState === 1) {
+      this._sendSaveRecord(params);
+      tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    }
+  }
+
+  //发送时缓存(同时需要发布订阅,供Message页面监听)
+  _sendSaveRecord(data) {
+    //跟当前用户没有聊天记录
+    let allMsg = {
+      SenderAvatar: this.state.PrimaryPhotoFilename,
+      SenderId: this.state.UserId,
+      SenderNickname: this.state.Nickname,
+      MsgList: [data]
+    };
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
+      if (res !== null && res.length > 0) {
+        let index = res.findIndex((item) => {
+          return item.SenderId === this.state.UserId
+        });
+        if (index > -1) {
+          res[index].MsgList.push(data);
+        } else {
+          res.push(allMsg);
+        }
+        res = this._updateAvatar(res);
+        console.log('发送时更新消息缓存数据', res, data);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
+          emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
+      } else {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(() => {
+          emitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
+        });
+      }
     });
   }
 
