@@ -24,12 +24,13 @@ import * as HomeActions from '../actions/Home'
 import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
 import {ComponentStyles,CommonStyles} from '../style'
+import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10
+    padding: pxToDp(20)
   },
   scrollView: {
     flex: 1
@@ -37,9 +38,9 @@ const styles = StyleSheet.create({
   tips:{
     flexDirection:'row',
     textAlign:'center',
-    fontSize:14,
-    paddingHorizontal:10,
-    marginVertical:10
+    fontSize:pxToDp(28),
+    paddingHorizontal:pxToDp(20),
+    marginVertical:pxToDp(20)
   },
   signatureContent: {
     flexWrap: 'wrap',
@@ -48,12 +49,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     textAlign: 'left',
     textAlignVertical: 'top',
-    paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingHorizontal: pxToDp(20),
+    paddingVertical: pxToDp(10)
   },
   saveBtn: {
-    marginTop: 20,
-    height: 40,
+    marginTop: pxToDp(40),
+    height: pxToDp(80),
     alignItems: 'center'
   }
 });
@@ -162,7 +163,7 @@ class Revel extends BaseComponent {
           <NBButton
             theme={customTheme}
             block
-            small
+            textStyle={ComponentStyles.btnText}
             style={styles.saveBtn}
             onPress={()=>this._saveFloatMsg(this.state.msg)}
             disabled={!this.state.msg}>
