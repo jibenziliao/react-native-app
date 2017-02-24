@@ -679,7 +679,7 @@ class AnnouncementDetail extends BaseComponent {
   }
 
   _marginBottomHandler() {
-    if (this.state.PostType === 1) {
+    if (this.state.PicList.length >0) {
       return {marginBottom: pxToDp(20)}
     } else {
       return {marginBottom: 0}
