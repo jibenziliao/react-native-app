@@ -5,11 +5,11 @@
  */
 export const URL_DEV = 'http://miyou-api.azurewebsites.net/mobile';
 
-export const URL_TOKEN_DEV = 'http://miyou-api.azurewebsites.net/mobile/signalr/hubs';
+export const URL_TOKEN_DEV = 'http://mobileapi.meetyou.com.au/mobile/signalr/hubs';
 
-export const URL_WS_PING_DEV = 'http://miyou-api.azurewebsites.net/chat/signalr/ping';
+export const URL_WS_PING_DEV = 'http://mobileapi.meetyou.com.au/mobile/signalr/ping';
 
-export const URL_WS_DEV = 'ws://nrb-stage.azurewebsites.net/mobile/signalr/hubs';
+export const URL_WS_DEV = 'ws://mobileapi.meetyou.com.au/mobile/signalr/hubs';
 
 export const URL_RECHARGE = 'http://120.26.162.192/Settlement.html';
 
