@@ -487,7 +487,7 @@ class Message extends BaseComponent {
             return response.json()
           }).then((json) => {
             if (json.Response === 'pong') {
-              //console.log('与webSocket服务器连接正常');
+              console.log('与webSocket服务器连接正常');
               //console.log(this,_this);
               this.reset();
             } else {

@@ -3,11 +3,11 @@
  * @author keyy/1501718947@qq.com 16/11/8 17:08
  * @description
  */
-export const URL_DEV = 'http://nrb-stage.azurewebsites.net/mobile';
+export const URL_DEV = 'http://miyou-api.azurewebsites.net/mobile';
 
-export const URL_TOKEN_DEV = 'http://nrb-stage.azurewebsites.net/mobile/signalr/hubs';
+export const URL_TOKEN_DEV = 'http://miyou-api.azurewebsites.net/mobile/signalr/hubs';
 
-export const URL_WS_PING_DEV = 'http://nrb-stage.azurewebsites.net/chat/signalr/ping';
+export const URL_WS_PING_DEV = 'http://miyou-api.azurewebsites.net/chat/signalr/ping';
 
 export const URL_WS_DEV = 'ws://nrb-stage.azurewebsites.net/mobile/signalr/hubs';
 
