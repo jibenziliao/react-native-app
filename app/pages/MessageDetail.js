@@ -744,20 +744,20 @@ class MessageDetail extends BaseComponent {
       },
     };
 
-    this.setState((previousState) => {
-      return {
-        messages: GiftedChat.append(previousState.messages, singleMsg),
-      };
-    });
-
     let sendMsgParams = {
       H: 'chatcore',
       M: 'UserSendMsgToUser',
-      A: [this.state.UserId + '', `[关注]我${str}关注了你`],
+      A: [this.state.UserId + '', `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`],
       I: Math.floor(Math.random() * 11)
     };
+
     if (tmpGlobal.ws.readyState === 1) {
       this._sendSaveRecord(params);
+      this.setState((previousState) => {
+        return {
+          messages: GiftedChat.append(previousState.messages, singleMsg),
+        };
+      });
       tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
     }
   }
