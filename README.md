@@ -13,6 +13,7 @@ react-native link
 ```
 
 ![Alt text](./img/home.gif)
+![Alt text](./img/map.gif)
 
 ### 说明
 
