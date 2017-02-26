@@ -14,6 +14,8 @@ react-native link
 
 ![Alt text](./img/home.gif)
 ![Alt text](./img/map.gif)
+![Alt text](./img/album.gif)
+
 
 ### 说明
 
