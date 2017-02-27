@@ -404,3 +404,12 @@ export function sendGift(data, resolve, reject) {
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function getMyGifts(data, resolve, reject) {
+  return (dispatch)=> {
+    getFetch(`/gift/users/list?pageIndex=${data.pageIndex}&pageSize=${data.pageSize}`, data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}

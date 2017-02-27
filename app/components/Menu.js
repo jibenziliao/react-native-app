@@ -96,7 +96,7 @@ class Menu extends Component {
           </View>
           <TouchableOpacity
             style={styles.signatureContent}
-            onPress={()=> {
+            onPress={() => {
               this.props.goSignature()
             }}>
             <Text
@@ -106,7 +106,7 @@ class Menu extends Component {
         <ScrollView scrollsToTop={false} style={styles.listItemContainer}>
           <View style={styles.listItem}>
             <TouchableHighlight
-              onPress={()=> {
+              onPress={() => {
                 this.props.goAlbum()
               }}
               underlayColor={'#FFF'}>
@@ -120,7 +120,7 @@ class Menu extends Component {
           </View>
           <View style={styles.listItem}>
             <TouchableHighlight
-              onPress={()=> {
+              onPress={() => {
                 this.props.goUserInfo()
               }}
               underlayColor={'#FFF'}>
@@ -134,7 +134,7 @@ class Menu extends Component {
           </View>
           <View style={styles.listItem}>
             <TouchableHighlight
-              onPress={()=> {
+              onPress={() => {
                 this.props.goAccount()
               }}
               underlayColor={'#FFF'}>
@@ -148,7 +148,21 @@ class Menu extends Component {
           </View>
           <View style={styles.listItem}>
             <TouchableHighlight
-              onPress={()=> {
+              onPress={() => {
+                this.props.goGiftList()
+              }}
+              underlayColor={'#FFF'}>
+              <View style={styles.itemContainer}>
+                <View style={styles.iconContainer}>
+                  <Icon name={'gift'} size={20} color={StyleConfig.color_primary}/>
+                </View>
+                <Text style={styles.itemText}>{'我的礼物'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={styles.listItem}>
+            <TouchableHighlight
+              onPress={() => {
                 this.props.goScore()
               }}
               underlayColor={'#FFF'}>
@@ -162,7 +176,7 @@ class Menu extends Component {
           </View>
           <View style={styles.listItem}>
             <TouchableHighlight
-              onPress={()=> {
+              onPress={() => {
                 this.props.goSettings()
               }}
               underlayColor={'#FFF'}>
