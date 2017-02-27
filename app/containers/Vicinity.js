@@ -217,8 +217,7 @@ class Vicinity extends BaseComponent {
 
 const mapStateToProps = (state) => {
   return {
-    pendingStatus: state.Vicinity.pending,
-    saveCoordinateStatus: state.Vicinity.asyncCoordinating
+    ...state
   }
 };
 

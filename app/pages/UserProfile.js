@@ -23,7 +23,6 @@ import {
 } from 'react-native'
 import BaseComponent from '../base/BaseComponent'
 import MainContainer from '../containers/MainContainer'
-import Photos from './Photos'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Button as NBButton} from 'native-base'
 import RNPicker from 'react-native-picker'
@@ -327,15 +326,6 @@ class UserProfile extends BaseComponent {
     }, (error)=> {
       //console.log(error);
     }));
-  }
-
-  //去拍照
-  goPhotos() {
-    const {navigator} =this.props;
-    navigator.push({
-      component: Photos,
-      name: 'Photos'
-    });
   }
 
   goFriendFilter() {

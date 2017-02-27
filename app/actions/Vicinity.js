@@ -19,29 +19,6 @@ function fetchOptions(data) {
   }
 }
 
-function fetchOptionsGet() {
-  return {
-    method: 'GET'
-  }
-}
-
-export function searchNearby(data) {
-  return (dispatch)=> {
-    dispatch(fetchUserNearby(data));
-    fetch(URL_DEV + '/contacts/nearby', fetchOptions(data.params))
-      .then(response => response.json())
-      .then(json => {
-        dispatch(receiveUserNearby(data, json));
-        if ('OK' !== json.Code) {
-          toastShort(json.Message);
-        }
-      }).catch((err)=> {
-      dispatch(receiveUserNearby(data, err));
-      toastShort('网络发生错误,请重试')
-    })
-  }
-}
-
 export function saveCoordinate(data,resolve,reject) {
   return (dispatch)=> {
     dispatch({type: ActionTypes.FETCH_BEGIN_QUIET, data});
@@ -62,39 +39,5 @@ export function saveCoordinate(data,resolve,reject) {
 export function saveLocation(data,resolve,reject) {
   return (dispatch)=> {
     postFetch('/profile/ping', data, dispatch, {type: ActionTypes.FETCH_BEGIN_QUIET}, {type: ActionTypes.FETCH_END_QUIET}, {type: ActionTypes.FETCH_FAILED_QUIET}, resolve, reject);
-  }
-}
-
-export function fetchUserInfo(data) {
-  return (dispatch)=>{
-    dispatch({type:ActionTypes.FETCH_USER_DETAIL_INFO,data});
-    fetch(URL_DEV+'/profiles/'+data,fetchOptionsGet())
-      .then(response=>response.json())
-      .then(json=>{
-        dispatch({type:ActionTypes.RECEIVE_USER_DETAIL_INFO,data,json});
-        if('OK'!==json.Code){
-          toastShort(json.Message);
-        }else{
-          //
-        }
-      }).catch((err)=>{
-      dispatch({type:ActionTypes.RECEIVE_USER_DETAIL_INFO,data,err});
-      toastShort('网络发生错误,请重试')
-    })
-  }
-}
-
-function fetchUserNearby(data) {
-  return {
-    type: ActionTypes.FETCH_USER_NEARBY,
-    data
-  }
-}
-
-function receiveUserNearby(data, json) {
-  return {
-    type: ActionTypes.RECEIVE_USER_NEARBY,
-    data,
-    json
   }
 }

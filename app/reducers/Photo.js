@@ -12,36 +12,6 @@ const initialState={
 };
 export default function takePhoto(state=initialState,action) {
   switch (action.type){
-    case ActionTypes.DOWNLOAD_IMAGE_BEGIN:
-      return {
-        ...state,
-        pending:true
-      };
-    case ActionTypes.DOWNLOAD_IMAGE_END:
-      return {
-        ...state,
-        pending:false,
-        download:action
-      };
-    case ActionTypes.TAKE_PHOTO:
-      return {
-        ...state,
-        res:action
-      };
-    case ActionTypes.SET_AS_AVATAR:
-      return {
-        ...state
-      };
-    case ActionTypes.DELETE_PHOTO:
-      return {
-        ...state,
-        res:action
-      };
-    case ActionTypes.SET_PERMISSION:
-      return {
-        ...state,
-        res:action
-      };
     case ActionTypes.UPLOAD_PHOTO_BEGIN:
       return{
         ...state,
