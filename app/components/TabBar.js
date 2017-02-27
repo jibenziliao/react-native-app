@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: pxToDp(18),
     flexDirection: 'row',
-    width: pxToDp(36),
-    textAlign:'center'
+    textAlign:'center',
+    paddingHorizontal:pxToDp(4)
   }
 });
 
