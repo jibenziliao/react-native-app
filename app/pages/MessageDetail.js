@@ -222,7 +222,7 @@ class MessageDetail extends BaseComponent {
     let resMsg = this._getSingleMsg(JSON.parse(JSON.stringify(newMsg.MsgPackage)), this.state.UserId);
     //页面销毁后,不在此页面接收消息。对方没有发消息过来,但别人发消息过来后,此页面也不会接收消息(如果对方在极短的时间内发了多条,就循环接收)
     if (resMsg && resMsg.MsgList && resMsg.MsgList.length > 0 && !this.state.destroyed) {
-      console.log(newMsg);
+      //console.log(newMsg, resMsg);
       console.log('MessageDetail页面收到了新消息');
       for (let i = 0; i < resMsg.MsgList.length; i++) {
         this._margeMessage(resMsg.MsgList[i]);
@@ -458,8 +458,10 @@ class MessageDetail extends BaseComponent {
   //在聊天页面接收消息，若对方更新了头像或昵称，则需要更新页面上的头像和昵称（更新缓存单独进行）
   _margeMessage(data) {
     for (let i = 0; i < this.state.messages.length; i++) {
-      this.state.messages[i].user.avatar = URL_DEV + data.user.avatar;
-      this.state.messages[i].user.name = data.user.name;
+      if (this.state.messages[i].user._id === data.user._id) {
+        this.state.messages[i].user.avatar = URL_DEV + data.user.avatar;
+        this.state.messages[i].user.name = data.user.name;
+      }
     }
     this.setState({
       messages: this.state.messages
