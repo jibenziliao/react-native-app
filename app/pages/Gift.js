@@ -31,6 +31,7 @@ import GiftImage from '../components/GiftImage'
 import EmptyView from '../components/EmptyView'
 import Recharge from '../pages/Recharge'
 import {dateFormat} from '../utils/DateUtil'
+import {toastShort} from '../utils/ToastUtil'
 
 const {width, height}=Dimensions.get('window');
 
@@ -96,6 +97,12 @@ class Gift extends BaseComponent {
     });
   }
 
+  componentWillUnmount() {
+    if (this.sendTimer) {
+      clearTimeout(this.sendTimer);
+    }
+  }
+
   _getGiftList() {
     const {dispatch}=this.props;
     dispatch(HomeActions.getGifts('', (json) => {
@@ -126,10 +133,25 @@ class Gift extends BaseComponent {
         this._goRecharge()
       }, true)
     } else {
-      //送礼物
-      console.log('送礼物');
-      this._sendGiftMsg(this.state.selectedGift.Name);
+      this._sendGiftRequest();
     }
+  }
+
+  _sendGiftRequest() {
+    const {dispatch}=this.props;
+    let data = {
+      receiverId: this.state.UserId,
+      giftId: this.state.selectedGift.Id
+    };
+    dispatch(HomeActions.sendGift(data, (json) => {
+      this._sendGiftMsg(this.state.selectedGift.Name);
+      toastShort('赠送成功');
+      this.sendTimer = setTimeout(() => {
+        navigator.pop();
+      }, 1000);
+    }, (error) => {
+
+    }));
   }
 
   _goRecharge() {

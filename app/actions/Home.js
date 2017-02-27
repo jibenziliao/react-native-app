@@ -395,3 +395,12 @@ export function getGifts(data, resolve, reject) {
     }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
   }
 }
+
+export function sendGift(data, resolve, reject) {
+  return (dispatch)=> {
+    postFetch(`/gift/users/send/${data.receiverId}/gift/${data.giftId}`, data, dispatch, {
+      type: ActionTypes.FETCH_BEGIN,
+      data
+    }, {type: ActionTypes.FETCH_END}, {type: ActionTypes.FETCH_FAILED}, resolve, reject);
+  }
+}

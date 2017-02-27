@@ -161,6 +161,12 @@ class Addannouncement extends BaseComponent {
     };
   }
 
+  componentWillUnmount(){
+   if(this.publishTimer){
+     clearTimeout(this.publishTimer);
+   }
+  }
+
   //点击完成
   onRightPressed() {
     Keyboard.dismiss();
@@ -168,7 +174,7 @@ class Addannouncement extends BaseComponent {
     this.state.PostContent = this.state.PostContent.trim();
     dispatch(HomeActions.postAnnouncement(this.state, navigator,(data)=>{
       toastShort('发布成功');
-      setTimeout(()=> {
+      this.publishTimer=setTimeout(()=> {
         navigator.popToTop();
         emitter.emit('announcementHasPublish', {message: '新公告已发布', data: data});
       }, 1000);
