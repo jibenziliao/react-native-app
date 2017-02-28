@@ -253,7 +253,7 @@ class Gift extends BaseComponent {
   }
 
   _canSendGift(data) {
-    return tmpGlobal.currentUser.UserBalance > data
+    return tmpGlobal.currentUser.UserBalance >= data
   }
 
   renderUserInfo() {

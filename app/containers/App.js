@@ -24,9 +24,10 @@ import * as VicinityActions from '../actions/Vicinity'
 import Spinner from '../components/Spinner'
 import RNPicker from 'react-native-picker'
 import tmpGlobal from '../utils/TmpVairables'
-import {CommonStyles,StyleConfig} from '../style'
+import {CommonStyles, StyleConfig} from '../style'
 
 let lastClickTime = 0;
+let pageNavigator;
 
 class App extends Component {
 
@@ -76,7 +77,7 @@ class App extends Component {
     );
   }
 
-  loadRegisteredStatus = async()=> {
+  loadRegisteredStatus = async() => {
     try {
       let value = await Storage.getItem('hasRegistered');
       if (value !== null) {
@@ -121,14 +122,14 @@ class App extends Component {
     async function saveLocation() {
       await Storage.setItem('currentLocation', params);
       Storage.getItem('hasRegistered').then(
-        (response)=> {
+        (response) => {
           if (response != null) {
             console.log('用户已注册,开始向后台发送用户位置信息');
-            dispatch(VicinityActions.saveLocation(params, (json)=> {
-            }, (error)=> {
+            dispatch(VicinityActions.saveLocation(params, (json) => {
+            }, (error) => {
             }));
           }
-        }, (error)=> {
+        }, (error) => {
           console.log('读取缓存出错!', error);
         }
       );
@@ -212,7 +213,7 @@ class App extends Component {
   }
 
   renderScene(route, navigator) {
-    this.navigator = navigator;
+    pageNavigator = navigator;
     let Component = route.component;
     return (
       <Component navigator={navigator} route={route}/>
@@ -220,7 +221,8 @@ class App extends Component {
   }
 
   onBackAndroid() {
-    const routers = this.navigator.getCurrentRoutes();
+    console.log(this, pageNavigator);
+    const routers = pageNavigator.getCurrentRoutes();
     console.log(routers);
     if ((routers[routers.length - 1].name == 'MainContainer') || (routers[routers.length - 1].name == 'Home') || (routers[routers.length - 1].name == 'Login')) {
       let now = new Date().getTime();
@@ -234,7 +236,7 @@ class App extends Component {
       return true;
     } else {
       //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
-      RNPicker.isPickerShow((status)=> {
+      RNPicker.isPickerShow((status) => {
         if (status) RNPicker.hide()
       });
       this.navigator.pop();
@@ -244,7 +246,7 @@ class App extends Component {
 
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     pendingStatus: state.InitialApp.pending
   }
