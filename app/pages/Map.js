@@ -323,9 +323,9 @@ class Map extends BaseComponent {
   }
 
   renderSpinner() {
-    if (this.state.pending || this.props.pendingStatus) {
+    if (this.state.pending) {
       return (
-        <Spinner animating={this.state.pending || this.props.pendingStatus}/>
+        <Spinner animating={this.state.pending}/>
       )
     }
   }
@@ -377,8 +377,7 @@ class Map extends BaseComponent {
 
 const mapStateToProps = (state) => {
   return {
-    pendingStatus: state.Vicinity.pending,
-    saveCoordinateStatus: state.Vicinity.asyncCoordinating
+    ...state
   }
 };
 
