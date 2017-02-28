@@ -473,7 +473,7 @@ class Message extends BaseComponent {
   heartCheck() {
     let _this=this;
     return {
-      timeout: 5000,//50s
+      timeout: 15000,//15s
       timeoutObj: null,
       reset: function () {
         BackgroundTimer.clearTimeout(this.timeoutObj);

@@ -157,7 +157,7 @@ class GiftList extends BaseComponent{
         style={styles.listView}>
         <View style={styles.listItemContainer}>
           <View style={styles.notes}>
-            <Text style={styles.recordText}>{`${rowData.UserId}送给我一个${rowData.Gift.Name}`}</Text>
+            <Text style={styles.recordText}>{`收到一个礼物${rowData.Gift.Name}`}</Text>
             <Text style={styles.recordTime}>{dateFormat(new Date(strToDateTime(this._dateHandler(rowData.Gift.CreateDate))))}</Text>
           </View>
             <Image
