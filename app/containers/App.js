@@ -220,9 +220,9 @@ class App extends Component {
   }
 
   onBackAndroid() {
-    console.log(this, this.appNavigator);
+    //console.log(this, this.appNavigator);
     const routers = this.appNavigator.getCurrentRoutes();
-    console.log(routers);
+    //console.log(routers);
     if ((routers[routers.length - 1].name == 'MainContainer') || (routers[routers.length - 1].name == 'Home') || (routers[routers.length - 1].name == 'Login')) {
       let now = new Date().getTime();
       if (now - lastClickTime < 2500) {

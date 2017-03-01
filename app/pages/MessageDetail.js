@@ -768,7 +768,6 @@ class MessageDetail extends BaseComponent {
 
   //发送消息时，更改本地缓存中的当前用户的头像(如果用户改了头像的话)
   _updateAvatar(data) {
-    console.log(data);
     for (let i = 0; i < data.length; i++) {
       if (data[i].user._id === data[i].user.myUserId) {
         data[i].user.avatar = URL_DEV + tmpGlobal.currentUser.PhotoUrl

@@ -42,6 +42,8 @@ import AnnouncementList from '../pages/AnnouncemenetList'
 import customTheme from '../themes/MyThemes'
 import {ComponentStyles, CommonStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
+import {dateFormat} from '../utils/DateUtil'
+import * as Storage from '../utils/Storage'
 
 const {height, width} = Dimensions.get('window');
 
@@ -400,9 +402,89 @@ class AnnouncementDetail extends BaseComponent {
     };
     dispatch(HomeActions.attention(data, (json) => {
       emitter.emit('hasAttention', '已关注/取消关注对方');
-      //this.setState({AmIFollowedHim: !this.state.AmIFollowedHim});
+      if(json.Result){
+        this._sendAttentionMsg(json.Result ? '' : '取消');//取消关注暂时不发消息
+      }
     }, (error) => {
     }))
+  }
+
+  _sendAttentionMsg(str){
+    let tmpId = Math.round(Math.random() * 1000000);
+
+    //单条发送的消息存入缓存中时,需要将日期转成字符串存储
+    let params = {
+      MsgContent: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
+      MsgId: tmpId,
+      MsgType: 3,//3代表关注/取消关注
+      SendTime: dateFormat(new Date()),
+      HasSend: true,
+      _id: tmpId,
+      text: `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`,
+      createdAt: dateFormat(new Date()),
+      user: {
+        _id: tmpGlobal.currentUser.UserId,
+        name: tmpGlobal.currentUser.Nickname,
+        avatar: URL_DEV + tmpGlobal.currentUser.PhotoUrl,
+        myUserId: tmpGlobal.currentUser.UserId
+      },
+    };
+
+    let sendMsgParams = {
+      H: 'chatcore',
+      M: 'UserSendMsgToUser',
+      A: [this.state.PosterInfo.UserId + '', `[关注]${tmpGlobal.currentUser.Nickname}${str}关注了你`],
+      I: Math.floor(Math.random() * 11)
+    };
+
+    if (tmpGlobal.ws.readyState === 1) {
+      this._sendSaveRecord(params);
+      tmpGlobal.ws.send(JSON.stringify(sendMsgParams));
+    }
+  }
+
+  //发送时缓存(同时需要发布订阅,供Message页面监听)
+  _sendSaveRecord(data) {
+    //跟当前用户没有聊天记录
+    let allMsg = {
+      SenderAvatar: this.state.PosterInfo.PrimaryPhotoFilename,
+      SenderId: this.state.PosterInfo.UserId,
+      SenderNickname: this.state.PosterInfo.Nickname,
+      MsgList: [data]
+    };
+    Storage.getItem(`${tmpGlobal.currentUser.UserId}_MsgList`).then((res) => {
+      if (res !== null && res.length > 0) {
+        let index = res.findIndex((item) => {
+          return item.SenderId === this.state.PosterInfo.UserId
+        });
+        if (index > -1) {
+          res[index].MsgList.push(data);
+        } else {
+          res.push(allMsg);
+        }
+        for (let i = 0; i < res.length; i++) {
+          res[i].MsgList = this._updateAvatar(res[i].MsgList)
+        }
+        //console.log('发送时更新消息缓存数据', res, data);
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, res).then(() => {
+          emitter.emit('MessageCached', {data: res, message: '消息缓存成功'});
+        });
+      } else {
+        Storage.setItem(`${tmpGlobal.currentUser.UserId}_MsgList`, [allMsg]).then(() => {
+          emitter.emit('MessageCached', {data: [allMsg], message: '消息缓存成功'});
+        });
+      }
+    });
+  }
+
+  //发送消息时(关注用户时)，更改本地缓存中的当前用户的头像(如果用户改了头像的话)
+  _updateAvatar(data) {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].user._id === data[i].user.myUserId) {
+        data[i].user.avatar = URL_DEV + tmpGlobal.currentUser.PhotoUrl
+      }
+    }
+    return data;
   }
 
   //点击头像和名字,跳转个人信息详情页
