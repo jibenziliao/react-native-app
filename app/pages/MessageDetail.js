@@ -21,7 +21,7 @@ import BaseComponent from '../base/BaseComponent'
 import {GiftedChat} from 'react-native-gifted-chat'
 import {CustomGiftedChat} from '../components/CustomGiftedChat'
 import CustomView from '../components/CustomView'
-import {URL_DEV} from '../constants/Constant'
+import {URL_DEV, URL_TOKEN_DEV, URL_WS_DEV, URL_WS_PING_DEV} from '../constants/Constant'
 import * as Storage from '../utils/Storage'
 import tmpGlobal from '../utils/TmpVairables'
 import {strToDateTime, dateFormat} from '../utils/DateUtil'
@@ -32,8 +32,9 @@ import CustomGiftedAvatar from '../components/CustomGiftAvatar'
 import UserInfo from '../pages/UserInfo'
 import CustomBubble from '../components/CustomBubble'
 import Report from '../pages/Report'
-import {toastShort} from '../utils/ToastUtil'
+import {toastShort, toastLong} from '../utils/ToastUtil'
 import Recharge from '../pages/Recharge'
+import BackgroundTimer from 'react-native-background-timer'
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -88,6 +89,8 @@ const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
 let navigator;
 let emitter;
+let reconnectCount = 0;
+let wsNetWorkStatus = true;
 
 class MessageDetail extends BaseComponent {
 
@@ -208,7 +211,58 @@ class MessageDetail extends BaseComponent {
         });
       }
     } else {
+      wsNetWorkStatus = true;
       //console.log(obj);
+      //进入聊天页面后，要重新绑定心跳检测
+      this.heartCheck().start();
+    }
+  }
+
+  heartCheck() {
+    let _this = this;
+    return {
+      timeout: 15000,//15s
+      timeoutObj: null,
+      reset: function () {
+        BackgroundTimer.clearTimeout(this.timeoutObj);
+        this.start();
+      },
+      start: function () {
+        this.timeoutObj = BackgroundTimer.setTimeout(() => {
+          fetch(URL_WS_PING_DEV, {
+            method: 'POST'
+          }).then((response) => {
+            return response.json()
+          }).then((json) => {
+            if (json.Response === 'pong') {
+              wsNetWorkStatus = true;
+              //console.log('与webSocket服务器连接正常');
+              //console.log(this,_this);
+              this.reset();
+            } else {
+              wsNetWorkStatus = false;
+              console.log('与webSocket服务器连接异常');
+              //与websocket服务器的连接断开,手动关闭websocket连接
+              tmpGlobal._wsCloseManual = false;
+              toastLong('您的聊天网络异常，将自动返回上一页，以便重新连接');
+              this.popTimer = setTimeout(() => {
+                navigator.pop();
+              }, 3000);
+              return false;
+            }
+          }).catch((e) => {
+            console.log(e);
+            console.log('与webSocket服务器连接异常');
+            wsNetWorkStatus = false;
+            tmpGlobal._wsCloseManual = false;
+            toastLong('您的聊天网络异常，将自动返回上一页，以便重新连接');
+            this.popTimer = setTimeout(() => {
+              navigator.pop();
+            }, 3000);
+            return false;
+          });
+        }, this.timeout)
+      }
     }
   }
 
@@ -366,7 +420,18 @@ class MessageDetail extends BaseComponent {
   componentWillUnmount() {
     this.state.destroyed = true;
     this._attentionListener.remove();
-    emitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
+    if (this.popTimer) {
+      clearTimeout(this.popTimer);
+    }
+    if (this.reConnectTimer) {
+      clearTimeout(this.reConnectTimer);
+    }
+    if (this.heartCheck && this.heartCheck.timeoutObj) {
+      BackgroundTimer.clearTimeout(this.heartCheck.timeoutObj);
+    }
+    if (wsNetWorkStatus) {
+      emitter.emit('ReceiveMsg', {data: true, message: '即将离开MessageDetail页面'});
+    }
   }
 
   //暂不支持加载历史记录功能

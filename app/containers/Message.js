@@ -203,6 +203,9 @@ class Message extends BaseComponent {
     this.subscription.remove();
     this.startReceiveMsgListener.remove();
     this.reConnectWebSocketListener.remove();
+    if(this.reConnectTimer){
+      clearTimeout(this.reConnectTimer);
+    }
     if (this.heartCheck && this.heartCheck.timeoutObj) {
       BackgroundTimer.clearTimeout(this.heartCheck.timeoutObj);
     }
@@ -362,11 +365,13 @@ class Message extends BaseComponent {
         console.log(e + '');
       }
       reconnectCount += 1;
-      if (reconnectCount <= 5) {
-        this._wsTokenHandler();//报错后重新获取token
-      } else {
-        toastLong('聊天功能初始化失败');
-      }
+      //if (reconnectCount <= 5) {
+        this.reConnectTimer=setTimeout(()=>{
+          this._wsTokenHandler();//报错后重新获取token
+        },5000);
+      //} else {
+      //  toastLong('聊天功能初始化失败');
+      //}
     });
   }
 
