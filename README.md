@@ -16,12 +16,22 @@ react-native link
 ![Alt text](./img/map.gif)
 ![Alt text](./img/album.gif)
 
+###
+
 
 ### 说明
 
-1. react-native版本是0.38.0,不要轻易升级react-native版本。0.39.0、0.39.1、0.39.2在iOS平台跟cocoapods不太兼容,编译各种报错。本人对原生不是很熟悉,所以退而求其次,使用react-native@0.38.0
+1. 插件[react-native-swipe-cards](https://github.com/meteor-factory/react-native-tinder-swipe-cards)0.0.9版本有bug(最新版已改名：[react-native-tinder-swipe-cards](https://github.com/meteor-factory/react-native-tinder-swipe-cards))
 
-2. 因集成极光推送插件,xCode需更新到8.2.1版本,以便支持iOS10,在iOS工程target的Build Phases->Link Binary with Libraries中加入如下库
+      0.0.9版本第95行if判断条件替换为如下内容
+      ``` JavaScript
+      nextProps.cards && nextProps.cards.length > 0 && (nextProps.cards[0].UserId !== this.props.cards[0].UserId || nextProps.refresh !== this.props.refresh)
+      ```
+
+
+2. react-native版本是0.38.0,不要轻易升级react-native版本。0.39.0、0.39.1、0.39.2在iOS平台跟cocoapods不太兼容,编译各种报错。本人对原生不是很熟悉,所以退而求其次,使用react-native@0.38.0
+
+3. 因集成极光推送插件,xCode需更新到8.2.1版本,以便支持iOS10,在iOS工程target的Build Phases->Link Binary with Libraries中加入如下库
 
     > libz.tbd
       

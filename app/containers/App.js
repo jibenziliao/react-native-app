@@ -27,7 +27,6 @@ import tmpGlobal from '../utils/TmpVairables'
 import {CommonStyles, StyleConfig} from '../style'
 
 let lastClickTime = 0;
-let pageNavigator;
 
 class App extends Component {
 
@@ -213,7 +212,7 @@ class App extends Component {
   }
 
   renderScene(route, navigator) {
-    pageNavigator = navigator;
+    this.appNavigator = navigator;
     let Component = route.component;
     return (
       <Component navigator={navigator} route={route}/>
@@ -221,8 +220,8 @@ class App extends Component {
   }
 
   onBackAndroid() {
-    console.log(this, pageNavigator);
-    const routers = pageNavigator.getCurrentRoutes();
+    console.log(this, this.appNavigator);
+    const routers = this.appNavigator.getCurrentRoutes();
     console.log(routers);
     if ((routers[routers.length - 1].name == 'MainContainer') || (routers[routers.length - 1].name == 'Home') || (routers[routers.length - 1].name == 'Login')) {
       let now = new Date().getTime();
@@ -239,7 +238,7 @@ class App extends Component {
       RNPicker.isPickerShow((status) => {
         if (status) RNPicker.hide()
       });
-      this.navigator.pop();
+      this.appNavigator.pop();
       return true;
     }
   }

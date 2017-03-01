@@ -15,18 +15,10 @@ export const URL_RECHARGE = 'http://120.26.162.192/Settlement.html';
 
 export const URL_RECHARGE_DESKTOP = 'http://www.miyou.com.au/Settlement.html';
 
-export const URL_ADMIN_IMG_DEV = 'http://miyou-admin.azurewebsites.net';
+export const URL_ADMIN_IMG_DEV = 'http://miyou-api.azurewebsites.net/mobile/gift/';
 
 export const TIME_OUT = 10000;
 
 export const LOCATION_TIME_OUT = 10000;
 
 export const LOCATION_TIME_OUT_SHORT = 3000;
-
-export const DEBUG_SETTINGS = {
-  useFixtures: false,
-  ezLogin: false,
-  yellowBox: __DEV__,
-  reduxLogging: true,
-  includeExamples: __DEV__
-};
