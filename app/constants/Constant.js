@@ -13,7 +13,7 @@ export const URL_WS_DEV = 'ws://mobileapi.meetyou.com.au/mobile/signalr/hubs';
 
 export const URL_RECHARGE = 'http://120.26.162.192/Settlement.html';
 
-export const URL_RECHARGE_DESKTOP = 'http://www.miyou.com.au/Settlement.html';
+export const URL_RECHARGE_DESKTOP = 'http://www.meetyou.com.au/recharge';
 
 export const URL_ADMIN_IMG_DEV = 'http://miyou-api.azurewebsites.net/mobile/gift/';
 
