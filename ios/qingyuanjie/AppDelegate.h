@@ -15,8 +15,8 @@
 
 @end
 
-static NSString *appKey = @"ad98571f95006c8b9bba6f31";    //填写appkey
+static NSString *appKey = @"229bf21ac7a2638c6e0e61cf";    //填写appkey
 
 static NSString *channel = @"";    //填写channel  一般为nil
 
-static BOOL isProduction = false;  //填写isProdurion  平时测试时为false ，生产时填写true
+static BOOL isProduction = true;  //填写isProdurion  平时测试时为false ，生产时填写true

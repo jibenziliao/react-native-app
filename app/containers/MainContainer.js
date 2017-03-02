@@ -147,7 +147,7 @@ class MainContainer extends Component {
 
   //去应用市场给本APP打分
   _goScore() {
-    let url = Platform.OS === 'ios' ? 'https://itunes.apple.com/cn/app/qingyuanjie/id444934666?mt=8' : 'https://play.google.com/store/apps/details?id=com.qingyuanjie';
+    let url = Platform.OS === 'ios' ? 'https://itunes.apple.com/au/app/id1211127691' : 'https://play.google.com/store/apps/details?id=com.haijiao.meetyou';
     Alert.alert('提示', '确定好评,你会获得50觅豆', [
       {
         text: '确定', onPress: () => {

@@ -87,14 +87,14 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.qingyuanjie"
+        applicationId "com.haijiao.meetyou"
         minSdkVersion 16
         targetSdkVersion 22
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
         manifestPlaceholders = [
-            JPUSH_APPKEY: "ad98571f95006c8b9bba6f31", //在此替换你的APPKey
+            JPUSH_APPKEY: "229bf21ac7a2638c6e0e61cf", //在此替换你的APPKey
             APP_CHANNEL: "developer-default"    //应用渠道号
         ]
     }

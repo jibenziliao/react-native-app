@@ -1,4 +1,4 @@
-package com.qingyuanjie;
+package com.haijiao.meetyou;
 
 import android.app.Application;
 import android.util.Log;
