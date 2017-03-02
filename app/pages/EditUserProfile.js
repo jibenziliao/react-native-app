@@ -791,7 +791,7 @@ class EditUserProfile extends BaseComponent {
                     ref={'Ethnicity'}
                     value={this.state.Ethnicity}
                     onChangeText={(Ethnicity)=>this.setState({Ethnicity: Ethnicity, hasChanged: true})}
-                    maxLength={15}/>
+                    maxLength={20}/>
                 </View>
                 <View style={styles.listItem}>
                   <Text style={styles.inputLabel}>{'信仰'}</Text>

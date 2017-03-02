@@ -815,7 +815,7 @@ class UserProfile extends BaseComponent {
             ref={'Ethnicity'}
             value={this.state.ethnicity}
             onChangeText={(ethnicity)=>this.setState({ethnicity})}
-            maxLength={15}/>
+            maxLength={20}/>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>{'学历'}</Text>
