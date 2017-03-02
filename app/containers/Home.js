@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     top: pxToDp(40),
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal:pxToDp(40)
+    paddingHorizontal: pxToDp(40)
   },
 });
 
@@ -461,11 +461,7 @@ class Home extends BaseComponent {
 
       let alias = `${tmpGlobal.currentUser.UserId}`;
 
-      JPushModule.setAlias(alias, () => {
-        console.log('成功', alias);
-      }, () => {
-        console.log('失败');
-      });
+      this._setAlias(alias);
 
       JPushModule.addGetRegistrationIdListener((registrationId) => {
         console.log("Device register succeed, registrationId " + registrationId);
@@ -492,11 +488,7 @@ class Home extends BaseComponent {
 
       let alias = `${tmpGlobal.currentUser.UserId}`;
 
-      JPushModule.setAlias(alias, () => {
-        console.log('成功', alias);
-      }, () => {
-        console.log('失败');
-      });
+      this._setAlias(alias);
 
       JPushModule.setBadge(0, (value) => {
         console.log(value);
@@ -515,6 +507,15 @@ class Home extends BaseComponent {
       });
 
     }
+  }
+
+  _setAlias(alias){
+    JPushModule.setAlias(alias, () => {
+      console.log('成功', alias);
+    }, () => {
+      console.log('失败');
+      this._setAlias(alias);
+    });
   }
 
   _changeSubTab(index) {
@@ -573,7 +574,7 @@ class Home extends BaseComponent {
       hideRightButton: false,
       rightIcon: {
         name: 'plus',
-        size:pxToDp(36)
+        size: pxToDp(36)
       },
       leftIcon: {
         name: 'bars',
