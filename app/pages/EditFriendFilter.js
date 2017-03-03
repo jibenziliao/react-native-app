@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   inputLabel: {
-    width: pxToDp(200)
+    width: pxToDp(240)
   },
   topItem: {
     borderTopWidth: 1,

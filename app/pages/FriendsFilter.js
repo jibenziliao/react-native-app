@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   inputLabel: {
-    width: pxToDp(200)
+    width: pxToDp(240)
   },
   pickerItem: {
     flex: 1,
