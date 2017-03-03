@@ -16,6 +16,7 @@ let tmpGlobal = {
   _wsTokenHandler:null,
   appInfo:null,
   _wsCloseManual:false,//用户手动关闭webSocket连接，不需要重连（适用于注销）
+  settings:null
 };
 
 export default tmpGlobal

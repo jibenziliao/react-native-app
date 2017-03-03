@@ -14,7 +14,8 @@ import {
   Linking,
   DeviceEventEmitter,
   NativeAppEventEmitter,
-  Alert
+  Alert,
+  InteractionManager
 } from 'react-native'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import Home from './Home'
@@ -84,6 +85,30 @@ class MainContainer extends Component {
     this.badgeListener = emitter.addListener('msgUnReadCountChange', (data) => {
       this._renderBadge(data);
     });
+    this._getSettings();
+  }
+
+  _getSettings() {
+    InteractionManager.runAfterInteractions(() => {
+      fetch(URL_DEV + '/profile/setting', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+        .then(response => response.json())
+        .then(json => {
+          if ('OK' !== json.Code) {
+            toastShort(json.Message);
+          } else {
+            tmpGlobal.settings = json.Result;
+          }
+        }).catch((err) => {
+        toastShort('网络发生错误,请重试');
+      });
+    });
   }
 
   _renderBadge(data) {
@@ -148,7 +173,7 @@ class MainContainer extends Component {
   //去应用市场给本APP打分
   _goScore() {
     let url = Platform.OS === 'ios' ? 'https://itunes.apple.com/au/app/id1211127691' : 'https://play.google.com/store/apps/details?id=com.haijiao.meetyou';
-    Alert.alert('提示', '确定好评,你会获得50觅豆', [
+    Alert.alert('提示', `确定好评,你会获得${tmpGlobal.settings.GivePraise || 50}觅豆`, [
       {
         text: '确定', onPress: () => {
         fetch(URL_DEV + '/profile/praise', {
