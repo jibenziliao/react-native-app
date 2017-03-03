@@ -397,8 +397,10 @@ class Message extends BaseComponent {
       console.log(e.code, e.reason);
       tmpGlobal.webSocketInitState = false;
       reconnectCount += 1;
-      if (reconnectCount <= 5 && !tmpGlobal._wsCloseManual) {
-        this._wsTokenHandler();//报错后重新初始化webSocket连接
+      if (!tmpGlobal._wsCloseManual) {
+        this.reInitTimer=setTimeout(()=>{
+          this._wsTokenHandler();
+        },5000);
       } else if (tmpGlobal._wsCloseManual) {
         //用户注销do nothing
       } else {

@@ -87,10 +87,6 @@ class App extends Component {
         console.log('尚未完成注册流程');
       }
       this.getCurrentPosition();
-      //this.setState({
-      //  getRegistered: true
-      //});
-      //this.setState({loading: false, getRegistered: true});
     } catch (error) {
       console.log('加载缓存注册状态时出错', error.message);
     }

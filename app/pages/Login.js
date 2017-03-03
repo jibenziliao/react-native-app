@@ -40,6 +40,8 @@ import {toastShort} from '../utils/ToastUtil'
 import customTheme from '../themes/MyThemes'
 import pxToDp from '../utils/PxToDp'
 import {ComponentStyles, CommonStyles} from '../style'
+import CookieManager from 'react-native-cookies'
+import {URL_DEV} from '../constants/Constant'
 
 const styles = StyleSheet.create({
   picker: {
@@ -128,10 +130,15 @@ class Login extends BaseComponent {
     this.login = this.login.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
+    this._init();
+  }
+
+  _init(){
     let systemType = DeviceInfo.getSystemName();
-    if (systemType && systemType == 'iPhone OS') {
+    if (systemType && systemType === 'iPhone OS') {
       systemType = 'iOS';
     } else {
       systemType = 'Android';
@@ -147,16 +154,20 @@ class Login extends BaseComponent {
     Storage.getItem('hasInit').then((response) => {
       if (!response) {
         dispatch(InitialAppActions.initDevice(data, (json) => {
-          Storage.setItem('hasInit', true);
+          CookieManager.get(URL_DEV, (err, res) => {
+            //console.log('Got cookies for url', res);
+            tmpGlobal.cookie = res.rkt;
+            if(res && res.rkt){
+              Storage.setItem('hasInit', true);
+            }else{
+              this._init();
+            }
+          });
         }, (json) => {
           //不需要做特殊处理
         }));
       }
     });
-  }
-
-  componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
   }
 
   _handleAppStateChange(appState) {

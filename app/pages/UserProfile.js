@@ -35,7 +35,7 @@ import {toastShort} from '../utils/ToastUtil'
 import tmpGlobal from '../utils/TmpVairables'
 import FriendsFilter from './FriendsFilter'
 import customTheme from '../themes/MyThemes'
-import {CommonStyles,ComponentStyles} from '../style'
+import {CommonStyles, ComponentStyles} from '../style'
 import pxToDp from '../utils/PxToDp'
 
 const {width, height}=Dimensions.get('window');
@@ -251,12 +251,12 @@ class UserProfile extends BaseComponent {
 
     DatingPurposeSelectCopy = [];
 
-    dispatch(UserProfileActions.getDict('', (json)=> {
+    dispatch(UserProfileActions.getDict('', (json) => {
       DictMap = json;
       this.setState({
         loading: false
       });
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -269,7 +269,7 @@ class UserProfile extends BaseComponent {
   //因为有弹出的日期选择框,这里需要自定义返回方法,以便在点击返回时自动关闭日期弹出框(如果之前没有手动关闭的话)
   onLeftPressed() {
     const {navigator}=this.props;
-    RNPicker.isPickerShow((status)=> {
+    RNPicker.isPickerShow((status) => {
       if (status) RNPicker.hide()
     });
     navigator.pop();
@@ -313,17 +313,15 @@ class UserProfile extends BaseComponent {
 
   saveUserProfile(data, datingPurpose, bool) {
     const {dispatch} =this.props;
-    dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json)=> {
+    dispatch(UserProfileActions.saveProfile(data, datingPurpose, (json) => {
       tmpGlobal.currentUser = json.Result;
       Storage.setItem('hasRegistered', true);
       if (bool) {
-        //注册时,跳过拍照
-        //this.goPhotos();
         this.goFriendFilter();
       } else {
         this.goHome();
       }
-    }, (error)=> {
+    }, (error) => {
       //console.log(error);
     }));
   }
@@ -349,7 +347,7 @@ class UserProfile extends BaseComponent {
   }
 
   checkGender(gender, index) {
-    this.state.genderArr.map((item)=> {
+    this.state.genderArr.map((item) => {
       item.iconName = 'circle-o';
       item.checked = false
     });
@@ -362,7 +360,7 @@ class UserProfile extends BaseComponent {
   }
 
   checkSmokeHabit(habit, index) {
-    this.state.habitSmokeArr.map((item)=> {
+    this.state.habitSmokeArr.map((item) => {
       item.iconName = 'circle-o';
       item.checked = false
     });
@@ -375,7 +373,7 @@ class UserProfile extends BaseComponent {
   }
 
   checkDrinkHabit(habit, index) {
-    this.state.habitDrinkArr.map((item)=> {
+    this.state.habitDrinkArr.map((item) => {
       item.iconName = 'circle-o';
       item.checked = false
     });
@@ -390,7 +388,7 @@ class UserProfile extends BaseComponent {
   renderGenders(arr) {
     return (
       <View style={[styles.genderRow, styles.inputHeight, styles.paddingH_20]}>
-        {arr.map((gender, index)=>this.renderGenderItem(gender, index))}
+        {arr.map((gender, index) => this.renderGenderItem(gender, index))}
       </View>
     )
   }
@@ -398,7 +396,7 @@ class UserProfile extends BaseComponent {
   renderHabitDrink(arr) {
     return (
       <View style={[styles.genderRow, styles.inputHeight, styles.paddingH_20]}>
-        {arr.map((habit, index)=>this.renderHabitDrinkItem(habit, index))}
+        {arr.map((habit, index) => this.renderHabitDrinkItem(habit, index))}
       </View>
     )
   }
@@ -406,7 +404,7 @@ class UserProfile extends BaseComponent {
   renderHabitSmoke(arr) {
     return (
       <View style={[styles.genderRow, styles.inputHeight, styles.paddingH_20]}>
-        {arr.map((habit, index)=>this.renderHabitSmokeItem(habit, index))}
+        {arr.map((habit, index) => this.renderHabitSmokeItem(habit, index))}
       </View>
     )
   }
@@ -414,7 +412,7 @@ class UserProfile extends BaseComponent {
   renderHabitSmokeItem(habit, index) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this.checkSmokeHabit(habit, index)
         }}
         key={index}
@@ -431,7 +429,7 @@ class UserProfile extends BaseComponent {
   renderHabitDrinkItem(habit, index) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this.checkDrinkHabit(habit, index)
         }}
         key={index}
@@ -454,13 +452,13 @@ class UserProfile extends BaseComponent {
     moveY = 0;
     originalY = 0;
     if (Platform.OS === 'ios') {
-      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
+      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height) => {
         //console.log(x, y, width, height);
         //height为input框高度,64为iOS导航栏高度
         moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
         //console.log(moveY, e, y);
 
-        this.refs[refTarget].measure((ox, oy, width, height, px, py)=> {
+        this.refs[refTarget].measure((ox, oy, width, height, px, py) => {
           //console.log(ox, oy, width, height, px, py);
           originalY = y + 64 - py;
           //console.log(originalY);
@@ -468,7 +466,7 @@ class UserProfile extends BaseComponent {
             this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
           }
         });
-      }, (error)=> {
+      }, (error) => {
         console.log(error);
       });
     }
@@ -478,7 +476,7 @@ class UserProfile extends BaseComponent {
   renderGenderItem(gender, index) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this.checkGender(gender, index)
         }}
         key={index}
@@ -496,7 +494,7 @@ class UserProfile extends BaseComponent {
   renderMoreButton() {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this.expandMore()
         }}
         style={styles.expandTips}
@@ -524,7 +522,7 @@ class UserProfile extends BaseComponent {
   renderSinglePicker(text, value, _createData) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this._showPicker(_createData, text, value)
         }}
         style={styles.emotionStatusIOS}
@@ -560,7 +558,10 @@ class UserProfile extends BaseComponent {
         this.setState({incomeText: pickedValue});
         break;
       case 'mapPrecisionText':
-        this.setState({mapPrecisionText: pickedValue});
+        this.setState({
+          mapPrecisionText: pickedValue,
+          mapPrecision: pickedValue.indexOf('k') > -1 ? parseInt(pickedValue.split('K')[0]) * 1000 : parseInt(pickedValue.split('m')[0])
+        });
         break;
       case 'religionText':
         this.setState({religionText: pickedValue});
@@ -594,7 +595,7 @@ class UserProfile extends BaseComponent {
 
   _hidePicker(str) {
     refTarget = str;
-    RNPicker.isPickerShow((status)=> {
+    RNPicker.isPickerShow((status) => {
       if (status) RNPicker.hide()
     });
   }
@@ -653,7 +654,7 @@ class UserProfile extends BaseComponent {
   }
 
   _createMapData() {
-    return ['0m(精确定位)', '200m', '500m', '1000m'];
+    return ['0m(精确定位)', '200m', '500m', '1000m', '10km'];
   }
 
   _showDatePicker() {
@@ -688,7 +689,7 @@ class UserProfile extends BaseComponent {
   renderBirthYearBtn() {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this._showDatePicker()
         }}
         style={styles.emotionStatusIOS}
@@ -707,7 +708,7 @@ class UserProfile extends BaseComponent {
     let arr = DictMap.DatingPurposeDict;
     return (
       <View style={styles.checkBoxView}>
-        {arr.map((item, index)=> {
+        {arr.map((item, index) => {
           return (
             <CheckBox
               key={index}
@@ -715,12 +716,12 @@ class UserProfile extends BaseComponent {
               labelStyle={styles.checkBoxLabel}
               checked={item.Checked}
               style={styles.checkBoxItem}
-              onChange={(checked)=> {
+              onChange={(checked) => {
                 item.Checked = checked;
                 if (checked) {
                   DatingPurposeSelectCopy.push(item);
                 } else {
-                  let index = DatingPurposeSelectCopy.findIndex((i)=> {
+                  let index = DatingPurposeSelectCopy.findIndex((i) => {
                     return i.Key == item.Key;
                   });
                   if (index >= 0) {
@@ -760,17 +761,17 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=> {
+            onFocus={() => {
               this._hidePicker('Location')
             }}
-            onBlur={()=> {
+            onBlur={() => {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
             ref={'Location'}
             value={this.state.location}
-            onChangeText={(location)=>this.setState({location})}
+            onChangeText={(location) => this.setState({location})}
             maxLength={50}/>
         </View>
         <View style={styles.inputRow}>
@@ -782,17 +783,17 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=> {
+            onFocus={() => {
               this._hidePicker('Hometown')
             }}
-            onBlur={()=> {
+            onBlur={() => {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
             ref={'Hometown'}
             value={this.state.hometown}
-            onChangeText={(hometown)=>this.setState({hometown})}
+            onChangeText={(hometown) => this.setState({hometown})}
             maxLength={15}/>
         </View>
         <View style={styles.inputRow}>
@@ -804,17 +805,17 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=> {
+            onFocus={() => {
               this._hidePicker('Ethnicity')
             }}
-            onBlur={()=> {
+            onBlur={() => {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
             ref={'Ethnicity'}
             value={this.state.ethnicity}
-            onChangeText={(ethnicity)=>this.setState({ethnicity})}
+            onChangeText={(ethnicity) => this.setState({ethnicity})}
             maxLength={20}/>
         </View>
         <View style={styles.inputRow}>
@@ -830,16 +831,16 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=> {
+            onFocus={() => {
               this._hidePicker('Contact')
             }}
-            onBlur={()=> {
+            onBlur={() => {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
             ref={'Contact'}
-            onChangeText={(contact)=>this.setState({contact})}
+            onChangeText={(contact) => this.setState({contact})}
             maxLength={20}/>
         </View>
         <View style={styles.inputRow}>
@@ -847,17 +848,17 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=> {
+            onFocus={() => {
               this._hidePicker('Hobby')
             }}
-            onBlur={()=> {
+            onBlur={() => {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
             ref={'Hobby'}
             value={this.state.interest}
-            onChangeText={(interest)=>this.setState({interest})}
+            onChangeText={(interest) => this.setState({interest})}
             maxLength={15}/>
         </View>
         <View style={styles.inputRow}>
@@ -865,17 +866,17 @@ class UserProfile extends BaseComponent {
           <TextInput
             style={[styles.fullInput]}
             underlineColorAndroid={'transparent'}
-            onFocus={()=> {
+            onFocus={() => {
               this._hidePicker('SelfEvaluation')
             }}
-            onBlur={()=> {
+            onBlur={() => {
               if (Platform.OS === 'ios') {
                 this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
               }
             }}
             ref={'SelfEvaluation'}
             value={this.state.selfEvaluation}
-            onChangeText={(selfEvaluation)=>this.setState({selfEvaluation})}
+            onChangeText={(selfEvaluation) => this.setState({selfEvaluation})}
             maxLength={100}/>
         </View>
       </View>
@@ -906,17 +907,17 @@ class UserProfile extends BaseComponent {
               <TextInput
                 style={[styles.fullInput]}
                 underlineColorAndroid={'transparent'}
-                onFocus={()=> {
+                onFocus={() => {
                   this._hidePicker('Nickname')
                 }}
-                onBlur={()=> {
+                onBlur={() => {
                   if (Platform.OS === 'ios') {
                     this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                   }
                 }}
                 ref={'Nickname'}
                 value={this.state.nickName}
-                onChangeText={(nickName)=>this.setState({nickName})}
+                onChangeText={(nickName) => this.setState({nickName})}
                 maxLength={15}/>
             </View>
             <View style={styles.inputRow}>
@@ -948,7 +949,7 @@ class UserProfile extends BaseComponent {
             block
             textStyle={ComponentStyles.btnText}
             style={styles.nextBtn}
-            onPress={()=> {
+            onPress={() => {
               this.goNext(this.state, DatingPurposeSelectCopy)
             }}>
             下一步
@@ -967,7 +968,7 @@ class UserProfile extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
