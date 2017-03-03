@@ -285,7 +285,7 @@ class Addannouncement extends BaseComponent {
   _renderPicker(arr, str, callBack) {
     if (Platform.OS == 'ios') {
       return (
-        <View style={{width: pxToDp(160), height: pxToDp(80), marginRight: pxToDp(40), borderRadius: pxToDp(8)}}>
+        <View style={{width: pxToDp(240), height: pxToDp(80), marginRight: pxToDp(40), borderRadius: pxToDp(8)}}>
           {this._renderPickerIOS(arr, str, callBack)}
         </View>
       )
