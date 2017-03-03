@@ -245,7 +245,7 @@ class Login extends BaseComponent {
 
     tmpGlobal.currentUser = json.Result;
     console.log('登录成功后,保存用户信息到全局变量', tmpGlobal.currentUser);
-
+    Storage.setItem(`${tmpGlobal.currentUser.UserId}_LastMsgId`,tmpGlobal.currentUser.MsgId);
     let saveUserInfo = async() => {
       try {
         await Storage.setItem('userInfo', json.Result);

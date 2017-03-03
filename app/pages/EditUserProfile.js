@@ -31,7 +31,7 @@ import * as HomeActions from '../actions/Home'
 import * as Storage from '../utils/Storage'
 import * as UserProfileActions from '../actions/UserProfile'
 import {toastShort} from '../utils/ToastUtil'
-import {ComponentStyles,CommonStyles} from '../style'
+import {ComponentStyles, CommonStyles} from '../style'
 
 const {width, height}=Dimensions.get('window');
 
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
   },
   emotionStatusIOSText: {
     textAlignVertical: 'center',
-    color:'#000',
-    fontSize:13.5
+    color: '#000',
+    fontSize: 13.5
   },
   pickerItem: {
     flex: 1,
@@ -228,7 +228,7 @@ class EditUserProfile extends BaseComponent {
   }
 
   componentWillMount() {
-    InteractionManager.runAfterInteractions(()=> {
+    InteractionManager.runAfterInteractions(() => {
       this._initUserProfile();
     });
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
@@ -246,8 +246,8 @@ class EditUserProfile extends BaseComponent {
 
   _initUserProfile() {
     const {dispatch}=this.props;
-    dispatch(HomeActions.getCurrentUserProfile('', (json)=> {
-      this._initDict((DictMap, result)=> {
+    dispatch(HomeActions.getCurrentUserProfile('', (json) => {
+      this._initDict((DictMap, result) => {
         this._initDatingPurpose(DictMap, result, result.DatingPurposeName);
         console.log({
           DictMap: DictMap,
@@ -255,7 +255,7 @@ class EditUserProfile extends BaseComponent {
         })
       }, json.Result);
 
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
@@ -272,7 +272,7 @@ class EditUserProfile extends BaseComponent {
     };
     //下面是选填项的字典
     for (let i = 0; i < DictMapArrKey.length; i++) {
-      Storage.getItem(`${DictMapArrKey[i]}`).then((response)=> {
+      Storage.getItem(`${DictMapArrKey[i]}`).then((response) => {
         if (response && response.length > 0) {
           for (let j = 0; j < response.length; j++) {
             if (DictMapArrKey[i] == 'DatingPurposeDict' || DictMapArrKey[i] == 'PhotoPermissionDict') {
@@ -320,24 +320,24 @@ class EditUserProfile extends BaseComponent {
 
   //点击完成(保存编辑后的个人资料)
   onRightPressed() {
-    if(this._validForm()){
+    if (this._validForm()) {
       this._saveUserProfile();
     }
   }
 
-  _saveUserProfile(){
+  _saveUserProfile() {
     const {dispatch}=this.props;
-    dispatch(UserProfileActions.editProfile(this.state, DatingPurposeSelectCopy, (json)=> {
+    dispatch(UserProfileActions.editProfile(this.state, DatingPurposeSelectCopy, (json) => {
       DeviceEventEmitter.emit('userInfoChanged', '编辑用户资料成功');
       toastShort('保存成功!');
-      this.saveTimer = setTimeout(()=> {
+      this.saveTimer = setTimeout(() => {
         navigator.pop();
       }, 1000)
-    }, (error)=> {
+    }, (error) => {
     }));
   }
 
-  _validForm(){
+  _validForm() {
     let nickNameReg = /^[\u4E00-\u9FA5\uF900-\uFA2D\da-zA-Z]+$/;
     if (this.state.Nickname == '') {
       toastShort('请填写昵称');
@@ -348,7 +348,7 @@ class EditUserProfile extends BaseComponent {
     } else if (!nickNameReg.test(this.state.Nickname)) {
       toastShort('昵称只能为英文、数字、汉字');
       return false;
-    }else{
+    } else {
       return true;
     }
   }
@@ -360,7 +360,7 @@ class EditUserProfile extends BaseComponent {
   _backAlert() {
     Keyboard.dismiss();
     //如果页面上有弹出选择框,按安卓物理返回键需要手动关闭弹出选择框(如果之前没有关闭的话)
-    RNPicker.isPickerShow((status)=> {
+    RNPicker.isPickerShow((status) => {
       if (status) RNPicker.hide()
     });
     if (this.state.hasChanged) {
@@ -389,13 +389,13 @@ class EditUserProfile extends BaseComponent {
     moveY = 0;
     originalY = 0;
     if (Platform.OS === 'ios') {
-      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height)=> {
+      this.refs[refTarget].measureLayout(findNodeHandle(this.refs['root']), (x, y, width, height) => {
         //console.log(x, y, width, height);
         //height为input框高度,64为iOS导航栏高度
         moveY = e.startCoordinates.height - (e.startCoordinates.screenY - y) + height + 64;
         //console.log(moveY, e, y);
 
-        this.refs[refTarget].measure((ox, oy, width, height, px, py)=> {
+        this.refs[refTarget].measure((ox, oy, width, height, px, py) => {
           console.log(ox, oy, width, height, px, py);
           originalY = y + 64 - py;
           //console.log(originalY);
@@ -403,7 +403,7 @@ class EditUserProfile extends BaseComponent {
             this.refs.scroll.scrollTo({y: moveY, x: 0, animated: true});
           }
         });
-      }, (error)=> {
+      }, (error) => {
         console.log(error);
       });
     }
@@ -423,7 +423,7 @@ class EditUserProfile extends BaseComponent {
     let arr = this.state.DictMap.DatingPurposeDict;
     return (
       <View style={styles.checkBoxView}>
-        {arr.map((item, index)=> {
+        {arr.map((item, index) => {
           //勾选/取消勾选会引起重绘,这里需要再次判断DatingPurposeSelectCopy中是否有已勾选的项,如果有则跳过,没有则添加
           //TODO: 代码冗余,待封装,待优化
           if (item.Checked) {
@@ -444,7 +444,7 @@ class EditUserProfile extends BaseComponent {
               labelStyle={styles.checkBoxLabel}
               checked={item.Checked}
               style={styles.checkBoxItem}
-              onChange={(checked)=> {
+              onChange={(checked) => {
                 item.Checked = checked;
                 this.setState({hasChanged: true});
                 if (checked) {
@@ -491,14 +491,14 @@ class EditUserProfile extends BaseComponent {
   }
 
   _createMapData() {
-    return ['0m(精确定位)', '200m', '500m', '1000m'];
+    return ['0m(精确定位)', '200m', '500m', '1000m', '10km'];
   }
 
   //通用选择弹窗显示文本方法
   renderSinglePicker(text, value, _createData) {
     return (
       <TouchableHighlight
-        onPress={()=> {
+        onPress={() => {
           this._showPicker(_createData, text, value)
         }}
         style={styles.emotionStatusIOS}
@@ -541,7 +541,7 @@ class EditUserProfile extends BaseComponent {
           });
         } else {
           this.setState({
-            MapPrecision: parseInt(pickedValue.split('m')[0]),
+            MapPrecision: pickedValue.indexOf('k') > -1 ? parseInt(pickedValue.split('k')[0]) * 1000 : parseInt(pickedValue.split('m')[0]),
           });
         }
         break;
@@ -578,37 +578,37 @@ class EditUserProfile extends BaseComponent {
 
   _hidePicker(str) {
     refTarget = str;
-    RNPicker.isPickerShow((status)=> {
+    RNPicker.isPickerShow((status) => {
       if (status) RNPicker.hide()
     });
   }
 
-  renderHabitSmoke(value){
+  renderHabitSmoke(value) {
     return (
       <View style={styles.genderRow}>
         <TouchableHighlight
-          onPress={()=> {
+          onPress={() => {
             this.setState({
-              IsSmoke:true
+              IsSmoke: true
             })
           }}
           activeOpacity={0.5}
           underlayColor="rgba(247,245,245,0.7)">
           <View style={styles.genderRadioGroup}>
-            <Icon name={value?'check-circle-o':'circle-o'} size={24}/>
+            <Icon name={value ? 'check-circle-o' : 'circle-o'} size={24}/>
             <Text style={styles.genderLabel}>{'是'}</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
-          onPress={()=> {
+          onPress={() => {
             this.setState({
-              IsSmoke:false
+              IsSmoke: false
             })
           }}
           activeOpacity={0.5}
           underlayColor="rgba(247,245,245,0.7)">
           <View style={styles.genderRadioGroup}>
-            <Icon name={value?'circle-o':'check-circle-o'} size={24}/>
+            <Icon name={value ? 'circle-o' : 'check-circle-o'} size={24}/>
             <Text style={styles.genderLabel}>{'否'}</Text>
           </View>
         </TouchableHighlight>
@@ -616,32 +616,32 @@ class EditUserProfile extends BaseComponent {
     )
   }
 
-  renderHabitDrink(value){
+  renderHabitDrink(value) {
     return (
       <View style={styles.genderRow}>
         <TouchableHighlight
-          onPress={()=> {
+          onPress={() => {
             this.setState({
-              IsDrink:true
+              IsDrink: true
             })
           }}
           activeOpacity={0.5}
           underlayColor="rgba(247,245,245,0.7)">
           <View style={styles.genderRadioGroup}>
-            <Icon name={value?'check-circle-o':'circle-o'} size={24}/>
+            <Icon name={value ? 'check-circle-o' : 'circle-o'} size={24}/>
             <Text style={styles.genderLabel}>{'是'}</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
-          onPress={()=> {
+          onPress={() => {
             this.setState({
-              IsDrink:false
+              IsDrink: false
             })
           }}
           activeOpacity={0.5}
           underlayColor="rgba(247,245,245,0.7)">
           <View style={styles.genderRadioGroup}>
-            <Icon name={value?'circle-o':'check-circle-o'} size={24}/>
+            <Icon name={value ? 'circle-o' : 'check-circle-o'} size={24}/>
             <Text style={styles.genderLabel}>{'否'}</Text>
           </View>
         </TouchableHighlight>
@@ -673,7 +673,7 @@ class EditUserProfile extends BaseComponent {
               <View
                 style={[styles.userInfo, styles.topSection]}
                 pointerEvents={'box-none'}
-                onStartShouldSetResponderCapture={()=> {
+                onStartShouldSetResponderCapture={() => {
                   return false
                 }}>
                 <Text style={styles.itemTitle}>{'基本资料'}</Text>
@@ -682,17 +682,17 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('Nickname')
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
                     ref={'Nickname'}
                     value={this.state.Nickname}
-                    onChangeText={(Nickname)=>this.setState({Nickname: Nickname, hasChanged: true})}
+                    onChangeText={(Nickname) => this.setState({Nickname: Nickname, hasChanged: true})}
                     maxLength={15}/>
                 </View>
                 <View style={styles.listItem}>
@@ -718,17 +718,17 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('Location')
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
                     ref={'Location'}
                     value={this.state.Location}
-                    onChangeText={(Location)=>this.setState({Location: Location, hasChanged: true})}
+                    onChangeText={(Location) => this.setState({Location: Location, hasChanged: true})}
                     maxLength={50}/>
                 </View>
                 <View style={styles.listItem}>
@@ -740,22 +740,22 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('Hometown');
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       this.refs.scroll.scrollTo({y: 0, x: 0, animated: true})
                     }}
                     ref={'Hometown'}
                     value={this.state.Hometown}
-                    onChangeText={(Hometown)=>this.setState({Hometown: Hometown, hasChanged: true})}
+                    onChangeText={(Hometown) => this.setState({Hometown: Hometown, hasChanged: true})}
                     maxLength={50}/>
                 </View>
               </View>
               <View
                 style={styles.userInfo}
                 pointerEvents={'box-none'}
-                onStartShouldSetResponderCapture={()=> {
+                onStartShouldSetResponderCapture={() => {
                   return false
                 }}>
                 <Text style={styles.itemTitle}>{'其他'}</Text>
@@ -780,17 +780,17 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('Ethnicity')
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
                     ref={'Ethnicity'}
                     value={this.state.Ethnicity}
-                    onChangeText={(Ethnicity)=>this.setState({Ethnicity: Ethnicity, hasChanged: true})}
+                    onChangeText={(Ethnicity) => this.setState({Ethnicity: Ethnicity, hasChanged: true})}
                     maxLength={20}/>
                 </View>
                 <View style={styles.listItem}>
@@ -802,17 +802,17 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('Contact')
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
                     ref={'Contact'}
                     value={this.state.Contact}
-                    onChangeText={(Contact)=>this.setState({Contact: Contact, hasChanged: true})}
+                    onChangeText={(Contact) => this.setState({Contact: Contact, hasChanged: true})}
                     maxLength={15}/>
                 </View>
                 <View style={styles.listItem}>
@@ -820,17 +820,17 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('Hobby')
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
                     ref={'Hobby'}
                     value={this.state.Hobby}
-                    onChangeText={(Hobby)=>this.setState({Hobby: Hobby, hasChanged: true})}
+                    onChangeText={(Hobby) => this.setState({Hobby: Hobby, hasChanged: true})}
                     maxLength={15}/>
                 </View>
                 <View style={[styles.listItem, styles.bottomItem]}>
@@ -838,17 +838,17 @@ class EditUserProfile extends BaseComponent {
                   <TextInput
                     style={[styles.input, styles.fullInput]}
                     underlineColorAndroid={'transparent'}
-                    onFocus={()=> {
+                    onFocus={() => {
                       this._hidePicker('SelfEvaluation')
                     }}
-                    onBlur={()=> {
+                    onBlur={() => {
                       if (Platform.OS === 'ios') {
                         this.refs.scroll.scrollTo({y: originalY, x: 0, animated: true})
                       }
                     }}
                     ref={'SelfEvaluation'}
                     value={this.state.SelfEvaluation}
-                    onChangeText={(SelfEvaluation)=>this.setState({SelfEvaluation: SelfEvaluation, hasChanged: true})}
+                    onChangeText={(SelfEvaluation) => this.setState({SelfEvaluation: SelfEvaluation, hasChanged: true})}
                     maxLength={50}/>
                 </View>
               </View>
@@ -864,7 +864,7 @@ class EditUserProfile extends BaseComponent {
   }
 }
 
-export default connect((state)=> {
+export default connect((state) => {
   return {
     ...state
   }
