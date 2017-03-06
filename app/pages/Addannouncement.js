@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectLabel: {
-    width: pxToDp(400)
+    width: pxToDp(300)
   },
   days: {
     backgroundColor: '#fff',
@@ -103,10 +103,10 @@ const styles = StyleSheet.create({
     marginRight: pxToDp(20),
     paddingLeft: pxToDp(20),
     borderRadius: pxToDp(8),
-    height: pxToDp(80)
+    height: pxToDp(80),
+    flex:1
   },
   picker: {
-    width: pxToDp(300),
     height: pxToDp(80)
   },
   tips: {
@@ -285,7 +285,7 @@ class Addannouncement extends BaseComponent {
   _renderPicker(arr, str, callBack) {
     if (Platform.OS == 'ios') {
       return (
-        <View style={{width: pxToDp(240), height: pxToDp(80), marginRight: pxToDp(40), borderRadius: pxToDp(8)}}>
+        <View style={{height: pxToDp(80), marginRight: pxToDp(40), borderRadius: pxToDp(8),flex:1}}>
           {this._renderPickerIOS(arr, str, callBack)}
         </View>
       )
@@ -344,7 +344,7 @@ class Addannouncement extends BaseComponent {
           </View>
         </MenuTrigger>
         <MenuOptions
-          optionsContainerStyle={{width: pxToDp(160)}}>
+          optionsContainerStyle={{flex:1}}>
           {this.renderMenuOption(arr)}
         </MenuOptions>
       </Menu>
