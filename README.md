@@ -16,8 +16,11 @@ react-native link
 ![Alt text](./img/map.gif)
 ![Alt text](./img/album.gif)
 
-###
+### 下载地址
 
+    Android版本已上线Google Play
+
+![Alt text](./img/QR_Code_Android.png)
 
 ### 说明
 
