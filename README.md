@@ -18,6 +18,13 @@ react-native link
 
 ### 下载地址
 
+    iOS版正在重构，即将上线。
+
+    App小范围试用，短信通道暂时关闭。
+    可使用测试账号登录：
+    账号：18988888888
+    密码：111111
+
     Android版本已上线Google Play
 
 ![Alt text](./img/QR_Code_Android.png)
