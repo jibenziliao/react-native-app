@@ -1,4 +1,6 @@
-# qingyuanjie
+# react-native-app
+
+## 觅友 Meet U
 
 ```bash
 git clone https://github.com/jibenziliao/react-native-app.git
@@ -12,22 +14,28 @@ npm install
 react-native link
 ```
 
-![Alt text](./img/home.gif)
-![Alt text](./img/map.gif)
-![Alt text](./img/album.gif)
+![首页截图](./img/home.gif)
+![寻TA截图](./img/map.gif)
+![相册截图](./img/album.gif)
 
 ### 下载地址
 
     iOS版正在重构，即将上线。
 
     App小范围试用，短信通道暂时关闭。
+
     可使用测试账号登录：
+
     账号：18988888888
+
     密码：111111
 
-    Android版本已上线Google Play
 
+Android版本已上线Google Play
 ![Alt text](./img/QR_Code_Android.png)
+
+也可以从[蒲公英](https://www.pgyer.com/Meetyou)下载测试版(两个签名不一样，不能共存)
+![觅友 Meet U](./img/QR_Code_PuGongYing.png)
 
 ### 说明
 
