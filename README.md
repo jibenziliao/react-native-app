@@ -32,9 +32,11 @@ react-native link
 
 
 Android版本已上线Google Play
+
 ![Alt text](./img/QR_Code_Android.png)
 
 也可以从[蒲公英](https://www.pgyer.com/Meetyou)下载测试版(两个签名不一样，不能共存)
+
 ![觅友 Meet U](./img/QR_Code_PuGongYing.png)
 
 ### 说明
